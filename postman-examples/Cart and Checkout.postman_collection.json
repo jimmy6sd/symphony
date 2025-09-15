@@ -1,0 +1,2500 @@
+{
+	"info": {
+		"_postman_id": "82a9308d-8b49-472b-80b8-4dd74e22d2f1",
+		"name": "Cart and Checkout",
+		"description": "A set of requests that illustrate a cart and checkout workflow with the Tessitura API. The Create Session requests saves the generated session key into the sessionKey environment variable. That variable is used in most other requests in this collection. In many places however, you will need to manually copy data from one request to the next in order to string along a workflow.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4337315"
+	},
+	"item": [
+		{
+			"name": "Start",
+			"item": [
+				{
+					"name": "Service Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Diagnostics/Status",
+							"host": [
+								"{{url}}Diagnostics"
+							],
+							"path": [
+								"Status"
+							]
+						},
+						"description": "Hit Diagnostics/Status to verify service is available"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Security/ContextInformation",
+							"host": [
+								"{{url}}Security"
+							],
+							"path": [
+								"ContextInformation"
+							]
+						},
+						"description": "Check if auth header is valid"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"sessionKey\", jsonData.SessionKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"IpAddress\": \"0.0.0.0\",\n\t\"BusinessUnitId\": 1,\n\t\"Organization\": \"impresario\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"constituentId\", jsonData.LoginInfo.ConstituentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PrimaryAddress\": {\r\n    \"City\": \"Dallas\",\r\n    \"PostalCode\": \"75230\",\r\n    \"StateId\": \"TX\",\r\n    \"Street1\": \"11700 Preston Road, Ste 660\",\r\n    \"Street2\": \"PMB 214\",\r\n    \"CountryId\": 1\r\n  },\r\n  \"ConstituentTypeId\": 1,\r\n  \"PrimaryElectronicAddress\": {\r\n    \"Address\": \"{{email}}\"\r\n  },\r\n  \"FirstName\": \"Dolores\",\r\n  \"LastName\": \"Abernathy\",\r\n  \"OriginalSourceId\": 1,\r\n  \"WebLogin\": {\r\n    \"Login\": \"{{email}}\",\r\n    \"LoginTypeId\": 1,\r\n    \"Password\": \"password\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Registration/{{sessionKey}}/Register",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Registration",
+								"{{sessionKey}}",
+								"Register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/Logout",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"Logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"constituentId\", jsonData.LoginInfo.ConstituentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"UserName\": \"{{email}}\",\r\n  \"Password\": \"password\",\r\n  \"LoginTypeId\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/Login",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"Login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"constituentId\", jsonData.LoginInfo.ConstituentId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"EmailAddress\": \"{{email}}\",\r\n  \"ElectronicAddressTypeId\": 1,\r\n  \"LoginTypeId\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/LoginAsGuest",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"LoginAsGuest"
+							]
+						},
+						"description": "Login for guest checkout only.\n\nAllows anonymous checkout under constituent 0, attaching the supplied email address to the cart. The session will be marked as a guest login.\n\nIf the email address exists attached to a login of the specified login type, that login's constituent ID will be used on the cart."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Membership",
+					"item": [
+						{
+							"name": "Get Membership Organizations",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}MembershipSetup/MembershipOrganizations/Summary",
+									"host": [
+										"{{url}}MembershipSetup"
+									],
+									"path": [
+										"MembershipOrganizations",
+										"Summary"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Membership Organization Benefits",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}MembershipSetup/MembershipOrganizationBenefits/Summary?membershipOrganizationId=12",
+									"host": [
+										"{{url}}MembershipSetup"
+									],
+									"path": [
+										"MembershipOrganizationBenefits",
+										"Summary"
+									],
+									"query": [
+										{
+											"key": "membershipOrganizationId",
+											"value": "12"
+										}
+									]
+								},
+								"description": "View all benefits available to add to levels of a single membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Web Membership Levels",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}MembershipSetup/MembershipLevels/Summary?membershipOrganizationIds=12&onlyPublishOnWebForSale=true",
+									"host": [
+										"{{url}}MembershipSetup"
+									],
+									"path": [
+										"MembershipLevels",
+										"Summary"
+									],
+									"query": [
+										{
+											"key": "membershipOrganizationIds",
+											"value": "12"
+										},
+										{
+											"key": "onlyPublishOnWebForSale",
+											"value": "true"
+										}
+									]
+								},
+								"description": "View all levels of a membership organization available to add to the web cart."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Membership Level Benefits",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}MembershipSetup/MembershipLevelBenefits?membershipLevelId=9",
+									"host": [
+										"{{url}}MembershipSetup"
+									],
+									"path": [
+										"MembershipLevelBenefits"
+									],
+									"query": [
+										{
+											"key": "membershipLevelId",
+											"value": "9"
+										}
+									]
+								},
+								"description": "View all level benefits (including their limits and frequencies) that will be available to a constituent who purchases the membership level."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Level First",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"FundId\": {{membershipFundId}},\r\n  \"MembershipLevelId\": {{lowerMembershipLevelId}},\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 1, \"Value\": \"string\" },\r\n      { \"Index\": 2, \"Value\": \"3\" },\r\n      { \"Index\": 3, \"Value\": \"1/30/2021\" },\r\n      { \"Index\": 4, \"Value\": \"$2.00\" },\r\n      { \"Index\": 5, \"Value\": \"1.0\" }\r\n  ]\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/LevelFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"LevelFirst"
+									]
+								},
+								"description": "Add a membership to the cart by providing the level.\n\nThere must be a campaign attached to the membership organization of level you are supplying. The Campaign must be attached to an active Fund."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Level First Upgrade",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Action\": 3,\r\n    \"FundId\": {{membershipFundId}},\r\n    \"MembershipLevelId\": {{higherMembershipLevelId}}\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/LevelFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"LevelFirst"
+									]
+								},
+								"description": "Upgrade the user's current membership by providing a higher level (membership level must be a included in a membership organization which is tied to the campaign that is associated with the Fund Id provided)."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Level First Renewal",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Action\": 2,\r\n    \"FundId\": {{membershipFundId}},\r\n    \"MembershipLevelId\": {{lowerMembershipLevelId}}\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/LevelFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"LevelFirst"
+									]
+								},
+								"description": "Renew the user's current membership by providing a level (membership level must be a included in a membership organization which is tied to the campaign that is associated with the Fund Id provided)."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Level First Gift",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"FundId\": {{membershipFundId}},\r\n  \"CrediteeTypeId\": 5,\r\n  \"RecipientId\": 1000,\r\n  \"MembershipLevelId\": {{lowerMembershipLevelId}},\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 1, \"Value\": \"string\" },\r\n      { \"Index\": 2, \"Value\": \"3\" },\r\n      { \"Index\": 3, \"Value\": \"1/30/2021\" },\r\n      { \"Index\": 4, \"Value\": \"$2.00\" },\r\n      { \"Index\": 5, \"Value\": \"1.0\" }\r\n  ]\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/LevelFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"LevelFirst"
+									]
+								},
+								"description": "This call has the current session's user purchasing a membership for another user, a.k.a. the recipient.\n\nThe Fund Id provided must be attached to a campaign that is attached to a membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Amount First",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"FundId\": {{membershipFundId}},\r\n  \"MembershipAmount\": 100,\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 1, \"Value\": \"string\" },\r\n      { \"Index\": 2, \"Value\": \"3\" },\r\n      { \"Index\": 3, \"Value\": \"1/30/2021\" },\r\n      { \"Index\": 4, \"Value\": \"$2.00\" },\r\n      { \"Index\": 5, \"Value\": \"1.0\" }\r\n  ]\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/AmountFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"AmountFirst"
+									]
+								},
+								"description": "Add a membership to the cart by providing the amount.\n\nThe Fund Id provided must be attached to a campaign that is attached to a membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Amount First Upgrade",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Action\": 3,\r\n    \"FundId\": {{membershipFundId}},\r\n    \"MembershipAmount\": 150\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/AmountFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"AmountFirst"
+									]
+								},
+								"description": "Upgrade the user's current membership by the amount of money provided.\n\nThe Fund Id provided must be attached to a campaign that is attached to a membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Amount First Renewal",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"Action\": 2,\r\n    \"FundId\": {{membershipFundId}},\r\n    \"MembershipAmount\": 123.45\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/AmountFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"AmountFirst"
+									]
+								},
+								"description": "Renew the user's current membership by providing a new amount.\n\nThe Fund Id provided must be attached to a campaign that is attached to a membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Add Membership Amount First Gift",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();\r",
+											"pm.environment.set(\"membershipId\", jsonData.MembershipId);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"FundId\": {{membershipFundId}},\r\n  \"CrediteeTypeId\": 5,\r\n  \"RecipientId\": 1000,\r\n  \"MembershipAmount\": 250,\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 1, \"Value\": \"string\" },\r\n      { \"Index\": 2, \"Value\": \"3\" },\r\n      { \"Index\": 3, \"Value\": \"1/30/2021\" },\r\n      { \"Index\": 4, \"Value\": \"$2.00\" },\r\n      { \"Index\": 5, \"Value\": \"1.0\" }\r\n  ]\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/AmountFirst",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"AmountFirst"
+									]
+								},
+								"description": "This call has the current session's user purchasing a membership for another user, a.k.a. the recipient.\n\nThe Fund Id provided must be attached to a campaign that is attached to a membership organization."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Current Benefits For Constituent",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{url}}CRM/Benefits/Current?constituentId={{constituentId}}",
+									"host": [
+										"{{url}}CRM"
+									],
+									"path": [
+										"Benefits",
+										"Current"
+									],
+									"query": [
+										{
+											"key": "constituentId",
+											"value": "{{constituentId}}"
+										}
+									]
+								},
+								"description": "Get all level benefits for a constituent by Constituent Id. The constituent must have a membership and did not decline benefits of that membership."
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Membership",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/json, application/xml, text/xml"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{url}}Web/Cart/{{sessionKey}}/Memberships/{{membershipId}}",
+									"host": [
+										"{{url}}Web"
+									],
+									"path": [
+										"Cart",
+										"{{sessionKey}}",
+										"Memberships",
+										"{{membershipId}}"
+									]
+								},
+								"description": "Remove a membership from the cart by membership Id."
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"if (pm.request.method == \"POST\")",
+									"{",
+									"    pm.test(\"Reponse contains MembershipId\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property(\"MembershipId\");",
+									"",
+									"        //Set environment variable        ",
+									"        pm.environment.set(\"membershipCartItemId\", jsonData.MembershipId);        ",
+									"    });",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Get Cart",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Summary",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Contribution",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 100.0,\r\n  \"FundId\": 5,\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 3, \"Value\": \"1/1/2021 9:00:00\" }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Contributions",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Contributions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Contribution",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Contributions/100257",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Contributions",
+								"100257"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Gift Certificate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 101.0,\r\n  \"PaymentMethodId\": 28,\r\n  \"Notes\": \"\",\r\n  \"Name\": \"Dolores Abernathy\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/GiftCertificates",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"GiftCertificates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add OnAccount",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 500.0,\r\n  \"PaymentMethodId\": 7,\r\n  \"Notes\": \"Add an On Account balance to the cart\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/OnAccount",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"OnAccount"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Promo Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PromoCodeString\": \"TestPromoCode\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/PromoCode",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"PromoCode"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Properties",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ModeOfSaleId\": 2,\r\n  \"SourceId\": 50\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Properties with Default MOS and Source",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ModeOfSaleId\": 0,\r\n  \"SourceId\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart Properties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Performance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}TXN/Performances/62",
+							"host": [
+								"{{url}}TXN"
+							],
+							"path": [
+								"Performances",
+								"62"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Package",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}TXN/Packages/25/Details?modeOfSaleId=2&sourceId=50",
+							"host": [
+								"{{url}}TXN"
+							],
+							"path": [
+								"Packages",
+								"25",
+								"Details"
+							],
+							"query": [
+								{
+									"key": "modeOfSaleId",
+									"value": "2"
+								},
+								{
+									"key": "sourceId",
+									"value": "50"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reserve Ticket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PriceType\": \"1\",\r\n  \"PerformanceId\": 62,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 23\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Tickets",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reserve Tickets For LineItem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PriceType\": \"1\",\r\n  \"PerformanceId\": 62,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 23\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/LineItems/[[ LINE ITEM ID ]]/Tickets",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"LineItems",
+								"[[ LINE ITEM ID ]]",
+								"Tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Tickets",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PriceType\": \"1\",\r\n  \"PerformanceId\": 14,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Tickets/62/[[ LINE ITEM ID ]]",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Tickets",
+								"62",
+								"[[ LINE ITEM ID ]]"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Properties for Packages",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ModeOfSaleId\": 8,\r\n  \"SourceId\": 20\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Fixed Seat Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PriceType\": \"2\",\r\n  \"PackageId\": 12,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Fixed",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Fixed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Package Performance Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWxscmlnaHQ6bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Fixed/943/945/62",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Fixed",
+								"943",
+								"945",
+								"62"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Package by LineItem",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"PriceType\": \"1\",\r\n  \"PerformanceId\": 14,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 0\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Fixed/12/[[ LINE ITEM ID ]]",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Fixed",
+								"12",
+								"[[ LINE ITEM ID ]]"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Super Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW46bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"SuperPackageLineItemId\": 0,\r\n  \"PriceType\": \"2\",\r\n  \"SubPackageId\": 19,\r\n  \"NumberOfSeats\": 2,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Super",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Super"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Super Package Performance Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWxscmlnaHQ6bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Super/978/19/980/62",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Super",
+								"978",
+								"19",
+								"980",
+								"62"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Super Package by LineItem",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWxscmlnaHQ6bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Super/19/1007",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Super",
+								"19",
+								"1007"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Flex Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"NFSPackageLineItemId\": 0,\r\n  \"PriceType\": \"2\",\r\n  \"PackageId\": 29,\r\n  \"PerformanceId\": 62,\r\n  \"PerformanceGroupId\": 20,\r\n  \"NumberOfSeats\": 1,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Nfs",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Nfs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add 2nd Performance to Flex Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"NFSPackageLineItemId\": [[ LINE ITEM ID ]],\r\n  \"PriceType\": \"2\",\r\n  \"PackageId\": 29,\r\n  \"PerformanceId\": 66,\r\n  \"PerformanceGroupId\": 20,\r\n  \"NumberOfSeats\": 1,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Nfs",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Nfs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add 3rd Performance to Flex Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"NFSPackageLineItemId\": [[ LINE ITEM ID ]],\r\n  \"PriceType\": \"2\",\r\n  \"PackageId\": 29,\r\n  \"PerformanceId\": 65,\r\n  \"PerformanceGroupId\": 18,\r\n  \"NumberOfSeats\": 1,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Nfs",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Nfs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add 4th Performance to Flex Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"NFSPackageLineItemId\": [[ LINE ITEM ID ]],\r\n  \"PriceType\": \"2\",\r\n  \"PackageId\": 29,\r\n  \"PerformanceId\": 85,\r\n  \"PerformanceGroupId\": 19,\r\n  \"NumberOfSeats\": 1,\r\n  \"ZoneId\": 23,\r\n  \"Unseated\": false\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Packages/Nfs",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Packages",
+								"Nfs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Load Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"tests[\"#1391, CartActionBalanceToCharge, 11 - Load order into cart.  BalanceToCharge=65.\"] = data.BalanceToCharge === 65 && data.CartAmount === 75 && data.AmountPaidPreviously === 10;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic d2ViOndlYjptYWNoaW5lOnBhc3N3b3Jk"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{serviceUrl}}Web/Session/{{sessionKey}}/LoadOrder/{{orderId}}",
+							"host": [
+								"{{serviceUrl}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"LoadOrder",
+								"{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Contribution Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 100.0,\r\n  \"FundId\": 5,\r\n  \"CustomDataItems\": [\r\n      { \"Index\": 7, \"Value\": \"lol\" }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Contributions",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Contributions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checkout",
+			"item": [
+				{
+					"name": "Checkout Simple",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"CreditCardOwner\": \"Guy Smiley\",\r\n  \"CreditCardNumber\": \"5454545454545454\",\r\n  \"CreditCardType\": 33,\r\n  \"CreditCardMonth\": 10,\r\n  \"CreditCardYear\": 2023,\r\n  \"Amount\": 150.00,\r\n  \"AllowUnderPayment\": false,\r\n  \"Authorize\": true,\r\n  \"ZipCode\": \"63119\",\r\n  \"Address\": \"123 Fourth St.\",\r\n  \"ECommerce\": true,\r\n  \"StoreAccount\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Checkout",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Checkout"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Session (no save)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(pm.request.body.raw);",
+									"pm.environment.set(\"sessionKey\", jsonData.NewSessionKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"IpAddress\": \"0.0.0.0\",\n\t\"BusinessUnitId\": 1,\n\t\"Organization\": \"impresario\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Session",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(pm.request.body.raw);",
+									"pm.environment.set(\"sessionKey\", jsonData.NewSessionKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"NewSessionKey\": \"[[ SESSION KEY ]]\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/Transfer",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"Transfer"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Apply Cash Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Amount\": 100.0,\n  \"TenderedAmount\": 100.0,\n  \"PaymentMethodId\": 3,\n  \"Notes\": \"It's in the mail, I promise.\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Payments/Cash",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Payments",
+								"Cash"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Contribution",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 47.0,\r\n  \"FundId\": 5\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Contributions",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Contributions"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Apply OnAccount Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 50.0,\r\n  \"PaymentMethodId\": 7,\r\n  \"Notes\": \"On Account money for you!\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Payments/OnAccount",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Payments",
+								"OnAccount"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Apply Gift Certificate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWRtaW46bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Amount\": 0.0,\n  \"GiftCertificateNumber\": \"AA48-402\",\n  \"Notes\": \"Gift certificate ftw\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Payments/GiftCertificate",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Payments",
+								"GiftCertificate"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Checkout PreAuth",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"CreditCardOwner\": \"Guy Smiley\",\r\n  \"CreditCardType\": 35,\r\n  \"Amount\": 50.00,\r\n  \"AllowUnderPayment\": false,\r\n  \"AuthorizationCode\": \"ABCDE\",\r\n  \"Authorize\": false,\r\n  \"ZipCode\": \"63119\",\r\n  \"Address\": \"123 Fourth St.\",\r\n  \"ECommerce\": true,\r\n  \"StoreAccount\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Checkout",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Checkout"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Checkout Zero Balance",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"CreditCardOwner\": \"Guy Smiley\",\r\n  \"Amount\": 0.00,\r\n  \"Authorize\": true\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Checkout",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Checkout"
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Methods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}TXN/PaymentMethodUserGroups",
+							"host": [
+								"{{url}}TXN"
+							],
+							"path": [
+								"PaymentMethodUserGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delivery Methods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}ReferenceData/DeliveryMethods",
+							"host": [
+								"{{url}}ReferenceData"
+							],
+							"path": [
+								"DeliveryMethods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Payment Plan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic YWRtaW46YWxscmlnaHQ6bWFjaGluZTpwYXNzd29yZA=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"Amount\": 100.0,\r\n  \"FundId\": 5\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Contributions",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Contributions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Session Properties",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"DeliveryMethodId\": -1\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Session Properties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Web/Cart/{{sessionKey}}/Properties",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Cart",
+								"{{sessionKey}}",
+								"Properties"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post Checkout",
+			"item": [
+				{
+					"name": "Load Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/LoadOrder/456",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"LoadOrder",
+								"456"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product View",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/json, application/xml, text/xml"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}TXN/Orders/[[ ORDER ID ]]/ProductsView",
+							"host": [
+								"{{url}}TXN"
+							],
+							"path": [
+								"Orders",
+								"[[ ORDER ID ]]",
+								"ProductsView"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Order Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}Web/Session/{{sessionKey}}/Orders/Search?modeOfSaleId=3",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								"{{sessionKey}}",
+								"Orders",
+								"Search"
+							],
+							"query": [
+								{
+									"key": "modeOfSaleId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{username}}:{{usergroup}}:{{machinename}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Data Service</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Test Data Service Loading</h1>
+    <div id="output"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/tessitura-config.js"></script>
+    <script src="js/tessitura-api.js"></script>
+    <script src="js/data-service.js"></script>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            output.appendChild(div);
+        }
+
+        function logPre(data) {
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(data, null, 2);
+            output.appendChild(pre);
+        }
+
+        async function testDataService() {
+            log('🧪 Testing Data Service Configuration', 'info');
+            log(`Mock Data Enabled: ${CONFIG.api.mockDataEnabled}`, CONFIG.api.mockDataEnabled ? 'error' : 'success');
+
+            try {
+                log('📊 Loading performance data...', 'info');
+                const performances = await dataService.getPerformances();
+
+                log(`✅ Successfully loaded ${performances.length} performances`, 'success');
+
+                if (performances.length > 0) {
+                    log('📋 Sample performance:', 'info');
+                    logPre(performances[0]);
+
+                    log('🔍 Data source check:', 'info');
+                    if (performances[0].id === 6086) {
+                        log('✅ Loading REAL Tessitura data (ID 6086 = Tuba Christmas)', 'success');
+                    } else if (performances[0].id === 'perf-001') {
+                        log('⚠️ Loading MOCK data (ID perf-001 = Beethoven)', 'error');
+                    } else {
+                        log(`❓ Unknown data source (ID: ${performances[0].id})`, 'error');
+                    }
+                } else {
+                    log('❌ No performances loaded', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error loading data: ${error.message}`, 'error');
+            }
+        }
+
+        // Run test when page loads
+        window.addEventListener('load', testDataService);
+    </script>
+</body>
+</html>

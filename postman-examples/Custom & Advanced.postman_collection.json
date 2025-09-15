@@ -1,0 +1,697 @@
+{
+	"info": {
+		"_postman_id": "ac61eb5e-5069-4cf9-b875-f47f6c9d0647",
+		"name": "Custom & Advanced",
+		"description": "A set of requests that illustrate the custom and email template endpoints in the Tessitura API. The Create Session requests saves the generated session key into the sessionKey environment variable. That variable is used in most other requests in this collection. In many places however, you will need to manually copy data, like the constituentId, from one request to the next in order to string along a workflow.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Start",
+			"item": [
+				{
+					"name": "Service Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Diagnostics/Status",
+							"host": [
+								"{{url}}Diagnostics"
+							],
+							"path": [
+								"Status"
+							]
+						},
+						"description": "Hit Diagnostics/Status to verify service is available"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Security/ContextInformation",
+							"host": [
+								"{{url}}Security"
+							],
+							"path": [
+								"ContextInformation"
+							]
+						},
+						"description": "Check if auth header is valid"
+					},
+					"response": []
+				},
+				{
+					"name": "GetSessionKey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.environment.set(\"sessionKey\", jsonData.SessionKey);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"IpAddress\": \"\",\r\n  \"BusinessUnitId\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Web/Session/",
+							"host": [
+								"{{url}}Web"
+							],
+							"path": [
+								"Session",
+								""
+							]
+						},
+						"description": "Fetches session key for use in session and cart areas."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Custom",
+			"item": [
+				{
+					"name": "Get All Grades",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Custom/Grades",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Grades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Custom/Students",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"FirstName\": \"Eric\",\r\n        \"LastName\": \"Margheim\",\r\n        \"StudentType\": \"1\"\r\n    }\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Students",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Grade",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"Student\": {\r\n            \"Id\": \"5\"\r\n        },\r\n        \"Grade1\": \"A\",\r\n        \"Grade2\": \"A\",\r\n        \"Grade3\": \"C\"\r\n    }\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Grades",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Grades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Grade",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Custom/Grades/6",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Grades",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a Student",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Custom/Students/5",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Students",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Grade",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Id\": \"6\",\r\n    \"Student\": {\r\n        \"Id\": \"5\"\r\n    },\r\n    \"Grade1\": \"A\",\r\n    \"Grade2\": \"A\",\r\n    \"Grade3\": \"A\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Grades/6",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Grades",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add With Ref Filter (no Inactive type)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"FirstName\": \"Eric\",\r\n        \"LastName\": \"Margheim\",\r\n        \"StudentType\": \"3\"\r\n    }\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Students",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update With Validation (no numbers in FirstName)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"FirstName\": \"Erico55\",\r\n        \"LastName\": \"Margheim\",\r\n        \"StudentType\": \"1\"\r\n    }\r\n"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Students",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All StudentSubjects (inhibit expansion)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Custom/StudentSubjects",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"StudentSubjects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Execute Local Procedure (old)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProcedureId\" : 1,\r\n    \"Parameters\" : \"@perf_no=64&@mos=8\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Execute",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Execute"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Execute Local Procedure (V15)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ProcedureName\" : \"TP_GET_ALL_PRICES\",\r\n    \"ParameterValues\": [\r\n    \t{\r\n    \t\t\"Name\": \"@perf_no\",\r\n    \t\t\"Value\": \"63\"\r\n    \t},\r\n    \t{\r\n    \t\t\"Name\": \"@mos\",\r\n    \t\t\"Value\": \"2\"\r\n    \t}\r\n    ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Custom/Execute",
+							"host": [
+								"{{url}}Custom"
+							],
+							"path": [
+								"Execute"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Templates & Emails",
+			"item": [
+				{
+					"name": "Get Template",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": "\n"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}Templates/1",
+							"host": [
+								"{{url}}Templates"
+							],
+							"path": [
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Login Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}Templates/1/Login/1/Credentials",
+							"host": [
+								"{{url}}Templates"
+							],
+							"path": [
+								"1",
+								"Login",
+								"1",
+								"Credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Render Login Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Body\" : \"<style type=\\\"text/css\\\">\\r\\n    body,\\r\\n    html,\\r\\n    .body {\\r\\n        background: #f3f3f3 !important;\\r\\n    }\\r\\n</style>\\r\\n<div>\\r\\n    <h1>Here are your credentials.</h1>\\r\\n    EmailAddress: @Model.LoginCredentials.EmailAddress <br />\\r\\n    PasswordToken: @Model.LoginCredentials.PasswordToken <br />\\r\\n    AllowHtmlFormat: @Model.LoginCredentials.AllowHtmlFormat <br />\\r\\n    ConstituentId: @Model.LoginCredentials.ConstituentId <br />\\r\\n    FirstName: @Model.LoginCredentials.FirstName <br />\\r\\n    LastName: @Model.LoginCredentials.LastName <br />\\r\\n    DisplayName: @Model.LoginCredentials.DisplayName <br />\\r\\n    EnvelopeSalutation1: @Model.LoginCredentials.EnvelopeSalutation1 <br />\\r\\n    EnvelopeSalutation2: @Model.LoginCredentials.EnvelopeSalutation2 <br />\\r\\n    LetterSalutation: @Model.LoginCredentials.LetterSalutation <br />\\r\\n    BusinessTitle: @Model.LoginCredentials.BusinessTitle <br />\\r\\n    Login: @Model.LoginCredentials.Login <br />\\r\\n    IsTemporary: @Model.LoginCredentials.IsTemporary <br />\\r\\n</div>\\r\\n@if (Model.GetPropertyValue(\\\"ResetLink\\\") != null)\\r\\n{\\r\\n    <p>\\r\\n        <a href=\\\"@Model.GetPropertyValue(\\\"ResetLink\\\")\\\" target=\\\"_blank\\\">Click here to reset your password</a>\\r\\n    </p>\\r\\n}\\r\\n<p>\\r\\n    Call us at 800.555.1923<br />\\r\\n    Email us at support@somewhere.org\\r\\n</p>\\r\\n<p>\\r\\n    123 Maple Rd<br />\\r\\n    Campbell, CA 95112\\r\\n</p>\\r\\n\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}Templates/1/Login/1/Credentials",
+							"host": [
+								"{{url}}Templates"
+							],
+							"path": [
+								"1",
+								"Login",
+								"1",
+								"Credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Login Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"TemplateId\": 1,\r\n  \"EmailAddress\": \"emargheim@tessituranetwork.com\",\r\n  \"EmailProfileId\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}Emails/LoginCredentials/1/Send",
+							"host": [
+								"{{url}}Emails"
+							],
+							"path": [
+								"LoginCredentials",
+								"1",
+								"Send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clear Cart",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}Web/Cart/{{sessionKey}}",
+					"host": [
+						"{{url}}Web"
+					],
+					"path": [
+						"Cart",
+						"{{sessionKey}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart Summary",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{url}}Web/Cart/{{sessionKey}}/Summary",
+					"host": [
+						"{{url}}Web"
+					],
+					"path": [
+						"Cart",
+						"{{sessionKey}}",
+						"Summary"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{username}}:{{usergroup}}:{{machinename}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

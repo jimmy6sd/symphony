@@ -1,0 +1,16 @@
+{
+  "performances": {
+    "timestamp": "2025-09-14T21:13:10.705Z",
+    "expiryTime": "2025-09-15T21:13:10.706Z",
+    "ttl": 86400000,
+    "dataSize": 15523,
+    "filename": "performances.json"
+  },
+  "dashboard-performances": {
+    "timestamp": "2025-09-14T21:13:58.877Z",
+    "expiryTime": "2025-09-15T21:13:58.877Z",
+    "ttl": 86400000,
+    "dataSize": 9321,
+    "filename": "dashboard-performances.json"
+  }
+}

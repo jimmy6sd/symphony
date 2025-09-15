@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symphony Dashboard - Real Tessitura Data</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1>Symphony Sales Dashboard</h1>
+            <p>Advanced Analytics & Performance Insights</p>
+        </header>
+
+        <main class="dashboard-content">
+
+            <!-- Main Dashboard Views -->
+            <div id="overview-view" class="dashboard-view active">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card" id="kpi-total-performances">
+                        <div class="kpi-icon">🎭</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">--</div>
+                            <div class="kpi-label">Total Performances</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" id="kpi-avg-occupancy">
+                        <div class="kpi-icon">🎫</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">--</div>
+                            <div class="kpi-label">Avg Occupancy</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" id="kpi-total-revenue">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">--</div>
+                            <div class="kpi-label">Total Revenue</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card" id="kpi-on-track">
+                        <div class="kpi-icon">📈</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">--</div>
+                            <div class="kpi-label">On Track</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-container primary-chart">
+                        <div class="chart-header">
+                            <h3>Performance Overview</h3>
+                            <button class="chart-expand" data-chart="performance">⛶</button>
+                        </div>
+                        <div id="performance-chart" class="chart-content"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Sales Progression</h3>
+                            <button class="chart-expand" data-chart="sales-curve">⛶</button>
+                        </div>
+                        <div id="sales-curve-chart" class="chart-content"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Ticket Distribution</h3>
+                            <button class="chart-expand" data-chart="ticket-type">⛶</button>
+                        </div>
+                        <div id="ticket-type-chart" class="chart-content"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Performance Details</h3>
+                            <button class="chart-expand" data-chart="details">⛶</button>
+                        </div>
+                        <div id="performance-details" class="chart-content">
+                            <div class="details-placeholder">
+                                Click on a performance above to see details
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed View (Modal-style overlay) -->
+            <div id="detailed-view" class="dashboard-view modal-view" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="detailed-title">Detailed Analysis</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="detailed-chart" class="detailed-chart-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table View -->
+            <div id="data-table-view" class="dashboard-view">
+                <div id="data-table" class="data-table-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Symphony Dashboard - Organized Application Loader -->
+    <script src="src/main.js"></script>
+</body>
+</html>

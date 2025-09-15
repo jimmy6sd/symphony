@@ -1,0 +1,754 @@
+[
+  {
+    "AvailSaleIndicator": true,
+    "BestSeatMap": {
+      "Id": 102,
+      "Description": "Parking Pass",
+      "GaIndicator": "Y",
+      "IsGA": true
+    },
+    "BudgetAmount": null,
+    "Campaign": {
+      "AutoRestrictContributionsBeforeStartDate": false,
+      "Type": "C",
+      "Id": 1076,
+      "CategoryId": 19,
+      "Category": {
+        "Id": 19,
+        "Description": "SY-Education Campaigns",
+        "Inactive": false,
+        "CreatedDateTime": "2006-08-03T11:15:33.7-05:00",
+        "CreateLocation": "KCS24",
+        "CreatedBy": "jknapp",
+        "UpdatedDateTime": "2012-06-06T21:36:26.533-05:00",
+        "UpdatedBy": "dbo"
+      },
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      },
+      "CreatedDateTime": "2013-04-24T12:08:07.29-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig",
+      "Description": "SY-FY14 Education",
+      "EndDateTime": "2014-06-30T23:59:59.997-05:00",
+      "EventDateTime": null,
+      "EventExpense": null,
+      "EventMinimumAmount": null,
+      "FYear": 2014,
+      "GiftAmount": 0,
+      "GoalAmount": null,
+      "Inactive": true,
+      "UpdatedDateTime": "2019-11-20T06:52:12.18-06:00",
+      "UpdatedBy": "sa",
+      "MembershipIncludesMatchingGifts": null,
+      "MembershipOrganization": null,
+      "MinimumPledgeAmount": null,
+      "Notes": null,
+      "NumSuccessCust": null,
+      "NumTargetCust": null,
+      "NumTickets": null,
+      "PledgeReceivedAmount": 0,
+      "PledgeAmount": 0,
+      "SingleOpenPledgeIndicator": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "Status": "C",
+      "TotalTicketIncome": 79060,
+      "CalculationMethod": null,
+      "EditIndicator": false
+    },
+    "DefaultEndSaleDateTime": "2013-12-06T20:00:00-06:00",
+    "DefaultStartSaleDateTime": "2013-04-30T16:31:00-05:00",
+    "DoorsClose": null,
+    "DoorsOpen": null,
+    "Duration": null,
+    "Facility": {
+      "Description": "SY-G/A Hall",
+      "AliasDescription": null,
+      "Inactive": false,
+      "Id": 59,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "Code": "131206A",
+    "Date": "2013-12-06T10:30:00-06:00",
+    "Id": 6086,
+    "Status": {
+      "Id": 1,
+      "Description": "On Sale",
+      "Inactive": false
+    },
+    "Type": {
+      "Id": 1,
+      "Description": "Default TR_PERF_TYPE",
+      "Inactive": false
+    },
+    "ProductionSeason": {
+      "Production": {
+        "Id": 6083,
+        "Description": "SY-13-14 Tuba Christmas",
+        "TitleId": 6065
+      },
+      "Id": 6084,
+      "Description": "SY-13-14 Tuba Christmas Regist",
+      "Season": {
+        "Id": 244,
+        "Description": "13-14 Tuba Christmas",
+        "FYear": 2014,
+        "Inactive": true
+      },
+      "FirstPerformanceDate": "2013-12-06T10:30:00-06:00",
+      "LastPerformanceDate": "2013-12-09T10:30:00-06:00"
+    },
+    "PublishClientEndDate": null,
+    "PublishClientStartDate": null,
+    "PublishWebApiEndDate": null,
+    "PublishWebApiStartDate": null,
+    "RankType": {
+      "Id": 8,
+      "Description": "SY-Default TR_RANK_TYPE",
+      "Inactive": false,
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      }
+    },
+    "SalesNotes": null,
+    "SalesNotesRequired": false,
+    "Season": {
+      "ConfirmationNoticeFormat": null,
+      "CreatedDateTime": "2013-04-24T10:50:24.447-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig  ",
+      "DefaultIndicator": false,
+      "Description": "13-14 Tuba Christmas",
+      "DisplayInSeasonOverview": false,
+      "EndDateTime": "2014-06-30T00:00:00-05:00",
+      "FYear": 2014,
+      "Id": 244,
+      "Inactive": true,
+      "UpdatedDateTime": "2014-11-17T12:17:16.2-06:00",
+      "UpdatedBy": "ocraig  ",
+      "RenewalNoticeFormat": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "SubscriptionFund1": null,
+      "SubscriptionFund2": null,
+      "Type": {
+        "BusinessUnit": {
+          "Description": "Consortium",
+          "Id": 1,
+          "Inactive": false
+        },
+        "CreatedDateTime": "2013-09-26T11:35:13.897-05:00",
+        "CreateLocation": "KCCOUSER48",
+        "CreatedBy": "afogel  ",
+        "Description": "SY-Education",
+        "Id": 23,
+        "Inactive": false,
+        "UpdatedDateTime": "2013-09-26T11:39:19.72-05:00",
+        "UpdatedBy": "afogel  "
+      },
+      "YearlySeason": null,
+      "ControlGroup": {
+        "Description": "Shared BO - KC/SY",
+        "Id": 11,
+        "Inactive": false
+      }
+    },
+    "TimeSlot": {
+      "Id": 2,
+      "Description": "Matinee",
+      "Inactive": false
+    },
+    "TvIndicator": null,
+    "ZoneMap": {
+      "Description": "KCS Education",
+      "Id": 422,
+      "Inactive": false,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "CreatedDateTime": "2014-05-09T01:19:08.95-05:00",
+    "CreateLocation": "DBLIVEC4",
+    "CreatedBy": "dbo",
+    "UpdatedDateTime": "2014-05-09T01:19:09.623-05:00",
+    "UpdatedBy": "dbo",
+    "EditIndicator": false,
+    "Description": "Tuba Registration #1",
+    "ShortName": "Tuba Registration #1",
+    "Text1": null,
+    "Text2": null,
+    "Text3": null,
+    "Text4": null
+  },
+  {
+    "AvailSaleIndicator": true,
+    "BestSeatMap": {
+      "Id": 128,
+      "Description": " General Admission",
+      "GaIndicator": "Y",
+      "IsGA": true
+    },
+    "BudgetAmount": null,
+    "Campaign": {
+      "AutoRestrictContributionsBeforeStartDate": false,
+      "Type": "C",
+      "Id": 1076,
+      "CategoryId": 19,
+      "Category": {
+        "Id": 19,
+        "Description": "SY-Education Campaigns",
+        "Inactive": false,
+        "CreatedDateTime": "2006-08-03T11:15:33.7-05:00",
+        "CreateLocation": "KCS24",
+        "CreatedBy": "jknapp",
+        "UpdatedDateTime": "2012-06-06T21:36:26.533-05:00",
+        "UpdatedBy": "dbo"
+      },
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      },
+      "CreatedDateTime": "2013-04-24T12:08:07.29-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig",
+      "Description": "SY-FY14 Education",
+      "EndDateTime": "2014-06-30T23:59:59.997-05:00",
+      "EventDateTime": null,
+      "EventExpense": null,
+      "EventMinimumAmount": null,
+      "FYear": 2014,
+      "GiftAmount": 0,
+      "GoalAmount": null,
+      "Inactive": true,
+      "UpdatedDateTime": "2019-11-20T06:52:12.18-06:00",
+      "UpdatedBy": "sa",
+      "MembershipIncludesMatchingGifts": null,
+      "MembershipOrganization": null,
+      "MinimumPledgeAmount": null,
+      "Notes": null,
+      "NumSuccessCust": null,
+      "NumTargetCust": null,
+      "NumTickets": null,
+      "PledgeReceivedAmount": 0,
+      "PledgeAmount": 0,
+      "SingleOpenPledgeIndicator": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "Status": "C",
+      "TotalTicketIncome": 79060,
+      "CalculationMethod": null,
+      "EditIndicator": false
+    },
+    "DefaultEndSaleDateTime": "2013-12-06T11:00:00-06:00",
+    "DefaultStartSaleDateTime": "2013-07-02T10:07:43-05:00",
+    "DoorsClose": null,
+    "DoorsOpen": null,
+    "Duration": null,
+    "Facility": {
+      "Description": "SY-G/A Hall",
+      "AliasDescription": null,
+      "Inactive": false,
+      "Id": 59,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "Code": "131206M",
+    "Date": "2013-12-06T12:00:00-06:00",
+    "Id": 6328,
+    "Status": {
+      "Id": 1,
+      "Description": "On Sale",
+      "Inactive": false
+    },
+    "Type": {
+      "Id": 1,
+      "Description": "Default TR_PERF_TYPE",
+      "Inactive": false
+    },
+    "ProductionSeason": {
+      "Production": {
+        "Id": 6083,
+        "Description": "SY-13-14 Tuba Christmas",
+        "TitleId": 6065
+      },
+      "Id": 6085,
+      "Description": "SY-13-14 Tuba Comp",
+      "Season": {
+        "Id": 244,
+        "Description": "13-14 Tuba Christmas",
+        "FYear": 2014,
+        "Inactive": true
+      },
+      "FirstPerformanceDate": "2013-12-06T12:00:00-06:00",
+      "LastPerformanceDate": "2013-12-09T12:00:00-06:00"
+    },
+    "PublishClientEndDate": null,
+    "PublishClientStartDate": null,
+    "PublishWebApiEndDate": "2013-12-06T10:00:00-06:00",
+    "PublishWebApiStartDate": null,
+    "RankType": {
+      "Id": 8,
+      "Description": "SY-Default TR_RANK_TYPE",
+      "Inactive": false,
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      }
+    },
+    "SalesNotes": null,
+    "SalesNotesRequired": false,
+    "Season": {
+      "ConfirmationNoticeFormat": null,
+      "CreatedDateTime": "2013-04-24T10:50:24.447-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig  ",
+      "DefaultIndicator": false,
+      "Description": "13-14 Tuba Christmas",
+      "DisplayInSeasonOverview": false,
+      "EndDateTime": "2014-06-30T00:00:00-05:00",
+      "FYear": 2014,
+      "Id": 244,
+      "Inactive": true,
+      "UpdatedDateTime": "2014-11-17T12:17:16.2-06:00",
+      "UpdatedBy": "ocraig  ",
+      "RenewalNoticeFormat": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "SubscriptionFund1": null,
+      "SubscriptionFund2": null,
+      "Type": {
+        "BusinessUnit": {
+          "Description": "Consortium",
+          "Id": 1,
+          "Inactive": false
+        },
+        "CreatedDateTime": "2013-09-26T11:35:13.897-05:00",
+        "CreateLocation": "KCCOUSER48",
+        "CreatedBy": "afogel  ",
+        "Description": "SY-Education",
+        "Id": 23,
+        "Inactive": false,
+        "UpdatedDateTime": "2013-09-26T11:39:19.72-05:00",
+        "UpdatedBy": "afogel  "
+      },
+      "YearlySeason": null,
+      "ControlGroup": {
+        "Description": "Shared BO - KC/SY",
+        "Id": 11,
+        "Inactive": false
+      }
+    },
+    "TimeSlot": {
+      "Id": 2,
+      "Description": "Matinee",
+      "Inactive": false
+    },
+    "TvIndicator": null,
+    "ZoneMap": {
+      "Description": " General Admission",
+      "Id": 189,
+      "Inactive": false,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "CreatedDateTime": "2014-05-09T01:19:08.95-05:00",
+    "CreateLocation": "DBLIVEC4",
+    "CreatedBy": "dbo",
+    "UpdatedDateTime": "2014-05-09T01:19:09.623-05:00",
+    "UpdatedBy": "dbo",
+    "EditIndicator": false,
+    "Description": "TubaChristmas Friday",
+    "ShortName": "Tuba Christmas Comp",
+    "Text1": null,
+    "Text2": null,
+    "Text3": null,
+    "Text4": null
+  },
+  {
+    "AvailSaleIndicator": true,
+    "BestSeatMap": {
+      "Id": 102,
+      "Description": "Parking Pass",
+      "GaIndicator": "Y",
+      "IsGA": true
+    },
+    "BudgetAmount": null,
+    "Campaign": {
+      "AutoRestrictContributionsBeforeStartDate": false,
+      "Type": "C",
+      "Id": 1076,
+      "CategoryId": 19,
+      "Category": {
+        "Id": 19,
+        "Description": "SY-Education Campaigns",
+        "Inactive": false,
+        "CreatedDateTime": "2006-08-03T11:15:33.7-05:00",
+        "CreateLocation": "KCS24",
+        "CreatedBy": "jknapp",
+        "UpdatedDateTime": "2012-06-06T21:36:26.533-05:00",
+        "UpdatedBy": "dbo"
+      },
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      },
+      "CreatedDateTime": "2013-04-24T12:08:07.29-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig",
+      "Description": "SY-FY14 Education",
+      "EndDateTime": "2014-06-30T23:59:59.997-05:00",
+      "EventDateTime": null,
+      "EventExpense": null,
+      "EventMinimumAmount": null,
+      "FYear": 2014,
+      "GiftAmount": 0,
+      "GoalAmount": null,
+      "Inactive": true,
+      "UpdatedDateTime": "2019-11-20T06:52:12.18-06:00",
+      "UpdatedBy": "sa",
+      "MembershipIncludesMatchingGifts": null,
+      "MembershipOrganization": null,
+      "MinimumPledgeAmount": null,
+      "Notes": null,
+      "NumSuccessCust": null,
+      "NumTargetCust": null,
+      "NumTickets": null,
+      "PledgeReceivedAmount": 0,
+      "PledgeAmount": 0,
+      "SingleOpenPledgeIndicator": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "Status": "C",
+      "TotalTicketIncome": 79060,
+      "CalculationMethod": null,
+      "EditIndicator": false
+    },
+    "DefaultEndSaleDateTime": "2013-12-09T20:00:00-06:00",
+    "DefaultStartSaleDateTime": "2013-05-09T10:26:52-05:00",
+    "DoorsClose": null,
+    "DoorsOpen": null,
+    "Duration": null,
+    "Facility": {
+      "Description": "SY-G/A Hall",
+      "AliasDescription": null,
+      "Inactive": false,
+      "Id": 59,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "Code": "131209A",
+    "Date": "2013-12-09T10:30:00-06:00",
+    "Id": 6119,
+    "Status": {
+      "Id": 1,
+      "Description": "On Sale",
+      "Inactive": false
+    },
+    "Type": {
+      "Id": 1,
+      "Description": "Default TR_PERF_TYPE",
+      "Inactive": false
+    },
+    "ProductionSeason": {
+      "Production": {
+        "Id": 6083,
+        "Description": "SY-13-14 Tuba Christmas",
+        "TitleId": 6065
+      },
+      "Id": 6084,
+      "Description": "SY-13-14 Tuba Christmas Regist",
+      "Season": {
+        "Id": 244,
+        "Description": "13-14 Tuba Christmas",
+        "FYear": 2014,
+        "Inactive": true
+      },
+      "FirstPerformanceDate": "2013-12-06T10:30:00-06:00",
+      "LastPerformanceDate": "2013-12-09T10:30:00-06:00"
+    },
+    "PublishClientEndDate": null,
+    "PublishClientStartDate": null,
+    "PublishWebApiEndDate": null,
+    "PublishWebApiStartDate": null,
+    "RankType": {
+      "Id": 8,
+      "Description": "SY-Default TR_RANK_TYPE",
+      "Inactive": false,
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      }
+    },
+    "SalesNotes": null,
+    "SalesNotesRequired": false,
+    "Season": {
+      "ConfirmationNoticeFormat": null,
+      "CreatedDateTime": "2013-04-24T10:50:24.447-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig  ",
+      "DefaultIndicator": false,
+      "Description": "13-14 Tuba Christmas",
+      "DisplayInSeasonOverview": false,
+      "EndDateTime": "2014-06-30T00:00:00-05:00",
+      "FYear": 2014,
+      "Id": 244,
+      "Inactive": true,
+      "UpdatedDateTime": "2014-11-17T12:17:16.2-06:00",
+      "UpdatedBy": "ocraig  ",
+      "RenewalNoticeFormat": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "SubscriptionFund1": null,
+      "SubscriptionFund2": null,
+      "Type": {
+        "BusinessUnit": {
+          "Description": "Consortium",
+          "Id": 1,
+          "Inactive": false
+        },
+        "CreatedDateTime": "2013-09-26T11:35:13.897-05:00",
+        "CreateLocation": "KCCOUSER48",
+        "CreatedBy": "afogel  ",
+        "Description": "SY-Education",
+        "Id": 23,
+        "Inactive": false,
+        "UpdatedDateTime": "2013-09-26T11:39:19.72-05:00",
+        "UpdatedBy": "afogel  "
+      },
+      "YearlySeason": null,
+      "ControlGroup": {
+        "Description": "Shared BO - KC/SY",
+        "Id": 11,
+        "Inactive": false
+      }
+    },
+    "TimeSlot": {
+      "Id": 2,
+      "Description": "Matinee",
+      "Inactive": false
+    },
+    "TvIndicator": null,
+    "ZoneMap": {
+      "Description": "KCS Education",
+      "Id": 422,
+      "Inactive": false,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "CreatedDateTime": "2014-05-09T01:19:08.95-05:00",
+    "CreateLocation": "DBLIVEC4",
+    "CreatedBy": "dbo",
+    "UpdatedDateTime": "2014-05-09T01:19:09.623-05:00",
+    "UpdatedBy": "dbo",
+    "EditIndicator": false,
+    "Description": "Tuba Registration #2",
+    "ShortName": "Tuba Registration #2",
+    "Text1": null,
+    "Text2": null,
+    "Text3": null,
+    "Text4": null
+  },
+  {
+    "AvailSaleIndicator": true,
+    "BestSeatMap": {
+      "Id": 128,
+      "Description": " General Admission",
+      "GaIndicator": "Y",
+      "IsGA": true
+    },
+    "BudgetAmount": null,
+    "Campaign": {
+      "AutoRestrictContributionsBeforeStartDate": false,
+      "Type": "C",
+      "Id": 1076,
+      "CategoryId": 19,
+      "Category": {
+        "Id": 19,
+        "Description": "SY-Education Campaigns",
+        "Inactive": false,
+        "CreatedDateTime": "2006-08-03T11:15:33.7-05:00",
+        "CreateLocation": "KCS24",
+        "CreatedBy": "jknapp",
+        "UpdatedDateTime": "2012-06-06T21:36:26.533-05:00",
+        "UpdatedBy": "dbo"
+      },
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      },
+      "CreatedDateTime": "2013-04-24T12:08:07.29-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig",
+      "Description": "SY-FY14 Education",
+      "EndDateTime": "2014-06-30T23:59:59.997-05:00",
+      "EventDateTime": null,
+      "EventExpense": null,
+      "EventMinimumAmount": null,
+      "FYear": 2014,
+      "GiftAmount": 0,
+      "GoalAmount": null,
+      "Inactive": true,
+      "UpdatedDateTime": "2019-11-20T06:52:12.18-06:00",
+      "UpdatedBy": "sa",
+      "MembershipIncludesMatchingGifts": null,
+      "MembershipOrganization": null,
+      "MinimumPledgeAmount": null,
+      "Notes": null,
+      "NumSuccessCust": null,
+      "NumTargetCust": null,
+      "NumTickets": null,
+      "PledgeReceivedAmount": 0,
+      "PledgeAmount": 0,
+      "SingleOpenPledgeIndicator": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "Status": "C",
+      "TotalTicketIncome": 79060,
+      "CalculationMethod": null,
+      "EditIndicator": false
+    },
+    "DefaultEndSaleDateTime": "2013-12-09T11:00:00-06:00",
+    "DefaultStartSaleDateTime": "2013-07-02T10:07:43-05:00",
+    "DoorsClose": null,
+    "DoorsOpen": null,
+    "Duration": null,
+    "Facility": {
+      "Description": "SY-G/A Hall",
+      "AliasDescription": null,
+      "Inactive": false,
+      "Id": 59,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "Code": "131209M",
+    "Date": "2013-12-09T12:00:00-06:00",
+    "Id": 6542,
+    "Status": {
+      "Id": 1,
+      "Description": "On Sale",
+      "Inactive": false
+    },
+    "Type": {
+      "Id": 1,
+      "Description": "Default TR_PERF_TYPE",
+      "Inactive": false
+    },
+    "ProductionSeason": {
+      "Production": {
+        "Id": 6083,
+        "Description": "SY-13-14 Tuba Christmas",
+        "TitleId": 6065
+      },
+      "Id": 6085,
+      "Description": "SY-13-14 Tuba Comp",
+      "Season": {
+        "Id": 244,
+        "Description": "13-14 Tuba Christmas",
+        "FYear": 2014,
+        "Inactive": true
+      },
+      "FirstPerformanceDate": "2013-12-06T12:00:00-06:00",
+      "LastPerformanceDate": "2013-12-09T12:00:00-06:00"
+    },
+    "PublishClientEndDate": null,
+    "PublishClientStartDate": null,
+    "PublishWebApiEndDate": "2013-12-09T10:00:00-06:00",
+    "PublishWebApiStartDate": null,
+    "RankType": {
+      "Id": 8,
+      "Description": "SY-Default TR_RANK_TYPE",
+      "Inactive": false,
+      "ControlGroup": {
+        "Description": "Kansas City Symphony",
+        "Id": 6,
+        "Inactive": false
+      }
+    },
+    "SalesNotes": null,
+    "SalesNotesRequired": false,
+    "Season": {
+      "ConfirmationNoticeFormat": null,
+      "CreatedDateTime": "2013-04-24T10:50:24.447-05:00",
+      "CreateLocation": "KCCOUSER62",
+      "CreatedBy": "ocraig  ",
+      "DefaultIndicator": false,
+      "Description": "13-14 Tuba Christmas",
+      "DisplayInSeasonOverview": false,
+      "EndDateTime": "2014-06-30T00:00:00-05:00",
+      "FYear": 2014,
+      "Id": 244,
+      "Inactive": true,
+      "UpdatedDateTime": "2014-11-17T12:17:16.2-06:00",
+      "UpdatedBy": "ocraig  ",
+      "RenewalNoticeFormat": null,
+      "StartDateTime": "2013-07-01T00:00:00-05:00",
+      "SubscriptionFund1": null,
+      "SubscriptionFund2": null,
+      "Type": {
+        "BusinessUnit": {
+          "Description": "Consortium",
+          "Id": 1,
+          "Inactive": false
+        },
+        "CreatedDateTime": "2013-09-26T11:35:13.897-05:00",
+        "CreateLocation": "KCCOUSER48",
+        "CreatedBy": "afogel  ",
+        "Description": "SY-Education",
+        "Id": 23,
+        "Inactive": false,
+        "UpdatedDateTime": "2013-09-26T11:39:19.72-05:00",
+        "UpdatedBy": "afogel  "
+      },
+      "YearlySeason": null,
+      "ControlGroup": {
+        "Description": "Shared BO - KC/SY",
+        "Id": 11,
+        "Inactive": false
+      }
+    },
+    "TimeSlot": {
+      "Id": 2,
+      "Description": "Matinee",
+      "Inactive": false
+    },
+    "TvIndicator": null,
+    "ZoneMap": {
+      "Description": " General Admission",
+      "Id": 189,
+      "Inactive": false,
+      "SeatMap": {
+        "Description": "CO-SY GA Hall",
+        "Id": 63
+      }
+    },
+    "CreatedDateTime": "2014-05-09T01:19:08.95-05:00",
+    "CreateLocation": "DBLIVEC4",
+    "CreatedBy": "dbo",
+    "UpdatedDateTime": "2014-05-09T01:19:09.623-05:00",
+    "UpdatedBy": "dbo",
+    "EditIndicator": false,
+    "Description": "TubaChristmas Monday",
+    "ShortName": "Tuba Christmas Comp",
+    "Text1": null,
+    "Text2": null,
+    "Text3": null,
+    "Text4": null
+  }
+]

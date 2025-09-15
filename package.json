@@ -1,0 +1,37 @@
+{
+  "name": "symphony-dashboard",
+  "version": "1.0.0",
+  "description": "D3.js dashboard for symphony ticket sales analytics",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Static build complete'",
+    "start": "netlify dev",
+    "fetch-data": "node fetch-tessitura-data-cached.js",
+    "daily-refresh": "node daily-refresh.js",
+    "cache-status": "node fetch-tessitura-data-cached.js status",
+    "cache-clear": "node fetch-tessitura-data-cached.js clear",
+    "cache-clean": "node fetch-tessitura-data-cached.js clean",
+    "fetch-date-range": "node fetch-date-range.js",
+    "transform-prod-data": "node transform-production-data.js"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "dotenv": "^17.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "undici": "^7.16.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "netlify-cli": "^17.0.0"
+  },
+  "keywords": [
+    "d3",
+    "dashboard",
+    "symphony",
+    "analytics",
+    "tessitura"
+  ],
+  "author": "",
+  "license": "MIT"
+}
