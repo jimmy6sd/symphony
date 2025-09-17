@@ -438,3 +438,255 @@ symphony-dashboard/
 
 This plan builds on our successful foundation while addressing the most impactful improvements for a production-ready symphony analytics dashboard. Each phase delivers tangible value while moving us toward a comprehensive solution that will transform how the symphony understands and optimizes their ticket sales performance.
 - do not add extra console logging unless it's absolutely necessary
+
+---
+
+# 🏗️ CODEBASE REFACTORING PLAN - JANUARY 2025
+
+## 🎯 **MISSION: Transform Complex Multi-Architecture Codebase into Simple, Clean Modern Application**
+
+After comprehensive analysis of the entire codebase, we have identified significant architectural debt and file proliferation that needs immediate attention. This plan will transform the current hybrid system into a clean, maintainable modern application.
+
+---
+
+## 📊 **CURRENT STATE ANALYSIS**
+
+### **✅ What's Working (Keep These)**
+```
+CORE FUNCTIONALITY (19 files)
+├── index.html + login.html                    # Main pages
+├── src/main.js                                # Modern entry point
+├── src/ (8 files)                            # New architecture
+│   ├── components/dashboard-ui.js
+│   ├── config/app-config.js
+│   ├── core/ (app.js, base-component.js)
+│   └── utils/ (logger.js, error-handler.js, validators.js)
+├── js/ (11 files actively loaded)            # Legacy components
+│   ├── auth.js, data-service.js
+│   ├── charts/ (4 chart components)
+│   └── config/tessitura integration
+├── netlify/functions/ (3 files)              # Backend API
+├── styles/main.css                           # Styling
+└── dashboard-no-parking.json                 # Clean data (118 performances)
+```
+
+### **❌ What's Broken/Unnecessary (Remove These)**
+```
+DEVELOPMENT CLUTTER (35+ files to remove)
+├── test-*.js (8 files)                       # Development test scripts
+├── examine-*.js (4 files)                    # Data exploration scripts
+├── fetch-*.js, transform-*.js (6 files)      # Data transformation scripts
+├── dashboard-*.json (9 extra files)          # Duplicate/old data files
+├── data/*.json (15+ files)                   # Legacy data cache
+├── postman-examples/ (6 files)               # API documentation
+├── enhanced-*.json (2 files)                 # Processing artifacts
+└── Daily Extract... .docx                    # Source document
+```
+
+### **🔀 Current Architecture Issues**
+1. **Dual Loading System**: `src/main.js` loads both `src/` and `js/` files
+2. **Config Fragmentation**: Multiple config systems (`js/config.js`, `src/config/app-config.js`, etc.)
+3. **Data File Cascade**: 10+ JSON files with complex fallback logic
+4. **Mixed Patterns**: ES6 modules mixed with legacy scripts
+5. **Development Pollution**: 35+ files that serve no production purpose
+
+---
+
+## 🎯 **TARGET ARCHITECTURE: Clean Modern Application**
+
+### **New Simplified Structure**
+```
+CLEAN SYMPHONY DASHBOARD
+├── index.html                                # Entry page
+├── login.html                               # Auth page
+├── src/                                     # SINGLE unified source
+│   ├── main.js                             # Application entry
+│   ├── config.js                           # UNIFIED configuration
+│   ├── auth.js                             # Authentication
+│   ├── data-service.js                     # Data management
+│   ├── charts/                             # Chart components
+│   │   ├── performance-chart.js
+│   │   ├── sales-curve-chart.js
+│   │   ├── ticket-type-chart.js
+│   │   └── data-table.js
+│   └── components/                          # UI components
+│       └── dashboard-ui.js
+├── styles/main.css                         # Styling
+├── data/dashboard.json                     # SINGLE data file
+├── netlify/functions/                      # Backend (unchanged)
+└── package.json                            # Dependencies
+```
+
+### **Key Simplifications**
+- **Single Source Tree**: Everything in `src/` (no more `js/` legacy)
+- **Unified Config**: One `src/config.js` file instead of multiple systems
+- **Single Data File**: `data/dashboard.json` instead of cascading fallbacks
+- **Modern Modules**: ES6 imports throughout
+- **Clean Dependencies**: Remove all development/test files
+
+---
+
+## 🚀 **EXECUTION PLAN**
+
+### **Phase 1: Cleanup & Removal** ⚡ *Priority: IMMEDIATE*
+
+**1.1 Remove Development Files (35+ files)**
+```bash
+# Test and examination scripts
+rm test-*.js examine-*.js find-*.js
+rm fetch-*.js transform-*.js cache-*.js daily-*.js
+rm explore-*.js tessitura-production-*.js
+
+# Duplicate data files
+rm dashboard-corrected-data.json dashboard-enhanced-data.json
+rm dashboard-performance-data.json dashboard-sales-data.json
+rm dashboard-series-fixed.json enhanced-*.json
+rm "Daily Extract from Tessitura*.docx"
+
+# Legacy data directory
+rm -rf data/
+
+# Documentation artifacts
+rm -rf postman-examples/
+rm AGENTS.md
+```
+
+**1.2 Consolidate Data Files**
+```bash
+# Keep only the clean data file
+mv dashboard-no-parking.json data/dashboard.json
+# This becomes the SINGLE source of performance data
+```
+
+### **Phase 2: Architecture Migration** 🏗️ *Priority: HIGH*
+
+**2.1 Migrate Legacy Components to src/**
+- Move `js/auth.js` → `src/auth.js`
+- Move `js/data-service.js` → `src/data-service.js`
+- Move `js/charts/*` → `src/charts/`
+- Update all import paths and dependencies
+
+**2.2 Unify Configuration System**
+- Merge `js/config.js` + `src/config/app-config.js` → `src/config.js`
+- Consolidate all settings into single configuration
+- Update all references throughout codebase
+
+**2.3 Modern Module System**
+- Convert all files to ES6 modules with proper imports/exports
+- Remove legacy script loading from `src/main.js`
+- Implement clean module dependency tree
+
+### **Phase 3: Simplify Entry Point** 🎯 *Priority: MEDIUM*
+
+**3.1 Streamline src/main.js**
+- Remove complex script loading system
+- Use modern ES6 imports
+- Simplify bootstrap process
+- Clean up loading indicators
+
+**3.2 Update HTML Files**
+- Simplify script loading in index.html
+- Remove unnecessary complexity
+- Clean up authentication flow
+
+### **Phase 4: Final Polish** ✨ *Priority: LOW*
+
+**4.1 Code Quality**
+- Remove all debugging console.logs
+- Standardize code formatting
+- Add proper JSDoc comments
+- Optimize performance
+
+**4.2 Configuration Cleanup**
+- Remove unused configuration options
+- Simplify environment handling
+- Clean up package.json dependencies
+
+---
+
+## 📈 **EXPECTED BENEFITS**
+
+### **Immediate Gains**
+- **75% File Reduction**: From ~70 files to ~18 files
+- **Simplified Mental Model**: Single source tree instead of hybrid system
+- **Faster Loading**: No more complex script loading cascade
+- **Easier Debugging**: Clear dependency relationships
+
+### **Long-term Benefits**
+- **Maintainability**: Single unified architecture
+- **Developer Experience**: Clean, modern codebase
+- **Performance**: Reduced file overhead and complexity
+- **Scalability**: Proper foundation for future features
+
+### **Risk Mitigation**
+- **Backup Strategy**: Commit before each phase
+- **Incremental Migration**: Test functionality after each step
+- **Rollback Plan**: Git history allows easy reversion
+- **Testing Protocol**: Verify all charts and features work after migration
+
+---
+
+## ⚡ **EXECUTION TIMELINE**
+
+| Phase | Duration | Risk Level | Dependencies |
+|-------|----------|------------|--------------|
+| **Phase 1: Cleanup** | 2 hours | 🟢 Low | None |
+| **Phase 2: Migration** | 4 hours | 🟡 Medium | Phase 1 complete |
+| **Phase 3: Entry Point** | 2 hours | 🟡 Medium | Phase 2 complete |
+| **Phase 4: Polish** | 1 hour | 🟢 Low | All phases complete |
+| **Total** | **~1 day** | | |
+
+---
+
+## 🎯 **SUCCESS CRITERIA**
+
+### **Phase Completion Checkpoints**
+- [ ] **Phase 1**: All unnecessary files removed, single data file established
+- [ ] **Phase 2**: All code moved to `src/`, unified config, ES6 modules working
+- [ ] **Phase 3**: Simple main.js entry point, clean HTML loading
+- [ ] **Phase 4**: All debugging removed, code formatted, documentation updated
+
+### **Application Functionality**
+- [ ] **Dashboard loads correctly** with all charts functioning
+- [ ] **Authentication system** works properly
+- [ ] **Data tables and modals** display correctly
+- [ ] **Sales curve charts** show proper progression
+- [ ] **Performance is improved** or equivalent
+
+### **Codebase Quality**
+- [ ] **Single source tree** (`src/` only)
+- [ ] **Unified configuration** (one config file)
+- [ ] **Modern modules** (ES6 imports throughout)
+- [ ] **Clean dependencies** (no development files)
+- [ ] **Production ready** (no debug logging)
+
+---
+
+## 🚨 **RISK MITIGATION & ROLLBACK**
+
+### **Before Starting**
+- [ ] Commit current working state
+- [ ] Tag release: `git tag v1.0-pre-refactor`
+- [ ] Test all functionality works
+- [ ] Document current file structure
+
+### **During Each Phase**
+- [ ] Commit after each major change
+- [ ] Test functionality after each step
+- [ ] Keep backup of critical files
+- [ ] Document any issues encountered
+
+### **Rollback Strategy**
+```bash
+# If anything goes wrong:
+git checkout v1.0-pre-refactor
+# Or revert to last working commit
+```
+
+---
+
+## 🎬 **READY TO EXECUTE**
+
+This refactoring plan will transform the Symphony Dashboard from a complex, cluttered codebase into a clean, modern, maintainable application. The hybrid architecture will be eliminated, file count will drop by 75%, and the development experience will be dramatically improved.
+
+**RECOMMENDATION: Proceed immediately with Phase 1 (Cleanup) as it has the highest benefit-to-risk ratio and will provide immediate clarity to the codebase structure.**
