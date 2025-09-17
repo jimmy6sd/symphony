@@ -13,7 +13,15 @@
     "cache-clear": "node fetch-tessitura-data-cached.js clear",
     "cache-clean": "node fetch-tessitura-data-cached.js clean",
     "fetch-date-range": "node fetch-date-range.js",
-    "transform-prod-data": "node transform-production-data.js"
+    "transform-prod-data": "node transform-production-data.js",
+    "test-sales-api": "node test-sales-api.js",
+    "examine-orders": "node examine-orders-data.js",
+    "test-proper-api": "node test-proper-tessitura-api.js",
+    "test-working-sales": "node test-sales-with-working-structure.js",
+    "test-individual-perf": "node test-individual-performance.js",
+    "examine-campaign": "node examine-campaign-budget.js",
+    "find-perf-sales": "node find-individual-performance-sales.js",
+    "examine-lineitems": "node examine-orders-lineitems.js"
   },
   "dependencies": {
     "d3": "^7.8.5",

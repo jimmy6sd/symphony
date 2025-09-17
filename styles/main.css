@@ -101,6 +101,13 @@ body {
     font-weight: var(--font-weight-normal);
 }
 
+.data-refresh-info {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    opacity: 0.8;
+    font-weight: var(--font-weight-normal);
+}
+
 .dashboard-content {
     flex: 1;
     padding: var(--spacing-xl);

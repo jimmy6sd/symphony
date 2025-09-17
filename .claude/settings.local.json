@@ -9,7 +9,10 @@
       "Bash(curl:*)",
       "Bash(npm run fetch-data:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "WebFetch(domain:ts-stg-appgw.calacademy.org)",
+      "Bash(node:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

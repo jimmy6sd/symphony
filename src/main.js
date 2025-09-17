@@ -20,7 +20,7 @@
 
         // Configuration
         config: [
-            '/src/config/app-config.js'
+            '/src/config.js'
         ],
 
         // Core classes
@@ -28,17 +28,17 @@
             '/src/core/base-component.js'
         ],
 
-        // Legacy components (existing js/ files)
-        legacy: [
-            '/js/auth.js',
-            '/js/tessitura-config.js',
-            '/js/tessitura-api.js',
-            '/js/data-service.js',
-            '/js/charts/performance-chart.js',
-            '/js/charts/sales-curve-chart.js',
-            '/js/charts/ticket-type-chart.js',
-            '/js/charts/data-table.js',
-            '/js/admin-panel.js'
+        // Application modules (migrated from js/ to src/)
+        modules: [
+            '/src/auth.js',
+            '/src/tessitura-config.js',
+            '/src/tessitura-api.js',
+            '/src/data-service.js',
+            '/src/charts/performance-chart.js',
+            '/src/charts/sales-curve-chart.js',
+            '/src/charts/ticket-type-chart.js',
+            '/src/charts/data-table.js',
+            '/src/admin-panel.js'
         ],
 
         // Components
