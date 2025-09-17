@@ -5,7 +5,7 @@ class SalesCurveChart {
         this.svg = null;
         this.width = CONFIG.charts.dimensions.defaultWidth;
         this.height = CONFIG.charts.dimensions.defaultHeight;
-        this.margin = { top: 60, right: 250, bottom: 60, left: 70 }; // Extra space for status box and legend
+        this.margin = { top: 50, right: 220, bottom: 75, left: 70 }; // Proper spacing for labels and legend
         this.selectedPerformance = null;
     }
 
@@ -30,6 +30,12 @@ class SalesCurveChart {
 
         const container = d3.select(`#${this.containerId}`);
         container.select("svg").remove();
+
+        // Get container dimensions dynamically
+        const containerElement = container.node();
+        const containerRect = containerElement.getBoundingClientRect();
+        this.width = Math.max(800, containerRect.width - 16); // Account for reduced padding
+        this.height = Math.max(350, containerRect.height - 16); // Account for reduced padding, smaller min height
 
         const innerWidth = this.width - this.margin.left - this.margin.right;
         const innerHeight = this.height - this.margin.top - this.margin.bottom;
@@ -186,10 +192,22 @@ class SalesCurveChart {
             .attr("stroke", CONFIG.charts.colors.onTrackLine || "#2ca02c")
             .attr("stroke-width", 3)
             .attr("stroke-dasharray", "8,4") // Dashed line to indicate target
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .style("filter", "drop-shadow(0 1px 2px rgba(44, 160, 44, 0.2))")
             .attr("opacity", 0.9);
 
         // Draw single actual sales point (current sales at current week)
         if (currentSales > 0 && weeksToPerformance <= maxWeeks) {
+            // Add a subtle glow effect
+            chartGroup.append("circle")
+                .attr("class", "current-sales-glow")
+                .attr("cx", xScale(weeksToPerformance))
+                .attr("cy", yScale(currentSales))
+                .attr("r", 12)
+                .attr("fill", CONFIG.charts.colors.actualSales)
+                .attr("opacity", 0.2);
+
             chartGroup.append("circle")
                 .attr("class", "current-sales-point")
                 .attr("cx", xScale(weeksToPerformance))
@@ -197,7 +215,8 @@ class SalesCurveChart {
                 .attr("r", 8)
                 .attr("fill", CONFIG.charts.colors.actualSales)
                 .attr("stroke", "white")
-                .attr("stroke-width", 3);
+                .attr("stroke-width", 3)
+                .style("filter", "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))");
         }
 
         // No multiple actual sales points - only the single current sales point above
@@ -217,32 +236,79 @@ class SalesCurveChart {
             .attr("opacity", 0.8);
 
         // X-axis
-        chartGroup.append("g")
+        const xAxis = chartGroup.append("g")
             .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).tickFormat(d => d === 0 ? 'Performance' : `${d} weeks before`))
-            .selectAll("text")
+            .call(d3.axisBottom(xScale).tickFormat(d => d === 0 ? 'Performance' : `${d}w before`));
+
+        // Style x-axis tick labels
+        xAxis.selectAll("text")
             .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-45)");
+            .style("font-size", "11px")
+            .style("fill", "#666")
+            .attr("dx", "-.5em")
+            .attr("dy", ".3em")
+            .attr("transform", "rotate(-35)");
+
+        // Style x-axis line and ticks
+        xAxis.select(".domain")
+            .style("stroke", "#e0e0e0");
+        xAxis.selectAll(".tick line")
+            .style("stroke", "#e0e0e0");
+
+        // Add subtle grid lines
+        chartGroup.append("g")
+            .attr("class", "grid")
+            .attr("transform", `translate(0,${innerHeight})`)
+            .call(d3.axisBottom(xScale)
+                .tickSize(-innerHeight)
+                .tickFormat("")
+            )
+            .selectAll("line")
+            .style("stroke", "#f0f0f0")
+            .style("stroke-width", 0.5);
+
+        chartGroup.append("g")
+            .attr("class", "grid")
+            .call(d3.axisLeft(yScale)
+                .tickSize(-innerWidth)
+                .tickFormat("")
+            )
+            .selectAll("line")
+            .style("stroke", "#f0f0f0")
+            .style("stroke-width", 0.5);
 
         // Y-axis
-        chartGroup.append("g")
+        const yAxis = chartGroup.append("g")
             .call(d3.axisLeft(yScale));
+
+        // Style y-axis
+        yAxis.selectAll("text")
+            .style("font-size", "11px")
+            .style("fill", "#666");
+        yAxis.select(".domain")
+            .style("stroke", "#e0e0e0");
+        yAxis.selectAll(".tick line")
+            .style("stroke", "#e0e0e0");
 
         // X-axis label
         chartGroup.append("text")
-            .attr("transform", `translate(${innerWidth / 2}, ${innerHeight + this.margin.bottom})`)
+            .attr("transform", `translate(${innerWidth / 2}, ${innerHeight + this.margin.bottom - 15})`)
             .style("text-anchor", "middle")
+            .style("font-weight", "500")
+            .style("font-size", "12px")
+            .style("fill", "#666")
             .text("Weeks Before Performance");
 
         // Y-axis label
         chartGroup.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", 0 - this.margin.left)
+            .attr("y", 0 - this.margin.left + 20)
             .attr("x", 0 - (innerHeight / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
+            .style("font-weight", "500")
+            .style("font-size", "12px")
+            .style("fill", "#666")
             .text("Cumulative Tickets Sold");
 
         // Add performance tracking status
@@ -258,7 +324,7 @@ class SalesCurveChart {
     generateOnTrackLine(performance, maxWeeks, capacity = null) {
         const useCapacity = capacity || performance.capacity || 2000;
         const targetSales = useCapacity * (performance.occupancyGoal / 100);
-        const progression = CONFIG.salesCurve.historicalProgression;
+        const progression = CONFIG.salesCurve.historicSalesProgression;
 
         console.log('🎯 Target generation debug:');
         console.log('   Capacity:', useCapacity);

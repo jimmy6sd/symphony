@@ -170,16 +170,51 @@ class DataTable {
                 }
             },
             {
-                key: 'status',
+                key: 'salesTarget',
                 label: 'Status',
                 sortable: true,
                 align: 'center',
                 formatter: (value, row) => {
-                    const statusClass = value ? value.toLowerCase().replace(/\s+/g, '-') : 'unknown';
-                    return `<span class="status-badge status-${statusClass}">${value || 'Unknown'}</span>`;
+                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const capacity = row.capacity || 2000;
+                    const occupancyGoal = row.occupancyGoal || 85; // Use actual occupancy goal from data
+                    const targetSales = Math.floor(capacity * (occupancyGoal / 100));
+
+                    // Calculate weeks to performance (like in sales curve chart)
+                    const today = new Date();
+                    const performanceDate = new Date(row.date);
+                    const weeksToPerformance = Math.max(0, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+
+                    // Get expected sales at current week using same progression as chart
+                    const expectedAtCurrentWeek = this.getExpectedSalesAtWeek(targetSales, weeksToPerformance);
+                    const isOnTarget = currentSales >= expectedAtCurrentWeek;
+
+                    const statusClass = isOnTarget ? 'on-target' : 'below-target';
+                    const statusText = isOnTarget ? 'On Target' : 'Below Target';
+
+                    return `<span class="status-badge status-${statusClass}">${statusText}</span>`;
                 }
             }
         ];
+    }
+
+    getExpectedSalesAtWeek(targetSales, weeksToPerformance) {
+        // Use the same historic progression as the sales curve chart
+        const progression = [
+            { week: 0, percentage: 100 },
+            { week: 1, percentage: 59 },
+            { week: 2, percentage: 46 },
+            { week: 3, percentage: 39 },
+            { week: 4, percentage: 33 },
+            { week: 5, percentage: 30 },
+            { week: 6, percentage: 27 }
+        ];
+
+        // Find the progression percentage for the current week
+        const weekData = progression.find(p => p.week === weeksToPerformance);
+        const percentage = weekData ? weekData.percentage : 27; // Default to week 6+ percentage
+
+        return Math.floor(targetSales * (percentage / 100));
     }
 
     create(containerId) {
@@ -419,18 +454,36 @@ class DataTable {
             .text('×')
             .on('click', () => modalOverlay.remove());
 
-        // Performance details
+        // Sales curve chart section - now the main content
+        modal.append('h3')
+            .style('margin-bottom', '15px')
+            .style('font-size', '1.1em')
+            .style('color', '#333')
+            .text('Sales Progression Analysis');
+
+        const chartContainer = modal.append('div')
+            .attr('id', 'modal-sales-chart')
+            .style('width', '100%')
+            .style('height', '450px')
+            .style('margin-bottom', '25px');
+
+        this.renderSalesChart(chartContainer, performance);
+
+        // Performance details - now below the chart
         const detailsGrid = modal.append('div')
             .attr('class', 'performance-details')
             .style('display', 'grid')
             .style('grid-template-columns', '1fr 1fr')
             .style('gap', '20px')
-            .style('margin-bottom', '30px');
+            .style('margin-top', '20px');
 
         // Left column
         const leftDetails = detailsGrid.append('div');
 
-        leftDetails.append('h3').text('Performance Information');
+        leftDetails.append('h3')
+            .style('font-size', '1em')
+            .style('margin-bottom', '12px')
+            .text('Performance Information');
         leftDetails.append('p').html(`<strong>Code:</strong> ${performance.code}`);
         leftDetails.append('p').html(`<strong>Date:</strong> ${new Date(performance.date).toLocaleDateString()}`);
         leftDetails.append('p').html(`<strong>Venue:</strong> ${performance.venue}`);
@@ -440,7 +493,10 @@ class DataTable {
         // Right column
         const rightDetails = detailsGrid.append('div');
 
-        rightDetails.append('h3').text('Sales Information');
+        rightDetails.append('h3')
+            .style('font-size', '1em')
+            .style('margin-bottom', '12px')
+            .text('Sales Information');
         rightDetails.append('p').html(`<strong>Capacity:</strong> ${performance.capacity?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Total Sold:</strong> ${performance.totalSold?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Single Tickets:</strong> ${performance.singleTicketsSold?.toLocaleString() || 'N/A'}`);
@@ -448,21 +504,6 @@ class DataTable {
         rightDetails.append('p').html(`<strong>Occupancy Rate:</strong> ${performance.occupancyRate?.toFixed(1) || 'N/A'}%`);
         rightDetails.append('p').html(`<strong>Total Revenue:</strong> $${performance.totalRevenue?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Status:</strong> ${performance.status || 'Unknown'}`);
-
-        // Sales curve chart section
-        if (performance.weeklySales && performance.weeklySales.length > 0) {
-            modal.append('h3')
-                .style('margin-top', '30px')
-                .style('margin-bottom', '15px')
-                .text('Sales Progression Over Time');
-
-            const chartContainer = modal.append('div')
-                .attr('id', 'modal-sales-chart')
-                .style('width', '100%')
-                .style('height', '400px');
-
-            this.renderSalesChart(chartContainer, performance);
-        }
 
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {
@@ -619,6 +660,105 @@ class DataTable {
                     return column.formatter ? column.formatter(value, d) : value;
                 });
         });
+
+        // Render sparklines after DOM elements are created (currently disabled)
+        // setTimeout(() => {
+        //     this.renderSparklines(filteredData);
+        // }, 10);
+    }
+
+    renderSparklines(data) {
+        data.forEach(performance => {
+            const containerId = `sparkline-${performance.id}`;
+            const container = d3.select(`#${containerId}`);
+
+            if (container.empty()) return;
+
+            // Clear any existing content
+            container.selectAll('*').remove();
+
+            // Generate simple sales progression data (similar to sales curve chart)
+            const salesData = this.generateSparklineData(performance);
+
+            if (!salesData || salesData.length === 0) {
+                container.append('div')
+                    .style('font-size', '10px')
+                    .style('color', '#999')
+                    .style('text-align', 'center')
+                    .text('No data');
+                return;
+            }
+
+            this.drawSparkline(container, salesData);
+        });
+    }
+
+    generateSparklineData(performance) {
+        // Create a simplified version of the sales progression
+        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const capacity = performance.capacity || 2000;
+        const targetSales = capacity * 0.85; // 85% occupancy goal
+
+        // Create 6 data points representing weeks leading up to performance
+        const progressionPoints = [
+            { week: 6, target: Math.floor(targetSales * 0.27), actual: null },
+            { week: 5, target: Math.floor(targetSales * 0.30), actual: null },
+            { week: 4, target: Math.floor(targetSales * 0.33), actual: null },
+            { week: 3, target: Math.floor(targetSales * 0.39), actual: null },
+            { week: 2, target: Math.floor(targetSales * 0.46), actual: null },
+            { week: 1, target: Math.floor(targetSales * 0.59), actual: null },
+            { week: 0, target: Math.floor(targetSales * 1.00), actual: currentSales }
+        ];
+
+        return progressionPoints;
+    }
+
+    drawSparkline(container, data) {
+        const width = 80;
+        const height = 25;
+        const padding = 2;
+
+        const svg = container.append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .style('display', 'block');
+
+        // Scales
+        const xScale = d3.scaleLinear()
+            .domain([0, 6])
+            .range([padding, width - padding]);
+
+        const maxValue = d3.max(data, d => Math.max(d.target, d.actual || 0));
+        const yScale = d3.scaleLinear()
+            .domain([0, maxValue])
+            .range([height - padding, padding]);
+
+        // Target line
+        const targetLine = d3.line()
+            .x(d => xScale(6 - d.week))
+            .y(d => yScale(d.target))
+            .curve(d3.curveMonotoneX);
+
+        svg.append('path')
+            .datum(data)
+            .attr('d', targetLine)
+            .attr('fill', 'none')
+            .attr('stroke', '#2ca02c')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '2,2')
+            .attr('opacity', 0.7);
+
+        // Current sales point
+        const currentData = data.find(d => d.actual !== null);
+        if (currentData) {
+            svg.append('circle')
+                .attr('cx', xScale(6 - currentData.week))
+                .attr('cy', yScale(currentData.actual))
+                .attr('r', 2)
+                .attr('fill', '#d62728')
+                .attr('stroke', 'white')
+                .attr('stroke-width', 1);
+        }
     }
 
     getCellValue(row, key) {
@@ -963,6 +1103,19 @@ const tableStyles = `
     min-width: 200px;
 }
 
+.sparkline-container {
+    width: 80px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.sparkline-container svg {
+    display: block;
+}
+
 .performance-title {
     font-weight: 500;
     color: #212529;
@@ -1056,6 +1209,18 @@ const tableStyles = `
     white-space: nowrap;
 }
 
+.status-on-target {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-below-target {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
 .status-on-sale {
     background: #d4edda;
     color: #155724;
@@ -1136,20 +1301,22 @@ const tableStyles = `
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .performance-details h3 {
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     color: #495057;
     border-bottom: 1px solid #dee2e6;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+    font-size: 1em;
 }
 
 .performance-details p {
-    margin: 8px 0;
-    line-height: 1.4;
+    margin: 6px 0;
+    line-height: 1.3;
+    font-size: 0.9em;
 }
 
 .performance-details strong {

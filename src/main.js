@@ -214,7 +214,7 @@
                         animation: spin 1s linear infinite;
                         margin: 0 auto 1rem;
                     "></div>
-                    <h2 style="margin: 0 0 0.5rem 0;">Symphony Dashboard</h2>
+                    <h2 style="margin: 0 0 0.5rem 0;">Kansas City Symphony</h2>
                     <p style="margin: 0; opacity: 0.8;">Loading application...</p>
                 </div>
                 <style>

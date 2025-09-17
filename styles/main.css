@@ -1,9 +1,9 @@
 /* CSS Custom Properties for Design System */
 :root {
-    /* Colors */
-    --primary-color: #667eea;
-    --secondary-color: #764ba2;
-    --accent-color: #f093fb;
+    /* Colors - Kansas City Symphony Brand */
+    --primary-color: #2c3e50;
+    --secondary-color: #46bc96;
+    --accent-color: #46bc96;
     --background-color: #f8f9fa;
     --surface-color: #ffffff;
     --border-color: #e9ecef;
@@ -77,7 +77,7 @@ body {
 }
 
 .dashboard-header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: var(--spacing-xl);
     text-align: center;
@@ -87,6 +87,24 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* Responsive header for mobile */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: var(--spacing-md);
+        min-height: 120px;
+    }
+
+    .dashboard-header .data-refresh-info {
+        position: static;
+        margin-top: var(--spacing-sm);
+        font-size: 0.85em;
+    }
+
+    .dashboard-header h1 {
+        font-size: var(--font-size-2xl);
+    }
 }
 
 .dashboard-header h1 {
@@ -395,7 +413,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-md);
 }
 
 .modal-content {
@@ -404,20 +422,24 @@ body {
     box-shadow: var(--shadow-xl);
     width: 100%;
     max-width: 1200px;
-    max-height: 90vh;
+    max-height: 92vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
 .modal-header {
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    border-top-left-radius: var(--border-radius-xl);
+    border-top-right-radius: var(--border-radius-xl);
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -448,13 +470,23 @@ body {
 
 .modal-body {
     flex: 1;
-    padding: var(--spacing-xl);
-    overflow: auto;
+    padding: var(--spacing-md);
+    padding-top: var(--spacing-sm);
+    overflow: hidden;
+    background: var(--background-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .detailed-chart-container {
-    height: 500px;
+    flex: 1;
     width: 100%;
+    min-height: 0; /* Important for flex shrinking */
+    background: var(--surface-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
 /* Data Table View */

@@ -42,7 +42,7 @@ class AdminPanel {
 
         return `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; color: #667eea;">🎼 Symphony Dashboard Admin</h3>
+                <h3 style="margin: 0; color: #667eea;">🎼 Kansas City Symphony Admin</h3>
                 <button id="close-admin-panel" style="background: none; border: none; font-size: 18px; cursor: pointer;">✕</button>
             </div>
 
