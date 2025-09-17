@@ -3,7 +3,7 @@ class DataTable {
         this.container = null;
         this.data = [];
         this.sortColumn = 'date';
-        this.sortDirection = 'desc';
+        this.sortDirection = 'asc';
         this.filterText = '';
         this.filters = {
             series: 'all',
@@ -52,16 +52,19 @@ class DataTable {
                 formatter: (value) => {
                     if (!value || value === 'N/A') return '<span class="series-cell series-other">N/A</span>';
 
-                    // Map series names to CSS classes
-                    const seriesClass = value.toLowerCase().includes('classical') ? 'series-classical' :
-                                      value.toLowerCase().includes('pops') ? 'series-pops' :
-                                      value.toLowerCase().includes('family') ? 'series-family' :
-                                      value.toLowerCase().includes('special') ? 'series-special' :
-                                      value.toLowerCase().includes('film') ? 'series-film' :
-                                      value.toLowerCase().includes('holiday') ? 'series-holiday' :
-                                      value.toLowerCase().includes('chamber') ? 'series-chamber' :
-                                      value.toLowerCase().includes('guest') ? 'series-guest' :
-                                      'series-other';
+                    // Map series codes and names to CSS classes
+                    const lowerValue = value.toLowerCase();
+                    const seriesClass =
+                        lowerValue.startsWith('cs') || lowerValue.includes('classical') ? 'series-classical' :
+                        lowerValue.startsWith('ps') || lowerValue.includes('pops') ? 'series-pops' :
+                        lowerValue.startsWith('fs') || lowerValue.includes('family') ? 'series-family' :
+                        lowerValue.includes('special') || lowerValue.includes('morgan freeman') ? 'series-special' :
+                        lowerValue.includes('christmas') || lowerValue.includes('messiah') || lowerValue.includes('holiday') ? 'series-holiday' :
+                        lowerValue.includes('chamber') || lowerValue.includes('quartet') || lowerValue.includes('trio') ? 'series-chamber' :
+                        lowerValue.includes('concert') || lowerValue.includes('top gun') || lowerValue.includes('harry potter') || lowerValue.includes('indiana jones') ? 'series-film' :
+                        lowerValue.includes('education') || lowerValue.includes('student') ? 'series-education' :
+                        lowerValue.includes('on stage') || lowerValue.includes('happy hour') ? 'series-outreach' :
+                        'series-other';
 
                     return `<span class="series-cell ${seriesClass}">${value}</span>`;
                 }
@@ -470,153 +473,20 @@ class DataTable {
     }
 
     renderSalesChart(container, performance) {
-        const margin = { top: 20, right: 180, bottom: 40, left: 60 };
-        const width = 800 - margin.left - margin.right;
-        const height = 400 - margin.top - margin.bottom;
+        // Use the proper SalesCurveChart class instead of duplicating code
+        const chartId = 'modal-sales-chart-inner';
+        container.attr('id', chartId);
 
-        const svg = container
-            .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom);
+        // Create a sales curve chart instance
+        const salesChart = new SalesCurveChart(chartId);
 
-        const g = svg.append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
+        // Set up the performance data for the chart
+        const chartData = [performance];
+        salesChart.data = chartData;
 
-        const weeklySales = performance.weeklySales;
-        const maxWeeks = Math.max(10, weeklySales.length);
-        const maxSales = Math.max(
-            d3.max(weeklySales, d => d.actualCumulative),
-            d3.max(weeklySales, d => d.expectedCumulative),
-            performance.capacity || 0
-        );
+        // Render the chart
+        salesChart.render();
 
-        // Scales (flip x-axis so week 10 is on left, week 1 on right)
-        const xScale = d3.scaleLinear()
-            .domain([maxWeeks, 1])
-            .range([0, width]);
-
-        const yScale = d3.scaleLinear()
-            .domain([0, maxSales])
-            .range([height, 0]);
-
-        // Line generators
-        const actualLine = d3.line()
-            .x(d => xScale(d.week))
-            .y(d => yScale(d.actualCumulative))
-            .curve(d3.curveMonotoneX);
-
-        const expectedLine = d3.line()
-            .x(d => xScale(d.week))
-            .y(d => yScale(d.expectedCumulative))
-            .curve(d3.curveMonotoneX);
-
-        // Add capacity line
-        if (performance.capacity) {
-            g.append('line')
-                .attr('x1', 0)
-                .attr('x2', width)
-                .attr('y1', yScale(performance.capacity))
-                .attr('y2', yScale(performance.capacity))
-                .attr('stroke', '#ccc')
-                .attr('stroke-width', 2)
-                .attr('stroke-dasharray', '5,5');
-        }
-
-        // Add occupancy goal line
-        if (performance.occupancyGoal && performance.capacity) {
-            const goalTickets = performance.capacity * (performance.occupancyGoal / 100);
-            g.append('line')
-                .attr('x1', 0)
-                .attr('x2', width)
-                .attr('y1', yScale(goalTickets))
-                .attr('y2', yScale(goalTickets))
-                .attr('stroke', '#28a745')
-                .attr('stroke-width', 2)
-                .attr('stroke-dasharray', '3,3');
-        }
-
-        // Add expected sales line
-        g.append('path')
-            .datum(weeklySales)
-            .attr('d', expectedLine)
-            .attr('fill', 'none')
-            .attr('stroke', '#ffc107')
-            .attr('stroke-width', 3)
-            .attr('stroke-dasharray', '8,4');
-
-        // Add actual sales line
-        g.append('path')
-            .datum(weeklySales)
-            .attr('d', actualLine)
-            .attr('fill', 'none')
-            .attr('stroke', '#007bff')
-            .attr('stroke-width', 3);
-
-        // Add data points
-        g.selectAll('.actual-point')
-            .data(weeklySales)
-            .enter()
-            .append('circle')
-            .attr('class', 'actual-point')
-            .attr('cx', d => xScale(d.week))
-            .attr('cy', d => yScale(d.actualCumulative))
-            .attr('r', 4)
-            .attr('fill', '#007bff')
-            .attr('stroke', 'white')
-            .attr('stroke-width', 2);
-
-        // Add axes
-        g.append('g')
-            .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(xScale).tickFormat(d => `${d} weeks before`));
-
-        g.append('g')
-            .call(d3.axisLeft(yScale));
-
-        // Add axis labels
-        g.append('text')
-            .attr('transform', `translate(${width / 2}, ${height + margin.bottom})`)
-            .style('text-anchor', 'middle')
-            .text('Weeks Before Performance');
-
-        g.append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 0 - margin.left)
-            .attr('x', 0 - (height / 2))
-            .attr('dy', '1em')
-            .style('text-anchor', 'middle')
-            .text('Cumulative Tickets Sold');
-
-        // Add legend
-        const legend = g.append('g')
-            .attr('transform', `translate(${width + 20}, 20)`);
-
-        const legendItems = [
-            { label: 'Actual Sales', color: '#007bff', style: 'solid' },
-            { label: 'Expected Sales', color: '#ffc107', style: 'dashed' },
-            { label: 'Capacity', color: '#ccc', style: 'dashed' },
-            { label: 'Goal', color: '#28a745', style: 'dashed' }
-        ];
-
-        legendItems.forEach((item, i) => {
-            const legendRow = legend.append('g')
-                .attr('transform', `translate(0, ${i * 20})`);
-
-            legendRow.append('line')
-                .attr('x1', 0)
-                .attr('x2', 20)
-                .attr('y1', 10)
-                .attr('y2', 10)
-                .attr('stroke', item.color)
-                .attr('stroke-width', 2)
-                .attr('stroke-dasharray', item.style === 'dashed' ? '5,3' : 'none');
-
-            legendRow.append('text')
-                .attr('x', 25)
-                .attr('y', 14)
-                .style('font-size', '12px')
-                .text(item.label);
-        });
     }
 
     createTableHeader() {
@@ -766,16 +636,7 @@ class DataTable {
     getFilteredData() {
         let filtered = [...this.data];
 
-        // Filter out parking performances
-        filtered = filtered.filter(row => {
-            const title = (row.title || '').toLowerCase();
-            const series = (row.series || '').toLowerCase();
-            const season = (row.season || '').toLowerCase();
-
-            return !title.includes('parking') &&
-                   !series.includes('parking') &&
-                   !season.includes('parking');
-        });
+        // Note: Parking performances are already filtered out in the data source
 
         // Apply text filter
         if (this.filterText) {

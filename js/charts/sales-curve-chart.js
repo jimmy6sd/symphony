@@ -101,55 +101,73 @@ class SalesCurveChart {
             return;
         }
 
-        if (!this.data || !Array.isArray(this.data)) {
-            console.warn('⚠️ Data became undefined after safety check');
-            return;
-        }
-
         const performance = this.data.find(d => d.id === this.selectedPerformance);
         if (!performance) {
             console.warn('⚠️ SalesCurveChart render: No performance found with id:', this.selectedPerformance);
             return;
         }
 
-        const weeklySales = performance.weeklySales;
-        const maxWeeks = Math.max(10, weeklySales.length);
+        // Calculate current sales (actual data point)
+        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
 
-        // Scales (flip x-axis so week 10 is on left, week 1 on right)
+        // Calculate weeks from today to performance
+        const today = new Date();
+        const performanceDate = new Date(performance.date);
+        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+
+        console.log('📊 Current sales:', currentSales, 'Weeks to performance:', weeksToPerformance);
+
+        const maxWeeks = 10;
+
+        // Debug capacity issue
+        console.log('📊 Performance capacity:', performance.capacity);
+        console.log('📊 Performance data:', performance);
+
+        // Ensure we have a valid capacity
+        const capacity = performance.capacity && performance.capacity > 0 ? performance.capacity : 2000;
+        const maxSales = Math.max(
+            capacity,
+            currentSales,
+            100  // minimum scale
+        );
+
+        console.log('📊 Using capacity:', capacity, 'Max sales for scale:', maxSales);
+        console.log('📊 Current sales:', currentSales, 'at week:', weeksToPerformance);
+
+        // Scales (flip x-axis so week 10 is on left, week 0 on right)
         const xScale = d3.scaleLinear()
-            .domain([maxWeeks, 1])
+            .domain([maxWeeks, 0])
             .range([0, innerWidth]);
 
         const yScale = d3.scaleLinear()
-            .domain([0, performance.capacity])
+            .domain([0, maxSales])
             .range([innerHeight, 0]);
 
-        // Generate on-track line data based on heuristic
-        const onTrackData = this.generateOnTrackLine(performance, maxWeeks);
+        // Generate on-track line data based on historic progression
+        const onTrackData = this.generateOnTrackLine(performance, maxWeeks, capacity);
+        console.log('📊 Target line data:', onTrackData.filter(d => d.hasTarget));
 
-        // Line generators
-        const actualLine = d3.line()
-            .x(d => xScale(d.week))
-            .y(d => yScale(d.actualCumulative))
-            .curve(d3.curveMonotoneX);
+        // Line generator for expected sales only
+        // (No actual line since we only have one data point)
 
         const expectedLine = d3.line()
             .x(d => xScale(d.week))
             .y(d => yScale(d.expectedCumulative))
-            .curve(d3.curveMonotoneX);
+            .curve(d3.curveMonotoneX)
+            .defined(d => d.hasTarget && d.expectedCumulative !== null); // Only draw where we have target data
 
         // Draw capacity reference line
         chartGroup.append("line")
             .attr("x1", 0)
             .attr("x2", innerWidth)
-            .attr("y1", yScale(performance.capacity))
-            .attr("y2", yScale(performance.capacity))
+            .attr("y1", yScale(capacity))
+            .attr("y2", yScale(capacity))
             .attr("stroke", "#ccc")
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5");
 
         // Draw occupancy goal line
-        const occupancyTarget = performance.capacity * (performance.occupancyGoal / 100);
+        const occupancyTarget = capacity * (performance.occupancyGoal / 100);
         chartGroup.append("line")
             .attr("x1", 0)
             .attr("x2", innerWidth)
@@ -159,55 +177,54 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "3,3");
 
-        // Draw expected sales line (on-track heuristic)
+        // Draw expected sales line (on-track heuristic) - 6 weeks only
         chartGroup.append("path")
             .datum(onTrackData)
             .attr("class", "expected-line")
             .attr("d", expectedLine)
             .attr("fill", "none")
-            .attr("stroke", CONFIG.charts.colors.onTrackLine)
+            .attr("stroke", CONFIG.charts.colors.onTrackLine || "#2ca02c")
             .attr("stroke-width", 3)
-            .attr("stroke-dasharray", "8,4");
+            .attr("stroke-dasharray", "8,4") // Dashed line to indicate target
+            .attr("opacity", 0.9);
 
-        // Draw actual sales line
-        chartGroup.append("path")
-            .datum(weeklySales)
-            .attr("class", "actual-line")
-            .attr("d", actualLine)
-            .attr("fill", "none")
-            .attr("stroke", CONFIG.charts.colors.actualSales)
-            .attr("stroke-width", 3);
+        // Draw single actual sales point (current sales at current week)
+        if (currentSales > 0 && weeksToPerformance <= maxWeeks) {
+            chartGroup.append("circle")
+                .attr("class", "current-sales-point")
+                .attr("cx", xScale(weeksToPerformance))
+                .attr("cy", yScale(currentSales))
+                .attr("r", 8)
+                .attr("fill", CONFIG.charts.colors.actualSales)
+                .attr("stroke", "white")
+                .attr("stroke-width", 3);
+        }
 
-        // Add data points for actual sales
-        chartGroup.selectAll(".actual-point")
-            .data(weeklySales)
-            .enter()
-            .append("circle")
-            .attr("class", "actual-point")
-            .attr("cx", d => xScale(d.week))
-            .attr("cy", d => yScale(d.actualCumulative))
-            .attr("r", 5)
-            .attr("fill", CONFIG.charts.colors.actualSales)
-            .attr("stroke", "white")
-            .attr("stroke-width", 2);
+        // No multiple actual sales points - only the single current sales point above
 
-        // Add data points for expected sales
+        // Add data points for expected sales (6 weeks only)
         chartGroup.selectAll(".expected-point")
-            .data(onTrackData.filter(d => d.week <= weeklySales.length))
+            .data(onTrackData.filter(d => d.hasTarget && d.expectedCumulative !== null))
             .enter()
             .append("circle")
             .attr("class", "expected-point")
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.expectedCumulative))
             .attr("r", 4)
-            .attr("fill", CONFIG.charts.colors.onTrackLine)
+            .attr("fill", CONFIG.charts.colors.onTrackLine || "#2ca02c")
             .attr("stroke", "white")
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .attr("opacity", 0.8);
 
         // X-axis
         chartGroup.append("g")
             .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).tickFormat(d => `${d} weeks before`));
+            .call(d3.axisBottom(xScale).tickFormat(d => d === 0 ? 'Performance' : `${d} weeks before`))
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-45)");
 
         // Y-axis
         chartGroup.append("g")
@@ -234,25 +251,63 @@ class SalesCurveChart {
         // Add legend
         this.addLegend(chartGroup, innerWidth);
 
-        // Add tooltips
-        this.addTooltips(weeklySales, onTrackData, performance);
+        // Add tooltips for the single current sales point
+        this.addTooltips(currentSales, weeksToPerformance, onTrackData, performance);
     }
 
-    generateOnTrackLine(performance, maxWeeks) {
-        const targetSales = performance.capacity * (performance.occupancyGoal / 100);
-        const progression = CONFIG.salesCurve.expectedSalesProgression;
+    generateOnTrackLine(performance, maxWeeks, capacity = null) {
+        const useCapacity = capacity || performance.capacity || 2000;
+        const targetSales = useCapacity * (performance.occupancyGoal / 100);
+        const progression = CONFIG.salesCurve.historicalProgression;
+
+        console.log('🎯 Target generation debug:');
+        console.log('   Capacity:', useCapacity);
+        console.log('   Occupancy goal:', performance.occupancyGoal);
+        console.log('   Target sales:', targetSales);
+        console.log('   CONFIG object:', CONFIG);
+        console.log('   CONFIG.salesCurve:', CONFIG.salesCurve);
+        console.log('   Historic progression:', progression);
 
         const onTrackData = [];
-        for (let week = 1; week <= maxWeeks; week++) {
-            const expectedPercentage = this.getExpectedPercentageAtWeek(week, progression);
-            const expectedCumulative = Math.floor(targetSales * (expectedPercentage / 100));
 
-            onTrackData.push({
-                week: week,
-                expectedCumulative: expectedCumulative,
-                expectedPercentage: expectedPercentage
-            });
+        // Generate target line from 6 weeks out to performance date (week 0)
+        // First add week 0 (performance date)
+        const week0Percentage = this.getHistoricPercentageAtWeek(0, progression);
+        const week0Cumulative = Math.floor(targetSales * (week0Percentage / 100));
+        console.log(`   Week 0 (performance): ${week0Percentage}% = ${week0Cumulative} tickets`);
+
+        for (let week = 1; week <= maxWeeks; week++) {
+            if (week <= 6) {
+                // Use historic progression for weeks 1-6
+                const expectedPercentage = this.getHistoricPercentageAtWeek(week, progression);
+                const expectedCumulative = Math.floor(targetSales * (expectedPercentage / 100));
+
+                console.log(`   Week ${week}: ${expectedPercentage}% = ${expectedCumulative} tickets`);
+
+                onTrackData.push({
+                    week: week,
+                    expectedCumulative: expectedCumulative,
+                    expectedPercentage: expectedPercentage,
+                    hasTarget: true  // Flag to indicate this point has target data
+                });
+            } else {
+                // No target line for weeks 7-10, but maintain data structure
+                onTrackData.push({
+                    week: week,
+                    expectedCumulative: null,
+                    expectedPercentage: null,
+                    hasTarget: false
+                });
+            }
         }
+
+        // Add week 0 data point at the end for proper line drawing
+        onTrackData.unshift({
+            week: 0,
+            expectedCumulative: week0Cumulative,
+            expectedPercentage: week0Percentage,
+            hasTarget: true
+        });
 
         return onTrackData;
     }
@@ -277,18 +332,42 @@ class SalesCurveChart {
         return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
     }
 
-    addTrackingStatus(chartGroup, performance, innerWidth) {
-        const currentWeek = performance.weeklySales.length;
-        const latestSales = performance.weeklySales[currentWeek - 1];
+    getHistoricPercentageAtWeek(week, progression) {
+        if (!progression || !Array.isArray(progression)) {
+            return 0;
+        }
 
-        if (!latestSales) return;
+        // Historic progression has weeks 6, 5, 4, 3, 2, 1, 0
+        // Find the exact match first
+        const dataPoint = progression.find(point => point.week === week);
+        if (dataPoint) {
+            return dataPoint.percentage;
+        }
+
+        // Interpolate if exact week not found
+        const lowerPoint = progression.filter(point => point.week < week).pop();
+        const upperPoint = progression.find(point => point.week > week);
+
+        if (!lowerPoint) return progression[progression.length - 1].percentage; // lowest week
+        if (!upperPoint) return progression[0].percentage; // highest week
+
+        const ratio = (week - lowerPoint.week) / (upperPoint.week - lowerPoint.week);
+        return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
+    }
+
+    addTrackingStatus(chartGroup, performance, innerWidth) {
+        // Calculate current sales and weeks to performance
+        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const today = new Date();
+        const performanceDate = new Date(performance.date);
+        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
         const onTrackData = this.generateOnTrackLine(performance, 10);
-        const expectedAtCurrentWeek = onTrackData.find(d => d.week === currentWeek);
+        const expectedAtCurrentWeek = onTrackData.find(d => d.week === weeksToPerformance);
 
-        if (!expectedAtCurrentWeek) return;
+        if (!expectedAtCurrentWeek || !expectedAtCurrentWeek.expectedCumulative) return;
 
-        const variance = latestSales.actualCumulative - expectedAtCurrentWeek.expectedCumulative;
+        const variance = currentSales - expectedAtCurrentWeek.expectedCumulative;
         const variancePercentage = ((variance / expectedAtCurrentWeek.expectedCumulative) * 100).toFixed(1);
 
         let status = "On Track";
@@ -344,7 +423,7 @@ class SalesCurveChart {
 
         const legendItems = [
             { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
-            { label: "On-Track Target", color: CONFIG.charts.colors.onTrackLine, style: "dashed" },
+            { label: "Target Sales (6 weeks)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
             { label: "Occupancy Goal", color: CONFIG.charts.colors.occupancyGoal, style: "dashed" },
             { label: "Capacity", color: "#ccc", style: "dashed" }
         ];
@@ -370,7 +449,7 @@ class SalesCurveChart {
         });
     }
 
-    addTooltips(actualData, expectedData, performance) {
+    addTooltips(currentSales, weeksToPerformance, expectedData, performance) {
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "sales-curve-tooltip")
@@ -380,20 +459,23 @@ class SalesCurveChart {
             .style("color", "white")
             .style("padding", "10px")
             .style("border-radius", "5px")
-            .style("font-size", "12px");
+            .style("font-size", "12px")
+            .style("z-index", "1001")
+            .style("pointer-events", "none");
 
-        // Tooltips for actual data points
-        this.svg.selectAll(".actual-point")
-            .on("mouseover", function(event, d) {
-                const expected = expectedData.find(e => e.week === d.week);
-                const variance = expected ? d.actualCumulative - expected.expectedCumulative : 0;
+        // Tooltip for current sales point
+        this.svg.selectAll(".current-sales-point")
+            .on("mouseover", function(event) {
+                const expected = expectedData.find(e => e.week === weeksToPerformance);
+                const variance = expected ? currentSales - expected.expectedCumulative : 0;
+                const capacityPercent = performance.capacity ? ((currentSales / performance.capacity) * 100).toFixed(1) : 'N/A';
 
                 tooltip.html(`
-                    <strong>Week ${d.week}</strong><br/>
-                    Actual: ${d.actualCumulative.toLocaleString()} tickets<br/>
-                    Expected: ${expected ? expected.expectedCumulative.toLocaleString() : 'N/A'} tickets<br/>
+                    <strong>Current Sales (${weeksToPerformance} weeks before)</strong><br/>
+                    Actual: ${currentSales.toLocaleString()} tickets<br/>
+                    Target: ${expected ? expected.expectedCumulative.toLocaleString() : 'N/A'} tickets<br/>
                     Variance: ${variance > 0 ? '+' : ''}${variance.toLocaleString()}<br/>
-                    Weekly Sales: ${d.actualSales.toLocaleString()}
+                    Capacity: ${capacityPercent}%
                 `);
                 return tooltip.style("visibility", "visible");
             })

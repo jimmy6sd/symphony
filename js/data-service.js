@@ -1,6 +1,133 @@
 class DataService {
     constructor() {
         this.mockDataEnabled = CONFIG.api.mockDataEnabled;
+        this.realDataCache = null;
+    }
+
+    // Load real Tessitura sales data
+    async loadRealData() {
+        if (this.realDataCache) {
+            return this.realDataCache;
+        }
+
+        try {
+            // Try no-parking dataset first, then fallback to others
+            let response = await fetch('./dashboard-no-parking.json');
+            if (!response.ok) {
+                response = await fetch('./dashboard-series-fixed.json');
+                if (!response.ok) {
+                    response = await fetch('./dashboard-corrected-data.json');
+                    if (!response.ok) {
+                        response = await fetch('./dashboard-enhanced-data.json');
+                        if (!response.ok) {
+                            response = await fetch('./dashboard-performance-data.json');
+                        }
+                    }
+                }
+            }
+            const data = await response.json();
+            this.realDataCache = data;
+            return data;
+        } catch (error) {
+            console.warn('Failed to load real data, falling back to mock data:', error);
+            return null;
+        }
+    }
+
+    // Convert real Tessitura data to dashboard format
+    convertRealDataToFormat(realData) {
+        return realData.map(perf => {
+            // Check if this is already in dashboard format (corrected data)
+            if (perf.singleTicketsSold !== undefined && perf.subscriptionTicketsSold !== undefined) {
+                // Already in correct format, just ensure all required fields
+                return {
+                    ...perf,
+                    realData: true,
+                    title: perf.title || this.getPerformanceName(perf.id) || perf.id
+                };
+            }
+
+            // Handle legacy formats
+            const dateStr = perf.date ? perf.date.split(' ')[0] : perf.date;
+            const capacity = perf.capacity ||
+                (perf.ticketsSold ? Math.round(perf.ticketsSold / ((perf.capacityPercent || 50) / 100)) : 1500);
+            const ticketsSold = perf.ticketsSold || 0;
+            const revenue = perf.revenue || 0;
+
+            return {
+                id: perf.id,
+                performanceId: perf.performanceId,
+                title: perf.title || this.getPerformanceName(perf.id) || perf.name || perf.id,
+                series: perf.series,
+                date: dateStr,
+                venue: perf.venue || "HELZBERG HALL",
+                season: perf.season,
+                capacity: capacity,
+                singleTicketsSold: perf.breakdown?.single?.count || Math.round(ticketsSold * 0.6),
+                subscriptionTicketsSold: (perf.breakdown?.fixedPackages?.count || 0) +
+                                       (perf.breakdown?.nonFixedPackages?.count || 0) ||
+                                       Math.round(ticketsSold * 0.4),
+                totalRevenue: revenue,
+                occupancyGoal: 85,
+                budgetGoal: perf.budgetPercent ? Math.round(revenue / (perf.budgetPercent / 100)) : revenue * 1.2,
+                weeklySales: this.generateWeeklySalesFromReal(ticketsSold, perf.capacityPercent || 50),
+                realData: true,
+                hasSalesData: perf.hasSalesData,
+                dataSources: perf.dataSources || ['unknown']
+            };
+        });
+    }
+
+    // Generate realistic weekly sales progression for real data
+    generateWeeklySalesFromReal(finalTicketsSold, capacityPercent) {
+        const weeks = 10;
+        const sales = [];
+
+        // Create a realistic sales curve where sales accumulate toward performance date
+        // Week 10 = 10 weeks before (low sales), Week 1 = 1 week before (high sales)
+        for (let week = 1; week <= weeks; week++) {
+            // Reverse the progress: week 1 should have highest sales, week 10 lowest
+            const weeksFromEnd = weeks - week + 1; // week 1 -> 10, week 10 -> 1
+            const progress = weeksFromEnd / weeks;
+            // S-curve progression (slow start, fast middle, slow end)
+            const salesProgress = 1 - Math.pow(1 - progress, 2);
+            const weeklyTickets = Math.round(finalTicketsSold * salesProgress);
+            const weeklyPercent = (weeklyTickets / (finalTicketsSold / (capacityPercent / 100))) * 100;
+
+            sales.push({
+                week: week,
+                ticketsSold: weeklyTickets,
+                percentage: Math.min(weeklyPercent, capacityPercent)
+            });
+        }
+
+        return sales;
+    }
+
+    // Map performance codes to readable names
+    getPerformanceName(code) {
+        const nameMap = {
+            '251010E': 'CS01: Appalachian Spring',
+            '251011E': 'CS01: Appalachian Spring',
+            '251012M': 'CS01: Appalachian Spring',
+            '251031E': 'CS02: Rachmaninoff Celebration Pt 1',
+            '251101E': 'CS02: Rachmaninoff Celebration Pt 1',
+            '251102M': 'CS02: Rachmaninoff Celebration Pt 1',
+            '251121E': 'CS03: Matthias and Mahler 7',
+            '251122E': 'CS03: Matthias and Mahler 7',
+            '251123M': 'CS03: Matthias and Mahler 7',
+            '260109E': 'CS04: Brahms Fourth Symphony',
+            '260110E': 'CS04: Brahms Fourth Symphony',
+            '260111M': 'CS04: Brahms Fourth Symphony',
+            '250919E': 'PS1: Music of Journey',
+            '250920E': 'PS1: Music of Journey',
+            '250921M': 'PS1: Music of Journey',
+            '251024E': 'PS2: 90s Mixtape',
+            '251025E': 'PS2: 90s Mixtape',
+            '251026M': 'PS2: 90s Mixtape'
+        };
+
+        return nameMap[code] || code;
     }
 
     // Generate mock performance data
@@ -133,6 +260,13 @@ class DataService {
         console.log('  - authManager available:', !!window.authManager);
         console.log('  - authManager authenticated:', window.authManager?.isAuthenticated());
 
+        // Try to load real Tessitura sales data first
+        const realData = await this.loadRealData();
+        if (realData && realData.length > 0) {
+            console.log('📊 Using real Tessitura sales data');
+            return this.convertRealDataToFormat(realData);
+        }
+
         if (shouldUseMockData) {
             console.log('🔒 Using mock data for development');
             return this.generateMockPerformances();
@@ -158,6 +292,9 @@ class DataService {
             const data = await window.authManager.apiRequest('/.netlify/functions/dashboard-data');
 
             const performances = data.performances;
+
+            // Update the refresh timestamp display
+            this.updateRefreshTimestamp();
 
             return performances || [];
         } catch (error) {
@@ -298,6 +435,16 @@ class DataService {
         };
 
         return summary;
+    }
+
+    // Update refresh timestamp display
+    updateRefreshTimestamp() {
+        const refreshElement = document.getElementById('last-refresh');
+        if (refreshElement) {
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            refreshElement.textContent = `Last refreshed: ${timeString}`;
+        }
     }
 
     // Get live sales data for a specific performance
