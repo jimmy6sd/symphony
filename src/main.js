@@ -30,7 +30,6 @@
 
         // Application modules (migrated from js/ to src/)
         modules: [
-            '/src/auth.js',
             '/src/tessitura-config.js',
             '/src/tessitura-api.js',
             '/src/data-service.js',

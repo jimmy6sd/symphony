@@ -84,24 +84,14 @@ class SymphonyApp {
     }
 
     async checkAuthentication() {
-        if (!window.authManager) {
-            this.log('error', 'Authentication manager not found');
-            return false;
-        }
-
-        const isAuthenticated = window.authManager.isAuthenticated();
-        if (!isAuthenticated) {
-            this.log('warn', 'User not authenticated, redirecting to login');
-            window.location.href = '/login.html';
-            return false;
-        }
+        // Authentication disabled for direct access
+        this.log('info', 'Authentication bypassed for direct access');
 
         this.setState({
             authenticated: true,
-            user: window.authManager.getCurrentUser()
+            user: { username: 'guest', role: 'viewer' }
         });
 
-        this.log('info', 'User authentication verified');
         return true;
     }
 
@@ -291,13 +281,8 @@ class SymphonyApp {
     }
 
     handlePageVisible() {
-        this.log('debug', 'Page became visible, checking authentication');
-
-        // Re-verify authentication when page becomes visible
-        if (window.authManager && !window.authManager.isAuthenticated()) {
-            this.log('warn', 'Authentication expired, redirecting to login');
-            window.location.href = '/login.html';
-        }
+        this.log('debug', 'Page became visible');
+        // Authentication disabled - no checks needed
     }
 
     async refreshData() {
