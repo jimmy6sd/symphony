@@ -52,3 +52,12 @@ build/
 # Sensitive data files (keep structure, remove sensitive data)
 data/*-credentials.json
 data/*-secrets.json
+
+# BigQuery service account keys - NEVER commit these!
+*-bigquery-key.json
+symphony-bigquery-key.json
+*service-account*.json
+
+# Temporary files
+temp-response.json
+test-dashboard.html

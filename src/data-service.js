@@ -251,45 +251,67 @@ class DataService {
         console.log('  - authManager available:', !!window.authManager);
         console.log('  - authManager authenticated:', window.authManager?.isAuthenticated());
 
-        // Try to load real Tessitura sales data first
-        const realData = await this.loadRealData();
-        if (realData && realData.length > 0) {
-            console.log('📊 Using real Tessitura sales data');
-            return this.convertRealDataToFormat(realData);
-        }
-
         if (shouldUseMockData) {
             console.log('🔒 Using mock data for development');
             return this.generateMockPerformances();
         } else {
-            console.log('📊 Loading real Tessitura data from secure API');
-            const result = await this.loadDashboardData();
-            console.log('  - API result length:', result?.length || 0);
-            return result;
+            // First try BigQuery API for live data
+            console.log('📊 Loading real data from BigQuery API...');
+            try {
+                const result = await this.loadDashboardData();
+                if (result && result.length > 0) {
+                    console.log(`✅ Successfully loaded ${result.length} performances from BigQuery`);
+                    // Add visual indicator for BigQuery data
+                    this.updateDataSourceIndicator('BigQuery', result.length, 'success');
+                    return result;
+                }
+            } catch (error) {
+                console.warn('⚠️ BigQuery API failed, trying local fallback:', error.message);
+            }
+
+            // Fallback to local JSON if BigQuery fails
+            console.log('📁 Falling back to local JSON data...');
+            const localData = await this.loadRealData();
+            if (localData && localData.length > 0) {
+                console.log('📊 Using local JSON fallback data');
+                // Add visual indicator for local JSON data
+                this.updateDataSourceIndicator('Local JSON', localData.length, 'warning');
+                return this.convertRealDataToFormat(localData);
+            }
+
+            console.error('❌ No data available from any source');
+            return [];
         }
     }
 
-    // Load dashboard data from authenticated API
+    // Load dashboard data from BigQuery via API
     async loadDashboardData() {
         try {
-            console.log('📊 Loading dashboard data from authenticated API...');
+            console.log('📊 Loading dashboard data from BigQuery...');
 
-            // Check if authManager is available
-            if (typeof window.authManager === 'undefined') {
-                throw new Error('Authentication manager not available');
+            let performances;
+
+            // Try authenticated request first
+            if (typeof window.authManager !== 'undefined' && window.authManager.isAuthenticated()) {
+                performances = await window.authManager.apiRequest('/.netlify/functions/bigquery-data?action=get-performances');
+            } else {
+                // For development: make direct API call without authentication
+                console.log('🔧 Making direct BigQuery API call (development mode)...');
+                const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+                performances = await response.json();
             }
 
-            // Make authenticated API request
-            const data = await window.authManager.apiRequest('/.netlify/functions/dashboard-data');
-
-            const performances = data.performances;
+            console.log(`✅ Loaded ${performances.length} performances from BigQuery`);
 
             // Update the refresh timestamp display
             this.updateRefreshTimestamp();
 
             return performances || [];
         } catch (error) {
-            console.error('⚠️ Could not load dashboard data from API:', error.message);
+            console.error('⚠️ Could not load dashboard data from BigQuery:', error.message);
 
             // Try fallback to local files for development
             return await this.loadLocalFallback();
@@ -491,6 +513,42 @@ class DataService {
     // Test Tessitura connection
     async testTessituraConnection() {
         return await tessituraAPI.testConnection();
+    }
+
+    // Add visual indicator for data source
+    updateDataSourceIndicator(source, count, status) {
+        // Create or update data source indicator in the UI
+        let indicator = document.getElementById('data-source-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'data-source-indicator';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                z-index: 9999;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            `;
+            document.body.appendChild(indicator);
+        }
+
+        const styles = {
+            success: 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;',
+            warning: 'background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;',
+            error: 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'
+        };
+
+        indicator.style.cssText += styles[status] || styles.warning;
+        indicator.innerHTML = `
+            📊 <strong>${source}</strong><br>
+            ${count} performances
+        `;
+
+        console.log(`🎯 Data Source Indicator: ${source} (${count} records)`);
     }
 }
 
