@@ -1,5 +1,5 @@
 class SalesCurveChart {
-    constructor(containerId) {
+    constructor(containerId, options = {}) {
         this.containerId = containerId;
         this.data = [];
         this.svg = null;
@@ -7,6 +7,7 @@ class SalesCurveChart {
         this.height = CONFIG.charts.dimensions.defaultHeight;
         this.margin = { top: 50, right: 220, bottom: 75, left: 70 }; // Proper spacing for labels and legend
         this.selectedPerformance = null;
+        this.showSelector = options.showSelector !== false; // Default to true unless explicitly false
     }
 
     async init() {
@@ -49,8 +50,10 @@ class SalesCurveChart {
             .append("g")
             .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
-        // Add performance selector
-        this.addPerformanceSelector(container);
+        // Add performance selector (only if showSelector is true)
+        if (this.showSelector) {
+            this.addPerformanceSelector(container);
+        }
 
         // Default to first performance
         if (!this.selectedPerformance && this.data.length > 0) {

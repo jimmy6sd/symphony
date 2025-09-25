@@ -9,7 +9,7 @@ class DataTable {
             series: 'all',
             venue: 'all',
             season: 'all',
-            dateRange: 'thisWeekAndBeyond'
+            dateRange: 'all'
         };
 
         // Define columns and their properties
@@ -170,51 +170,16 @@ class DataTable {
                 }
             },
             {
-                key: 'salesTarget',
+                key: 'status',
                 label: 'Status',
                 sortable: true,
                 align: 'center',
                 formatter: (value, row) => {
-                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const capacity = row.capacity || 2000;
-                    const occupancyGoal = row.occupancyGoal || 85; // Use actual occupancy goal from data
-                    const targetSales = Math.floor(capacity * (occupancyGoal / 100));
-
-                    // Calculate weeks to performance (like in sales curve chart)
-                    const today = new Date();
-                    const performanceDate = new Date(row.date);
-                    const weeksToPerformance = Math.max(0, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
-
-                    // Get expected sales at current week using same progression as chart
-                    const expectedAtCurrentWeek = this.getExpectedSalesAtWeek(targetSales, weeksToPerformance);
-                    const isOnTarget = currentSales >= expectedAtCurrentWeek;
-
-                    const statusClass = isOnTarget ? 'on-target' : 'below-target';
-                    const statusText = isOnTarget ? 'On Target' : 'Below Target';
-
-                    return `<span class="status-badge status-${statusClass}">${statusText}</span>`;
+                    const statusClass = value ? value.toLowerCase().replace(/\s+/g, '-') : 'unknown';
+                    return `<span class="status-badge status-${statusClass}">${value || 'Unknown'}</span>`;
                 }
             }
         ];
-    }
-
-    getExpectedSalesAtWeek(targetSales, weeksToPerformance) {
-        // Use the same historic progression as the sales curve chart
-        const progression = [
-            { week: 0, percentage: 100 },
-            { week: 1, percentage: 59 },
-            { week: 2, percentage: 46 },
-            { week: 3, percentage: 39 },
-            { week: 4, percentage: 33 },
-            { week: 5, percentage: 30 },
-            { week: 6, percentage: 27 }
-        ];
-
-        // Find the progression percentage for the current week
-        const weekData = progression.find(p => p.week === weeksToPerformance);
-        const percentage = weekData ? weekData.percentage : 27; // Default to week 6+ percentage
-
-        return Math.floor(targetSales * (percentage / 100));
     }
 
     create(containerId) {
@@ -366,7 +331,6 @@ class DataTable {
 
         const dateRangeOptions = [
             { value: 'all', label: 'All Dates' },
-            { value: 'thisWeekAndBeyond', label: 'This Week & Beyond' },
             { value: 'thisMonth', label: 'This Month' },
             { value: 'next3Months', label: 'Next 3 Months' },
             { value: 'next6Months', label: 'Next 6 Months' },
@@ -375,14 +339,9 @@ class DataTable {
         ];
 
         dateRangeOptions.forEach(option => {
-            const optionElement = select.append('option')
+            select.append('option')
                 .attr('value', option.value)
                 .text(option.label);
-
-            // Set default selection
-            if (option.value === 'thisWeekAndBeyond') {
-                optionElement.attr('selected', true);
-            }
         });
     }
 
@@ -429,6 +388,7 @@ class DataTable {
             .attr('class', 'performance-modal')
             .style('background', 'white')
             .style('border-radius', '8px')
+            .style('padding', '20px')
             .style('max-width', '90vw')
             .style('max-height', '90vh')
             .style('overflow-y', 'auto')
@@ -459,36 +419,18 @@ class DataTable {
             .text('×')
             .on('click', () => modalOverlay.remove());
 
-        // Sales curve chart section - now the main content
-        modal.append('h3')
-            .style('margin-bottom', '15px')
-            .style('font-size', '1.1em')
-            .style('color', '#333')
-            .text('Sales Progression Analysis');
-
-        const chartContainer = modal.append('div')
-            .attr('id', 'modal-sales-chart')
-            .style('width', '100%')
-            .style('height', '450px')
-            .style('margin-bottom', '25px');
-
-        this.renderSalesChart(chartContainer, performance);
-
-        // Performance details - now below the chart
+        // Performance details
         const detailsGrid = modal.append('div')
             .attr('class', 'performance-details')
             .style('display', 'grid')
             .style('grid-template-columns', '1fr 1fr')
             .style('gap', '20px')
-            .style('margin-top', '20px');
+            .style('margin-bottom', '30px');
 
         // Left column
         const leftDetails = detailsGrid.append('div');
 
-        leftDetails.append('h3')
-            .style('font-size', '1em')
-            .style('margin-bottom', '12px')
-            .text('Performance Information');
+        leftDetails.append('h3').text('Performance Information');
         leftDetails.append('p').html(`<strong>Code:</strong> ${performance.code}`);
         leftDetails.append('p').html(`<strong>Date:</strong> ${new Date(performance.date).toLocaleDateString()}`);
         leftDetails.append('p').html(`<strong>Venue:</strong> ${performance.venue}`);
@@ -498,10 +440,7 @@ class DataTable {
         // Right column
         const rightDetails = detailsGrid.append('div');
 
-        rightDetails.append('h3')
-            .style('font-size', '1em')
-            .style('margin-bottom', '12px')
-            .text('Sales Information');
+        rightDetails.append('h3').text('Sales Information');
         rightDetails.append('p').html(`<strong>Capacity:</strong> ${performance.capacity?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Total Sold:</strong> ${performance.totalSold?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Single Tickets:</strong> ${performance.singleTicketsSold?.toLocaleString() || 'N/A'}`);
@@ -509,6 +448,21 @@ class DataTable {
         rightDetails.append('p').html(`<strong>Occupancy Rate:</strong> ${performance.occupancyRate?.toFixed(1) || 'N/A'}%`);
         rightDetails.append('p').html(`<strong>Total Revenue:</strong> $${performance.totalRevenue?.toLocaleString() || 'N/A'}`);
         rightDetails.append('p').html(`<strong>Status:</strong> ${performance.status || 'Unknown'}`);
+
+        // Sales curve chart section
+        if (performance.weeklySales && performance.weeklySales.length > 0) {
+            modal.append('h3')
+                .style('margin-top', '30px')
+                .style('margin-bottom', '15px')
+                .text('Sales Progression Over Time');
+
+            const chartContainer = modal.append('div')
+                .attr('id', 'modal-sales-chart')
+                .style('width', '100%')
+                .style('height', '400px');
+
+            this.renderSalesChart(chartContainer, performance);
+        }
 
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {
@@ -523,13 +477,12 @@ class DataTable {
         const chartId = 'modal-sales-chart-inner';
         container.attr('id', chartId);
 
-        // Create a sales curve chart instance without the selector
-        const salesChart = new SalesCurveChart(chartId, { showSelector: false });
+        // Create a sales curve chart instance
+        const salesChart = new SalesCurveChart(chartId);
 
         // Set up the performance data for the chart
         const chartData = [performance];
         salesChart.data = chartData;
-        salesChart.selectedPerformance = performance.id;
 
         // Render the chart
         salesChart.render();
@@ -628,105 +581,6 @@ class DataTable {
                     return column.formatter ? column.formatter(value, d) : value;
                 });
         });
-
-        // Render sparklines after DOM elements are created (currently disabled)
-        // setTimeout(() => {
-        //     this.renderSparklines(filteredData);
-        // }, 10);
-    }
-
-    renderSparklines(data) {
-        data.forEach(performance => {
-            const containerId = `sparkline-${performance.id}`;
-            const container = d3.select(`#${containerId}`);
-
-            if (container.empty()) return;
-
-            // Clear any existing content
-            container.selectAll('*').remove();
-
-            // Generate simple sales progression data (similar to sales curve chart)
-            const salesData = this.generateSparklineData(performance);
-
-            if (!salesData || salesData.length === 0) {
-                container.append('div')
-                    .style('font-size', '10px')
-                    .style('color', '#999')
-                    .style('text-align', 'center')
-                    .text('No data');
-                return;
-            }
-
-            this.drawSparkline(container, salesData);
-        });
-    }
-
-    generateSparklineData(performance) {
-        // Create a simplified version of the sales progression
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
-        const capacity = performance.capacity || 2000;
-        const targetSales = capacity * 0.85; // 85% occupancy goal
-
-        // Create 6 data points representing weeks leading up to performance
-        const progressionPoints = [
-            { week: 6, target: Math.floor(targetSales * 0.27), actual: null },
-            { week: 5, target: Math.floor(targetSales * 0.30), actual: null },
-            { week: 4, target: Math.floor(targetSales * 0.33), actual: null },
-            { week: 3, target: Math.floor(targetSales * 0.39), actual: null },
-            { week: 2, target: Math.floor(targetSales * 0.46), actual: null },
-            { week: 1, target: Math.floor(targetSales * 0.59), actual: null },
-            { week: 0, target: Math.floor(targetSales * 1.00), actual: currentSales }
-        ];
-
-        return progressionPoints;
-    }
-
-    drawSparkline(container, data) {
-        const width = 80;
-        const height = 25;
-        const padding = 2;
-
-        const svg = container.append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .style('display', 'block');
-
-        // Scales
-        const xScale = d3.scaleLinear()
-            .domain([0, 6])
-            .range([padding, width - padding]);
-
-        const maxValue = d3.max(data, d => Math.max(d.target, d.actual || 0));
-        const yScale = d3.scaleLinear()
-            .domain([0, maxValue])
-            .range([height - padding, padding]);
-
-        // Target line
-        const targetLine = d3.line()
-            .x(d => xScale(6 - d.week))
-            .y(d => yScale(d.target))
-            .curve(d3.curveMonotoneX);
-
-        svg.append('path')
-            .datum(data)
-            .attr('d', targetLine)
-            .attr('fill', 'none')
-            .attr('stroke', '#2ca02c')
-            .attr('stroke-width', 1.5)
-            .attr('stroke-dasharray', '2,2')
-            .attr('opacity', 0.7);
-
-        // Current sales point
-        const currentData = data.find(d => d.actual !== null);
-        if (currentData) {
-            svg.append('circle')
-                .attr('cx', xScale(6 - currentData.week))
-                .attr('cy', yScale(currentData.actual))
-                .attr('r', 2)
-                .attr('fill', '#d62728')
-                .attr('stroke', 'white')
-                .attr('stroke-width', 1);
-        }
     }
 
     getCellValue(row, key) {
@@ -775,14 +629,6 @@ class DataTable {
                 const performanceDate = new Date(row.date);
 
                 switch (this.filters.dateRange) {
-                    case 'thisWeekAndBeyond':
-                        // Get the start of this week (Sunday)
-                        const today = new Date();
-                        const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-                        const startOfWeek = new Date(today);
-                        startOfWeek.setDate(today.getDate() - currentDay);
-                        startOfWeek.setHours(0, 0, 0, 0);
-                        return performanceDate >= startOfWeek;
                     case 'thisMonth':
                         return performanceDate.getMonth() === now.getMonth() &&
                                performanceDate.getFullYear() === now.getFullYear();
@@ -861,107 +707,14 @@ const tableStyles = `
 }
 
 .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 20px;
     background: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
-    gap: 20px;
-    flex-wrap: wrap;
 }
 
 .table-header h3 {
     margin: 0;
     color: #495057;
-    flex: 1;
-}
-
-.view-toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.toggle-label {
-    font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.view-toggle-switch {
-    display: flex;
-    background: #e9ecef;
-    border-radius: 6px;
-    padding: 3px;
-    gap: 2px;
-}
-
-.toggle-option {
-    padding: 8px 16px;
-    border: none;
-    background: transparent;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #6c757d;
-    transition: all 0.2s ease;
-}
-
-.toggle-option:hover {
-    color: #495057;
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.toggle-option.active {
-    background: #667eea;
-    color: white;
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
-}
-
-.refresh-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.refresh-button:hover {
-    background: #218838;
-    transform: translateY(-1px);
-}
-
-.refresh-button.loading {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-.refresh-button.loading .refresh-icon {
-    animation: spin 1s linear infinite;
-}
-
-.refresh-text {
-    display: none;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@media (min-width: 640px) {
-    .refresh-text {
-        display: block;
-    }
 }
 
 
@@ -1047,19 +800,6 @@ const tableStyles = `
 
 .performance-cell {
     min-width: 200px;
-}
-
-.sparkline-container {
-    width: 80px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-.sparkline-container svg {
-    display: block;
 }
 
 .performance-title {
@@ -1155,18 +895,6 @@ const tableStyles = `
     white-space: nowrap;
 }
 
-.status-on-target {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.status-below-target {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
 .status-on-sale {
     background: #d4edda;
     color: #155724;
@@ -1204,28 +932,20 @@ const tableStyles = `
 .performance-modal {
     background: white;
     border-radius: 8px;
+    padding: 20px;
     max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.performance-modal > h3 {
-    padding: 20px 20px 0 20px;
-    margin-bottom: 15px;
-    margin-top: 0;
-    font-size: 1.1em;
-    color: #333;
-}
-
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0;
+    margin-bottom: 20px;
     border-bottom: 1px solid #eee;
-    padding: 20px 20px 15px 20px;
-    border-radius: 8px 8px 0 0;
+    padding-bottom: 15px;
 }
 
 .modal-header h2 {
@@ -1255,23 +975,20 @@ const tableStyles = `
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin-bottom: 15px;
-    padding: 0 20px 20px 20px;
+    margin-bottom: 30px;
 }
 
 .performance-details h3 {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     color: #495057;
     border-bottom: 1px solid #dee2e6;
-    padding-bottom: 6px;
-    font-size: 1em;
+    padding-bottom: 8px;
 }
 
 .performance-details p {
-    margin: 6px 0;
-    line-height: 1.3;
-    font-size: 0.9em;
+    margin: 8px 0;
+    line-height: 1.4;
 }
 
 .performance-details strong {
@@ -1284,7 +1001,6 @@ const tableStyles = `
     background: #f8f9fa;
     border-radius: 4px;
     padding: 15px;
-    margin: 0 20px 20px 20px;
 }
 
 @media (max-width: 768px) {

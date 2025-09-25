@@ -12,7 +12,9 @@
       "Bash(findstr:*)",
       "WebFetch(domain:ts-stg-appgw.calacademy.org)",
       "Bash(node:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(jq:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
