@@ -62,6 +62,12 @@ exports.handler = async (event, context) => {
         return await updatePerformance(bigquery, JSON.parse(event.body), headers);
       case 'sync-data':
         return await syncDataFromSource(bigquery, headers);
+      case 'get-latest-snapshot':
+        return await getLatestSnapshot(bigquery, headers);
+      case 'get-pipeline-health':
+        return await getPipelineHealth(bigquery, headers);
+      case 'get-data-freshness':
+        return await getDataFreshness(bigquery, headers);
       default:
         return await getPerformances(bigquery, params, headers);
     }
@@ -370,4 +376,164 @@ async function syncDataFromSource(bigquery, headers) {
       refreshId
     })
   };
+}
+
+// Get latest data snapshot information
+async function getLatestSnapshot(bigquery, headers) {
+  try {
+    const query = `
+      SELECT
+        snapshot_id,
+        snapshot_date,
+        source_type,
+        source_identifier,
+        performance_count,
+        total_tickets_in_snapshot,
+        total_revenue_in_snapshot,
+        processing_status,
+        processing_timestamp
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.data_snapshots\`
+      WHERE processing_status = 'processed'
+      ORDER BY processing_timestamp DESC
+      LIMIT 1
+    `;
+
+    const [rows] = await bigquery.query({
+      query,
+      location: 'US'
+    });
+
+    const snapshot = rows.length > 0 ? rows[0] : null;
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(snapshot)
+    };
+  } catch (error) {
+    console.error('Error fetching latest snapshot:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: 'Failed to fetch latest snapshot',
+        message: error.message
+      })
+    };
+  }
+}
+
+// Get pipeline health status
+async function getPipelineHealth(bigquery, headers) {
+  try {
+    const query = `
+      SELECT
+        status,
+        start_time,
+        end_time,
+        records_processed,
+        records_inserted,
+        records_updated,
+        error_message
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.pipeline_execution_log\`
+      ORDER BY start_time DESC
+      LIMIT 5
+    `;
+
+    const [rows] = await bigquery.query({
+      query,
+      location: 'US'
+    });
+
+    let overallHealth = 'healthy';
+    const recentExecutions = rows;
+
+    if (recentExecutions.length > 0) {
+      const latestExecution = recentExecutions[0];
+      const recentFailures = recentExecutions.filter(exec => exec.status === 'failed').length;
+
+      if (latestExecution.status === 'failed') {
+        overallHealth = 'error';
+      } else if (recentFailures > 1) {
+        overallHealth = 'warning';
+      }
+    } else {
+      overallHealth = 'unknown';
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        status: overallHealth,
+        lastExecution: recentExecutions.length > 0 ? recentExecutions[0] : null,
+        recentExecutions: recentExecutions
+      })
+    };
+  } catch (error) {
+    console.error('Error fetching pipeline health:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: 'Failed to fetch pipeline health',
+        message: error.message
+      })
+    };
+  }
+}
+
+// Get data freshness information
+async function getDataFreshness(bigquery, headers) {
+  try {
+    const query = `
+      SELECT
+        performance_id,
+        performance_code,
+        title,
+        performance_date,
+        last_updated,
+        days_since_update,
+        freshness_status,
+        latest_snapshot_date
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performance_freshness\`
+      ORDER BY performance_date DESC
+      LIMIT 50
+    `;
+
+    const [rows] = await bigquery.query({
+      query,
+      location: 'US'
+    });
+
+    // Calculate summary statistics
+    const totalPerformances = rows.length;
+    const freshCount = rows.filter(row => row.freshness_status === 'fresh').length;
+    const moderateCount = rows.filter(row => row.freshness_status === 'moderate').length;
+    const staleCount = rows.filter(row => row.freshness_status === 'stale').length;
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        summary: {
+          total: totalPerformances,
+          fresh: freshCount,
+          moderate: moderateCount,
+          stale: staleCount
+        },
+        performances: rows
+      })
+    };
+  } catch (error) {
+    console.error('Error fetching data freshness:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: 'Failed to fetch data freshness',
+        message: error.message
+      })
+    };
+  }
 }
