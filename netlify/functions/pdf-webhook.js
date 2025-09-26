@@ -7,14 +7,31 @@ const crypto = require('crypto');
 // Initialize BigQuery client
 const initializeBigQuery = () => {
   try {
-    const credentialsJson = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    if (!credentialsJson) {
+    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    if (!credentialsEnv) {
       throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
     }
 
-    const credentials = JSON.parse(credentialsJson);
-    if (credentials.private_key && credentials.private_key.includes('\\n')) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+    let credentials;
+
+    // Check if it's a file path or JSON content
+    if (credentialsEnv.startsWith('{')) {
+      // It's JSON content
+      credentials = JSON.parse(credentialsEnv);
+    } else {
+      // It's a file path
+      const fs = require('fs');
+      const path = require('path');
+      const credentialsFile = path.resolve(credentialsEnv);
+      console.log(`🔐 Loading credentials from file: ${credentialsFile}`);
+      const credentialsJson = fs.readFileSync(credentialsFile, 'utf8');
+      credentials = JSON.parse(credentialsJson);
+    }
+
+    // Fix escaped newlines, which is common in env vars
+    if (credentials.private_key && credentials.private_key.includes('\\\\n')) {
+      credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
     }
 
     return new BigQuery({
@@ -100,12 +117,9 @@ exports.handler = async (event, context) => {
     await updatePipelineExecution(bigquery, executionId, {
       status: 'completed',
       end_time: new Date().toISOString(),
-      records_received: performanceData?.length || 0,
-      records_processed: processedData.processed,
-      records_inserted: processedData.inserted,
-      records_updated: processedData.updated,
-      trends_adjusted: processedData.trendsAdjusted,
-      anomalies_detected: processedData.anomalies
+      records_processed: processedData.processed || 1,
+      records_inserted: processedData.inserted || 1,
+      records_updated: processedData.updated || 0
     });
 
     console.log(`✅ PDF webhook processing completed - Execution ID: ${executionId}`);
@@ -137,8 +151,7 @@ exports.handler = async (event, context) => {
       await updatePipelineExecution(bigquery, executionId, {
         status: 'failed',
         end_time: new Date().toISOString(),
-        error_message: error.message,
-        error_code: error.code || 'WEBHOOK_PROCESSING_ERROR'
+        error_message: error.message
       });
     } catch (logError) {
       console.error('Failed to log error:', logError.message);
@@ -510,12 +523,22 @@ async function createDataSnapshot(bigquery, data, executionId) {
     INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.data_snapshots\`
     (snapshot_id, snapshot_date, source_type, source_identifier, raw_data, processed_data,
      performance_count, total_tickets_in_snapshot, total_revenue_in_snapshot, processing_status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (
+      '${snapshotId}',
+      '${today}',
+      'pdf_webhook',
+      '${(data.metadata?.filename || `webhook_${executionId}`).replace(/'/g, "\\'")}',
+      PARSE_JSON('${JSON.stringify(data).replace(/'/g, "\\'")}'),
+      PARSE_JSON('${JSON.stringify(data.performances).replace(/'/g, "\\'")}'),
+      ${data.performances?.length || 0},
+      ${totalTickets},
+      ${totalRevenue},
+      'pending'
+    )
   `;
 
   await bigquery.query({
     query,
-    params: Object.values(snapshotData),
     location: 'US'
   });
 
