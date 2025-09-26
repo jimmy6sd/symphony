@@ -12,6 +12,8 @@
     "test-bigquery": "node scripts/test-bigquery.js",
     "bq-setup": "echo 'Follow bigquery-setup-instructions.md for BigQuery setup'",
     "apply-schema-enhancements": "node scripts/apply-schema-enhancements.js",
+    "test-webhook": "node scripts/test-webhook.js",
+    "test-makecom": "node scripts/test-webhook.js --makecom",
     "feature:start": "git checkout develop && git pull origin develop && git checkout -b",
     "deploy:production": "git checkout main && git merge develop && git push origin main",
     "deploy:preview": "git push origin HEAD"
