@@ -239,6 +239,7 @@ async function parseTessituraText(text, metadata) {
 
   // Multiple parsing strategies for different Tessitura report formats
   const strategies = [
+    parseDirectLineFormat,  // Add new strategy first for raw line format
     parseTabularFormat,
     parseNarrativeFormat,
     parseDetailedReportFormat,
@@ -275,7 +276,62 @@ async function parseTessituraText(text, metadata) {
   return performances;
 }
 
-// Strategy 1: Tabular format (most common)
+// Strategy 1: Direct line format (for raw Tessitura export lines)
+async function parseDirectLineFormat(lines) {
+  const performances = [];
+
+  for (const line of lines) {
+    // Match Tessitura direct export format:
+    // 251010E 10/10/2025 8:00 PM 51.1% 485 32,899.00 15 1,101.60 292 16,098.70 50,099.30 0 0.00 50,099.30 659 51.2%
+
+    // Look for lines that start with a performance code (letters + numbers)
+    const directMatch = line.match(/^([A-Z0-9]+)\s+(\d{1,2}\/\d{1,2}\/\d{4})\s+(.+)/);
+
+    if (directMatch) {
+      console.log(`🎯 Found direct line format: ${line}`);
+
+      // Split the line into components
+      const parts = line.split(/\s+/);
+
+      if (parts.length >= 10) {
+        // Extract data from the expected positions
+        const performanceCode = parts[0];  // 251010E
+        const date = parts[1];             // 10/10/2025
+        const time = parts[2] + ' ' + parts[3];  // 8:00 PM
+        // parts[4] is occupancy percentage // 51.1%
+        const singleTickets = parseInt(parts[5]) || 0;     // 485
+        const singleRevenue = parseFloat(parts[6].replace(/,/g, '')) || 0;  // 32,899.00
+        // parts[7] and parts[8] appear to be other ticket categories
+        const subscriptionTickets = parseInt(parts[9]) || 0;  // 292
+        const subscriptionRevenue = parseFloat(parts[10].replace(/,/g, '')) || 0;  // 16,098.70
+        const totalRevenue = parseFloat(parts[11].replace(/,/g, '')) || 0;  // 50,099.30
+
+        const performance = {
+          performance_id: Date.now() + Math.floor(Math.random() * 1000),
+          performance_code: performanceCode,
+          title: `Performance ${performanceCode}`,
+          performance_date: parseDate(date) || '2025-01-01',
+          venue: 'SY-Lyric Theatre',
+          series: 'Classical',
+          season: '25-26 Classical',
+          capacity: 1000,
+          single_tickets_sold: singleTickets,
+          subscription_tickets_sold: subscriptionTickets,
+          total_revenue: totalRevenue,
+          occupancy_goal: 85,
+          budget_goal: 0
+        };
+
+        console.log(`✅ Parsed performance: ${performanceCode} - ${singleTickets} single, ${subscriptionTickets} subscription, $${totalRevenue} revenue`);
+        performances.push(performance);
+      }
+    }
+  }
+
+  return performances;
+}
+
+// Strategy 2: Tabular format (most common)
 async function parseTabularFormat(lines) {
   const performances = [];
   let headerFound = false;
@@ -548,16 +604,82 @@ async function createDataSnapshot(bigquery, data, executionId) {
 
 // Import the complex processing logic from the original function
 async function processPerformanceData(bigquery, performances, snapshotId, executionId) {
-  // This would reuse the exact same logic from pdf-data-processor.js
-  // For brevity, I'll reference the original implementation
   let processed = 0, inserted = 0, updated = 0, trendsAdjusted = 0, anomalies = 0;
 
-  // TODO: Import full implementation from pdf-data-processor.js
-  // For now, simplified version:
   for (const perfData of performances) {
-    // Simplified processing - in real implementation, use full logic
-    processed++;
-    inserted++; // Assuming all are new for simplicity
+    try {
+      // First, check if this performance already exists in performances table
+      const checkQuery = `
+        SELECT performance_id, single_tickets_sold, subscription_tickets_sold, total_revenue
+        FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
+        WHERE performance_code = '${perfData.performance_code}'
+      `;
+
+      const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
+
+      if (existingRows.length > 0) {
+        // Update existing record
+        const updateQuery = `
+          UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
+          SET
+            single_tickets_sold = ${perfData.single_tickets_sold || 0},
+            subscription_tickets_sold = ${perfData.subscription_tickets_sold || 0},
+            total_tickets_sold = ${(perfData.single_tickets_sold || 0) + (perfData.subscription_tickets_sold || 0)},
+            total_revenue = ${perfData.total_revenue || 0},
+            capacity_percent = ${perfData.capacity_percent || 0},
+            budget_percent = ${perfData.budget_percent || 0},
+            occupancy_percent = ${perfData.occupancy_percent || 0},
+            has_sales_data = true,
+            updated_at = CURRENT_TIMESTAMP()
+          WHERE performance_code = '${perfData.performance_code}'
+        `;
+
+        await bigquery.query({ query: updateQuery, location: 'US' });
+        updated++;
+        console.log(`📊 Updated performance: ${perfData.performance_code}`);
+
+      } else {
+        // Insert new record
+        const insertQuery = `
+          INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
+          (performance_id, performance_code, title, series, performance_date, venue, season,
+           capacity, single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
+           total_revenue, occupancy_goal, budget_goal, capacity_percent, budget_percent,
+           occupancy_percent, has_sales_data, updated_at)
+          VALUES (
+            ${perfData.performance_id || 0},
+            '${perfData.performance_code}',
+            '${(perfData.title || '').replace(/'/g, "\\'")}',
+            '${(perfData.series || '').replace(/'/g, "\\'")}',
+            '${perfData.performance_date || '2025-01-01'}',
+            '${(perfData.venue || 'Unknown').replace(/'/g, "\\'")}',
+            '${(perfData.season || 'Unknown').replace(/'/g, "\\'")}',
+            ${perfData.capacity || 1500},
+            ${perfData.single_tickets_sold || 0},
+            ${perfData.subscription_tickets_sold || 0},
+            ${(perfData.single_tickets_sold || 0) + (perfData.subscription_tickets_sold || 0)},
+            ${perfData.total_revenue || 0},
+            ${perfData.occupancy_goal || 85},
+            ${perfData.budget_goal || 0},
+            ${perfData.capacity_percent || 0},
+            ${perfData.budget_percent || 0},
+            ${perfData.occupancy_percent || 0},
+            true,
+            CURRENT_TIMESTAMP()
+          )
+        `;
+
+        await bigquery.query({ query: insertQuery, location: 'US' });
+        inserted++;
+        console.log(`📝 Inserted new performance: ${perfData.performance_code}`);
+      }
+
+      processed++;
+
+    } catch (error) {
+      console.error(`❌ Error processing performance ${perfData.performance_code}:`, error.message);
+      anomalies++;
+    }
   }
 
   return { processed, inserted, updated, trendsAdjusted, anomalies };

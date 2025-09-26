@@ -6,24 +6,38 @@ const { BigQuery } = require('@google-cloud/bigquery');
 // Initialize BigQuery client
 const initializeBigQuery = () => {
   try {
-    const json = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
-    if (!json) {
+    if (!credentialsEnv) {
       throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
     }
 
-    const creds = JSON.parse(json);
+    let credentials;
+
+    // Check if it's a file path or JSON content
+    if (credentialsEnv.startsWith('{')) {
+      // It's JSON content
+      credentials = JSON.parse(credentialsEnv);
+    } else {
+      // It's a file path
+      const fs = require('fs');
+      const path = require('path');
+      const credentialsFile = path.resolve(credentialsEnv);
+      console.log(`🔐 Loading credentials from file: ${credentialsFile}`);
+      const credentialsJson = fs.readFileSync(credentialsFile, 'utf8');
+      credentials = JSON.parse(credentialsJson);
+    }
 
     // Fix escaped newlines, which is common in env vars
-    if (creds.private_key && creds.private_key.includes('\\n')) {
-      creds.private_key = creds.private_key.replace(/\\n/g, '\n');
+    if (credentials.private_key && credentials.private_key.includes('\\\\n')) {
+      credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
     }
 
     return new BigQuery({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || creds.project_id,
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
       credentials: {
-        client_email: creds.client_email,
-        private_key: creds.private_key,
+        client_email: credentials.client_email,
+        private_key: credentials.private_key,
       },
       location: 'US'
     });
