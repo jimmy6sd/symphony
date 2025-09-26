@@ -6,10 +6,10 @@ const { BigQuery } = require('@google-cloud/bigquery');
 // Initialize BigQuery client
 const initializeBigQuery = () => {
   try {
-    const json = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+    const json = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
     if (!json) {
-      throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable not set');
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
     }
 
     const creds = JSON.parse(json);
