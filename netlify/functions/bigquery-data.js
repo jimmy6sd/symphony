@@ -5,15 +5,32 @@ const { BigQuery } = require('@google-cloud/bigquery');
 
 // Initialize BigQuery client
 const initializeBigQuery = () => {
-  const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
-    ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
-    : undefined;
+  try {
+    const json = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
 
-  return new BigQuery({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-    credentials: credentials,
-    location: 'US'
-  });
+    if (!json) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable not set');
+    }
+
+    const creds = JSON.parse(json);
+
+    // Fix escaped newlines, which is common in env vars
+    if (creds.private_key && creds.private_key.includes('\\n')) {
+      creds.private_key = creds.private_key.replace(/\\n/g, '\n');
+    }
+
+    return new BigQuery({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || creds.project_id,
+      credentials: {
+        client_email: creds.client_email,
+        private_key: creds.private_key,
+      },
+      location: 'US'
+    });
+  } catch (error) {
+    console.error('BigQuery initialization error:', error.message);
+    throw error;
+  }
 };
 
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
