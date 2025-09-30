@@ -1,5 +1,72 @@
 # Symphony Dashboard - Production API Success & Documentation
 
+---
+
+## 🚀 **DEVELOPMENT WORKFLOW** (How We Work)
+
+### **Git Branch Strategy**
+- **`main`** = Production (live site)
+- **`develop`** = Staging/testing
+- **`feature/*`** = Individual features
+
+### **Daily Development Process**
+
+**1. Start New Feature:**
+```bash
+npm run feature:start feature/your-feature-name
+# Creates new branch from develop
+```
+
+**2. Develop Locally:**
+```bash
+npm run dev
+# Runs Netlify dev server at http://localhost:8888
+# Includes serverless functions
+```
+
+**3. Test & Commit:**
+```bash
+git add .
+git commit -m "feat: description"
+git push origin HEAD
+```
+
+**4. Deploy Preview (for testing):**
+```bash
+npm run deploy:preview
+# Pushes branch to GitHub
+# Netlify automatically creates preview URL
+# Test at: https://[branch-name]--symphony.netlify.app
+```
+
+**5. Merge to Production:**
+```bash
+# After preview testing succeeds:
+git checkout develop
+git merge feature/your-feature-name
+git push origin develop
+
+# When ready for production:
+npm run deploy:production
+# Merges develop → main, pushes to production
+# Live at: https://symphony.netlify.app
+```
+
+### **Commit Message Convention**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `refactor:` - Code restructuring
+- `docs:` - Documentation
+- `style:` - Formatting
+- `test:` - Testing
+
+### **Environment-Specific Behavior**
+- **Local (`npm run dev`)**: Uses `.env` file, local testing
+- **Preview**: Uses Netlify environment variables, preview URLs
+- **Production**: Uses production environment variables, main domain
+
+---
+
 ## 🎉 BREAKTHROUGH: Production API Successfully Integrated! ✅
 
 **MAJOR ACHIEVEMENT**: Successfully connected to production Tessitura API and discovered 220 events in target date range!

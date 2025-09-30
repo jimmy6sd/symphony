@@ -180,13 +180,13 @@ class PipelineStatus {
 
     async loadPipelineStatus() {
         try {
-            // Get latest snapshot and pipeline status
-            const [snapshotData, healthData] = await Promise.all([
-                this.getLatestSnapshot(),
+            // Get actual performance data and pipeline health
+            const [performancesData, healthData] = await Promise.all([
+                this.getPerformancesData(),
                 this.getPipelineHealth()
             ]);
 
-            this.updateStatusDisplay(snapshotData, healthData);
+            this.updateStatusDisplay(performancesData, healthData);
 
         } catch (error) {
             console.error('Error loading pipeline status:', error);
@@ -194,13 +194,42 @@ class PipelineStatus {
         }
     }
 
-    async getLatestSnapshot() {
+    async getPerformancesData() {
         try {
-            const response = await fetch('/.netlify/functions/bigquery-data?action=get-latest-snapshot');
-            if (!response.ok) throw new Error('Failed to fetch snapshot data');
-            return await response.json();
+            const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
+            if (!response.ok) throw new Error('Failed to fetch performances data');
+            const performances = await response.json();
+
+            // Create snapshot-like object from actual data
+            if (performances && performances.length > 0) {
+                // Try to get pipeline health for actual timestamp
+                try {
+                    const healthResponse = await fetch('/.netlify/functions/bigquery-data?action=get-pipeline-health');
+                    if (healthResponse.ok) {
+                        const healthData = await healthResponse.json();
+                        if (healthData.lastExecution && healthData.lastExecution.end_time) {
+                            const timestamp = healthData.lastExecution.end_time.value || healthData.lastExecution.end_time;
+                            return {
+                                performance_count: performances.length,
+                                processing_timestamp: timestamp,
+                                source_type: 'bigquery'
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not fetch pipeline health for timestamp:', e);
+                }
+
+                // Fallback: use current time if no pipeline execution data
+                return {
+                    performance_count: performances.length,
+                    processing_timestamp: new Date().toISOString(),
+                    source_type: 'bigquery'
+                };
+            }
+            return null;
         } catch (error) {
-            console.error('Error fetching latest snapshot:', error);
+            console.error('Error fetching performances data:', error);
             return null;
         }
     }
@@ -216,12 +245,12 @@ class PipelineStatus {
         }
     }
 
-    updateStatusDisplay(snapshotData, healthData) {
+    updateStatusDisplay(performancesData, healthData) {
         // Update last update time
         const lastUpdateEl = document.getElementById('last-update-time');
         if (lastUpdateEl) {
-            if (snapshotData && snapshotData.processing_timestamp) {
-                const updateTime = new Date(snapshotData.processing_timestamp);
+            if (performancesData && performancesData.processing_timestamp) {
+                const updateTime = new Date(performancesData.processing_timestamp);
                 const timeAgo = this.getTimeAgo(updateTime);
                 const freshness = this.getFreshnessLevel(updateTime);
 
@@ -234,17 +263,16 @@ class PipelineStatus {
             }
         }
 
-        // Update data source
+        // Update data source - show actual count
         const dataSourceEl = document.getElementById('data-source');
         if (dataSourceEl) {
-            if (snapshotData) {
-                const sourceType = snapshotData.source_type || 'unknown';
-                const sourceText = this.getSourceDisplayText(sourceType);
-                dataSourceEl.textContent = sourceText;
-                this.dataSource = sourceType;
+            if (performancesData) {
+                const count = performancesData.performance_count || 0;
+                dataSourceEl.textContent = `BigQuery (${count} performances)`;
+                this.dataSource = 'bigquery';
             } else {
-                dataSourceEl.textContent = 'Local JSON';
-                this.dataSource = 'local';
+                dataSourceEl.textContent = 'No data';
+                this.dataSource = 'unknown';
             }
         }
 

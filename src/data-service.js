@@ -1,31 +1,12 @@
 class DataService {
     constructor() {
-        this.mockDataEnabled = CONFIG.api.mockDataEnabled;
-        this.realDataCache = null;
+        // BigQuery-only data service
     }
 
-    // Load real Tessitura sales data
-    async loadRealData() {
-        if (this.realDataCache) {
-            return this.realDataCache;
-        }
+    // REMOVED: loadRealData() - no longer needed, using BigQuery only
+    // REMOVED: convertRealDataToFormat() - BigQuery data is already in correct format
 
-        try {
-            // Load single consolidated data file
-            const response = await fetch('./data/dashboard.json');
-            if (!response.ok) {
-                throw new Error(`Failed to fetch dashboard data: ${response.status} ${response.statusText}`);
-            }
-            const data = await response.json();
-            this.realDataCache = data;
-            return data;
-        } catch (error) {
-            console.warn('Failed to load real data, falling back to mock data:', error);
-            return null;
-        }
-    }
-
-    // Convert real Tessitura data to dashboard format
+    // Legacy method kept for compatibility (not used)
     convertRealDataToFormat(realData) {
         return realData.map(perf => {
             // Check if this is already in dashboard format (corrected data)
@@ -238,84 +219,30 @@ class DataService {
         return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
     }
 
-    // Main method to get performance data
+    // Main method to get performance data - BIGQUERY ONLY
     async getPerformances() {
-        // Check if we should use mock data
-        const shouldUseMockData = CONFIG?.api?.mockDataEnabled ||
-                                 window.appConfig?.get('api.mockDataEnabled', false);
-
-        console.log('🔍 DataService Debug Info:');
-        console.log('  - CONFIG.api.mockDataEnabled:', CONFIG?.api?.mockDataEnabled);
-        console.log('  - appConfig mockDataEnabled:', window.appConfig?.get('api.mockDataEnabled', false));
-        console.log('  - shouldUseMockData:', shouldUseMockData);
-        console.log('  - authManager available:', !!window.authManager);
-        console.log('  - authManager authenticated:', window.authManager?.isAuthenticated());
-
-        if (shouldUseMockData) {
-            console.log('🔒 Using mock data for development');
-            return this.generateMockPerformances();
-        } else {
-            // First try BigQuery API for live data
-            console.log('📊 Loading real data from BigQuery API...');
-            try {
-                const result = await this.loadDashboardData();
-                if (result && result.length > 0) {
-                    console.log(`✅ Successfully loaded ${result.length} performances from BigQuery`);
-                    // Add visual indicator for BigQuery data
-                    this.updateDataSourceIndicator('BigQuery', result.length, 'success');
-                    return result;
-                }
-            } catch (error) {
-                console.warn('⚠️ BigQuery API failed, trying local fallback:', error.message);
+        try {
+            const result = await this.loadDashboardData();
+            if (result && result.length > 0) {
+                return result;
             }
-
-            // Fallback to local JSON if BigQuery fails
-            console.log('📁 Falling back to local JSON data...');
-            const localData = await this.loadRealData();
-            if (localData && localData.length > 0) {
-                console.log('📊 Using local JSON fallback data');
-                // Add visual indicator for local JSON data
-                this.updateDataSourceIndicator('Local JSON', localData.length, 'warning');
-                return this.convertRealDataToFormat(localData);
-            }
-
-            console.error('❌ No data available from any source');
+            console.error('❌ No data available from BigQuery');
+            return [];
+        } catch (error) {
+            console.error('❌ BigQuery API failed:', error.message);
             return [];
         }
     }
 
     // Load dashboard data from BigQuery via API
     async loadDashboardData() {
-        try {
-            console.log('📊 Loading dashboard data from BigQuery...');
-
-            let performances;
-
-            // Try authenticated request first
-            if (typeof window.authManager !== 'undefined' && window.authManager.isAuthenticated()) {
-                performances = await window.authManager.apiRequest('/.netlify/functions/bigquery-data?action=get-performances');
-            } else {
-                // For development: make direct API call without authentication
-                console.log('🔧 Making direct BigQuery API call (development mode)...');
-                const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
-                if (!response.ok) {
-                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-                }
-                performances = await response.json();
-            }
-
-            console.log(`✅ Loaded ${performances.length} performances from BigQuery`);
-
-            // Update the refresh timestamp display
-            this.updateRefreshTimestamp();
-
-            return performances || [];
-        } catch (error) {
-            console.error('⚠️ Could not load dashboard data from BigQuery:', error.message);
-
-            // Try fallback to local files for development
-            return await this.loadLocalFallback();
+        const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
         }
+        const performances = await response.json();
+        this.updateRefreshTimestamp();
+        return performances || [];
     }
 
     // Fallback to local files for development

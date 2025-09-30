@@ -32,11 +32,8 @@ class DashboardUI extends BaseComponent {
 
             this.setupEventListeners();
 
-            // Initialize charts for other views
-            await this.initializeCharts();
-
-            // Default to data-table view since we removed the top controls
-            this.switchView('data-table');
+            // Initialize data table view directly
+            await this.initializeTableView();
 
             this.log('info', 'Dashboard UI initialized successfully');
         } catch (error) {

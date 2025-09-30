@@ -9,7 +9,7 @@ class DataTable {
             series: 'all',
             venue: 'all',
             season: 'all',
-            dateRange: 'thisWeekAndBeyond'
+            dateRange: 'all'
         };
 
         // Define columns and their properties
@@ -379,8 +379,8 @@ class DataTable {
                 .attr('value', option.value)
                 .text(option.label);
 
-            // Set default selection
-            if (option.value === 'thisWeekAndBeyond') {
+            // Set default selection to match this.filters.dateRange
+            if (option.value === this.filters.dateRange) {
                 optionElement.attr('selected', true);
             }
         });

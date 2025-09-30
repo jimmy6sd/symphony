@@ -82,11 +82,10 @@ body {
     padding: var(--spacing-xl);
     text-align: center;
     box-shadow: var(--shadow-md);
-    position: relative;
-    height: var(--header-height);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-height: 100px;
 }
 
 /* Responsive header for mobile */
