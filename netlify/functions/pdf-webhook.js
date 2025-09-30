@@ -176,14 +176,113 @@ async function processPdfBase64(base64Data, metadata) {
   // Convert base64 to buffer
   const pdfBuffer = Buffer.from(base64Data, 'base64');
 
-  // Extract text using pdf-parse (need to add this dependency)
-  const pdfParse = require('pdf-parse');
-  const pdfData = await pdfParse(pdfBuffer);
+  // Extract text using pdf2json (preserves table structure)
+  const PDFParser = require('pdf2json');
+  const pdfParser = new PDFParser();
 
-  console.log(`📝 Extracted ${pdfData.text.length} characters from PDF`);
+  const performances = await new Promise((resolve, reject) => {
+    pdfParser.on('pdfParser_dataError', errData => reject(errData.parserError));
+    pdfParser.on('pdfParser_dataReady', pdfData => {
+      const performances = [];
 
-  // Parse the extracted text
-  return await parseTessituraText(pdfData.text, metadata);
+      for (const page of pdfData.Pages) {
+        // Collect all text items and sort by position
+        const allItems = [];
+        for (const textItem of page.Texts) {
+          const content = decodeURIComponent(textItem.R[0].T);
+          allItems.push(content);
+        }
+
+        // Find performance codes and extract data following each code
+        const isCurrency = (str) => /^\d{1,3}(,\d{3})*\.\d{2}$/.test(str);
+        const isPercent = (str) => /^\d+\.\d+%$/.test(str);
+        const isCount = (str) => /^\d+$/.test(str);
+
+        for (let i = 0; i < allItems.length; i++) {
+          const item = allItems[i];
+
+          // Check if this is a performance code (25XXXXY format, not a total row)
+          if (item.match(/^25\d{4}[A-Z]$/) && !allItems[i-1]?.includes('Total')) {
+            const performanceCode = item;
+
+            // Expected sequence: [Code, DateTime, Budget%, FixedCount, FixedRev, NonFixedCount, NonFixedRev, SingleCount, SingleRev, Subtotal, Reserved, ReservedRev, Total, Avail, Capacity%]
+            let idx = i + 1;
+
+            const dateTime = allItems[idx++] || '';
+            const budgetStr = allItems[idx++] || '0%';
+            const fixedCountStr = allItems[idx++] || '0';
+            const fixedRevStr = allItems[idx++] || '0.00';
+            const nonFixedCountStr = allItems[idx++] || '0';
+            const nonFixedRevStr = allItems[idx++] || '0.00';
+            const singleCountStr = allItems[idx++] || '0';
+            const singleRevStr = allItems[idx++] || '0.00';
+            const subtotalStr = allItems[idx++] || '0.00';
+
+            // Reserved and Reserved Revenue (check if next item is a count)
+            let reservedStr = '0';
+            let reservedRevStr = '0.00';
+            if (idx < allItems.length && isCount(allItems[idx])) {
+              reservedStr = allItems[idx++];
+              if (idx < allItems.length && isCurrency(allItems[idx])) {
+                reservedRevStr = allItems[idx++];
+              }
+            }
+
+            // Total, Avail, Capacity%
+            const totalStr = allItems[idx++] || subtotalStr;
+            const availStr = allItems[idx++] || '0';
+            const capacityStr = allItems[idx++] || '0.0%';
+
+            const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
+            const fixedCount = parseInt(fixedCountStr) || 0;
+            const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
+            const nonFixedCount = parseInt(nonFixedCountStr) || 0;
+            const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
+            const singleCount = parseInt(singleCountStr) || 0;
+            const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+            const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
+            const availSeats = parseInt(availStr) || 0;
+            const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
+
+            const subscriptionTickets = fixedCount + nonFixedCount;
+            const totalSold = subscriptionTickets + singleCount;
+            const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
+
+            const performance = {
+              performance_id: Date.now() + Math.floor(Math.random() * 10000),
+              performance_code: performanceCode,
+              title: `Performance ${performanceCode}`,
+              performance_date: parseDate(dateTime) || '2025-01-01',
+              venue: 'Helzberg Hall',
+              series: 'Classical',
+              season: '25-26',
+              capacity: capacity,
+              single_tickets_sold: singleCount,
+              subscription_tickets_sold: subscriptionTickets,
+              total_revenue: totalRevenue,
+              capacity_percent: capacityPercent,
+              budget_percent: budgetPercent,
+              occupancy_percent: capacityPercent,
+              occupancy_goal: 85,
+              budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+            };
+
+            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+            performances.push(performance);
+          }
+        }
+      }
+
+      resolve(performances);
+    });
+
+    pdfParser.parseBuffer(pdfBuffer);
+  });
+
+  console.log(`📊 Parsed ${performances.length} performances from PDF`);
+
+  // Return performances array
+  return performances;
 }
 
 // Process pre-extracted PDF text
@@ -196,19 +295,108 @@ async function processPdfText(text, metadata) {
 async function processPdfUrl(url, metadata) {
   console.log('📥 Downloading PDF from URL...');
 
-  const https = require('https');
-  const pdfParse = require('pdf-parse');
-
   // Download PDF
   const pdfBuffer = await downloadPdf(url);
 
-  // Extract text
-  const pdfData = await pdfParse(pdfBuffer);
+  // Extract and parse using pdf2json (same as processPdfBase64)
+  const PDFParser = require('pdf2json');
+  const pdfParser = new PDFParser();
 
-  console.log(`📝 Extracted ${pdfData.text.length} characters from downloaded PDF`);
+  const performances = await new Promise((resolve, reject) => {
+    pdfParser.on('pdfParser_dataError', errData => reject(errData.parserError));
+    pdfParser.on('pdfParser_dataReady', pdfData => {
+      const performances = [];
 
-  // Parse the extracted text
-  return await parseTessituraText(pdfData.text, metadata);
+      for (const page of pdfData.Pages) {
+        // Collect all text items
+        const allItems = [];
+        for (const textItem of page.Texts) {
+          const content = decodeURIComponent(textItem.R[0].T);
+          allItems.push(content);
+        }
+
+        // Find performance codes and extract data following each code
+        const isCurrency = (str) => /^\d{1,3}(,\d{3})*\.\d{2}$/.test(str);
+        const isCount = (str) => /^\d+$/.test(str);
+
+        for (let i = 0; i < allItems.length; i++) {
+          const item = allItems[i];
+
+          // Check if this is a performance code (not a total row)
+          if (item.match(/^25\d{4}[A-Z]$/) && !allItems[i-1]?.includes('Total')) {
+            const performanceCode = item;
+
+            let idx = i + 1;
+            const dateTime = allItems[idx++] || '';
+            const budgetStr = allItems[idx++] || '0%';
+            const fixedCountStr = allItems[idx++] || '0';
+            const fixedRevStr = allItems[idx++] || '0.00';
+            const nonFixedCountStr = allItems[idx++] || '0';
+            const nonFixedRevStr = allItems[idx++] || '0.00';
+            const singleCountStr = allItems[idx++] || '0';
+            const singleRevStr = allItems[idx++] || '0.00';
+            const subtotalStr = allItems[idx++] || '0.00';
+
+            let reservedStr = '0';
+            let reservedRevStr = '0.00';
+            if (idx < allItems.length && isCount(allItems[idx])) {
+              reservedStr = allItems[idx++];
+              if (idx < allItems.length && isCurrency(allItems[idx])) {
+                reservedRevStr = allItems[idx++];
+              }
+            }
+
+            const totalStr = allItems[idx++] || subtotalStr;
+            const availStr = allItems[idx++] || '0';
+            const capacityStr = allItems[idx++] || '0.0%';
+
+            const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
+            const fixedCount = parseInt(fixedCountStr) || 0;
+            const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
+            const nonFixedCount = parseInt(nonFixedCountStr) || 0;
+            const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
+            const singleCount = parseInt(singleCountStr) || 0;
+            const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+            const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
+            const availSeats = parseInt(availStr) || 0;
+            const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
+
+            const subscriptionTickets = fixedCount + nonFixedCount;
+            const totalSold = subscriptionTickets + singleCount;
+            const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
+
+            performances.push({
+              performance_id: Date.now() + Math.floor(Math.random() * 10000),
+              performance_code: performanceCode,
+              title: `Performance ${performanceCode}`,
+              performance_date: parseDate(dateTime) || '2025-01-01',
+              venue: 'Helzberg Hall',
+              series: 'Classical',
+              season: '25-26',
+              capacity: capacity,
+              single_tickets_sold: singleCount,
+              subscription_tickets_sold: subscriptionTickets,
+              total_revenue: totalRevenue,
+              capacity_percent: capacityPercent,
+              budget_percent: budgetPercent,
+              occupancy_percent: capacityPercent,
+              occupancy_goal: 85,
+              budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+            });
+
+            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+          }
+        }
+      }
+
+      resolve(performances);
+    });
+
+    pdfParser.parseBuffer(pdfBuffer);
+  });
+
+  console.log(`📊 Parsed ${performances.length} performances from downloaded PDF`);
+  return performances;
 }
 
 // Download PDF from URL
@@ -238,9 +426,10 @@ async function parseTessituraText(text, metadata) {
   const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
   // Multiple parsing strategies for different Tessitura report formats
+  // Note: PDF extraction may strip whitespace, creating compact format
   const strategies = [
-    parseDirectLineFormat,  // Add new strategy first for raw line format
-    parseTabularFormat,
+    parseTabularFormat,         // Try table format first (if whitespace preserved)
+    parseDirectLineFormat,      // Fallback to compact format (if whitespace stripped)
     parseNarrativeFormat,
     parseDetailedReportFormat,
     parseSummaryFormat
@@ -281,50 +470,166 @@ async function parseDirectLineFormat(lines) {
   const performances = [];
 
   for (const line of lines) {
-    // Match Tessitura direct export format:
-    // 251010E 10/10/2025 8:00 PM 51.1% 485 32,899.00 15 1,101.60 292 16,098.70 50,099.30 0 0.00 50,099.30 659 51.2%
+    // Match Tessitura compact export format (no spaces between code and date):
+    // 251010E10/10/2025 8:00 PM51.1%48032,642.00171,209.6034017,790.7051,642.3000.0051,642.3061452.8%
 
-    // Look for lines that start with a performance code (letters + numbers)
-    const directMatch = line.match(/^([A-Z0-9]+)\s+(\d{1,2}\/\d{1,2}\/\d{4})\s+(.+)/);
+    // Pattern: CODE + DATE + TIME + DATA
+    const compactMatch = line.match(/^(\d{6}[A-Z])(\d{1,2}\/\d{1,2}\/\d{4})\s+(\d{1,2}:\d{2}\s+[AP]M)(.+)/);
 
-    if (directMatch) {
-      console.log(`🎯 Found direct line format: ${line}`);
+    if (compactMatch) {
+      const performanceCode = compactMatch[1];  // 251010E
+      const date = compactMatch[2];              // 10/10/2025
+      const time = compactMatch[3];              // 8:00 PM
+      const dataSection = compactMatch[4];       // Rest of the line
 
-      // Split the line into components
-      const parts = line.split(/\s+/);
+      // Parse the data section more carefully
+      // Format: BUDGET% FixedCount FixedRev NonFixedCount NonFixedRev SingleCount SingleRev Subtotal Reserved Total Avail CapPct%
+      // Example: 51.1%48032,642.00171,209.6034017,790.7051,642.3000.0051,642.3061452.8%
+      // Numbers run together with no delimiters!
 
-      if (parts.length >= 10) {
-        // Extract data from the expected positions
-        const performanceCode = parts[0];  // 251010E
-        const date = parts[1];             // 10/10/2025
-        const time = parts[2] + ' ' + parts[3];  // 8:00 PM
-        // parts[4] is occupancy percentage // 51.1%
-        const singleTickets = parseInt(parts[5]) || 0;     // 485
-        const singleRevenue = parseFloat(parts[6].replace(/,/g, '')) || 0;  // 32,899.00
-        // parts[7] and parts[8] appear to be other ticket categories
-        const subscriptionTickets = parseInt(parts[9]) || 0;  // 292
-        const subscriptionRevenue = parseFloat(parts[10].replace(/,/g, '')) || 0;  // 16,098.70
-        const totalRevenue = parseFloat(parts[11].replace(/,/g, '')) || 0;  // 50,099.30
+      // From PDF headers: Budget% | Fixed(count+$) | NonFixed(count+$) | Single(count+$) | Subtotal$ | Reserved$ | Total$ | Avail | %Cap
+      // Example: 51.1% 480 $32,642.00 17 $1,209.60 340 $17,790.70 $51,642.30 $00.00 $51,642.30 614 52.8%
+      // But all run together: 51.1%48032,642.00171,209.6034017,790.7051,642.3000.0051,642.3061452.8%
 
-        const performance = {
-          performance_id: Date.now() + Math.floor(Math.random() * 1000),
-          performance_code: performanceCode,
-          title: `Performance ${performanceCode}`,
-          performance_date: parseDate(date) || '2025-01-01',
-          venue: 'SY-Lyric Theatre',
-          series: 'Classical',
-          season: '25-26 Classical',
-          capacity: 1000,
-          single_tickets_sold: singleTickets,
-          subscription_tickets_sold: subscriptionTickets,
-          total_revenue: totalRevenue,
-          occupancy_goal: 85,
-          budget_goal: 0
+      // New strategy: Parse step-by-step from left, extracting each currency and the count before it
+      // 1. Extract budget% from start
+      // 2. Extract capacity% from end
+      // 3. Find all currency values (they have distinct .XX format)
+      // 4. Extract counts from digits immediately before each currency
+
+      // Step 1: Budget percent
+      const budgetMatch = dataSection.match(/^([0-9.]+)%/);
+      if (!budgetMatch) continue;
+      const budgetPercent = parseFloat(budgetMatch[1]);
+
+      // New strategy: Character-by-character parsing with state machine
+      // We know the exact sequence: budget% | fixedCount fixedRev | nonFixedCount nonFixedRev | singleCount singleRev | subtotal | reserved | total | avail | capacity%
+      // Key insight: currencies always end with .XX (two decimal places)
+
+      // Working backwards from the end is more reliable
+      // End format: ...TOTAL_REVENUE AVAIL_SEATS CAPACITY%
+      // Example: ...51,642.3061452.8%
+
+      // Extract capacity% from end (format: XX.X% or X.X%)
+      const capacityMatch = dataSection.match(/(\d{1,2}\.\d+)%$/);
+      if (!capacityMatch) continue;
+      const capacityPercent = parseFloat(capacityMatch[1]);
+
+      // Remove capacity from end
+      let remaining = dataSection.substring(0, dataSection.length - capacityMatch[0].length);
+
+      // Extract all currency values (they end with .XX)
+      // Working backwards: we should find Total, Reserved, Subtotal, SingleRev, NonFixedRev, FixedRev
+      const extractCurrencyFromEnd = (str) => {
+        // Match currency at end: optional digits+commas, then .XX
+        const match = str.match(/(\d{1,3}(?:,\d{3})*\.\d{2})$/);
+        if (match) {
+          const value = parseFloat(match[1].replace(/,/g, ''));
+          const newStr = str.substring(0, str.length - match[1].length);
+          return { value, remaining: newStr };
+        }
+        return null;
+      };
+
+      // Extract total revenue and avail seats
+      const totalResult = extractCurrencyFromEnd(remaining);
+      if (!totalResult) continue;
+      const totalRevenue = totalResult.value;
+      remaining = totalResult.remaining;
+
+      // After removing total revenue, extract avail seats (digits before the currency)
+      const availMatch = remaining.match(/(\d+)$/);
+      if (!availMatch) continue;
+      const availSeats = parseInt(availMatch[1]);
+      remaining = remaining.substring(0, remaining.length - availMatch[1].length);
+
+      // Extract reserved revenue
+      const reservedResult = extractCurrencyFromEnd(remaining);
+      if (!reservedResult) continue;
+      const reserved = reservedResult.value;
+      remaining = reservedResult.remaining;
+
+      // Extract subtotal revenue
+      const subtotalResult = extractCurrencyFromEnd(remaining);
+      if (!subtotalResult) continue;
+      const subtotalRevenue = subtotalResult.value;
+      remaining = subtotalResult.remaining;
+
+      // Now extract the 3 count+revenue pairs (Single, NonFixed, Fixed) - working backwards
+      // Each pair is: COUNT REVENUE where COUNT is digits and REVENUE ends with .XX
+
+      const extractCountRevenuePair = (str) => {
+        const currResult = extractCurrencyFromEnd(str);
+        if (!currResult) return null;
+
+        const countMatch = currResult.remaining.match(/(\d+)$/);
+        if (!countMatch) return null;
+
+        return {
+          count: parseInt(countMatch[1]),
+          revenue: currResult.value,
+          remaining: currResult.remaining.substring(0, currResult.remaining.length - countMatch[1].length)
         };
+      };
 
-        console.log(`✅ Parsed performance: ${performanceCode} - ${singleTickets} single, ${subscriptionTickets} subscription, $${totalRevenue} revenue`);
-        performances.push(performance);
+      // Extract Single tickets (last count+revenue pair)
+      const singleResult = extractCountRevenuePair(remaining);
+      if (!singleResult) continue;
+      const singleCount = singleResult.count;
+      const singleRevenue = singleResult.revenue;
+      remaining = singleResult.remaining;
+
+      // Extract Non-Fixed packages
+      const nonFixedResult = extractCountRevenuePair(remaining);
+      if (!nonFixedResult) continue;
+      const nonFixedPkgCount = nonFixedResult.count;
+      const nonFixedPkgRevenue = nonFixedResult.revenue;
+      remaining = nonFixedResult.remaining;
+
+      // Extract Fixed packages
+      const fixedResult = extractCountRevenuePair(remaining);
+      if (!fixedResult) continue;
+      const fixedPkgCount = fixedResult.count;
+      const fixedPkgRevenue = fixedResult.revenue;
+      remaining = fixedResult.remaining;
+
+      // What's left should be just the budget% (already extracted above)
+      // Verify we extracted budget correctly
+      if (!remaining.endsWith('%')) {
+        console.log(`⚠️ Unexpected remaining data after parsing: "${remaining}"`);
+        continue;
       }
+
+      // Calculate total subscription tickets (fixed + non-fixed packages)
+      const subscriptionTickets = fixedPkgCount + nonFixedPkgCount;
+
+      // Calculate capacity from percentage and sold tickets
+      const totalSold = subscriptionTickets + singleCount;
+      const capacity = totalSold > 0 && capacityPercent > 0
+        ? Math.round(totalSold / (capacityPercent / 100))
+        : 1500;
+
+      const performance = {
+        performance_id: Date.now() + Math.floor(Math.random() * 10000),
+        performance_code: performanceCode,
+        title: `Performance ${performanceCode}`,
+        performance_date: parseDate(date) || '2025-01-01',
+        venue: 'Helzberg Hall',
+        series: 'Classical',
+        season: '25-26',
+        capacity: capacity,
+        single_tickets_sold: singleCount,
+        subscription_tickets_sold: subscriptionTickets,
+        total_revenue: totalRevenue,
+        capacity_percent: capacityPercent,
+        budget_percent: budgetPercent,
+        occupancy_percent: capacityPercent,
+        occupancy_goal: 85,
+        budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+      };
+
+      console.log(`✅ Parsed: ${performanceCode} (${date}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+      performances.push(performance);
     }
   }
 
@@ -334,57 +639,59 @@ async function parseDirectLineFormat(lines) {
 // Strategy 2: Tabular format (most common)
 async function parseTabularFormat(lines) {
   const performances = [];
-  let headerFound = false;
-  let columnMap = {};
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  for (const line of lines) {
+    // Match Tessitura table format with tabs or spaces
+    // Format: CODE\tDATE\tTIME\tBUDGET%\tFIXEDCOUNT\tFIXEDREV\t...
+    // Example: 251010E\t10/10/2025 8:00 PM\t51.1%\t480\t32,642.00\t17\t1,209.60\t340\t17,790.70\t...
 
-    // Look for table header
-    if (!headerFound && (line.includes('Performance') || line.includes('Code') || line.includes('Date'))) {
-      const headers = line.split(/\s{2,}|\t/); // Split on multiple spaces or tabs
+    const parts = line.split(/\t+/);  // Split on tabs
 
-      // Map column positions
-      headers.forEach((header, index) => {
-        const h = header.toLowerCase();
-        if (h.includes('id')) columnMap.id = index;
-        if (h.includes('code')) columnMap.code = index;
-        if (h.includes('title') || h.includes('name')) columnMap.title = index;
-        if (h.includes('date')) columnMap.date = index;
-        if (h.includes('venue')) columnMap.venue = index;
-        if (h.includes('single') || h.includes('individual')) columnMap.single = index;
-        if (h.includes('subscription') || h.includes('sub')) columnMap.subscription = index;
-        if (h.includes('revenue') || h.includes('sales')) columnMap.revenue = index;
-        if (h.includes('capacity')) columnMap.capacity = index;
-      });
+    // Check if this looks like a performance row (starts with performance code pattern)
+    if (parts.length >= 10 && parts[0].match(/^25\d{4}[A-Z]$/)) {
+      const performanceCode = parts[0];
+      const dateTime = parts[1];  // e.g., "10/10/2025 8:00 PM"
+      const budgetPercent = parseFloat(parts[2]) || 0;
 
-      headerFound = true;
-      continue;
-    }
+      // Next fields are count/revenue pairs
+      const fixedCount = parseInt(parts[3]) || 0;
+      const fixedRevenue = parseFloat(parts[4].replace(/,/g, '')) || 0;
+      const nonFixedCount = parseInt(parts[5]) || 0;
+      const nonFixedRevenue = parseFloat(parts[6].replace(/,/g, '')) || 0;
+      const singleCount = parseInt(parts[7]) || 0;
+      const singleRevenue = parseFloat(parts[8].replace(/,/g, '')) || 0;
+      const subtotalRevenue = parseFloat(parts[9].replace(/,/g, '')) || 0;
 
-    // Parse data rows
-    if (headerFound && line.match(/^\d+/) || line.match(/^[A-Z0-9]{5,}/)) {
-      const columns = line.split(/\s{2,}|\t/);
+      // Total, Avail, Capacity may be in remaining parts
+      const totalRevenue = parts.length > 11 ? parseFloat(parts[11].replace(/,/g, '')) : subtotalRevenue;
+      const availSeats = parts.length > 12 ? parseInt(parts[12]) || 0 : 0;
+      const capacityPercent = parts.length > 13 ? parseFloat(parts[13]) : 0;
+
+      const subscriptionTickets = fixedCount + nonFixedCount;
+      const totalSold = subscriptionTickets + singleCount;
+      const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
 
       const performance = {
-        performance_id: extractNumber(columns[columnMap.id]),
-        performance_code: columns[columnMap.code] || `GEN${Date.now()}`,
-        title: columns[columnMap.title] || 'Unknown Performance',
-        performance_date: parseDate(columns[columnMap.date]) || '2025-01-01',
-        venue: columns[columnMap.venue] || 'Unknown Venue',
-        series: 'Unknown Series',
-        season: '25-26 Unknown',
-        capacity: extractNumber(columns[columnMap.capacity]) || 1000,
-        single_tickets_sold: extractNumber(columns[columnMap.single]) || 0,
-        subscription_tickets_sold: extractNumber(columns[columnMap.subscription]) || 0,
-        total_revenue: extractCurrency(columns[columnMap.revenue]) || 0,
+        performance_id: Date.now() + Math.floor(Math.random() * 10000),
+        performance_code: performanceCode,
+        title: `Performance ${performanceCode}`,
+        performance_date: parseDate(dateTime) || '2025-01-01',
+        venue: 'Helzberg Hall',
+        series: 'Classical',
+        season: '25-26',
+        capacity: capacity,
+        single_tickets_sold: singleCount,
+        subscription_tickets_sold: subscriptionTickets,
+        total_revenue: totalRevenue,
+        capacity_percent: capacityPercent,
+        budget_percent: budgetPercent,
+        occupancy_percent: capacityPercent,
         occupancy_goal: 85,
-        budget_goal: 0
+        budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
       };
 
-      if (performance.performance_id || performance.performance_code !== `GEN${Date.now()}`) {
-        performances.push(performance);
-      }
+      console.log(`✅ Parsed: ${performanceCode} - Single:${singleCount} Sub:${subscriptionTickets} Rev:$${Math.round(totalRevenue)} Cap:${capacityPercent}%`);
+      performances.push(performance);
     }
   }
 
