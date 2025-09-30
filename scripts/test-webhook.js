@@ -76,13 +76,14 @@ async function testWebhook(testCase, caseName) {
   console.log(`\n🧪 Testing webhook with: ${caseName}`);
   console.log('=' .repeat(50));
 
-  const hostname = process.env.NETLIFY_SITE_URL?.replace(/https?:\/\//, '') || 'localhost:8888';
+  const url = process.env.NETLIFY_SITE_URL || 'http://localhost:8888';
+  const hostname = url.includes('localhost') ? 'localhost' : url.replace(/https?:\/\//, '');
   const path = '/.netlify/functions/pdf-webhook';
   const postData = JSON.stringify(testCase);
 
   const options = {
     hostname: hostname,
-    port: hostname.includes('localhost') ? 8888 : 443,
+    port: hostname === 'localhost' ? 8888 : 443,
     path: path,
     method: 'POST',
     headers: {

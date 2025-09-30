@@ -15,7 +15,9 @@
       "Bash(git add:*)",
       "Bash(jq:*)",
       "Bash(npm install:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run test-webhook:*)"
     ],
     "deny": [],
     "ask": []
