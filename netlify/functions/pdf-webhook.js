@@ -941,39 +941,10 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
         console.log(`📊 Updated sales data and date for: ${perfData.performance_code}`);
 
       } else {
-        // Insert new record (will need manual metadata editing via admin UI)
-        const insertQuery = `
-          INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
-          (performance_id, performance_code, title, series, performance_date, venue, season,
-           capacity, single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
-           total_revenue, occupancy_goal, budget_goal, capacity_percent, budget_percent,
-           has_sales_data, last_pdf_import_date, updated_at)
-          VALUES (
-            ${perfData.performance_id || 0},
-            '${perfData.performance_code}',
-            '${(perfData.title || '').replace(/'/g, "\\'")}',
-            '${(perfData.series || '').replace(/'/g, "\\'")}',
-            '${perfData.performance_date || '2025-01-01'}',
-            '${(perfData.venue || 'Unknown').replace(/'/g, "\\'")}',
-            '${(perfData.season || 'Unknown').replace(/'/g, "\\'")}',
-            ${perfData.capacity || 1500},
-            ${perfData.single_tickets_sold || 0},
-            ${perfData.subscription_tickets_sold || 0},
-            ${(perfData.single_tickets_sold || 0) + (perfData.subscription_tickets_sold || 0)},
-            ${perfData.total_revenue || 0},
-            ${perfData.occupancy_goal || 85},
-            ${perfData.budget_goal || 0},
-            ${perfData.capacity_percent || 0},
-            ${perfData.budget_percent || 0},
-            true,
-            CURRENT_TIMESTAMP(),
-            CURRENT_TIMESTAMP()
-          )
-        `;
-
-        await bigquery.query({ query: insertQuery, location: 'US' });
-        inserted++;
-        console.log(`📝 Inserted new performance: ${perfData.performance_code} (requires metadata edit)`);
+        // Performance not in database - SKIP (don't create new records)
+        console.log(`⏭️  Skipped unknown performance: ${perfData.performance_code} (not in database)`);
+        anomalies++;
+        continue;
       }
 
       processed++;
