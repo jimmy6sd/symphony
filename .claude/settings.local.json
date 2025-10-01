@@ -17,7 +17,10 @@
       "Bash(npm install:*)",
       "Bash(git commit:*)",
       "Bash(taskkill:*)",
-      "Bash(npm run test-webhook:*)"
+      "Bash(npm run test-webhook:*)",
+      "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"./symphony-bigquery-key.json\")",
+      "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"../symphony-bigquery-key.json\")",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

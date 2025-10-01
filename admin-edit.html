@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Edit Performance Metadata</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    .admin-container {
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .performance-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .performance-table th,
+    .performance-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .performance-table th {
+      background: #2c3e50;
+      color: white;
+      font-weight: 600;
+    }
+
+    .performance-table tr:hover {
+      background: #f5f5f5;
+    }
+
+    .edit-btn {
+      padding: 6px 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-btn:hover {
+      background: #2980b9;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #27ae60;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .info-box {
+      background: #e8f4f8;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-left: 4px solid #3498db;
+    }
+
+    .sales-readonly {
+      background: #f8f9fa;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="admin-header">
+      <div>
+        <h1>Performance Metadata Editor</h1>
+        <p style="color: #7f8c8d;">Edit titles, series, venues, and other metadata. Sales data updates automatically via PDF imports.</p>
+      </div>
+      <a href="index.html" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="info-box">
+      <strong>📝 Note:</strong> This page edits performance metadata (title, series, venue, capacity). Sales data (tickets sold, revenue) updates automatically from daily PDF imports and cannot be edited here.
+    </div>
+
+    <table class="performance-table" id="performanceTable">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Title</th>
+          <th>Series</th>
+          <th>Date</th>
+          <th>Venue</th>
+          <th>Capacity</th>
+          <th>Last PDF Import</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="performanceTableBody">
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 40px;">Loading performances...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h2>Edit Performance Metadata</h2>
+
+      <form id="editForm">
+        <input type="hidden" id="edit_performance_code">
+
+        <div class="form-group">
+          <label>Performance Code (read-only)</label>
+          <input type="text" id="edit_code_display" disabled class="sales-readonly">
+        </div>
+
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="edit_title" required>
+        </div>
+
+        <div class="form-group">
+          <label>Series *</label>
+          <select id="edit_series" required>
+            <option value="">Select Series</option>
+            <option value="Classical">Classical</option>
+            <option value="Pops">Pops</option>
+            <option value="Family">Family</option>
+            <option value="Special Event">Special Event</option>
+            <option value="Chamber">Chamber</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Performance Date *</label>
+          <input type="date" id="edit_date" required>
+        </div>
+
+        <div class="form-group">
+          <label>Venue *</label>
+          <select id="edit_venue" required>
+            <option value="">Select Venue</option>
+            <option value="Helzberg Hall">Helzberg Hall</option>
+            <option value="Folly Theater">Folly Theater</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Season</label>
+          <input type="text" id="edit_season" placeholder="e.g., 25-26">
+        </div>
+
+        <div class="form-group">
+          <label>Capacity *</label>
+          <input type="number" id="edit_capacity" required min="1">
+        </div>
+
+        <div class="info-box">
+          <strong>Sales Data (Read-Only):</strong><br>
+          Tickets Sold: <span id="readonly_tickets">-</span><br>
+          Total Revenue: <span id="readonly_revenue">-</span><br>
+          Last PDF Import: <span id="readonly_import_date">-</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let performances = [];
+
+    // Load performances on page load
+    async function loadPerformances() {
+      try {
+        const token = localStorage.getItem('authToken');
+
+        // If no token, try to fetch without auth (local dev mode)
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+        const response = await fetch('/.netlify/functions/bigquery-data', headers);
+
+        if (!response.ok) {
+          throw new Error('Failed to load performances');
+        }
+
+        const data = await response.json();
+        // BigQuery endpoint returns array directly, not wrapped in object
+        performances = Array.isArray(data) ? data : (data.performances || []);
+        renderTable();
+
+      } catch (error) {
+        console.error('Error loading performances:', error);
+        document.getElementById('performanceTableBody').innerHTML =
+          '<tr><td colspan="8" style="text-align: center; color: red;">Error loading data</td></tr>';
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('performanceTableBody');
+
+      if (performances.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No performances found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = performances.map(perf => `
+        <tr>
+          <td>${perf.performance_code}</td>
+          <td>${perf.title || '-'}</td>
+          <td>${perf.series || '-'}</td>
+          <td>${perf.performance_date || '-'}</td>
+          <td>${perf.venue || '-'}</td>
+          <td>${perf.capacity || '-'}</td>
+          <td>${perf.last_pdf_import_date ? new Date(perf.last_pdf_import_date).toLocaleDateString() : 'Never'}</td>
+          <td>
+            <button class="edit-btn" onclick="openEditModal('${perf.performance_code}')">Edit</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openEditModal(performanceCode) {
+      const perf = performances.find(p => p.performance_code === performanceCode);
+      if (!perf) return;
+
+      document.getElementById('edit_performance_code').value = perf.performance_code;
+      document.getElementById('edit_code_display').value = perf.performance_code;
+      document.getElementById('edit_title').value = perf.title || '';
+      document.getElementById('edit_series').value = perf.series || '';
+      document.getElementById('edit_date').value = perf.performance_date || '';
+      document.getElementById('edit_venue').value = perf.venue || '';
+      document.getElementById('edit_season').value = perf.season || '';
+      document.getElementById('edit_capacity').value = perf.capacity || '';
+
+      document.getElementById('readonly_tickets').textContent =
+        `${perf.total_tickets_sold || 0} (${perf.single_tickets_sold || 0} single, ${perf.subscription_tickets_sold || 0} sub)`;
+      document.getElementById('readonly_revenue').textContent =
+        `$${(perf.total_revenue || 0).toLocaleString()}`;
+      document.getElementById('readonly_import_date').textContent =
+        perf.last_pdf_import_date ? new Date(perf.last_pdf_import_date).toLocaleString() : 'Never';
+
+      document.getElementById('editModal').style.display = 'block';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const performanceCode = document.getElementById('edit_performance_code').value;
+      const updates = {
+        title: document.getElementById('edit_title').value,
+        series: document.getElementById('edit_series').value,
+        performance_date: document.getElementById('edit_date').value,
+        venue: document.getElementById('edit_venue').value,
+        season: document.getElementById('edit_season').value,
+        capacity: parseInt(document.getElementById('edit_capacity').value)
+      };
+
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('/.netlify/functions/update-performance-metadata', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ performance_code: performanceCode, updates })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update performance');
+        }
+
+        alert('Performance updated successfully!');
+        closeEditModal();
+        loadPerformances();
+
+      } catch (error) {
+        console.error('Error updating performance:', error);
+        alert('Failed to update performance: ' + error.message);
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('editModal').addEventListener('click', (e) => {
+      if (e.target.id === 'editModal') {
+        closeEditModal();
+      }
+    });
+
+    // Load performances on page load
+    loadPerformances();
+  </script>
+</body>
+</html>

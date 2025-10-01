@@ -862,50 +862,44 @@ const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
 // Reuse existing functions from pdf-data-processor.js
 async function createDataSnapshot(bigquery, data, executionId) {
   const snapshotId = `snap_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
-  const today = new Date().toISOString().split('T')[0];
 
-  const totalTickets = data.performances?.reduce((sum, perf) =>
-    sum + (perf.single_tickets_sold || 0) + (perf.subscription_tickets_sold || 0), 0) || 0;
-  const totalRevenue = data.performances?.reduce((sum, perf) =>
-    sum + (perf.total_revenue || 0), 0) || 0;
+  try {
+    const today = new Date().toISOString().split('T')[0];
 
-  const snapshotData = {
-    snapshot_id: snapshotId,
-    snapshot_date: today,
-    source_type: 'pdf_webhook',
-    source_identifier: data.metadata?.filename || `webhook_${executionId}`,
-    raw_data: data,
-    processed_data: data.performances,
-    performance_count: data.performances?.length || 0,
-    total_tickets_in_snapshot: totalTickets,
-    total_revenue_in_snapshot: totalRevenue,
-    processing_status: 'pending'
-  };
+    const totalTickets = data.performances?.reduce((sum, perf) =>
+      sum + (perf.single_tickets_sold || 0) + (perf.subscription_tickets_sold || 0), 0) || 0;
+    const totalRevenue = data.performances?.reduce((sum, perf) =>
+      sum + (perf.total_revenue || 0), 0) || 0;
 
-  const query = `
-    INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.data_snapshots\`
-    (snapshot_id, snapshot_date, source_type, source_identifier, raw_data, processed_data,
-     performance_count, total_tickets_in_snapshot, total_revenue_in_snapshot, processing_status)
-    VALUES (
-      '${snapshotId}',
-      '${today}',
-      'pdf_webhook',
-      '${(data.metadata?.filename || `webhook_${executionId}`).replace(/'/g, "\\'")}',
-      PARSE_JSON('${JSON.stringify(data).replace(/'/g, "\\'")}'),
-      PARSE_JSON('${JSON.stringify(data.performances).replace(/'/g, "\\'")}'),
-      ${data.performances?.length || 0},
-      ${totalTickets},
-      ${totalRevenue},
-      'pending'
-    )
-  `;
+    const query = `
+      INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.data_snapshots\`
+      (snapshot_id, snapshot_date, source_type, source_identifier, raw_data, processed_data,
+       performance_count, total_tickets_in_snapshot, total_revenue_in_snapshot, processing_status)
+      VALUES (
+        '${snapshotId}',
+        '${today}',
+        'pdf_webhook',
+        '${(data.metadata?.filename || `webhook_${executionId}`).replace(/'/g, "\\'")}',
+        PARSE_JSON('${JSON.stringify(data).replace(/'/g, "\\'")}'),
+        PARSE_JSON('${JSON.stringify(data.performances).replace(/'/g, "\\'")}'),
+        ${data.performances?.length || 0},
+        ${totalTickets},
+        ${totalRevenue},
+        'pending'
+      )
+    `;
 
-  await bigquery.query({
-    query,
-    location: 'US'
-  });
+    await bigquery.query({
+      query,
+      location: 'US'
+    });
 
-  console.log(`📸 Created data snapshot: ${snapshotId}`);
+    console.log(`📸 Created data snapshot: ${snapshotId}`);
+  } catch (error) {
+    // Table doesn't exist - skip snapshot creation
+    console.log('Data snapshots table not found - skipping snapshot creation');
+  }
+
   return snapshotId;
 }
 
@@ -925,34 +919,35 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
       const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
 
       if (existingRows.length > 0) {
-        // Update existing record
+        // Update sales data AND performance_date from PDF (preserve title, series, venue)
         const updateQuery = `
           UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
           SET
+            performance_date = '${perfData.performance_date || '2025-01-01'}',
             single_tickets_sold = ${perfData.single_tickets_sold || 0},
             subscription_tickets_sold = ${perfData.subscription_tickets_sold || 0},
             total_tickets_sold = ${(perfData.single_tickets_sold || 0) + (perfData.subscription_tickets_sold || 0)},
             total_revenue = ${perfData.total_revenue || 0},
             capacity_percent = ${perfData.capacity_percent || 0},
             budget_percent = ${perfData.budget_percent || 0},
-            occupancy_percent = ${perfData.occupancy_percent || 0},
             has_sales_data = true,
+            last_pdf_import_date = CURRENT_TIMESTAMP(),
             updated_at = CURRENT_TIMESTAMP()
           WHERE performance_code = '${perfData.performance_code}'
         `;
 
         await bigquery.query({ query: updateQuery, location: 'US' });
         updated++;
-        console.log(`📊 Updated performance: ${perfData.performance_code}`);
+        console.log(`📊 Updated sales data and date for: ${perfData.performance_code}`);
 
       } else {
-        // Insert new record
+        // Insert new record (will need manual metadata editing via admin UI)
         const insertQuery = `
           INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
           (performance_id, performance_code, title, series, performance_date, venue, season,
            capacity, single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
            total_revenue, occupancy_goal, budget_goal, capacity_percent, budget_percent,
-           occupancy_percent, has_sales_data, updated_at)
+           has_sales_data, last_pdf_import_date, updated_at)
           VALUES (
             ${perfData.performance_id || 0},
             '${perfData.performance_code}',
@@ -970,15 +965,15 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
             ${perfData.budget_goal || 0},
             ${perfData.capacity_percent || 0},
             ${perfData.budget_percent || 0},
-            ${perfData.occupancy_percent || 0},
             true,
+            CURRENT_TIMESTAMP(),
             CURRENT_TIMESTAMP()
           )
         `;
 
         await bigquery.query({ query: insertQuery, location: 'US' });
         inserted++;
-        console.log(`📝 Inserted new performance: ${perfData.performance_code}`);
+        console.log(`📝 Inserted new performance: ${perfData.performance_code} (requires metadata edit)`);
       }
 
       processed++;
@@ -992,45 +987,55 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
   return { processed, inserted, updated, trendsAdjusted, anomalies };
 }
 
-// Pipeline logging functions
+// Pipeline logging functions (optional - skip if table doesn't exist)
 async function logPipelineStart(bigquery, executionId, requestData) {
-  const query = `
-    INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.pipeline_execution_log\`
-    (execution_id, pipeline_type, status, start_time, source_file, triggered_by)
-    VALUES (?, 'pdf_webhook', 'running', ?, ?, 'make.com')
-  `;
+  try {
+    const query = `
+      INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.pipeline_execution_log\`
+      (execution_id, pipeline_type, status, start_time, source_file, triggered_by)
+      VALUES (?, 'pdf_webhook', 'running', ?, ?, 'make.com')
+    `;
 
-  await bigquery.query({
-    query,
-    params: [
-      executionId,
-      new Date().toISOString(),
-      requestData.metadata?.filename || 'unknown'
-    ],
-    location: 'US'
-  });
+    await bigquery.query({
+      query,
+      params: [
+        executionId,
+        new Date().toISOString(),
+        requestData.metadata?.filename || 'unknown'
+      ],
+      location: 'US'
+    });
+  } catch (error) {
+    // Table doesn't exist - skip logging
+    console.log('Pipeline logging table not found - skipping');
+  }
 }
 
 async function updatePipelineExecution(bigquery, executionId, updates) {
-  const setClauses = [];
-  const params = [];
+  try {
+    const setClauses = [];
+    const params = [];
 
-  for (const [key, value] of Object.entries(updates)) {
-    setClauses.push(`${key} = ?`);
-    params.push(value);
+    for (const [key, value] of Object.entries(updates)) {
+      setClauses.push(`${key} = ?`);
+      params.push(value);
+    }
+
+    params.push(executionId);
+
+    const query = `
+      UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.pipeline_execution_log\`
+      SET ${setClauses.join(', ')}
+      WHERE execution_id = ?
+    `;
+
+    await bigquery.query({
+      query,
+      params,
+      location: 'US'
+    });
+  } catch (error) {
+    // Table doesn't exist - skip logging
+    console.log('Pipeline logging table not found - skipping');
   }
-
-  params.push(executionId);
-
-  const query = `
-    UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.pipeline_execution_log\`
-    SET ${setClauses.join(', ')}
-    WHERE execution_id = ?
-  `;
-
-  await bigquery.query({
-    query,
-    params,
-    location: 'US'
-  });
 }

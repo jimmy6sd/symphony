@@ -1,0 +1,1 @@
+App now loads data from data/dashboard.json instead of BigQuery. To re-enable BigQuery, we need to fix the queries to match the new simplified schema.

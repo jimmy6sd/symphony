@@ -128,8 +128,8 @@ async function getPerformances(bigquery, params, headers) {
       budget_goal,
       capacity_percent,
       budget_percent,
-      occupancy_percent,
       has_sales_data,
+      last_pdf_import_date,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
     WHERE 1=1

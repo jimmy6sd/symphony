@@ -1,0 +1,56 @@
+[
+  {
+    "case": "text_input",
+    "success": true,
+    "response": {
+      "success": true,
+      "execution_id": "webhook_1759256238889_833d4555",
+      "snapshot_id": "snap_1759256241026_27453272",
+      "summary": {
+        "received": 2,
+        "processed": 2,
+        "inserted": 1,
+        "updated": 1,
+        "trends_adjusted": 0,
+        "anomalies_detected": 0
+      },
+      "message": "PDF processed successfully via webhook"
+    }
+  },
+  {
+    "case": "multi_performance",
+    "success": true,
+    "response": {
+      "success": true,
+      "execution_id": "webhook_1759256251197_8499f153",
+      "snapshot_id": "snap_1759256252904_17a78bd6",
+      "summary": {
+        "received": 3,
+        "processed": 3,
+        "inserted": 1,
+        "updated": 2,
+        "trends_adjusted": 0,
+        "anomalies_detected": 0
+      },
+      "message": "PDF processed successfully via webhook"
+    }
+  },
+  {
+    "case": "make_com_format",
+    "success": true,
+    "response": {
+      "success": true,
+      "execution_id": "webhook_1759256265380_44526cdc",
+      "snapshot_id": "snap_1759256267076_cc581208",
+      "summary": {
+        "received": 1,
+        "processed": 1,
+        "inserted": 1,
+        "updated": 0,
+        "trends_adjusted": 0,
+        "anomalies_detected": 0
+      },
+      "message": "PDF processed successfully via webhook"
+    }
+  }
+]
