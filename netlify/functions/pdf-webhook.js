@@ -425,6 +425,9 @@ async function parseTessituraText(text, metadata) {
   const performances = [];
   const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
+  console.log(`📄 Total lines to parse: ${lines.length}`);
+  console.log(`📋 First 5 lines of text:\n${lines.slice(0, 5).map((l, i) => `  ${i+1}. ${l.substring(0, 100)}${l.length > 100 ? '...' : ''}`).join('\n')}`);
+
   // Multiple parsing strategies for different Tessitura report formats
   // Note: PDF extraction may strip whitespace, creating compact format
   const strategies = [
@@ -467,7 +470,10 @@ async function parseTessituraText(text, metadata) {
 
 // Strategy 1: Direct line format (for raw Tessitura export lines)
 async function parseDirectLineFormat(lines) {
+  console.log(`🔍 parseDirectLineFormat: Checking ${lines.length} lines...`);
   const performances = [];
+  let matchedLines = 0;
+  let failedParses = 0;
 
   for (const line of lines) {
     // Match Tessitura compact export format (no spaces between code and date):
@@ -477,6 +483,8 @@ async function parseDirectLineFormat(lines) {
     const compactMatch = line.match(/^(\d{6}[A-Z])(\d{1,2}\/\d{1,2}\/\d{4})\s+(\d{1,2}:\d{2}\s+[AP]M)(.+)/);
 
     if (compactMatch) {
+      matchedLines++;
+      console.log(`📍 Line ${matchedLines}: MATCHED pattern for "${compactMatch[1]}" (${compactMatch[2]} ${compactMatch[3]})`);
       const performanceCode = compactMatch[1];  // 251010E
       const date = compactMatch[2];              // 10/10/2025
       const time = compactMatch[3];              // 8:00 PM
@@ -499,8 +507,13 @@ async function parseDirectLineFormat(lines) {
 
       // Step 1: Budget percent
       const budgetMatch = dataSection.match(/^([0-9.]+)%/);
-      if (!budgetMatch) continue;
+      if (!budgetMatch) {
+        console.log(`   ❌ Failed: No budget% match in data section: "${dataSection.substring(0, 50)}..."`);
+        failedParses++;
+        continue;
+      }
       const budgetPercent = parseFloat(budgetMatch[1]);
+      console.log(`   ✓ Budget: ${budgetPercent}%`);
 
       // New strategy: Character-by-character parsing with state machine
       // We know the exact sequence: budget% | fixedCount fixedRev | nonFixedCount nonFixedRev | singleCount singleRev | subtotal | reserved | total | avail | capacity%
@@ -512,14 +525,49 @@ async function parseDirectLineFormat(lines) {
 
       // Extract capacity% from end (format: XX.X% or X.X%)
       const capacityMatch = dataSection.match(/(\d{1,2}\.\d+)%$/);
-      if (!capacityMatch) continue;
+      if (!capacityMatch) {
+        console.log(`   ❌ Failed: No capacity% match at end of data section`);
+        failedParses++;
+        continue;
+      }
       const capacityPercent = parseFloat(capacityMatch[1]);
+      console.log(`   ✓ Capacity: ${capacityPercent}%`);
 
       // Remove capacity from end
       let remaining = dataSection.substring(0, dataSection.length - capacityMatch[0].length);
 
-      // Extract all currency values (they end with .XX)
-      // Working backwards: we should find Total, Reserved, Subtotal, SingleRev, NonFixedRev, FixedRev
+      // CRITICAL: The format is ...TOTAL_REVENUE.XXavail_seats (revenue ends with .XX, seats appended)
+      // Example: ...51,642.30614 means total=$51,642.30 and avail=614
+      // We must find the LAST .XX in the string, extract currency INCLUDING it, and digits AFTER it are avail seats
+
+      // Extract currency values that end with .XX, handling appended digits after
+      // Working backwards: we should find Total+Avail, Reserved, Subtotal, SingleRev, NonFixedRev, FixedRev
+      const extractCurrencyWithAppendedDigits = (str) => {
+        // Match currency at end: optional digits+commas, then .XX, then optional pure digits (no commas/decimals)
+        const match = str.match(/(\d{1,3}(?:,\d{3})*\.\d{2})(\d*)$/);
+        if (match) {
+          const currencyStr = match[1];
+          const appendedDigits = match[2];
+          const value = parseFloat(currencyStr.replace(/,/g, ''));
+          const newStr = str.substring(0, str.length - match[0].length);
+          return { value, remaining: newStr, appended: appendedDigits };
+        }
+        return null;
+      };
+
+      // Extract total revenue and available seats (they're concatenated)
+      const totalResult = extractCurrencyWithAppendedDigits(remaining);
+      if (!totalResult) {
+        console.log(`   ❌ Failed: Could not extract total revenue+avail from: "${remaining.substring(Math.max(0, remaining.length - 30))}"`);
+        failedParses++;
+        continue;
+      }
+      const totalRevenue = totalResult.value;
+      const availSeats = totalResult.appended ? parseInt(totalResult.appended) : 0;
+      remaining = totalResult.remaining;
+      console.log(`   ✓ Total revenue: $${totalRevenue.toFixed(2)}, Available seats: ${availSeats}`);
+
+      // Now extract the remaining currency values (they end with .XX, no appended digits)
       const extractCurrencyFromEnd = (str) => {
         // Match currency at end: optional digits+commas, then .XX
         const match = str.match(/(\d{1,3}(?:,\d{3})*\.\d{2})$/);
@@ -531,29 +579,34 @@ async function parseDirectLineFormat(lines) {
         return null;
       };
 
-      // Extract total revenue and avail seats
-      const totalResult = extractCurrencyFromEnd(remaining);
-      if (!totalResult) continue;
-      const totalRevenue = totalResult.value;
-      remaining = totalResult.remaining;
+      // Extract reserved revenue and subtotal (they're concatenated like total+avail)
+      // Format: ...SUBTOTAL.XXreserved.XX (subtotal ends with .XX, reserved is appended BUT also has .XX)
+      // So we need to extract TWO currency values that are concatenated
 
-      // After removing total revenue, extract avail seats (digits before the currency)
-      const availMatch = remaining.match(/(\d+)$/);
-      if (!availMatch) continue;
-      const availSeats = parseInt(availMatch[1]);
-      remaining = remaining.substring(0, remaining.length - availMatch[1].length);
+      // Actually, looking at the data: ...51,642.3000.00 = subtotal ($51,642.30) + reserved ($00.00)
+      // The reserved is a FULL currency value (with its own .XX), appended after subtotal
+      // So we extract: reserved first (last .XX in the string), then subtotal (previous .XX)
 
-      // Extract reserved revenue
       const reservedResult = extractCurrencyFromEnd(remaining);
-      if (!reservedResult) continue;
+      if (!reservedResult) {
+        console.log(`   ❌ Failed: Could not extract reserved revenue from: "${remaining.substring(Math.max(0, remaining.length - 50))}"`);
+        failedParses++;
+        continue;
+      }
       const reserved = reservedResult.value;
       remaining = reservedResult.remaining;
+      console.log(`   ✓ Reserved: $${reserved.toFixed(2)}`);
 
-      // Extract subtotal revenue
+      // Extract subtotal revenue (before reserved)
       const subtotalResult = extractCurrencyFromEnd(remaining);
-      if (!subtotalResult) continue;
+      if (!subtotalResult) {
+        console.log(`   ❌ Failed: Could not extract subtotal revenue from: "${remaining.substring(Math.max(0, remaining.length - 50))}"`);
+        failedParses++;
+        continue;
+      }
       const subtotalRevenue = subtotalResult.value;
       remaining = subtotalResult.remaining;
+      console.log(`   ✓ Subtotal: $${subtotalRevenue.toFixed(2)}`);
 
       // Now extract the 3 count+revenue pairs (Single, NonFixed, Fixed) - working backwards
       // Each pair is: COUNT REVENUE where COUNT is digits and REVENUE ends with .XX
@@ -574,21 +627,33 @@ async function parseDirectLineFormat(lines) {
 
       // Extract Single tickets (last count+revenue pair)
       const singleResult = extractCountRevenuePair(remaining);
-      if (!singleResult) continue;
+      if (!singleResult) {
+        console.log(`   ❌ Failed: Could not extract single ticket count/revenue pair`);
+        failedParses++;
+        continue;
+      }
       const singleCount = singleResult.count;
       const singleRevenue = singleResult.revenue;
       remaining = singleResult.remaining;
 
       // Extract Non-Fixed packages
       const nonFixedResult = extractCountRevenuePair(remaining);
-      if (!nonFixedResult) continue;
+      if (!nonFixedResult) {
+        console.log(`   ❌ Failed: Could not extract non-fixed package count/revenue pair`);
+        failedParses++;
+        continue;
+      }
       const nonFixedPkgCount = nonFixedResult.count;
       const nonFixedPkgRevenue = nonFixedResult.revenue;
       remaining = nonFixedResult.remaining;
 
       // Extract Fixed packages
       const fixedResult = extractCountRevenuePair(remaining);
-      if (!fixedResult) continue;
+      if (!fixedResult) {
+        console.log(`   ❌ Failed: Could not extract fixed package count/revenue pair`);
+        failedParses++;
+        continue;
+      }
       const fixedPkgCount = fixedResult.count;
       const fixedPkgRevenue = fixedResult.revenue;
       remaining = fixedResult.remaining;
@@ -628,11 +693,12 @@ async function parseDirectLineFormat(lines) {
         budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
       };
 
-      console.log(`✅ Parsed: ${performanceCode} (${date}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+      console.log(`   ✅ SUCCESS: ${performanceCode} (${date}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
       performances.push(performance);
     }
   }
 
+  console.log(`📊 parseDirectLineFormat Summary: ${matchedLines} lines matched pattern, ${failedParses} failed parsing, ${performances.length} successfully extracted`);
   return performances;
 }
 
