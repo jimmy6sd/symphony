@@ -969,57 +969,61 @@ async function createDataSnapshot(bigquery, data, executionId) {
   return snapshotId;
 }
 
-// Import the complex processing logic from the original function
+// OPTIMIZED: Batch processing - 2 queries instead of 100+
 async function processPerformanceData(bigquery, performances, snapshotId, executionId) {
   let processed = 0, inserted = 0, updated = 0, trendsAdjusted = 0, anomalies = 0;
 
-  for (const perfData of performances) {
-    try {
-      // First, check if this performance already exists in performances table
-      const checkQuery = `
-        SELECT performance_id, single_tickets_sold, subscription_tickets_sold, total_revenue
-        FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
-        WHERE performance_code = '${perfData.performance_code}'
-      `;
+  console.log(`🚀 Batch processing ${performances.length} performances...`);
 
-      const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
+  // STEP 1: Get all existing performance codes in ONE query
+  const codes = performances.map(p => `'${p.performance_code}'`).join(',');
+  const checkQuery = `
+    SELECT performance_code
+    FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
+    WHERE performance_code IN (${codes})
+  `;
 
-      if (existingRows.length > 0) {
-        // Update sales data AND performance_date from PDF (preserve title, series, venue)
-        const updateQuery = `
-          UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
-          SET
-            performance_date = '${perfData.performance_date || '2025-01-01'}',
-            single_tickets_sold = ${perfData.single_tickets_sold || 0},
-            subscription_tickets_sold = ${perfData.subscription_tickets_sold || 0},
-            total_tickets_sold = ${(perfData.single_tickets_sold || 0) + (perfData.subscription_tickets_sold || 0)},
-            total_revenue = ${perfData.total_revenue || 0},
-            capacity_percent = ${perfData.capacity_percent || 0},
-            budget_percent = ${perfData.budget_percent || 0},
-            has_sales_data = true,
-            last_pdf_import_date = CURRENT_TIMESTAMP(),
-            updated_at = CURRENT_TIMESTAMP()
-          WHERE performance_code = '${perfData.performance_code}'
-        `;
+  const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
+  const existingCodes = new Set(existingRows.map(row => row.performance_code));
 
-        await bigquery.query({ query: updateQuery, location: 'US' });
-        updated++;
-        console.log(`📊 Updated sales data and date for: ${perfData.performance_code}`);
+  console.log(`📋 Found ${existingCodes.size}/${performances.length} existing performances`);
 
-      } else {
-        // Performance not in database - SKIP (don't create new records)
-        console.log(`⏭️  Skipped unknown performance: ${perfData.performance_code} (not in database)`);
-        anomalies++;
-        continue;
-      }
+  // Filter to only valid performances
+  const validPerfs = performances.filter(p => {
+    if (existingCodes.has(p.performance_code)) return true;
+    console.log(`⏭️  Skip: ${p.performance_code}`);
+    anomalies++;
+    return false;
+  });
 
-      processed++;
-
-    } catch (error) {
-      console.error(`❌ Error processing performance ${perfData.performance_code}:`, error.message);
-      anomalies++;
-    }
+  if (validPerfs.length === 0) {
+    console.log('⚠️  No valid performances to update');
+    return { processed, inserted, updated, trendsAdjusted, anomalies };
   }
+
+  // STEP 2: Batch UPDATE with CASE statements in ONE query
+  const batchUpdate = `
+    UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
+    SET
+      performance_date = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN DATE('${p.performance_date || '2025-01-01'}')`).join(' ')} END,
+      single_tickets_sold = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.single_tickets_sold || 0}`).join(' ')} END,
+      subscription_tickets_sold = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.subscription_tickets_sold || 0}`).join(' ')} END,
+      total_tickets_sold = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)}`).join(' ')} END,
+      total_revenue = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.total_revenue || 0}`).join(' ')} END,
+      capacity_percent = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.capacity_percent || 0}`).join(' ')} END,
+      budget_percent = CASE performance_code ${validPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.budget_percent || 0}`).join(' ')} END,
+      has_sales_data = true,
+      last_pdf_import_date = CURRENT_TIMESTAMP(),
+      updated_at = CURRENT_TIMESTAMP()
+    WHERE performance_code IN (${validPerfs.map(p => `'${p.performance_code}'`).join(',')})
+  `;
+
+  await bigquery.query({ query: batchUpdate, location: 'US' });
+
+  updated = validPerfs.length;
+  processed = validPerfs.length;
+
+  console.log(`✅ Updated ${updated} performances in 2 queries (was 100+ queries)`);
 
   return { processed, inserted, updated, trendsAdjusted, anomalies };
 }
