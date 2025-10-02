@@ -63,3 +63,9 @@
 
 [context.deploy-preview.environment]
   NODE_ENV = "staging"
+[functions]
+  node_bundler = "esbuild"
+
+[functions."pdf-webhook"]
+  timeout = 60
+
