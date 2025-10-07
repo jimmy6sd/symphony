@@ -283,31 +283,39 @@
         return;
       }
 
-      tbody.innerHTML = performances.map(perf => `
+      tbody.innerHTML = performances.map(perf => {
+        const perfDate = perf.performance_date?.value || perf.performance_date || '-';
+        const importDate = perf.last_pdf_import_date?.value || perf.last_pdf_import_date;
+
+        return `
         <tr>
           <td>${perf.performance_code}</td>
           <td>${perf.title || '-'}</td>
           <td>${perf.series || '-'}</td>
-          <td>${perf.performance_date || '-'}</td>
+          <td>${perfDate}</td>
           <td>${perf.venue || '-'}</td>
           <td>${perf.capacity || '-'}</td>
-          <td>${perf.last_pdf_import_date ? new Date(perf.last_pdf_import_date).toLocaleDateString() : 'Never'}</td>
+          <td>${importDate ? new Date(importDate).toLocaleDateString() : 'Never'}</td>
           <td>
             <button class="edit-btn" onclick="openEditModal('${perf.performance_code}')">Edit</button>
           </td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
     function openEditModal(performanceCode) {
       const perf = performances.find(p => p.performance_code === performanceCode);
       if (!perf) return;
 
+      // Extract date value from object if needed
+      const perfDate = perf.performance_date?.value || perf.performance_date || '';
+      const importDate = perf.last_pdf_import_date?.value || perf.last_pdf_import_date;
+
       document.getElementById('edit_performance_code').value = perf.performance_code;
       document.getElementById('edit_code_display').value = perf.performance_code;
       document.getElementById('edit_title').value = perf.title || '';
       document.getElementById('edit_series').value = perf.series || '';
-      document.getElementById('edit_date').value = perf.performance_date || '';
+      document.getElementById('edit_date').value = perfDate;
       document.getElementById('edit_venue').value = perf.venue || '';
       document.getElementById('edit_season').value = perf.season || '';
       document.getElementById('edit_capacity').value = perf.capacity || '';
@@ -317,7 +325,7 @@
       document.getElementById('readonly_revenue').textContent =
         `$${(perf.total_revenue || 0).toLocaleString()}`;
       document.getElementById('readonly_import_date').textContent =
-        perf.last_pdf_import_date ? new Date(perf.last_pdf_import_date).toLocaleString() : 'Never';
+        importDate ? new Date(importDate).toLocaleString() : 'Never';
 
       document.getElementById('editModal').style.display = 'block';
     }
