@@ -30,7 +30,9 @@ class DataTable {
                 label: 'Date',
                 sortable: true,
                 formatter: (value) => {
-                    const date = new Date(value);
+                    // Parse date without timezone shift (value is YYYY-MM-DD)
+                    const [year, month, day] = value.split('-');
+                    const date = new Date(year, month - 1, day);
                     return `
                         <div class="date-cell">
                             <div class="date-main">${date.toLocaleDateString()}</div>
@@ -490,7 +492,10 @@ class DataTable {
             .style('margin-bottom', '12px')
             .text('Performance Information');
         leftDetails.append('p').html(`<strong>Code:</strong> ${performance.code}`);
-        leftDetails.append('p').html(`<strong>Date:</strong> ${new Date(performance.date).toLocaleDateString()}`);
+        // Parse date without timezone shift
+        const [year, month, day] = performance.date.split('-');
+        const perfDate = new Date(year, month - 1, day);
+        leftDetails.append('p').html(`<strong>Date:</strong> ${perfDate.toLocaleDateString()}`);
         leftDetails.append('p').html(`<strong>Venue:</strong> ${performance.venue}`);
         leftDetails.append('p').html(`<strong>Series:</strong> ${performance.series}`);
         leftDetails.append('p').html(`<strong>Season:</strong> ${performance.season}`);
