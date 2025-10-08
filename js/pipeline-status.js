@@ -422,14 +422,14 @@ if (typeof window !== 'undefined') {
     window.PipelineStatus = PipelineStatus;
 }
 
-// Auto-initialize if in browser environment
-if (typeof window !== 'undefined' && document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.pipelineStatus = new PipelineStatus();
-        window.pipelineStatus.initialize();
-    });
-} else if (typeof window !== 'undefined') {
-    // DOM already loaded
-    window.pipelineStatus = new PipelineStatus();
-    window.pipelineStatus.initialize();
-}
+// Auto-initialize if in browser environment (DISABLED - diagnostic bar removed)
+// if (typeof window !== 'undefined' && document.readyState === 'loading') {
+//     document.addEventListener('DOMContentLoaded', () => {
+//         window.pipelineStatus = new PipelineStatus();
+//         window.pipelineStatus.initialize();
+//     });
+// } else if (typeof window !== 'undefined') {
+//     // DOM already loaded
+//     window.pipelineStatus = new PipelineStatus();
+//     window.pipelineStatus.initialize();
+// }
