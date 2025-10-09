@@ -26,7 +26,7 @@ const SALES_PACING_TABLE = {
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
  * @returns {number} Weeks until performance (rounded)
  */
-export function calculateWeeksUntilPerformance(performanceDate) {
+function calculateWeeksUntilPerformance(performanceDate) {
     // Parse date without timezone shift
     const [year, month, day] = performanceDate.split('-');
     const perfDate = new Date(year, month - 1, day);
@@ -47,7 +47,7 @@ export function calculateWeeksUntilPerformance(performanceDate) {
  * @param {number} weeksUntil - Weeks until performance
  * @returns {number|null} Pacing percentage (0-1) or null if too early
  */
-export function getPacingPercentage(weeksUntil) {
+functiongetPacingPercentage(weeksUntil) {
     // For past events or current week
     if (weeksUntil <= 0) return 1.00;
 
@@ -63,7 +63,7 @@ export function getPacingPercentage(weeksUntil) {
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
  * @returns {Object} Projection data: { projected, weeksUntil, pacing, canProject }
  */
-export function calculateProjectedSales(currentSingleTicketsSold, performanceDate) {
+functioncalculateProjectedSales(currentSingleTicketsSold, performanceDate) {
     const weeksUntil = calculateWeeksUntilPerformance(performanceDate);
     const pacing = getPacingPercentage(weeksUntil);
 
@@ -107,7 +107,7 @@ function getProjectionConfidence(weeksUntil) {
  * @param {number} targetSales - Target single ticket sales (85% goal)
  * @returns {Object} Performance data: { percentage, status }
  */
-export function calculateProjectionPerformance(projectedSales, targetSales) {
+functioncalculateProjectionPerformance(projectedSales, targetSales) {
     if (!projectedSales || !targetSales) {
         return { percentage: 0, status: 'unknown' };
     }
@@ -128,7 +128,7 @@ export function calculateProjectionPerformance(projectedSales, targetSales) {
  * @param {Object} projection - Projection data from calculateProjectedSales
  * @returns {string} Human-readable projection description
  */
-export function formatProjectionText(projection) {
+functionformatProjectionText(projection) {
     if (!projection.canProject) {
         if (projection.reason === 'too_early') {
             return `Too early to project (${projection.weeksUntil}+ weeks out)`;

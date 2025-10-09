@@ -1,5 +1,3 @@
-import { calculateProjectedSales, calculateProjectionPerformance, formatProjectionText } from '../utils/sales-projections.js';
-
 class DataTable {
     constructor() {
         this.container = null;

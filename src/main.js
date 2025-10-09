@@ -33,6 +33,7 @@
             '/src/tessitura-config.js',
             '/src/tessitura-api.js',
             '/src/data-service.js',
+            '/src/utils/sales-projections.js',
             '/src/charts/performance-chart.js',
             '/src/charts/sales-curve-chart.js',
             '/src/charts/ticket-type-chart.js',
