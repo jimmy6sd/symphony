@@ -234,14 +234,14 @@ async function processPdfBase64(base64Data, metadata) {
             const capacityStr = allItems[idx++] || '0.0%';
 
             const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
-            const fixedCount = parseInt(fixedCountStr) || 0;
+            const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
             const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
-            const nonFixedCount = parseInt(nonFixedCountStr) || 0;
+            const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
             const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
-            const singleCount = parseInt(singleCountStr) || 0;
+            const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
             const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
-            const availSeats = parseInt(availStr) || 0;
+            const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
             const subscriptionTickets = fixedCount + nonFixedCount;
@@ -351,14 +351,14 @@ async function processPdfUrl(url, metadata) {
             const capacityStr = allItems[idx++] || '0.0%';
 
             const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
-            const fixedCount = parseInt(fixedCountStr) || 0;
+            const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
             const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
-            const nonFixedCount = parseInt(nonFixedCountStr) || 0;
+            const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
             const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
-            const singleCount = parseInt(singleCountStr) || 0;
+            const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
             const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
-            const availSeats = parseInt(availStr) || 0;
+            const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
             const subscriptionTickets = fixedCount + nonFixedCount;
