@@ -116,15 +116,17 @@ class SalesCurveChart {
             return;
         }
 
-        // Calculate current sales (actual data point)
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        // Calculate current SINGLE TICKET sales (actual data point)
+        // We only track single ticket progression, not subscriptions
+        const currentSales = performance.singleTicketsSold || 0;
+        const subscriptionSales = performance.subscriptionTicketsSold || 0;
 
         // Calculate weeks from today to performance
         const today = new Date();
         const performanceDate = new Date(performance.date);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
-        console.log('📊 Current sales:', currentSales, 'Weeks to performance:', weeksToPerformance);
+        console.log('📊 Single ticket sales:', currentSales, 'Subscription sales:', subscriptionSales, 'Weeks to performance:', weeksToPerformance);
 
         const maxWeeks = 10;
 
@@ -355,23 +357,24 @@ class SalesCurveChart {
     generateOnTrackLine(performance, maxWeeks, capacity = null) {
         const useCapacity = capacity || performance.capacity || 2000;
 
-        // NEW LOGIC: Calculate target based on available single tickets
-        // Subscription seats are already committed, so they don't count toward the single ticket target
+        // NEW LOGIC: Calculate target based on available single tickets ONLY
+        // The target line shows the progression toward selling 85% of available single tickets
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleTickets = useCapacity - subscriptionSeats;
         const singleTicketTarget = Math.floor(availableSingleTickets * (performance.occupancyGoal / 100));
 
-        // Total target = subscription seats (already sold) + single ticket target
-        const targetSales = subscriptionSeats + singleTicketTarget;
+        // Target sales = ONLY single ticket target (not including subscriptions)
+        // This shows the sales curve for single tickets only
+        const targetSales = singleTicketTarget;
 
         const progression = CONFIG.salesCurve.historicSalesProgression;
 
-        console.log('🎯 Target generation (NEW LOGIC):');
+        console.log('🎯 Target generation (SINGLE TICKET TARGET):');
         console.log('   Total Capacity:', useCapacity);
         console.log('   Subscription Sold:', subscriptionSeats);
         console.log('   Available Single Tickets:', availableSingleTickets);
         console.log('   Single Ticket Target (85%):', singleTicketTarget);
-        console.log('   Total Target Sales:', targetSales);
+        console.log('   Target line shows:', targetSales, '(single tickets only)');
         console.log('   Occupancy goal:', performance.occupancyGoal + '%');
 
         const onTrackData = [];
@@ -462,10 +465,8 @@ class SalesCurveChart {
     }
 
     addTrackingStatus(chartGroup, performance, innerWidth) {
-        // NEW LOGIC: Track single ticket sales vs single ticket target
-        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
+        // Track ONLY single ticket sales vs single ticket target
         const singleTicketsSold = performance.singleTicketsSold || 0;
-        const currentTotalSales = singleTicketsSold + subscriptionSeats;
 
         const today = new Date();
         const performanceDate = new Date(performance.date);
@@ -476,8 +477,8 @@ class SalesCurveChart {
 
         if (!expectedAtCurrentWeek || !expectedAtCurrentWeek.expectedCumulative) return;
 
-        // Calculate variance based on total sales (includes subscriptions)
-        const variance = currentTotalSales - expectedAtCurrentWeek.expectedCumulative;
+        // Calculate variance based on SINGLE TICKET sales only
+        const variance = singleTicketsSold - expectedAtCurrentWeek.expectedCumulative;
         const variancePercentage = ((variance / expectedAtCurrentWeek.expectedCumulative) * 100).toFixed(1);
 
         let status = "On Track";
