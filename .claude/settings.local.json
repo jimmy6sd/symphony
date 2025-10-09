@@ -20,7 +20,8 @@
       "Bash(npm run test-webhook:*)",
       "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"./symphony-bigquery-key.json\")",
       "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"../symphony-bigquery-key.json\")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npx kill-port:*)"
     ],
     "deny": [],
     "ask": []
