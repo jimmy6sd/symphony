@@ -558,13 +558,27 @@ class DataTable {
             .style('padding-bottom', '8px')
             .text('Sales Information');
 
+        // Calculate single ticket targets
+        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
+        const availableSingleTickets = performance.capacity - subscriptionSeats;
+        const singleTicketTarget = Math.floor(availableSingleTickets * (performance.occupancyGoal || 85) / 100);
+        const singleTicketsSold = performance.singleTicketsSold || 0;
+        const singleTicketProgress = availableSingleTickets > 0 ? (singleTicketsSold / singleTicketTarget * 100) : 0;
+
         const rightInfoItems = [
-            { label: 'Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
+            { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
+            { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
+            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true },
+            { label: '─────────', value: '─────────', isSpace: true },
+            { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
+            { label: 'Single Ticket Target (85%)', value: singleTicketTarget.toLocaleString() },
+            { label: 'Single Sales Progress', value: singleTicketProgress.toFixed(1) + '%',
+              color: singleTicketProgress >= 100 ? '#28a745' : singleTicketProgress >= 75 ? '#ffc107' : '#dc3545' },
+            { label: '─────────', value: '─────────', isSpace: true },
             { label: 'Total Sold', value: totalSold.toLocaleString() },
-            { label: 'Single Tickets', value: (performance.singleTicketsSold || 0).toLocaleString() },
-            { label: 'Subscription Tickets', value: (performance.subscriptionTicketsSold || 0).toLocaleString() },
-            { label: 'Occupancy Rate', value: occupancyRate.toFixed(1) + '%' },
+            { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
             { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
+            { label: '─────────', value: '─────────', isSpace: true },
             { label: 'Status', value: status, color: statusColor }
         ];
 
@@ -572,17 +586,19 @@ class DataTable {
             const row = rightDetails.append('div')
                 .style('display', 'flex')
                 .style('justify-content', 'space-between')
-                .style('padding', '8px 0')
-                .style('border-bottom', '1px solid #dee2e6');
+                .style('padding', item.isSpace ? '4px 0' : '8px 0')
+                .style('border-bottom', item.isSpace ? 'none' : '1px solid #dee2e6');
 
             row.append('span')
-                .style('font-weight', '600')
-                .style('color', '#495057')
-                .text(item.label + ':');
+                .style('font-weight', item.isBold ? '700' : '600')
+                .style('color', item.isSpace ? '#dee2e6' : '#495057')
+                .style('font-size', item.isSpace ? '8px' : '14px')
+                .text(item.isSpace ? item.label : item.label + ':');
 
             row.append('span')
                 .style('color', item.color || '#212529')
-                .style('font-weight', item.color ? '600' : 'normal')
+                .style('font-weight', item.color || item.isBold ? '600' : 'normal')
+                .style('font-size', item.isSpace ? '8px' : '14px')
                 .text(item.value);
         });
 
