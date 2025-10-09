@@ -615,11 +615,12 @@ async function parseDirectLineFormat(lines) {
         const currResult = extractCurrencyFromEnd(str);
         if (!currResult) return null;
 
-        const countMatch = currResult.remaining.match(/(\d+)$/);
+        // Match count at end - can include commas (e.g., "1,234")
+        const countMatch = currResult.remaining.match(/([\d,]+)$/);
         if (!countMatch) return null;
 
         return {
-          count: parseInt(countMatch[1]),
+          count: parseInt(countMatch[1].replace(/,/g, '')),  // Remove commas before parsing
           revenue: currResult.value,
           remaining: currResult.remaining.substring(0, currResult.remaining.length - countMatch[1].length)
         };
