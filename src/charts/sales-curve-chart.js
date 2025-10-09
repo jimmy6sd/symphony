@@ -116,15 +116,17 @@ class SalesCurveChart {
             return;
         }
 
-        // Calculate current sales (actual data point)
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        // Calculate current SINGLE TICKET sales (actual data point)
+        // We only track single ticket progression, not subscriptions
+        const currentSales = performance.singleTicketsSold || 0;
+        const subscriptionSales = performance.subscriptionTicketsSold || 0;
 
         // Calculate weeks from today to performance
         const today = new Date();
         const performanceDate = new Date(performance.date);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
-        console.log('📊 Current sales:', currentSales, 'Weeks to performance:', weeksToPerformance);
+        console.log('📊 Single ticket sales:', currentSales, 'Subscription sales:', subscriptionSales, 'Weeks to performance:', weeksToPerformance);
 
         const maxWeeks = 10;
 
@@ -197,8 +199,21 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5");
 
-        // Draw occupancy goal line
-        const occupancyTarget = capacity * (performance.occupancyGoal / 100);
+        // Draw available single tickets line (capacity minus subscriptions)
+        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
+        const availableSingleCapacity = capacity - subscriptionSeats;
+        chartGroup.append("line")
+            .attr("x1", 0)
+            .attr("x2", innerWidth)
+            .attr("y1", yScale(availableSingleCapacity))
+            .attr("y2", yScale(availableSingleCapacity))
+            .attr("stroke", "#9b59b6")  // Purple
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "4,4");
+
+        // Draw occupancy goal line (now based on subscription + single ticket target)
+        const singleTicketTarget = Math.floor(availableSingleCapacity * (performance.occupancyGoal / 100));
+        const occupancyTarget = subscriptionSeats + singleTicketTarget;
         chartGroup.append("line")
             .attr("x1", 0)
             .attr("x2", innerWidth)
@@ -341,16 +356,26 @@ class SalesCurveChart {
 
     generateOnTrackLine(performance, maxWeeks, capacity = null) {
         const useCapacity = capacity || performance.capacity || 2000;
-        const targetSales = useCapacity * (performance.occupancyGoal / 100);
+
+        // NEW LOGIC: Calculate target based on available single tickets ONLY
+        // The target line shows the progression toward selling 85% of available single tickets
+        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
+        const availableSingleTickets = useCapacity - subscriptionSeats;
+        const singleTicketTarget = Math.floor(availableSingleTickets * (performance.occupancyGoal / 100));
+
+        // Target sales = ONLY single ticket target (not including subscriptions)
+        // This shows the sales curve for single tickets only
+        const targetSales = singleTicketTarget;
+
         const progression = CONFIG.salesCurve.historicSalesProgression;
 
-        console.log('🎯 Target generation debug:');
-        console.log('   Capacity:', useCapacity);
-        console.log('   Occupancy goal:', performance.occupancyGoal);
-        console.log('   Target sales:', targetSales);
-        console.log('   CONFIG object:', CONFIG);
-        console.log('   CONFIG.salesCurve:', CONFIG.salesCurve);
-        console.log('   Historic progression:', progression);
+        console.log('🎯 Target generation (SINGLE TICKET TARGET):');
+        console.log('   Total Capacity:', useCapacity);
+        console.log('   Subscription Sold:', subscriptionSeats);
+        console.log('   Available Single Tickets:', availableSingleTickets);
+        console.log('   Single Ticket Target (85%):', singleTicketTarget);
+        console.log('   Target line shows:', targetSales, '(single tickets only)');
+        console.log('   Occupancy goal:', performance.occupancyGoal + '%');
 
         const onTrackData = [];
 
@@ -440,8 +465,9 @@ class SalesCurveChart {
     }
 
     addTrackingStatus(chartGroup, performance, innerWidth) {
-        // Calculate current sales and weeks to performance
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        // Track ONLY single ticket sales vs single ticket target
+        const singleTicketsSold = performance.singleTicketsSold || 0;
+
         const today = new Date();
         const performanceDate = new Date(performance.date);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
@@ -451,7 +477,8 @@ class SalesCurveChart {
 
         if (!expectedAtCurrentWeek || !expectedAtCurrentWeek.expectedCumulative) return;
 
-        const variance = currentSales - expectedAtCurrentWeek.expectedCumulative;
+        // Calculate variance based on SINGLE TICKET sales only
+        const variance = singleTicketsSold - expectedAtCurrentWeek.expectedCumulative;
         const variancePercentage = ((variance / expectedAtCurrentWeek.expectedCumulative) * 100).toFixed(1);
 
         let status = "On Track";
@@ -507,9 +534,10 @@ class SalesCurveChart {
 
         const legendItems = [
             { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
-            { label: "Target Sales (6 weeks)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
+            { label: "Target Sales (85% of avail.)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
             { label: "Occupancy Goal", color: CONFIG.charts.colors.occupancyGoal, style: "dashed" },
-            { label: "Capacity", color: "#ccc", style: "dashed" }
+            { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
+            { label: "Total Capacity", color: "#ccc", style: "dashed" }
         ];
 
         legendItems.forEach((item, i) => {
