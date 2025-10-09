@@ -47,7 +47,7 @@ function calculateWeeksUntilPerformance(performanceDate) {
  * @param {number} weeksUntil - Weeks until performance
  * @returns {number|null} Pacing percentage (0-1) or null if too early
  */
-functiongetPacingPercentage(weeksUntil) {
+function getPacingPercentage(weeksUntil) {
     // For past events or current week
     if (weeksUntil <= 0) return 1.00;
 
@@ -63,7 +63,7 @@ functiongetPacingPercentage(weeksUntil) {
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
  * @returns {Object} Projection data: { projected, weeksUntil, pacing, canProject }
  */
-functioncalculateProjectedSales(currentSingleTicketsSold, performanceDate) {
+function calculateProjectedSales(currentSingleTicketsSold, performanceDate) {
     const weeksUntil = calculateWeeksUntilPerformance(performanceDate);
     const pacing = getPacingPercentage(weeksUntil);
 
@@ -107,7 +107,7 @@ function getProjectionConfidence(weeksUntil) {
  * @param {number} targetSales - Target single ticket sales (85% goal)
  * @returns {Object} Performance data: { percentage, status }
  */
-functioncalculateProjectionPerformance(projectedSales, targetSales) {
+function calculateProjectionPerformance(projectedSales, targetSales) {
     if (!projectedSales || !targetSales) {
         return { percentage: 0, status: 'unknown' };
     }
@@ -128,7 +128,7 @@ functioncalculateProjectionPerformance(projectedSales, targetSales) {
  * @param {Object} projection - Projection data from calculateProjectedSales
  * @returns {string} Human-readable projection description
  */
-functionformatProjectionText(projection) {
+function formatProjectionText(projection) {
     if (!projection.canProject) {
         if (projection.reason === 'too_early') {
             return `Too early to project (${projection.weeksUntil}+ weeks out)`;
