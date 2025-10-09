@@ -481,39 +481,110 @@ class DataTable {
             .attr('class', 'performance-details')
             .style('display', 'grid')
             .style('grid-template-columns', '1fr 1fr')
-            .style('gap', '20px')
-            .style('margin-top', '20px');
+            .style('gap', '30px')
+            .style('margin-top', '30px')
+            .style('padding', '20px')
+            .style('background', '#f8f9fa')
+            .style('border-radius', '8px');
 
         // Left column
         const leftDetails = detailsGrid.append('div');
 
         leftDetails.append('h3')
-            .style('font-size', '1em')
-            .style('margin-bottom', '12px')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #3498db')
+            .style('padding-bottom', '8px')
             .text('Performance Information');
-        leftDetails.append('p').html(`<strong>Code:</strong> ${performance.code}`);
+
         // Parse date without timezone shift
         const [year, month, day] = performance.date.split('-');
         const perfDate = new Date(year, month - 1, day);
-        leftDetails.append('p').html(`<strong>Date:</strong> ${perfDate.toLocaleDateString()}`);
-        leftDetails.append('p').html(`<strong>Venue:</strong> ${performance.venue}`);
-        leftDetails.append('p').html(`<strong>Series:</strong> ${performance.series}`);
-        leftDetails.append('p').html(`<strong>Season:</strong> ${performance.season}`);
 
-        // Right column
+        const leftInfoItems = [
+            { label: 'Code', value: performance.code || performance.id || 'N/A' },
+            { label: 'Date', value: perfDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
+            { label: 'Venue', value: performance.venue },
+            { label: 'Series', value: performance.series },
+            { label: 'Season', value: performance.season }
+        ];
+
+        leftInfoItems.forEach(item => {
+            const row = leftDetails.append('div')
+                .style('display', 'flex')
+                .style('justify-content', 'space-between')
+                .style('padding', '8px 0')
+                .style('border-bottom', '1px solid #dee2e6');
+
+            row.append('span')
+                .style('font-weight', '600')
+                .style('color', '#495057')
+                .text(item.label + ':');
+
+            row.append('span')
+                .style('color', '#212529')
+                .text(item.value);
+        });
+
+        // Right column - Calculate derived values
         const rightDetails = detailsGrid.append('div');
 
+        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
+
+        // Determine status based on sales progress
+        const today = new Date();
+        const performanceDate = new Date(year, month - 1, day);
+        const weeksToPerformance = Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000));
+        let status = 'On Sale';
+        let statusColor = '#28a745';
+        if (performanceDate < today) {
+            status = 'Past Event';
+            statusColor = '#6c757d';
+        } else if (weeksToPerformance <= 1) {
+            status = 'Final Week';
+            statusColor = '#ffc107';
+        } else if (totalSold === 0) {
+            status = 'Not Yet On Sale';
+            statusColor = '#dc3545';
+        }
+
         rightDetails.append('h3')
-            .style('font-size', '1em')
-            .style('margin-bottom', '12px')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #27ae60')
+            .style('padding-bottom', '8px')
             .text('Sales Information');
-        rightDetails.append('p').html(`<strong>Capacity:</strong> ${performance.capacity?.toLocaleString() || 'N/A'}`);
-        rightDetails.append('p').html(`<strong>Total Sold:</strong> ${performance.totalSold?.toLocaleString() || 'N/A'}`);
-        rightDetails.append('p').html(`<strong>Single Tickets:</strong> ${performance.singleTicketsSold?.toLocaleString() || 'N/A'}`);
-        rightDetails.append('p').html(`<strong>Subscription Tickets:</strong> ${performance.subscriptionTicketsSold?.toLocaleString() || 'N/A'}`);
-        rightDetails.append('p').html(`<strong>Occupancy Rate:</strong> ${performance.occupancyRate?.toFixed(1) || 'N/A'}%`);
-        rightDetails.append('p').html(`<strong>Total Revenue:</strong> $${performance.totalRevenue?.toLocaleString() || 'N/A'}`);
-        rightDetails.append('p').html(`<strong>Status:</strong> ${performance.status || 'Unknown'}`);
+
+        const rightInfoItems = [
+            { label: 'Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
+            { label: 'Total Sold', value: totalSold.toLocaleString() },
+            { label: 'Single Tickets', value: (performance.singleTicketsSold || 0).toLocaleString() },
+            { label: 'Subscription Tickets', value: (performance.subscriptionTicketsSold || 0).toLocaleString() },
+            { label: 'Occupancy Rate', value: occupancyRate.toFixed(1) + '%' },
+            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
+            { label: 'Status', value: status, color: statusColor }
+        ];
+
+        rightInfoItems.forEach(item => {
+            const row = rightDetails.append('div')
+                .style('display', 'flex')
+                .style('justify-content', 'space-between')
+                .style('padding', '8px 0')
+                .style('border-bottom', '1px solid #dee2e6');
+
+            row.append('span')
+                .style('font-weight', '600')
+                .style('color', '#495057')
+                .text(item.label + ':');
+
+            row.append('span')
+                .style('color', item.color || '#212529')
+                .style('font-weight', item.color ? '600' : 'normal')
+                .text(item.value);
+        });
 
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {

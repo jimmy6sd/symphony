@@ -165,6 +165,28 @@ class SalesCurveChart {
             .curve(d3.curveMonotoneX)
             .defined(d => d.hasTarget && d.expectedCumulative !== null); // Only draw where we have target data
 
+        // Add subtle grid lines FIRST (so they're in the back)
+        chartGroup.append("g")
+            .attr("class", "grid")
+            .attr("transform", `translate(0,${innerHeight})`)
+            .call(d3.axisBottom(xScale)
+                .tickSize(-innerHeight)
+                .tickFormat("")
+            )
+            .selectAll("line")
+            .style("stroke", "#f0f0f0")
+            .style("stroke-width", 0.5);
+
+        chartGroup.append("g")
+            .attr("class", "grid")
+            .call(d3.axisLeft(yScale)
+                .tickSize(-innerWidth)
+                .tickFormat("")
+            )
+            .selectAll("line")
+            .style("stroke", "#f0f0f0")
+            .style("stroke-width", 0.5);
+
         // Draw capacity reference line
         chartGroup.append("line")
             .attr("x1", 0)
@@ -225,7 +247,7 @@ class SalesCurveChart {
         // No multiple actual sales points - only the single current sales point above
 
         // Add data points for expected sales (6 weeks only)
-        chartGroup.selectAll(".expected-point")
+        const expectedPoints = chartGroup.selectAll(".expected-point")
             .data(onTrackData.filter(d => d.hasTarget && d.expectedCumulative !== null))
             .enter()
             .append("circle")
@@ -236,7 +258,22 @@ class SalesCurveChart {
             .attr("fill", CONFIG.charts.colors.onTrackLine || "#2ca02c")
             .attr("stroke", "white")
             .attr("stroke-width", 2)
-            .attr("opacity", 0.8);
+            .attr("opacity", 0.8)
+            .style("cursor", "pointer")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 6)
+                    .attr("opacity", 1);
+            })
+            .on("mouseout", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 4)
+                    .attr("opacity", 0.8);
+            });
 
         // X-axis
         const xAxis = chartGroup.append("g")
@@ -257,28 +294,6 @@ class SalesCurveChart {
             .style("stroke", "#e0e0e0");
         xAxis.selectAll(".tick line")
             .style("stroke", "#e0e0e0");
-
-        // Add subtle grid lines
-        chartGroup.append("g")
-            .attr("class", "grid")
-            .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale)
-                .tickSize(-innerHeight)
-                .tickFormat("")
-            )
-            .selectAll("line")
-            .style("stroke", "#f0f0f0")
-            .style("stroke-width", 0.5);
-
-        chartGroup.append("g")
-            .attr("class", "grid")
-            .call(d3.axisLeft(yScale)
-                .tickSize(-innerWidth)
-                .tickFormat("")
-            )
-            .selectAll("line")
-            .style("stroke", "#f0f0f0")
-            .style("stroke-width", 0.5);
 
         // Y-axis
         const yAxis = chartGroup.append("g")
@@ -545,6 +560,29 @@ class SalesCurveChart {
                     Target: ${expected ? expected.expectedCumulative.toLocaleString() : 'N/A'} tickets<br/>
                     Variance: ${variance > 0 ? '+' : ''}${variance.toLocaleString()}<br/>
                     Capacity: ${capacityPercent}%
+                `);
+                return tooltip.style("visibility", "visible");
+            })
+            .on("mousemove", function(event) {
+                return tooltip
+                    .style("top", (event.pageY - 10) + "px")
+                    .style("left", (event.pageX + 10) + "px");
+            })
+            .on("mouseout", function() {
+                return tooltip.style("visibility", "hidden");
+            });
+
+        // Tooltip for expected sales points (target line)
+        this.svg.selectAll(".expected-point")
+            .on("mouseover", function(event, d) {
+                const targetPercent = performance.capacity ? ((d.expectedCumulative / performance.capacity) * 100).toFixed(1) : 'N/A';
+                const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
+
+                tooltip.html(`
+                    <strong>Target Sales (${weekLabel})</strong><br/>
+                    Expected: ${d.expectedCumulative.toLocaleString()} tickets<br/>
+                    Target %: ${d.expectedPercentage.toFixed(1)}% of goal<br/>
+                    Capacity: ${targetPercent}%
                 `);
                 return tooltip.style("visibility", "visible");
             })
