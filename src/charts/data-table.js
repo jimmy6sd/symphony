@@ -33,12 +33,7 @@ class DataTable {
                     // Parse date without timezone shift (value is YYYY-MM-DD)
                     const [year, month, day] = value.split('-');
                     const date = new Date(year, month - 1, day);
-                    return `
-                        <div class="date-cell">
-                            <div class="date-main">${date.toLocaleDateString()}</div>
-                            <div class="date-time">${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                        </div>
-                    `;
+                    return `<div class="date-cell">${date.toLocaleDateString()}</div>`;
                 }
             },
             {
@@ -434,6 +429,8 @@ class DataTable {
             .style('max-width', '90vw')
             .style('max-height', '90vh')
             .style('overflow-y', 'auto')
+            .style('overflow-x', 'hidden')
+            .style('padding', '25px')
             .style('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.3)');
 
         // Modal header
@@ -568,17 +565,14 @@ class DataTable {
         const rightInfoItems = [
             { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
             { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
-            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true },
-            { label: '─────────', value: '─────────', isSpace: true },
+            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true, spacing: 'bottom' },
             { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
             { label: 'Single Ticket Target (85%)', value: singleTicketTarget.toLocaleString() },
             { label: 'Single Sales Progress', value: singleTicketProgress.toFixed(1) + '%',
-              color: singleTicketProgress >= 100 ? '#28a745' : singleTicketProgress >= 75 ? '#ffc107' : '#dc3545' },
-            { label: '─────────', value: '─────────', isSpace: true },
+              color: singleTicketProgress >= 85 ? '#27ae60' : singleTicketProgress >= 60 ? '#f39c12' : '#e74c3c', spacing: 'bottom' },
             { label: 'Total Sold', value: totalSold.toLocaleString() },
             { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
-            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
-            { label: '─────────', value: '─────────', isSpace: true },
+            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), spacing: 'bottom' },
             { label: 'Status', value: status, color: statusColor }
         ];
 
@@ -586,19 +580,18 @@ class DataTable {
             const row = rightDetails.append('div')
                 .style('display', 'flex')
                 .style('justify-content', 'space-between')
-                .style('padding', item.isSpace ? '4px 0' : '8px 0')
-                .style('border-bottom', item.isSpace ? 'none' : '1px solid #dee2e6');
+                .style('padding', '8px 0')
+                .style('margin-bottom', item.spacing === 'bottom' ? '12px' : '0')
+                .style('border-bottom', '1px solid #dee2e6');
 
             row.append('span')
                 .style('font-weight', item.isBold ? '700' : '600')
-                .style('color', item.isSpace ? '#dee2e6' : '#495057')
-                .style('font-size', item.isSpace ? '8px' : '14px')
-                .text(item.isSpace ? item.label : item.label + ':');
+                .style('color', '#495057')
+                .text(item.label + ':');
 
             row.append('span')
                 .style('color', item.color || '#212529')
                 .style('font-weight', item.color || item.isBold ? '600' : 'normal')
-                .style('font-size', item.isSpace ? '8px' : '14px')
                 .text(item.value);
         });
 
