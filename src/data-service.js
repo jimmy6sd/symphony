@@ -227,10 +227,10 @@ class DataService {
                 return result;
             }
             console.error('❌ No data available from BigQuery');
-            return [];
+            throw new Error('No performance data returned from BigQuery');
         } catch (error) {
             console.error('❌ BigQuery API failed:', error.message);
-            return [];
+            throw error; // Re-throw to let caller handle the error
         }
     }
 
@@ -238,119 +238,16 @@ class DataService {
     async loadDashboardData() {
         const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
         if (!response.ok) {
-            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+            throw new Error(`BigQuery API request failed: ${response.status} ${response.statusText}`);
         }
         const performances = await response.json();
         this.updateRefreshTimestamp();
-        return performances || [];
-    }
 
-    // Fallback to local files for development
-    async loadLocalFallback() {
-        try {
-            console.log('📊 Attempting to load from local files as fallback...');
-
-            const response = await fetch('./data/dashboard.json');
-            if (!response.ok) {
-                throw new Error(`Could not load local data: ${response.status}`);
-            }
-
-            const performances = await response.json();
-            console.log(`✅ Loaded ${performances.length} performances from local fallback`);
-
-            return performances;
-        } catch (error) {
-            console.warn('⚠️ Local fallback failed, using enhanced mock data:', error.message);
-            return this.generateEnhancedMockData();
+        if (!performances || performances.length === 0) {
+            throw new Error('BigQuery returned empty dataset');
         }
-    }
 
-    // Generate more comprehensive mock data for demo
-    generateEnhancedMockData() {
-        console.log('🎭 Generating enhanced mock data for demonstration');
-
-        const mockPerformances = [
-            {
-                id: "perf-001",
-                title: "Beethoven's 9th Symphony",
-                date: "2024-03-15",
-                venue: "Main Hall",
-                capacity: 2500,
-                singleTicketsSold: 1200,
-                subscriptionTicketsSold: 800,
-                totalRevenue: 95000,
-                occupancyGoal: 90,
-                budgetGoal: 120000,
-                weeklySales: this.generateWeeklySales(2000, 10)
-            },
-            {
-                id: "perf-002",
-                title: "Mozart Piano Concerto No. 21",
-                date: "2024-03-22",
-                venue: "Chamber Hall",
-                capacity: 1200,
-                singleTicketsSold: 600,
-                subscriptionTicketsSold: 400,
-                totalRevenue: 58000,
-                occupancyGoal: 85,
-                budgetGoal: 70000,
-                weeklySales: this.generateWeeklySales(1000, 10)
-            },
-            {
-                id: "perf-003",
-                title: "Brahms Symphony No. 4",
-                date: "2024-04-05",
-                venue: "Main Hall",
-                capacity: 2500,
-                singleTicketsSold: 1100,
-                subscriptionTicketsSold: 750,
-                totalRevenue: 87000,
-                occupancyGoal: 88,
-                budgetGoal: 110000,
-                weeklySales: this.generateWeeklySales(1850, 8)
-            },
-            {
-                id: "perf-004",
-                title: "Tchaikovsky's Swan Lake Suite",
-                date: "2024-04-12",
-                venue: "Main Hall",
-                capacity: 2500,
-                singleTicketsSold: 950,
-                subscriptionTicketsSold: 650,
-                totalRevenue: 78000,
-                occupancyGoal: 85,
-                budgetGoal: 105000,
-                weeklySales: this.generateWeeklySales(1600, 6)
-            },
-            {
-                id: "perf-005",
-                title: "Handel's Messiah",
-                date: "2024-12-20",
-                venue: "Main Hall",
-                capacity: 2500,
-                singleTicketsSold: 1850,
-                subscriptionTicketsSold: 500,
-                totalRevenue: 125000,
-                occupancyGoal: 95,
-                budgetGoal: 130000,
-                weeklySales: this.generateWeeklySales(2350, 12)
-            },
-            {
-                id: "perf-006",
-                title: "Vivaldi's Four Seasons",
-                date: "2024-05-15",
-                venue: "Chamber Hall",
-                capacity: 1200,
-                singleTicketsSold: 850,
-                subscriptionTicketsSold: 300,
-                totalRevenue: 68000,
-                occupancyGoal: 90,
-                budgetGoal: 75000,
-                weeklySales: this.generateWeeklySales(1150, 9)
-            }
-        ];
-
-        return mockPerformances;
+        return performances;
     }
 
     // Get individual performance details
