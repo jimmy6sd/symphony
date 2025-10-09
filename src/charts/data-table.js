@@ -1,3 +1,5 @@
+import { calculateProjectedSales, calculateProjectionPerformance, formatProjectionText } from '../utils/sales-projections.js';
+
 class DataTable {
     constructor() {
         this.container = null;
@@ -564,6 +566,11 @@ class DataTable {
         const singleTicketsSold = performance.singleTicketsSold || 0;
         const singleTicketProgress = availableSingleTickets > 0 ? (singleTicketsSold / singleTicketTarget * 100) : 0;
 
+        // Calculate sales projections
+        const projection = calculateProjectedSales(singleTicketsSold, performance.date);
+        const projectionPerformance = projection.canProject ?
+            calculateProjectionPerformance(projection.projected, singleTicketTarget) : null;
+
         const rightInfoItems = [
             { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
             { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
@@ -571,7 +578,18 @@ class DataTable {
             { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
             { label: 'Single Ticket Target (85%)', value: singleTicketTarget.toLocaleString() },
             { label: 'Single Sales Progress', value: singleTicketProgress.toFixed(1) + '%',
-              color: singleTicketProgress >= 85 ? '#27ae60' : singleTicketProgress >= 60 ? '#f39c12' : '#e74c3c', spacing: 'bottom' },
+              color: singleTicketProgress >= 85 ? '#27ae60' : singleTicketProgress >= 60 ? '#f39c12' : '#e74c3c' },
+            // Add projection data if available
+            ...(projection.canProject ? [
+                { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isBold: true },
+                { label: 'Projected vs Target', value: projectionPerformance.percentage.toFixed(1) + '%',
+                  color: projectionPerformance.status === 'excellent' ? '#27ae60' :
+                         projectionPerformance.status === 'good' ? '#27ae60' :
+                         projectionPerformance.status === 'warning' ? '#f39c12' : '#e74c3c' },
+                { label: 'Projection Basis', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }
+            ] : [
+                { label: 'Projected Singles', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }
+            ]),
             { label: 'Total Sold', value: totalSold.toLocaleString() },
             { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
             { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), spacing: 'bottom' },
@@ -589,11 +607,14 @@ class DataTable {
             row.append('span')
                 .style('font-weight', item.isBold ? '700' : '600')
                 .style('color', '#495057')
+                .style('font-size', item.isSmall ? '12px' : '14px')
                 .text(item.label + ':');
 
             row.append('span')
                 .style('color', item.color || '#212529')
                 .style('font-weight', item.color || item.isBold ? '600' : 'normal')
+                .style('font-size', item.isSmall ? '12px' : '14px')
+                .style('font-style', item.isSmall ? 'italic' : 'normal')
                 .text(item.value);
         });
 
