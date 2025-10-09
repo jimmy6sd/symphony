@@ -211,6 +211,16 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4,4");
 
+        // Label for available single tickets line
+        chartGroup.append("text")
+            .attr("x", innerWidth - 5)
+            .attr("y", yScale(availableSingleCapacity) - 5)
+            .attr("text-anchor", "end")
+            .attr("fill", "#9b59b6")
+            .attr("font-size", "12px")
+            .attr("font-weight", "600")
+            .text(`Available Single Tickets (${availableSingleCapacity.toLocaleString()})`);
+
         // Draw occupancy goal line (now based on subscription + single ticket target)
         const singleTicketTarget = Math.floor(availableSingleCapacity * (performance.occupancyGoal / 100));
         const occupancyTarget = subscriptionSeats + singleTicketTarget;
@@ -222,6 +232,16 @@ class SalesCurveChart {
             .attr("stroke", CONFIG.charts.colors.occupancyGoal)
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "3,3");
+
+        // Label for occupancy goal line
+        chartGroup.append("text")
+            .attr("x", innerWidth - 5)
+            .attr("y", yScale(occupancyTarget) - 5)
+            .attr("text-anchor", "end")
+            .attr("fill", CONFIG.charts.colors.occupancyGoal)
+            .attr("font-size", "12px")
+            .attr("font-weight", "600")
+            .text(`Occupancy Goal (${occupancyTarget.toLocaleString()})`);
 
         // Draw expected sales line (on-track heuristic) - 6 weeks only
         chartGroup.append("path")

@@ -439,22 +439,24 @@ class DataTable {
             .style('display', 'flex')
             .style('justify-content', 'space-between')
             .style('align-items', 'center')
-            .style('margin-bottom', '20px')
-            .style('border-bottom', '1px solid #eee')
-            .style('padding-bottom', '15px');
+            .style('margin', '-25px -25px 20px -25px')
+            .style('padding', '20px 25px')
+            .style('background', '#2c3e50')
+            .style('border-radius', '8px 8px 0 0');
 
         header.append('h2')
             .style('margin', '0')
-            .style('color', '#333')
+            .style('color', 'white')
             .text(performance.title);
 
         header.append('button')
             .attr('class', 'close-modal')
             .style('background', 'none')
             .style('border', 'none')
-            .style('font-size', '24px')
+            .style('font-size', '28px')
             .style('cursor', 'pointer')
-            .style('color', '#999')
+            .style('color', 'white')
+            .style('line-height', '1')
             .text('×')
             .on('click', () => modalOverlay.remove());
 
