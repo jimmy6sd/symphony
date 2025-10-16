@@ -7,7 +7,7 @@ class DataTable {
         this.filterText = '';
         this.filters = {
             series: 'all',
-            venue: 'all',
+            venue: 'Helzberg Hall',
             season: 'all',
             dateRange: 'all'
         };
@@ -40,11 +40,12 @@ class DataTable {
                 key: 'venue',
                 label: 'Venue',
                 sortable: true,
+                hidden: true,
                 formatter: (value) => `<span class="venue-cell">${value}</span>`
             },
             {
                 key: 'series',
-                label: 'Series',
+                label: 'Production',
                 sortable: true,
                 formatter: (value) => {
                     if (!value || value === 'N/A') return '<span class="series-cell series-other">N/A</span>';
@@ -331,15 +332,23 @@ class DataTable {
             });
 
         // Add "All" option
-        select.append('option')
+        const allOption = select.append('option')
             .attr('value', 'all')
             .text('All');
 
+        if (this.filters[filterKey] === 'all') {
+            allOption.attr('selected', true);
+        }
+
         // Add unique options
         options.forEach(option => {
-            select.append('option')
+            const optionElement = select.append('option')
                 .attr('value', option)
                 .text(option);
+
+            if (this.filters[filterKey] === option) {
+                optionElement.attr('selected', true);
+            }
         });
     }
 
@@ -391,7 +400,7 @@ class DataTable {
     clearAllFilters() {
         this.filters = {
             series: 'all',
-            venue: 'all',
+            venue: 'Helzberg Hall',
             season: 'all',
             dateRange: 'all'
         };
@@ -399,7 +408,13 @@ class DataTable {
 
         // Reset UI elements
         this.container.select('.search-input').property('value', '');
-        this.container.selectAll('.filter-select').property('value', 'all');
+        this.container.selectAll('.filter-select').each(function(d, i) {
+            if (i === 1) { // venue filter is the second dropdown (index 1)
+                d3.select(this).property('value', 'Helzberg Hall');
+            } else {
+                d3.select(this).property('value', 'all');
+            }
+        });
 
         this.renderTableRows();
     }
@@ -666,6 +681,8 @@ class DataTable {
         const headerRow = thead.append('tr');
 
         this.columns.forEach(column => {
+            if (column.hidden) return;
+
             const th = headerRow
                 .append('th')
                 .attr('class', `header-${column.key}`)
@@ -717,6 +734,8 @@ class DataTable {
 
         // Create cells
         this.columns.forEach(column => {
+            if (column.hidden) return;
+
             const cells = allRows
                 .selectAll(`td.cell-${column.key}`)
                 .data(d => [d]);

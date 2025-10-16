@@ -1,0 +1,4338 @@
+{
+  "generatedAt": "2025-10-02T13:59:50.689Z",
+  "sources": {
+    "excel": {
+      "file": "data/excel-extracted.json",
+      "extractedAt": "2025-10-02T13:39:24.447Z",
+      "recordCount": 102
+    },
+    "bigquery": {
+      "file": "data/bigquery-extracted.json",
+      "extractedAt": "2025-10-02T13:58:36.933Z",
+      "recordCount": 60
+    }
+  },
+  "summary": {
+    "totalPerformances": 60,
+    "withExcelData": 47,
+    "withoutExcelData": 13,
+    "matchRate": "78.3%"
+  },
+  "performances": [
+    {
+      "performanceId": 24090,
+      "performanceCode": "250903E",
+      "performanceName": "Morgan Freeman's Symphonic Blu",
+      "seriesCode": "Special Event",
+      "performanceDate": "2025-09-03",
+      "performanceType": "Specials",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 1,
+        "weeksUntilPerformance": -2
+      },
+      "currentSales": {
+        "singleTickets": 942,
+        "subscriptionTickets": 6,
+        "totalTickets": 948,
+        "totalRevenue": 113051
+      },
+      "budget": {
+        "total": 153473,
+        "single": 153473,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.8756328475,
+        "single": 0.8756328475,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 113051,
+        "single": 134386,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1419,
+        "currentOccupancy": 66.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 117.0609756,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 227,
+        "returningHouseholds": 289,
+        "totalHouseholds": 516
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 134386,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "LOW",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "ON_TARGET",
+        "pacingVariance": 0,
+        "budgetVariance": 0.8756328475
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 24235,
+      "performanceCode": "250905E",
+      "performanceName": "La nuit sombre",
+      "seriesCode": null,
+      "performanceDate": "2025-09-05",
+      "performanceType": "Specials",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 1,
+        "weeksUntilPerformance": -2
+      },
+      "currentSales": {
+        "singleTickets": 629,
+        "subscriptionTickets": 252,
+        "totalTickets": 881,
+        "totalRevenue": 17715
+      },
+      "budget": {
+        "total": 15000,
+        "single": 15000,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 1.333666667,
+        "single": 1.333666667,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 17715,
+        "single": 20005,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 510
+      },
+      "capacity": {
+        "max": 742,
+        "currentOccupancy": 84.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 28.61945637,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 86,
+        "returningHouseholds": 209,
+        "totalHouseholds": 295
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 20005,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "LOW",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "AT_OR_ABOVE",
+        "pacingVariance": 0,
+        "budgetVariance": 1.333666667
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23668,
+      "performanceCode": "250919E",
+      "performanceName": "PS1 Music of Journey",
+      "seriesCode": "PS1",
+      "performanceDate": "2025-09-19",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 3,
+        "weeksUntilPerformance": null
+      },
+      "currentSales": {
+        "singleTickets": 214,
+        "subscriptionTickets": 695,
+        "totalTickets": 909,
+        "totalRevenue": 63832.1
+      },
+      "budget": {
+        "total": 100666,
+        "single": 59333,
+        "subscription": 41333
+      },
+      "budgetAchievement": {
+        "total": 0.7137921443,
+        "single": 0.411019163,
+        "subscription": 1.148418939
+      },
+      "revenue": {
+        "total": 63832.1,
+        "single": 24387,
+        "subscription": 47467.6
+      },
+      "projected": {
+        "singleTickets": 444,
+        "totalTickets": 1092,
+        "occupancy": 0.6867924528
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 800.7
+      },
+      "capacity": {
+        "max": 1578,
+        "currentOccupancy": 57.6,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 65.80091575,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 67,
+        "returningHouseholds": 416,
+        "totalHouseholds": 483
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 69230,
+        "weeklyIncrease": 2624.6
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.5180180180180181,
+        "budgetVariance": 0.7137921443
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23677,
+      "performanceCode": "250920E",
+      "performanceName": "PS1 Music of Journey",
+      "seriesCode": "PS1",
+      "performanceDate": "2025-09-20",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 3,
+        "weeksUntilPerformance": null
+      },
+      "currentSales": {
+        "singleTickets": 259,
+        "subscriptionTickets": 614,
+        "totalTickets": 873,
+        "totalRevenue": 62472.1
+      },
+      "budget": {
+        "total": 100667,
+        "single": 59333,
+        "subscription": 41334
+      },
+      "budgetAchievement": {
+        "total": 0.6954940547,
+        "single": 0.4760925623,
+        "subscription": 1.010434509
+      },
+      "revenue": {
+        "total": 62472.1,
+        "single": 28248,
+        "subscription": 41765.3
+      },
+      "projected": {
+        "singleTickets": 473,
+        "totalTickets": 1043,
+        "occupancy": 0.6559748428
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867
+      },
+      "capacity": {
+        "max": 1548,
+        "currentOccupancy": 56.4,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 67.12684564,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 78,
+        "returningHouseholds": 376,
+        "totalHouseholds": 454
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 67949,
+        "weeklyIncrease": 2064.3
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.452431289640592,
+        "budgetVariance": 0.6954940547
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23678,
+      "performanceCode": "250921M",
+      "performanceName": "PS1 Music of Journey",
+      "seriesCode": "PS1",
+      "performanceDate": "2025-09-21",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 3,
+        "weeksUntilPerformance": null
+      },
+      "currentSales": {
+        "singleTickets": 300,
+        "subscriptionTickets": 382,
+        "totalTickets": 682,
+        "totalRevenue": 45342.2
+      },
+      "budget": {
+        "total": 100666,
+        "single": 59333,
+        "subscription": 41333
+      },
+      "budgetAchievement": {
+        "total": 0.5570132915,
+        "single": 0.5254074461,
+        "subscription": 0.6023830837
+      },
+      "revenue": {
+        "total": 45342.2,
+        "single": 31174,
+        "subscription": 24898.3
+      },
+      "projected": {
+        "singleTickets": 526,
+        "totalTickets": 884,
+        "occupancy": 0.5559748428
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1047.2
+      },
+      "capacity": {
+        "max": 1568,
+        "currentOccupancy": 43.5,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.43020362,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 74,
+        "returningHouseholds": 286,
+        "totalHouseholds": 360
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 52671,
+        "weeklyIncrease": 3401.3
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.4296577946768061,
+        "budgetVariance": 0.5570132915
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23768,
+      "performanceCode": "250928M",
+      "performanceName": "FS1 The Orchestra Gamez",
+      "seriesCode": "FS1",
+      "performanceDate": "2025-09-28",
+      "performanceType": "Family",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "timeline": {
+        "weekNumber": 4,
+        "weeksUntilPerformance": 1
+      },
+      "currentSales": {
+        "singleTickets": 132,
+        "subscriptionTickets": 297,
+        "totalTickets": 429,
+        "totalRevenue": 11178
+      },
+      "budget": {
+        "total": 19500,
+        "single": 10000,
+        "subscription": 9500
+      },
+      "budgetAchievement": {
+        "total": 0.6504615385,
+        "single": 0.6207,
+        "subscription": 0.6817894737
+      },
+      "revenue": {
+        "total": 11178,
+        "single": 6207,
+        "subscription": 6477
+      },
+      "projected": {
+        "singleTickets": 333.8983051,
+        "totalTickets": 623.8983051,
+        "occupancy": 0.4791845661
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 860.2
+      },
+      "capacity": {
+        "max": 1986,
+        "currentOccupancy": 21.6,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 26.04517454,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 104,
+        "totalHouseholds": 125
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 12086,
+        "weeklyIncrease": 598
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.6046700507794821,
+        "budgetVariance": 0.6504615385
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23620,
+      "performanceCode": "251010E",
+      "performanceName": "CS01 Copland's Appalachian Spr",
+      "seriesCode": "CS01",
+      "performanceDate": "2025-10-10",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 485,
+        "subscriptionTickets": 292,
+        "totalTickets": 777,
+        "totalRevenue": 50099.3
+      },
+      "budget": {
+        "total": 86276,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 51.1,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 50099.3,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1481,
+        "currentOccupancy": 45.1,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.16350515463918,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23621,
+      "performanceCode": "251011E",
+      "performanceName": "CS01 Copland's Appalachian Spr",
+      "seriesCode": "CS01",
+      "performanceDate": "2025-10-11",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 117,
+        "subscriptionTickets": 614,
+        "totalTickets": 731,
+        "totalRevenue": 48757.8
+      },
+      "budget": {
+        "total": 95416,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 51.1,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 48757.8,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1468,
+        "currentOccupancy": 49.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 75.62222222222225,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23622,
+      "performanceCode": "251012M",
+      "performanceName": "CS01 Copland's Appalachian Spr",
+      "seriesCode": "CS01",
+      "performanceDate": "2025-10-12",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 160,
+        "subscriptionTickets": 633,
+        "totalTickets": 793,
+        "totalRevenue": 51402.4
+      },
+      "budget": {
+        "total": 100592,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 51.1,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 51402.4,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1510,
+        "currentOccupancy": 52.5,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.10875000000001,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23912,
+      "performanceCode": "251017E",
+      "performanceName": "Top Gun: Maverick in Concert",
+      "seriesCode": "Top Gun Concert",
+      "performanceDate": "2025-10-17",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 7,
+        "weeksUntilPerformance": 4
+      },
+      "currentSales": {
+        "singleTickets": 544,
+        "subscriptionTickets": 4,
+        "totalTickets": 548,
+        "totalRevenue": 41921.5
+      },
+      "budget": {
+        "total": 103497,
+        "single": 103497,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.4710281457,
+        "single": 0.4710281457,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 41921.5,
+        "single": 48750,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 1954.545455,
+        "totalTickets": 1954.545455,
+        "occupancy": 1.501186985
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1308,
+        "currentOccupancy": 41.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 75.58139535,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 51,
+        "returningHouseholds": 179,
+        "totalHouseholds": 230
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46261,
+        "weeklyIncrease": 2489
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.721674418669378,
+        "budgetVariance": 0.4710281457
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23913,
+      "performanceCode": "251018E",
+      "performanceName": "Top Gun: Maverick in Concert",
+      "seriesCode": "Top Gun Concert",
+      "performanceDate": "2025-10-18",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 7,
+        "weeksUntilPerformance": 4
+      },
+      "currentSales": {
+        "singleTickets": 659,
+        "subscriptionTickets": 12,
+        "totalTickets": 671,
+        "totalRevenue": 50743
+      },
+      "budget": {
+        "total": 103497,
+        "single": 103497,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.5857947573,
+        "single": 0.5857947573,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 50743,
+        "single": 60628,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 2448.484848,
+        "totalTickets": 2448.484848,
+        "occupancy": 1.880556719
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1323,
+        "currentOccupancy": 50.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 75.03465347,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 74,
+        "returningHouseholds": 184,
+        "totalHouseholds": 258
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 55583,
+        "weeklyIncrease": 5045
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.7308539603427434,
+        "budgetVariance": 0.5857947573
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23914,
+      "performanceCode": "251019M",
+      "performanceName": "Top Gun: Maverick in Concert",
+      "seriesCode": "Top Gun Concert",
+      "performanceDate": "2025-10-19",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 7,
+        "weeksUntilPerformance": 4
+      },
+      "currentSales": {
+        "singleTickets": 465,
+        "subscriptionTickets": 10,
+        "totalTickets": 475,
+        "totalRevenue": 36365
+      },
+      "budget": {
+        "total": 103496,
+        "single": 103496,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.4299103347,
+        "single": 0.4299103347,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 36365,
+        "single": 44494,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 1800,
+        "totalTickets": 1800,
+        "occupancy": 1.382488479
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1309,
+        "currentOccupancy": 36.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 74.90572391,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 38,
+        "returningHouseholds": 149,
+        "totalHouseholds": 187
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39484,
+        "weeklyIncrease": 5010
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.7416666666666667,
+        "budgetVariance": 0.4299103347
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23680,
+      "performanceCode": "251024E",
+      "performanceName": "PS2 90s Mixtape",
+      "seriesCode": "PS2",
+      "performanceDate": "2025-10-24",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 8,
+        "weeksUntilPerformance": 5
+      },
+      "currentSales": {
+        "singleTickets": 74,
+        "subscriptionTickets": 719,
+        "totalTickets": 793,
+        "totalRevenue": 56654.1
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "budgetAchievement": {
+        "total": 0.6239275232,
+        "single": 0.1117506984,
+        "subscription": 1.324335897
+      },
+      "revenue": {
+        "total": 56654.1,
+        "single": 5960,
+        "subscription": 51649.1
+      },
+      "projected": {
+        "singleTickets": 326.6666667,
+        "totalTickets": 1040.666667,
+        "occupancy": 0.6545073375
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 744.6
+      },
+      "capacity": {
+        "max": 1549,
+        "currentOccupancy": 51.2,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 70.94716749,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 7,
+        "returningHouseholds": 350,
+        "totalHouseholds": 357
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 56960,
+        "weeklyIncrease": 649.1
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.7734693877782174,
+        "budgetVariance": 0.6239275232
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23681,
+      "performanceCode": "251025E",
+      "performanceName": "PS2 90s Mixtape",
+      "seriesCode": "PS2",
+      "performanceDate": "2025-10-25",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 8,
+        "weeksUntilPerformance": 5
+      },
+      "currentSales": {
+        "singleTickets": 73,
+        "subscriptionTickets": 636,
+        "totalTickets": 709,
+        "totalRevenue": 50266.1
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "budgetAchievement": {
+        "total": 0.5673247918,
+        "single": 0.1243882774,
+        "subscription": 1.173046154
+      },
+      "revenue": {
+        "total": 50266.1,
+        "single": 6634,
+        "subscription": 45748.8
+      },
+      "projected": {
+        "singleTickets": 390,
+        "totalTickets": 1027,
+        "occupancy": 0.6459119497
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 810.05
+      },
+      "capacity": {
+        "max": 1562,
+        "currentOccupancy": 45.4,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 69.47320955,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 11,
+        "returningHouseholds": 320,
+        "totalHouseholds": 311
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 52132,
+        "weeklyIncrease": 250.8
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.8128205128205128,
+        "budgetVariance": 0.5673247918
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23682,
+      "performanceCode": "251026M",
+      "performanceName": "PS2 90s Mixtape",
+      "seriesCode": "PS2",
+      "performanceDate": "2025-10-26",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 8,
+        "weeksUntilPerformance": 5
+      },
+      "currentSales": {
+        "singleTickets": 66,
+        "subscriptionTickets": 391,
+        "totalTickets": 457,
+        "totalRevenue": 30489.7
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "budgetAchievement": {
+        "total": 0.3446059372,
+        "single": 0.1130257064,
+        "subscription": 0.6612948718
+      },
+      "revenue": {
+        "total": 30489.7,
+        "single": 6028,
+        "subscription": 25790.5
+      },
+      "projected": {
+        "singleTickets": 320,
+        "totalTickets": 700,
+        "occupancy": 0.4402515723
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1028.5
+      },
+      "capacity": {
+        "max": 1560,
+        "currentOccupancy": 29.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.84558824,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 6,
+        "returningHouseholds": 209,
+        "totalHouseholds": 203
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 31111,
+        "weeklyIncrease": 707.5
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.79375,
+        "budgetVariance": 0.3446059372
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23791,
+      "performanceCode": "251029E",
+      "performanceName": "On Stage 1 with George Li",
+      "seriesCode": "On Stage",
+      "performanceDate": "2025-10-29",
+      "performanceType": "On Stage",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 23,
+        "subscriptionTickets": 9,
+        "totalTickets": 32,
+        "totalRevenue": 2520
+      },
+      "budget": {
+        "total": 3150,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 80,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 2520,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 128,
+        "currentOccupancy": 18,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 84.1304347826087,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23624,
+      "performanceCode": "251031E",
+      "performanceName": "CS02 Rach Cele Pt 1 (Piazza 1)",
+      "seriesCode": "CS02",
+      "performanceDate": "2025-10-31",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 96,
+        "subscriptionTickets": 365,
+        "totalTickets": 461,
+        "totalRevenue": 30148.1
+      },
+      "budget": {
+        "total": 56776,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 53.1,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 30148.1,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1497,
+        "currentOccupancy": 30.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.90729166666665,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23625,
+      "performanceCode": "251101E",
+      "performanceName": "CS02 Rachmaninoff Celeb: Pt. 1",
+      "seriesCode": "CS02",
+      "performanceDate": "2025-11-01",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 9,
+        "weeksUntilPerformance": 6
+      },
+      "currentSales": {
+        "singleTickets": 212,
+        "subscriptionTickets": 590,
+        "totalTickets": 802,
+        "totalRevenue": 52754.2
+      },
+      "budget": {
+        "total": 86500,
+        "single": 31500,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.6669710983,
+        "single": 0.6659365079,
+        "subscription": 0.6675636364
+      },
+      "revenue": {
+        "total": 52754.2,
+        "single": 20977,
+        "subscription": 36716
+      },
+      "projected": {
+        "singleTickets": 1348.148148,
+        "totalTickets": 1911.148148,
+        "occupancy": 1.333669329
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 739.5
+      },
+      "capacity": {
+        "max": 1488,
+        "currentOccupancy": 53.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 62.23624595,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 26,
+        "returningHouseholds": 397,
+        "totalHouseholds": 423
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 56104,
+        "weeklyIncrease": 1589
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.8427472527299722,
+        "budgetVariance": 0.6669710983
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23626,
+      "performanceCode": "251102M",
+      "performanceName": "CS02 Rachmaninoff Celeb: Pt. 1",
+      "seriesCode": "CS02",
+      "performanceDate": "2025-11-02",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 9,
+        "weeksUntilPerformance": 6
+      },
+      "currentSales": {
+        "singleTickets": 165,
+        "subscriptionTickets": 570,
+        "totalTickets": 735,
+        "totalRevenue": 46553.4
+      },
+      "budget": {
+        "total": 86500,
+        "single": 31500,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.5945907514,
+        "single": 0.48,
+        "subscription": 0.66022
+      },
+      "revenue": {
+        "total": 46553.4,
+        "single": 15120,
+        "subscription": 36312.1
+      },
+      "projected": {
+        "singleTickets": 948.1481481,
+        "totalTickets": 1509.148148,
+        "occupancy": 1.053138973
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 741.2
+      },
+      "capacity": {
+        "max": 1544,
+        "currentOccupancy": 47.6,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 62.95238678,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 17,
+        "returningHouseholds": 407,
+        "totalHouseholds": 424
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 50340,
+        "weeklyIncrease": 1092.1
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "BEHIND",
+        "budgetStatus": "BELOW",
+        "pacingVariance": -0.8259765624911629,
+        "budgetVariance": 0.5945907514
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23694,
+      "performanceCode": "251109M",
+      "performanceName": "FS2 Carnival of the Animals",
+      "seriesCode": "FS2",
+      "performanceDate": "2025-11-09",
+      "performanceType": "Family",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "timeline": {
+        "weekNumber": 10,
+        "weeksUntilPerformance": 7
+      },
+      "currentSales": {
+        "singleTickets": 94,
+        "subscriptionTickets": 300,
+        "totalTickets": 394,
+        "totalRevenue": 9815.5
+      },
+      "budget": {
+        "total": 19500,
+        "single": 10000,
+        "subscription": 9500
+      },
+      "budgetAchievement": {
+        "total": 0.5488717949,
+        "single": 0.4064,
+        "subscription": 0.6988421053
+      },
+      "revenue": {
+        "total": 9815.5,
+        "single": 4064,
+        "subscription": 6639
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 850.85
+      },
+      "capacity": {
+        "max": 2074,
+        "currentOccupancy": 19,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 24.16027088,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 9,
+        "returningHouseholds": 103,
+        "totalHouseholds": 112
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 10523,
+        "weeklyIncrease": 180
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.5488717949
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23628,
+      "performanceCode": "251122E",
+      "performanceName": "CS03 Matthias and Mahler #7",
+      "seriesCode": "CS03",
+      "performanceDate": "2025-11-22",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 12,
+        "weeksUntilPerformance": 9
+      },
+      "currentSales": {
+        "singleTickets": 72,
+        "subscriptionTickets": 592,
+        "totalTickets": 664,
+        "totalRevenue": 44782.9
+      },
+      "budget": {
+        "total": 66500,
+        "single": 11500,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.7139533835,
+        "single": 0.6440869565,
+        "subscription": 0.7285618182
+      },
+      "revenue": {
+        "total": 44782.9,
+        "single": 7407,
+        "subscription": 40070.9
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 851.7
+      },
+      "capacity": {
+        "max": 1519,
+        "currentOccupancy": 43.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 67.24915014,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 4,
+        "returningHouseholds": 347,
+        "totalHouseholds": 351
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46306,
+        "weeklyIncrease": 1171.9
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7139533835
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23629,
+      "performanceCode": "251123M",
+      "performanceName": "CS03 Matthias and Mahler #7",
+      "seriesCode": "CS03",
+      "performanceDate": "2025-11-23",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 12,
+        "weeksUntilPerformance": 9
+      },
+      "currentSales": {
+        "singleTickets": 67,
+        "subscriptionTickets": 637,
+        "totalTickets": 704,
+        "totalRevenue": 45910.2
+      },
+      "budget": {
+        "total": 66500,
+        "single": 11500,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.7009503759,
+        "single": 0.5687826087,
+        "subscription": 0.7285854545
+      },
+      "revenue": {
+        "total": 45910.2,
+        "single": 6541,
+        "subscription": 40072.2
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 823.65
+      },
+      "capacity": {
+        "max": 1571,
+        "currentOccupancy": 44.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.83059805,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 3,
+        "returningHouseholds": 391,
+        "totalHouseholds": 394
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46473,
+        "weeklyIncrease": 140.2
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7009503759
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23798,
+      "performanceCode": "251130M",
+      "performanceName": "Elf™ in Concert",
+      "seriesCode": null,
+      "performanceDate": "2025-11-30",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 13,
+        "weeksUntilPerformance": 10
+      },
+      "currentSales": {
+        "singleTickets": 409,
+        "subscriptionTickets": 8,
+        "totalTickets": 417,
+        "totalRevenue": 29761.2
+      },
+      "budget": {
+        "total": 107500,
+        "single": 107500,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.3215776744,
+        "single": 0.3215776744,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 29761.2,
+        "single": 34569.6,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1399,
+        "currentOccupancy": 29.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 70.12089249,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 88,
+        "totalHouseholds": 109
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 33261,
+        "weeklyIncrease": 1308.6
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.3215776744
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23998,
+      "performanceCode": "251212E",
+      "performanceName": "Leslie Odom Jr. Christmas Tour",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-12",
+      "performanceType": "Specials",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 15,
+        "weeksUntilPerformance": 12
+      },
+      "currentSales": {
+        "singleTickets": 910,
+        "subscriptionTickets": 364,
+        "totalTickets": 1274,
+        "totalRevenue": 93712
+      },
+      "budget": {
+        "total": 150000,
+        "single": 150000,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.6895133333,
+        "single": 0.6895133333,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 93712,
+        "single": 103427,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "capacity": {
+        "max": 1499,
+        "currentOccupancy": 60.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 102.8101392,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 87,
+        "returningHouseholds": 264,
+        "totalHouseholds": 351
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 98177,
+        "weeklyIncrease": 5250
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6895133333
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23800,
+      "performanceCode": "251223E",
+      "performanceName": "It's a Wonderful Life in Conce",
+      "seriesCode": null,
+      "performanceDate": "2025-12-23",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 17,
+        "weeksUntilPerformance": 14
+      },
+      "currentSales": {
+        "singleTickets": 744,
+        "subscriptionTickets": 4,
+        "totalTickets": 748,
+        "totalRevenue": 57717.6
+      },
+      "budget": {
+        "total": 100000,
+        "single": 100000,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.666536,
+        "single": 0.666536,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 57717.6,
+        "single": 66653.6,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1299,
+        "currentOccupancy": 57.6,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 77.68484848,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 62594,
+        "weeklyIncrease": 4059.6
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.666536
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23631,
+      "performanceCode": "260110E",
+      "performanceName": "CS04 Brahms' Fourth Symphony",
+      "seriesCode": "CS04",
+      "performanceDate": "2026-01-10",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 19,
+        "weeksUntilPerformance": 16
+      },
+      "currentSales": {
+        "singleTickets": 38,
+        "subscriptionTickets": 572,
+        "totalTickets": 610,
+        "totalRevenue": 39210.3
+      },
+      "budget": {
+        "total": 54999,
+        "single": 21666,
+        "subscription": 33333
+      },
+      "budgetAchievement": {
+        "total": 0.7296132657,
+        "single": 0.1735438013,
+        "subscription": 1.091050911
+      },
+      "revenue": {
+        "total": 39210.3,
+        "single": 3760,
+        "subscription": 36368
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 878.9
+      },
+      "capacity": {
+        "max": 1593,
+        "currentOccupancy": 38.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.41091493,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40067,
+        "weeklyIncrease": 61
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7296132657
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23635,
+      "performanceCode": "260117E",
+      "performanceName": "CS05 Pines of Rome & Bruch",
+      "seriesCode": "CS05",
+      "performanceDate": "2026-01-17",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 20,
+        "weeksUntilPerformance": 17
+      },
+      "currentSales": {
+        "singleTickets": 91,
+        "subscriptionTickets": 600,
+        "totalTickets": 691,
+        "totalRevenue": 45838.3
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.631932,
+        "single": 0.34195,
+        "subscription": 0.73738
+      },
+      "revenue": {
+        "total": 45838.3,
+        "single": 6839,
+        "subscription": 40555.9
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "capacity": {
+        "max": 1542,
+        "currentOccupancy": 44.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.00961003,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46870,
+        "weeklyIncrease": 524.9
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.631932
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23637,
+      "performanceCode": "260118M",
+      "performanceName": "CS05 Pines of Rome & Bruch",
+      "seriesCode": "CS05",
+      "performanceDate": "2026-01-18",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 20,
+        "weeksUntilPerformance": 17
+      },
+      "currentSales": {
+        "singleTickets": 63,
+        "subscriptionTickets": 623,
+        "totalTickets": 686,
+        "totalRevenue": 43967.4
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.5946693333,
+        "single": 0.28335,
+        "subscription": 0.7078763636
+      },
+      "revenue": {
+        "total": 43967.4,
+        "single": 5667,
+        "subscription": 38933.2
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 835.55
+      },
+      "capacity": {
+        "max": 1599,
+        "currentOccupancy": 42.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.08074713,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 44645,
+        "weeklyIncrease": -44.8
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.5946693333
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23917,
+      "performanceCode": "260124E",
+      "performanceName": "Indiana Jones: Raiders of Lost",
+      "seriesCode": "Indiana Jones Concert",
+      "performanceDate": "2026-01-24",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 21,
+        "weeksUntilPerformance": 18
+      },
+      "currentSales": {
+        "singleTickets": 429,
+        "subscriptionTickets": 10,
+        "totalTickets": 439,
+        "totalRevenue": 32128.1
+      },
+      "budget": {
+        "total": 90000,
+        "single": 90000,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.3887566667,
+        "single": 0.3887566667,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 32128.1,
+        "single": 34988.1,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1338,
+        "currentOccupancy": 32.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 72.74033264,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 34163,
+        "weeklyIncrease": 825.1
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.3887566667
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23639,
+      "performanceCode": "260131E",
+      "performanceName": "CS06 Beethoven+",
+      "seriesCode": "CS06",
+      "performanceDate": "2026-01-31",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 22,
+        "weeksUntilPerformance": 19
+      },
+      "currentSales": {
+        "singleTickets": 53,
+        "subscriptionTickets": 614,
+        "totalTickets": 667,
+        "totalRevenue": 44237.1
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.6066786667,
+        "single": 0.26885,
+        "subscription": 0.7295254545
+      },
+      "revenue": {
+        "total": 44237.1,
+        "single": 5377,
+        "subscription": 40123.9
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "capacity": {
+        "max": 1544,
+        "currentOccupancy": 43.2,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 65.84790159,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45126,
+        "weeklyIncrease": 374.9
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6066786667
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23640,
+      "performanceCode": "260201M",
+      "performanceName": "CS06 Beethoven+",
+      "seriesCode": "CS06",
+      "performanceDate": "2026-02-01",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 22,
+        "weeksUntilPerformance": 19
+      },
+      "currentSales": {
+        "singleTickets": 41,
+        "subscriptionTickets": 617,
+        "totalTickets": 658,
+        "totalRevenue": 41792.9
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "budgetAchievement": {
+        "total": 0.5785893333,
+        "single": 0.2227,
+        "subscription": 0.7080036364
+      },
+      "revenue": {
+        "total": 41792.9,
+        "single": 4454,
+        "subscription": 38940.2
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 834.7
+      },
+      "capacity": {
+        "max": 1613,
+        "currentOccupancy": 40.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 64.09778434,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 43439,
+        "weeklyIncrease": -44.8
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.5785893333
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 24004,
+      "performanceCode": "260205E",
+      "performanceName": "On Stage 2 w/ Leila Josefowicz",
+      "seriesCode": "On Stage",
+      "performanceDate": "2026-02-05",
+      "performanceType": "On Stage",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 19,
+        "subscriptionTickets": 8,
+        "totalTickets": 27,
+        "totalRevenue": 1960
+      },
+      "budget": {
+        "total": 3048,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 64.3,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 1960,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 136,
+        "currentOccupancy": 14,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 75.78947368421052,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23642,
+      "performanceCode": "260206E",
+      "performanceName": "CS07 Prokofiev, Symphony No. 5",
+      "seriesCode": "CS07",
+      "performanceDate": "2026-02-06",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 44,
+        "subscriptionTickets": 573,
+        "totalTickets": 617,
+        "totalRevenue": 39853.3
+      },
+      "budget": {
+        "total": 87398,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 45.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 39853.3,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1586,
+        "currentOccupancy": 38.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 59.27954545454552,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23683,
+      "performanceCode": "260213E",
+      "performanceName": "PS3 She's Got Soul",
+      "seriesCode": "PS3",
+      "performanceDate": "2026-02-13",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 24,
+        "weeksUntilPerformance": 21
+      },
+      "currentSales": {
+        "singleTickets": 48,
+        "subscriptionTickets": 723,
+        "totalTickets": 771,
+        "totalRevenue": 55079.7
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "budgetAchievement": {
+        "total": 0.5905932436,
+        "single": 0.07303170645,
+        "subscription": 1.258415794
+      },
+      "revenue": {
+        "total": 55079.7,
+        "single": 3895,
+        "subscription": 52014.1
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 736.95
+      },
+      "capacity": {
+        "max": 1551,
+        "currentOccupancy": 49.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 71.0407878,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 55761,
+        "weeklyIncrease": 148.1
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.5905932436
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23684,
+      "performanceCode": "260214E",
+      "performanceName": "PS3 She's Got Soul",
+      "seriesCode": "PS3",
+      "performanceDate": "2026-02-14",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 24,
+        "weeksUntilPerformance": 21
+      },
+      "currentSales": {
+        "singleTickets": 38,
+        "subscriptionTickets": 660,
+        "totalTickets": 698,
+        "totalRevenue": 49814.5
+      },
+      "budget": {
+        "total": 94667,
+        "single": 53333,
+        "subscription": 41334
+      },
+      "budgetAchievement": {
+        "total": 0.5341967106,
+        "single": 0.03789398684,
+        "subscription": 1.174572991
+      },
+      "revenue": {
+        "total": 49814.5,
+        "single": 2021,
+        "subscription": 48549.8
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 781.15
+      },
+      "capacity": {
+        "max": 1551,
+        "currentOccupancy": 45,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 70.72839161,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 50567,
+        "weeklyIncrease": 3.8
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.5341967106
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23805,
+      "performanceCode": "260222M",
+      "performanceName": "Harry Potter 2 Chamber Secrets",
+      "seriesCode": "Harry Potter Concert",
+      "performanceDate": "2026-02-22",
+      "performanceType": "Specials/Film",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "timeline": {
+        "weekNumber": 25,
+        "weeksUntilPerformance": 22
+      },
+      "currentSales": {
+        "singleTickets": 390,
+        "subscriptionTickets": 7,
+        "totalTickets": 397,
+        "totalRevenue": 29349
+      },
+      "budget": {
+        "total": 111250,
+        "single": 111250,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 0.303752809,
+        "single": 0.303752809,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 29349,
+        "single": 33792.5,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "capacity": {
+        "max": 1332,
+        "currentOccupancy": 29.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 67.4500998,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 32563,
+        "weeklyIncrease": 1229.5
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.303752809
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23645,
+      "performanceCode": "260313E",
+      "performanceName": "CS08 Saint-Saëns & Strauss",
+      "seriesCode": "CS08",
+      "performanceDate": "2026-03-13",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 28,
+        "weeksUntilPerformance": 25
+      },
+      "currentSales": {
+        "singleTickets": 32,
+        "subscriptionTickets": 579,
+        "totalTickets": 611,
+        "totalRevenue": 40372.9
+      },
+      "budget": {
+        "total": 54999,
+        "single": 18333,
+        "subscription": 36666
+      },
+      "budgetAchievement": {
+        "total": 0.7426680485,
+        "single": 0.1438389789,
+        "subscription": 1.042082583
+      },
+      "revenue": {
+        "total": 40372.9,
+        "single": 2637,
+        "subscription": 38209
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867.85
+      },
+      "capacity": {
+        "max": 1551,
+        "currentOccupancy": 39.4,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.09385113,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40801,
+        "weeklyIncrease": 45
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7426680485
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23646,
+      "performanceCode": "260314E",
+      "performanceName": "CS08 Saint-Saëns & Strauss",
+      "seriesCode": "CS08",
+      "performanceDate": "2026-03-14",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 28,
+        "weeksUntilPerformance": 25
+      },
+      "currentSales": {
+        "singleTickets": 37,
+        "subscriptionTickets": 573,
+        "totalTickets": 610,
+        "totalRevenue": 39045.7
+      },
+      "budget": {
+        "total": 55000,
+        "single": 18333,
+        "subscription": 36667
+      },
+      "budgetAchievement": {
+        "total": 0.7227854545,
+        "single": 0.1742213495,
+        "subscription": 0.9970600267
+      },
+      "revenue": {
+        "total": 39045.7,
+        "single": 3194,
+        "subscription": 36559.2
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 872.95
+      },
+      "capacity": {
+        "max": 1601,
+        "currentOccupancy": 38.1,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.91189711,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39207,
+        "weeklyIncrease": 546.2
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7227854545
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23647,
+      "performanceCode": "260315M",
+      "performanceName": "CS08 Saint-Saëns & Strauss",
+      "seriesCode": "CS08",
+      "performanceDate": "2026-03-15",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 28,
+        "weeksUntilPerformance": 25
+      },
+      "currentSales": {
+        "singleTickets": 51,
+        "subscriptionTickets": 569,
+        "totalTickets": 620,
+        "totalRevenue": 39736
+      },
+      "budget": {
+        "total": 55000,
+        "single": 18333,
+        "subscription": 36667
+      },
+      "budgetAchievement": {
+        "total": 0.7460018182,
+        "single": 0.2358588338,
+        "subscription": 1.001066354
+      },
+      "revenue": {
+        "total": 39736,
+        "single": 4324,
+        "subscription": 36706.1
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 866.15
+      },
+      "capacity": {
+        "max": 1598,
+        "currentOccupancy": 38.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.90981308,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40659,
+        "weeklyIncrease": 371.1
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7460018182
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23686,
+      "performanceCode": "260327E",
+      "performanceName": "PS4 Billy Joel & Elton John",
+      "seriesCode": "PS4",
+      "performanceDate": "2026-03-27",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 30,
+        "weeksUntilPerformance": 27
+      },
+      "currentSales": {
+        "singleTickets": 136,
+        "subscriptionTickets": 741,
+        "totalTickets": 877,
+        "totalRevenue": 62827.3
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "budgetAchievement": {
+        "total": 0.677424841,
+        "single": 0.2031575197,
+        "subscription": 1.289383785
+      },
+      "revenue": {
+        "total": 62827.3,
+        "single": 10835,
+        "subscription": 53294.1
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 723.35
+      },
+      "capacity": {
+        "max": 1547,
+        "currentOccupancy": 56.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 71.25455556,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 63832,
+        "weeklyIncrease": 297.1
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.677424841
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23687,
+      "performanceCode": "260328E",
+      "performanceName": "PS4 Billy Joel & Elton John",
+      "seriesCode": "PS4",
+      "performanceDate": "2026-03-28",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 30,
+        "weeksUntilPerformance": 27
+      },
+      "currentSales": {
+        "singleTickets": 139,
+        "subscriptionTickets": 670,
+        "totalTickets": 809,
+        "totalRevenue": 58524.3
+      },
+      "budget": {
+        "total": 94667,
+        "single": 53333,
+        "subscription": 41334
+      },
+      "budgetAchievement": {
+        "total": 0.6433160447,
+        "single": 0.2285451784,
+        "subscription": 1.178492282
+      },
+      "revenue": {
+        "total": 58524.3,
+        "single": 12189,
+        "subscription": 48711.8
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 778.6
+      },
+      "capacity": {
+        "max": 1532,
+        "currentOccupancy": 52.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 71.90177096,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 60453,
+        "weeklyIncrease": 447.8
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6433160447
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23688,
+      "performanceCode": "260329M",
+      "performanceName": "PS4 Billy Joel & Elton John",
+      "seriesCode": "PS4",
+      "performanceDate": "2026-03-29",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 30,
+        "weeksUntilPerformance": 27
+      },
+      "currentSales": {
+        "singleTickets": 164,
+        "subscriptionTickets": 406,
+        "totalTickets": 570,
+        "totalRevenue": 39496.2
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "budgetAchievement": {
+        "total": 0.4435869267,
+        "single": 0.2971706073,
+        "subscription": 0.6325115525
+      },
+      "revenue": {
+        "total": 39496.2,
+        "single": 15849,
+        "subscription": 26143.6
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1024.25
+      },
+      "capacity": {
+        "max": 1504,
+        "currentOccupancy": 37.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 69.52417219,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41009,
+        "weeklyIncrease": 983.6
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.4435869267
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23649,
+      "performanceCode": "260411E",
+      "performanceName": "CS09 A Midsummer Night's Dream",
+      "seriesCode": "CS09",
+      "performanceDate": "2026-04-11",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 69,
+        "subscriptionTickets": 574,
+        "totalTickets": 643,
+        "totalRevenue": 40572.7
+      },
+      "budget": {
+        "total": 53668,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 75.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 40572.7,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1549,
+        "currentOccupancy": 41.5,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 47.28550724637677,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23650,
+      "performanceCode": "260412M",
+      "performanceName": "CS09 A Midsummer Night's Dream",
+      "seriesCode": "CS09",
+      "performanceDate": "2026-04-12",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 43,
+        "subscriptionTickets": 569,
+        "totalTickets": 612,
+        "totalRevenue": 38434.6
+      },
+      "budget": {
+        "total": 50839,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 75.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 38434.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1557,
+        "currentOccupancy": 39.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 33.71162790697671,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23652,
+      "performanceCode": "260418E",
+      "performanceName": "CS10 Farrenc, Dvorák, Schumann",
+      "seriesCode": "CS10",
+      "performanceDate": "2026-04-18",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 18,
+        "subscriptionTickets": 600,
+        "totalTickets": 618,
+        "totalRevenue": 41356.7
+      },
+      "budget": {
+        "total": 90695,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 45.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 41356.7,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1530,
+        "currentOccupancy": 40.4,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 130.9277777777776,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23653,
+      "performanceCode": "260419M",
+      "performanceName": "CS10 Farrenc, Dvorák, Schumann",
+      "seriesCode": "CS10",
+      "performanceDate": "2026-04-19",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 24,
+        "subscriptionTickets": 624,
+        "totalTickets": 648,
+        "totalRevenue": 40994.9
+      },
+      "budget": {
+        "total": 89901,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 45.6,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 40994.9,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 1620,
+        "currentOccupancy": 40,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 18.120833333333394,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23655,
+      "performanceCode": "260509E",
+      "performanceName": "CS11 Grieg's Piano Concerto",
+      "seriesCode": "CS11",
+      "performanceDate": "2026-05-09",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 36,
+        "weeksUntilPerformance": 33
+      },
+      "currentSales": {
+        "singleTickets": 61,
+        "subscriptionTickets": 607,
+        "totalTickets": 668,
+        "totalRevenue": 44337.3
+      },
+      "budget": {
+        "total": 65000,
+        "single": 17500,
+        "subscription": 47500
+      },
+      "budgetAchievement": {
+        "total": 0.7041369231,
+        "single": 0.3060571429,
+        "subscription": 0.8507978947
+      },
+      "revenue": {
+        "total": 44337.3,
+        "single": 5356,
+        "subscription": 40412.9
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "capacity": {
+        "max": 1543,
+        "currentOccupancy": 43.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.42801161,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45567,
+        "weeklyIncrease": 201.9
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7041369231
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23656,
+      "performanceCode": "260510M",
+      "performanceName": "CS11 Grieg's Piano Concerto",
+      "seriesCode": "CS11",
+      "performanceDate": "2026-05-10",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 36,
+        "weeksUntilPerformance": 33
+      },
+      "currentSales": {
+        "singleTickets": 40,
+        "subscriptionTickets": 626,
+        "totalTickets": 666,
+        "totalRevenue": 42307.7
+      },
+      "budget": {
+        "total": 65000,
+        "single": 17500,
+        "subscription": 47500
+      },
+      "budgetAchievement": {
+        "total": 0.6586492308,
+        "single": 0.1913142857,
+        "subscription": 0.8308252632
+      },
+      "revenue": {
+        "total": 42307.7,
+        "single": 3348,
+        "subscription": 39464.2
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 833
+      },
+      "capacity": {
+        "max": 1613,
+        "currentOccupancy": 41.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.51958457,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 42846,
+        "weeklyIncrease": -33.8
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6586492308
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23689,
+      "performanceCode": "260515E",
+      "performanceName": "PS5 Dolly Parton's Threads",
+      "seriesCode": "PS5",
+      "performanceDate": "2026-05-15",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 37,
+        "weeksUntilPerformance": 34
+      },
+      "currentSales": {
+        "singleTickets": 60,
+        "subscriptionTickets": 734,
+        "totalTickets": 794,
+        "totalRevenue": 66945.1
+      },
+      "budget": {
+        "total": 103333,
+        "single": 60000,
+        "subscription": 43333
+      },
+      "budgetAchievement": {
+        "total": 0.655318243,
+        "single": 0.08805,
+        "subscription": 1.440772621
+      },
+      "revenue": {
+        "total": 66945.1,
+        "single": 5283,
+        "subscription": 62433
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 479.4
+      },
+      "capacity": {
+        "max": 1398,
+        "currentOccupancy": 56.8,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 83.91078067,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 67528,
+        "weeklyIncrease": 188
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.655318243
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23690,
+      "performanceCode": "260516E",
+      "performanceName": "PS5 Dolly Parton's Threads",
+      "seriesCode": "PS5",
+      "performanceDate": "2026-05-16",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 37,
+        "weeksUntilPerformance": 34
+      },
+      "currentSales": {
+        "singleTickets": 59,
+        "subscriptionTickets": 669,
+        "totalTickets": 728,
+        "totalRevenue": 61516.5
+      },
+      "budget": {
+        "total": 103334,
+        "single": 60000,
+        "subscription": 43334
+      },
+      "budgetAchievement": {
+        "total": 0.6026767569,
+        "single": 0.08016666667,
+        "subscription": 1.326141136
+      },
+      "revenue": {
+        "total": 61516.5,
+        "single": 4810,
+        "subscription": 57467
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 532.1
+      },
+      "capacity": {
+        "max": 1395,
+        "currentOccupancy": 52.2,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 83.70564516,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 62273,
+        "weeklyIncrease": 4
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6026767569
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23691,
+      "performanceCode": "260517M",
+      "performanceName": "PS5 Dolly Parton's Threads",
+      "seriesCode": "PS5",
+      "performanceDate": "2026-05-17",
+      "performanceType": "Pops",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "timeline": {
+        "weekNumber": 37,
+        "weeksUntilPerformance": 34
+      },
+      "currentSales": {
+        "singleTickets": 90,
+        "subscriptionTickets": 403,
+        "totalTickets": 493,
+        "totalRevenue": 39232.4
+      },
+      "budget": {
+        "total": 103333,
+        "single": 60000,
+        "subscription": 43333
+      },
+      "budgetAchievement": {
+        "total": 0.385898019,
+        "single": 0.1491,
+        "subscription": 0.7137747213
+      },
+      "revenue": {
+        "total": 39232.4,
+        "single": 8946,
+        "subscription": 30930
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 776.05
+      },
+      "capacity": {
+        "max": 1480,
+        "currentOccupancy": 33.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 79.43426295,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39876,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "HIGH",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.385898019
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 24007,
+      "performanceCode": "260528E",
+      "performanceName": "On Stage 3 with Gil Shaham",
+      "seriesCode": "CS12",
+      "performanceDate": "2026-05-28",
+      "performanceType": "Classical",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 17,
+        "subscriptionTickets": 7,
+        "totalTickets": 24,
+        "totalRevenue": 1680
+      },
+      "budget": {
+        "total": 2613,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 64.3,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 1680,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 142,
+        "currentOccupancy": 12,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 72.05882352941177,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23658,
+      "performanceCode": "260530E",
+      "performanceName": "CS12 Gil Shaham Plays Brahms",
+      "seriesCode": "CS12",
+      "performanceDate": "2026-05-30",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 39,
+        "weeksUntilPerformance": 36
+      },
+      "currentSales": {
+        "singleTickets": 31,
+        "subscriptionTickets": 577,
+        "totalTickets": 608,
+        "totalRevenue": 38191.1
+      },
+      "budget": {
+        "total": 51667,
+        "single": 20000,
+        "subscription": 31667
+      },
+      "budgetAchievement": {
+        "total": 0.7536338475,
+        "single": 0.08575,
+        "subscription": 1.175450785
+      },
+      "revenue": {
+        "total": 38191.1,
+        "single": 1715,
+        "subscription": 37223
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 864.45
+      },
+      "capacity": {
+        "max": 1630,
+        "currentOccupancy": 37.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 62.80322581,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 38770,
+        "weeklyIncrease": 168
+      },
+      "riskMetrics": {
+        "riskLevel": "LOW",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7536338475
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23659,
+      "performanceCode": "260531M",
+      "performanceName": "CS12 Gil Shaham Plays Brahms",
+      "seriesCode": "CS12",
+      "performanceDate": "2026-05-31",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 39,
+        "weeksUntilPerformance": 36
+      },
+      "currentSales": {
+        "singleTickets": 47,
+        "subscriptionTickets": 574,
+        "totalTickets": 621,
+        "totalRevenue": 39203.3
+      },
+      "budget": {
+        "total": 51667,
+        "single": 20000,
+        "subscription": 31667
+      },
+      "budgetAchievement": {
+        "total": 0.7731724311,
+        "single": 0.14405,
+        "subscription": 1.170508731
+      },
+      "revenue": {
+        "total": 39203.3,
+        "single": 2881,
+        "subscription": 37066.5
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 865.3
+      },
+      "capacity": {
+        "max": 1621,
+        "currentOccupancy": 38.3,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 62.81053459,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39611,
+        "weeklyIncrease": 336.5
+      },
+      "riskMetrics": {
+        "riskLevel": "LOW",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7731724311
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 24008,
+      "performanceCode": "260604E",
+      "performanceName": "On Stage 4 with Yefim Bronfman",
+      "seriesCode": "On Stage",
+      "performanceDate": "2026-06-04",
+      "performanceType": "On Stage",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "timeline": null,
+      "currentSales": {
+        "singleTickets": 20,
+        "subscriptionTickets": 8,
+        "totalTickets": 28,
+        "totalRevenue": 2100
+      },
+      "budget": {
+        "total": 3266,
+        "single": 0,
+        "subscription": 0
+      },
+      "budgetAchievement": {
+        "total": 64.3,
+        "single": 0,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 2100,
+        "single": 0,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": null
+      },
+      "capacity": {
+        "max": 133,
+        "currentOccupancy": 15,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 79,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": null,
+        "weeklyIncrease": null
+      },
+      "riskMetrics": {
+        "riskLevel": "UNKNOWN",
+        "pacingStatus": "NO_DATA",
+        "budgetStatus": "NO_DATA"
+      },
+      "dataSources": {
+        "hasExcelData": false,
+        "hasBigQueryData": true,
+        "excelMatched": false
+      }
+    },
+    {
+      "performanceId": 23662,
+      "performanceCode": "260605E",
+      "performanceName": "CS13 Rachmaninoff Celeb: Pt. 2",
+      "seriesCode": "CS13",
+      "performanceDate": "2026-06-05",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 40,
+        "weeksUntilPerformance": 37
+      },
+      "currentSales": {
+        "singleTickets": 35,
+        "subscriptionTickets": 585,
+        "totalTickets": 620,
+        "totalRevenue": 40915
+      },
+      "budget": {
+        "total": 66666,
+        "single": 30000,
+        "subscription": 36666
+      },
+      "budgetAchievement": {
+        "total": 0.6157411574,
+        "single": 0.08073333333,
+        "subscription": 1.053482791
+      },
+      "revenue": {
+        "total": 40915,
+        "single": 2422,
+        "subscription": 38627
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 862.75
+      },
+      "capacity": {
+        "max": 1550,
+        "currentOccupancy": 40,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 65.99517685,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41193,
+        "weeklyIncrease": -144
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6157411574
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23661,
+      "performanceCode": "260606E",
+      "performanceName": "CS13 Rachmaninoff Celeb: Pt. 2",
+      "seriesCode": "CS13",
+      "performanceDate": "2026-06-06",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 40,
+        "weeksUntilPerformance": 37
+      },
+      "currentSales": {
+        "singleTickets": 53,
+        "subscriptionTickets": 613,
+        "totalTickets": 666,
+        "totalRevenue": 44551.9
+      },
+      "budget": {
+        "total": 66667,
+        "single": 30000,
+        "subscription": 36667
+      },
+      "budgetAchievement": {
+        "total": 0.6854200729,
+        "single": 0.1596333333,
+        "subscription": 1.115605313
+      },
+      "revenue": {
+        "total": 44551.9,
+        "single": 4789,
+        "subscription": 40905.9
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 838.95
+      },
+      "capacity": {
+        "max": 1531,
+        "currentOccupancy": 43.5,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 66.80540936,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45445,
+        "weeklyIncrease": 249.9
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6854200729
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23663,
+      "performanceCode": "260607M",
+      "performanceName": "CS13 Rachmaninoff Celeb: Pt. 2",
+      "seriesCode": "CS13",
+      "performanceDate": "2026-06-07",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 40,
+        "weeksUntilPerformance": 37
+      },
+      "currentSales": {
+        "singleTickets": 58,
+        "subscriptionTickets": 643,
+        "totalTickets": 701,
+        "totalRevenue": 44788.6
+      },
+      "budget": {
+        "total": 66667,
+        "single": 30000,
+        "subscription": 36667
+      },
+      "budgetAchievement": {
+        "total": 0.6900655497,
+        "single": 0.1798,
+        "subscription": 1.10755175
+      },
+      "revenue": {
+        "total": 44788.6,
+        "single": 5394,
+        "subscription": 40610.6
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 816
+      },
+      "capacity": {
+        "max": 1604,
+        "currentOccupancy": 43.7,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.89527778,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45813,
+        "weeklyIncrease": 191.6
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6900655497
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23666,
+      "performanceCode": "260620E",
+      "performanceName": "CS14 Rhapsody in Blue",
+      "seriesCode": "CS14",
+      "performanceDate": "2026-06-20",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 42,
+        "weeksUntilPerformance": 39
+      },
+      "currentSales": {
+        "singleTickets": 152,
+        "subscriptionTickets": 603,
+        "totalTickets": 755,
+        "totalRevenue": 48586.5
+      },
+      "budget": {
+        "total": 70000,
+        "single": 27500,
+        "subscription": 42500
+      },
+      "budgetAchievement": {
+        "total": 0.7116428571,
+        "single": 0.4233818182,
+        "subscription": 0.8981647059
+      },
+      "revenue": {
+        "total": 48586.5,
+        "single": 11643,
+        "subscription": 38172
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 851.7
+      },
+      "capacity": {
+        "max": 1589,
+        "currentOccupancy": 47.5,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.62068966,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 49647,
+        "weeklyIncrease": 168
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.7116428571
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    },
+    {
+      "performanceId": 23667,
+      "performanceCode": "260621M",
+      "performanceName": "CS14 Rhapsody in Blue",
+      "seriesCode": "CS14",
+      "performanceDate": "2026-06-21",
+      "performanceType": "Classical",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "timeline": {
+        "weekNumber": 42,
+        "weeksUntilPerformance": 39
+      },
+      "currentSales": {
+        "singleTickets": 133,
+        "subscriptionTickets": 588,
+        "totalTickets": 721,
+        "totalRevenue": 45992.2
+      },
+      "budget": {
+        "total": 70000,
+        "single": 27500,
+        "subscription": 42500
+      },
+      "budgetAchievement": {
+        "total": 0.6757142857,
+        "single": 0.3852363636,
+        "subscription": 0.8636705882
+      },
+      "revenue": {
+        "total": 45992.2,
+        "single": 10594,
+        "subscription": 36706
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 869.55
+      },
+      "capacity": {
+        "max": 1606,
+        "currentOccupancy": 44.9,
+        "occupancyGoal": 85
+      },
+      "pricing": {
+        "singleATP": 63.40482574,
+        "subscriptionATP": 65
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46963,
+        "weeklyIncrease": 337
+      },
+      "riskMetrics": {
+        "riskLevel": "MEDIUM",
+        "pacingStatus": "ON_TARGET",
+        "budgetStatus": "BELOW",
+        "pacingVariance": 0,
+        "budgetVariance": 0.6757142857
+      },
+      "dataSources": {
+        "hasExcelData": true,
+        "hasBigQueryData": true,
+        "excelMatched": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,5514 @@
+{
+  "extractedAt": "2025-10-02T13:39:24.447Z",
+  "sourceFile": "KCS 25-26 Weekly Sales Report - Sep 17.xlsx",
+  "performances": [
+    {
+      "performanceName": "26 Morgan Freeman's Symphonic Blues",
+      "performanceDate": "2025-09-02",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 1,
+      "weeksUntilPerformance": -2,
+      "actualTickets": {
+        "total": 1169,
+        "single": 1169,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 137698,
+        "single": 137698,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 153473,
+        "single": 153473,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.8972131906,
+        "single": 0.8972131906,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.8978494624
+      },
+      "pricing": {
+        "singleATP": 117.7912746
+      },
+      "audience": {
+        "newHouseholds": 228,
+        "returningHouseholds": 295,
+        "totalHouseholds": 523
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 137698,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Morgan Freeman's Symphonic Blues",
+      "performanceDate": "2025-09-03",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 1,
+      "weeksUntilPerformance": -2,
+      "actualTickets": {
+        "total": 1148,
+        "single": 1148,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 134386,
+        "single": 134386,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 153473,
+        "single": 153473,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.8756328475,
+        "single": 0.8756328475,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.8817204301
+      },
+      "pricing": {
+        "singleATP": 117.0609756
+      },
+      "audience": {
+        "newHouseholds": 227,
+        "returningHouseholds": 289,
+        "totalHouseholds": 516
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 134386,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 La nuit sombre",
+      "performanceDate": "2025-09-05",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 1,
+      "weeksUntilPerformance": -2,
+      "actualTickets": {
+        "total": 699,
+        "single": 699,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 20005,
+        "single": 20005,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 15000,
+        "single": 15000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 510
+      },
+      "budgetAchievement": {
+        "total": 1.333666667,
+        "single": 1.333666667,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 600,
+        "currentOccupancy": 1.165
+      },
+      "pricing": {
+        "singleATP": 28.61945637
+      },
+      "audience": {
+        "newHouseholds": 86,
+        "returningHouseholds": 209,
+        "totalHouseholds": 295
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 20005,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS1 Music of Journey",
+      "performanceDate": "2025-09-19",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 3,
+      "weeksUntilPerformance": null,
+      "actualTickets": {
+        "total": 1092,
+        "single": 444,
+        "subscription": 648
+      },
+      "revenue": {
+        "total": 71854.6,
+        "single": 24387,
+        "subscription": 47467.6
+      },
+      "budget": {
+        "total": 100666,
+        "single": 59333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": 444,
+        "totalTickets": 1092,
+        "occupancy": 0.6867924528
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 800.7
+      },
+      "budgetAchievement": {
+        "total": 0.7137921443,
+        "single": 0.411019163,
+        "subscription": 1.148418939
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.6867924528
+      },
+      "pricing": {
+        "singleATP": 65.80091575
+      },
+      "audience": {
+        "newHouseholds": 67,
+        "returningHouseholds": 416,
+        "totalHouseholds": 483
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 69230,
+        "weeklyIncrease": 2624.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS1 Music of Journey",
+      "performanceDate": "2025-09-20",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 3,
+      "weeksUntilPerformance": null,
+      "actualTickets": {
+        "total": 1043,
+        "single": 473,
+        "subscription": 570
+      },
+      "revenue": {
+        "total": 70013.3,
+        "single": 28248,
+        "subscription": 41765.3
+      },
+      "budget": {
+        "total": 100667,
+        "single": 59333,
+        "subscription": 41334
+      },
+      "projected": {
+        "singleTickets": 473,
+        "totalTickets": 1043,
+        "occupancy": 0.6559748428
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867
+      },
+      "budgetAchievement": {
+        "total": 0.6954940547,
+        "single": 0.4760925623,
+        "subscription": 1.010434509
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.6559748428
+      },
+      "pricing": {
+        "singleATP": 67.12684564
+      },
+      "audience": {
+        "newHouseholds": 78,
+        "returningHouseholds": 376,
+        "totalHouseholds": 454
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 67949,
+        "weeklyIncrease": 2064.3
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS1 Music of Journey",
+      "performanceDate": "2025-09-21",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 3,
+      "weeksUntilPerformance": null,
+      "actualTickets": {
+        "total": 884,
+        "single": 526,
+        "subscription": 358
+      },
+      "revenue": {
+        "total": 56072.3,
+        "single": 31174,
+        "subscription": 24898.3
+      },
+      "budget": {
+        "total": 100666,
+        "single": 59333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": 526,
+        "totalTickets": 884,
+        "occupancy": 0.5559748428
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1047.2
+      },
+      "budgetAchievement": {
+        "total": 0.5570132915,
+        "single": 0.5254074461,
+        "subscription": 0.6023830837
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.5559748428
+      },
+      "pricing": {
+        "singleATP": 63.43020362
+      },
+      "audience": {
+        "newHouseholds": 74,
+        "returningHouseholds": 286,
+        "totalHouseholds": 360
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 52671,
+        "weeklyIncrease": 3401.3
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 FS1 The Orchestra Games",
+      "performanceDate": "2025-09-28",
+      "performanceType": "Family",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 4,
+      "weeksUntilPerformance": 1,
+      "actualTickets": {
+        "total": 487,
+        "single": 197,
+        "subscription": 290
+      },
+      "revenue": {
+        "total": 12684,
+        "single": 6207,
+        "subscription": 6477
+      },
+      "budget": {
+        "total": 19500,
+        "single": 10000,
+        "subscription": 9500
+      },
+      "projected": {
+        "singleTickets": 333.8983051,
+        "totalTickets": 623.8983051,
+        "occupancy": 0.4791845661
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 860.2
+      },
+      "budgetAchievement": {
+        "total": 0.6504615385,
+        "single": 0.6207,
+        "subscription": 0.6817894737
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3740399386
+      },
+      "pricing": {
+        "singleATP": 26.04517454
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 104,
+        "totalHouseholds": 125
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 12086,
+        "weeklyIncrease": 598
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "Chicken Fried",
+      "performanceDate": "2025-10-04",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 5,
+      "weeksUntilPerformance": 2,
+      "actualTickets": {
+        "total": 201,
+        "single": 201,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 15091,
+        "single": 15091,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 58000,
+        "single": 58000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 436.9565217,
+        "totalTickets": 436.9565217,
+        "occupancy": 0.2748154225
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.2601896552,
+        "single": 0.2601896552,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.1264150943
+      },
+      "pricing": {
+        "singleATP": 75.07960199
+      },
+      "audience": {
+        "newHouseholds": 7,
+        "returningHouseholds": 70,
+        "totalHouseholds": 77
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 14181,
+        "weeklyIncrease": 910
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS01 Appalachian Spring",
+      "performanceDate": "2025-10-10",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 6,
+      "weeksUntilPerformance": 3,
+      "actualTickets": {
+        "total": 743,
+        "single": 227,
+        "subscription": 516
+      },
+      "revenue": {
+        "total": 47640,
+        "single": 12933,
+        "subscription": 34707
+      },
+      "budget": {
+        "total": 100000,
+        "single": 16666,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": 582.0512821,
+        "totalTickets": 1098.051282,
+        "occupancy": 0.7662604899
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 779.45
+      },
+      "budgetAchievement": {
+        "total": 0.4764,
+        "single": 0.7760110404,
+        "subscription": 1.041220412
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.5184926727
+      },
+      "pricing": {
+        "singleATP": 64.11843876
+      },
+      "audience": {
+        "newHouseholds": 13,
+        "returningHouseholds": 370,
+        "totalHouseholds": 383
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 47326,
+        "weeklyIncrease": 314
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS01 Appalachian Spring",
+      "performanceDate": "2025-10-11",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 6,
+      "weeksUntilPerformance": 3,
+      "actualTickets": {
+        "total": 837,
+        "single": 256,
+        "subscription": 581
+      },
+      "revenue": {
+        "total": 55614.1,
+        "single": 16296,
+        "subscription": 39318.1
+      },
+      "budget": {
+        "total": 100000,
+        "single": 16666,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": 656.4102564,
+        "totalTickets": 1237.410256,
+        "occupancy": 0.8635102976
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 724.2
+      },
+      "budgetAchievement": {
+        "total": 0.556141,
+        "single": 0.977799112,
+        "subscription": 1.179554796
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.5840893231
+      },
+      "pricing": {
+        "singleATP": 66.44456392
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 386,
+        "totalHouseholds": 407
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 52503,
+        "weeklyIncrease": 3111.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS01 Appalachian Spring",
+      "performanceDate": "2025-10-12",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 6,
+      "weeksUntilPerformance": 3,
+      "actualTickets": {
+        "total": 919,
+        "single": 319,
+        "subscription": 600
+      },
+      "revenue": {
+        "total": 57932.6,
+        "single": 19152,
+        "subscription": 38780.6
+      },
+      "budget": {
+        "total": 100000,
+        "single": 16666,
+        "subscription": 33334
+      },
+      "projected": {
+        "singleTickets": 817.9487179,
+        "totalTickets": 1417.948718,
+        "occupancy": 0.9894966629
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 708.05
+      },
+      "budgetAchievement": {
+        "total": 0.579326,
+        "single": 1.149165967,
+        "subscription": 1.163394732
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.641311933
+      },
+      "pricing": {
+        "singleATP": 63.03873776
+      },
+      "audience": {
+        "newHouseholds": 17,
+        "returningHouseholds": 455,
+        "totalHouseholds": 472
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 55606,
+        "weeklyIncrease": 2326.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Top Gun: Maverick in Concert",
+      "performanceDate": "2025-10-17",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 7,
+      "weeksUntilPerformance": 4,
+      "actualTickets": {
+        "total": 645,
+        "single": 645,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 48750,
+        "single": 48750,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 103497,
+        "single": 103497,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 1954.545455,
+        "totalTickets": 1954.545455,
+        "occupancy": 1.501186985
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.4710281457,
+        "single": 0.4710281457,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.4953917051
+      },
+      "pricing": {
+        "singleATP": 75.58139535
+      },
+      "audience": {
+        "newHouseholds": 51,
+        "returningHouseholds": 179,
+        "totalHouseholds": 230
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46261,
+        "weeklyIncrease": 2489
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Top Gun: Maverick in Concert",
+      "performanceDate": "2025-10-18",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 7,
+      "weeksUntilPerformance": 4,
+      "actualTickets": {
+        "total": 808,
+        "single": 808,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 60628,
+        "single": 60628,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 103497,
+        "single": 103497,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 2448.484848,
+        "totalTickets": 2448.484848,
+        "occupancy": 1.880556719
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.5857947573,
+        "single": 0.5857947573,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.6205837174
+      },
+      "pricing": {
+        "singleATP": 75.03465347
+      },
+      "audience": {
+        "newHouseholds": 74,
+        "returningHouseholds": 184,
+        "totalHouseholds": 258
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 55583,
+        "weeklyIncrease": 5045
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Top Gun: Maverick in Concert",
+      "performanceDate": "2025-10-19",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 7,
+      "weeksUntilPerformance": 4,
+      "actualTickets": {
+        "total": 594,
+        "single": 594,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 44494,
+        "single": 44494,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 103496,
+        "single": 103496,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 1800,
+        "totalTickets": 1800,
+        "occupancy": 1.382488479
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.4299103347,
+        "single": 0.4299103347,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.4562211982
+      },
+      "pricing": {
+        "singleATP": 74.90572391
+      },
+      "audience": {
+        "newHouseholds": 38,
+        "returningHouseholds": 149,
+        "totalHouseholds": 187
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39484,
+        "weeklyIncrease": 5010
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 The Lodger",
+      "performanceDate": "2025-10-22",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 8,
+      "weeksUntilPerformance": 5,
+      "actualTickets": {
+        "total": 208,
+        "single": 208,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 10588,
+        "single": 10588,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 50000,
+        "single": 50000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 693.3333333,
+        "totalTickets": 693.3333333,
+        "occupancy": 0.5325140809
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.21176,
+        "single": 0.21176,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.1597542243
+      },
+      "pricing": {
+        "singleATP": 50.90384615
+      },
+      "audience": {
+        "newHouseholds": 5,
+        "returningHouseholds": 78,
+        "totalHouseholds": 83
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 10238,
+        "weeklyIncrease": 350
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS2 90s Mixtape",
+      "performanceDate": "2025-10-24",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 8,
+      "weeksUntilPerformance": 5,
+      "actualTickets": {
+        "total": 812,
+        "single": 98,
+        "subscription": 714
+      },
+      "revenue": {
+        "total": 57609.1,
+        "single": 5960,
+        "subscription": 51649.1
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "projected": {
+        "singleTickets": 326.6666667,
+        "totalTickets": 1040.666667,
+        "occupancy": 0.6545073375
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 744.6
+      },
+      "budgetAchievement": {
+        "total": 0.6239275232,
+        "single": 0.1117506984,
+        "subscription": 1.324335897
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.5106918239
+      },
+      "pricing": {
+        "singleATP": 70.94716749
+      },
+      "audience": {
+        "newHouseholds": 7,
+        "returningHouseholds": 350,
+        "totalHouseholds": 357
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 56960,
+        "weeklyIncrease": 649.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS2 90s Mixtape",
+      "performanceDate": "2025-10-25",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 8,
+      "weeksUntilPerformance": 5,
+      "actualTickets": {
+        "total": 754,
+        "single": 117,
+        "subscription": 637
+      },
+      "revenue": {
+        "total": 52382.8,
+        "single": 6634,
+        "subscription": 45748.8
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "projected": {
+        "singleTickets": 390,
+        "totalTickets": 1027,
+        "occupancy": 0.6459119497
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 810.05
+      },
+      "budgetAchievement": {
+        "total": 0.5673247918,
+        "single": 0.1243882774,
+        "subscription": 1.173046154
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4742138365
+      },
+      "pricing": {
+        "singleATP": 69.47320955
+      },
+      "audience": {
+        "newHouseholds": 11,
+        "returningHouseholds": 320,
+        "totalHouseholds": 311
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 52132,
+        "weeklyIncrease": 250.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS2 90s Mixtape",
+      "performanceDate": "2025-10-26",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 8,
+      "weeksUntilPerformance": 5,
+      "actualTickets": {
+        "total": 476,
+        "single": 96,
+        "subscription": 380
+      },
+      "revenue": {
+        "total": 31818.5,
+        "single": 6028,
+        "subscription": 25790.5
+      },
+      "budget": {
+        "total": 92333,
+        "single": 53333,
+        "subscription": 39000
+      },
+      "projected": {
+        "singleTickets": 320,
+        "totalTickets": 700,
+        "occupancy": 0.4402515723
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1028.5
+      },
+      "budgetAchievement": {
+        "total": 0.3446059372,
+        "single": 0.1130257064,
+        "subscription": 0.6612948718
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2993710692
+      },
+      "pricing": {
+        "singleATP": 66.84558824
+      },
+      "audience": {
+        "newHouseholds": 6,
+        "returningHouseholds": 209,
+        "totalHouseholds": 203
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 31111,
+        "weeklyIncrease": 707.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 On-Stage 1",
+      "performanceDate": "2025-10-29",
+      "performanceType": "On Stage",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 9,
+      "weeksUntilPerformance": 6,
+      "actualTickets": {
+        "total": 25,
+        "single": 25,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 2800,
+        "single": 2800,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 11200,
+        "single": 11200,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": 92.59259259,
+        "totalTickets": 92.59259259,
+        "occupancy": 0.9259259259
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 85
+      },
+      "budgetAchievement": {
+        "total": 0.25,
+        "single": 0.25,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 100,
+        "currentOccupancy": 0.25
+      },
+      "pricing": {
+        "singleATP": 112
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 11,
+        "totalHouseholds": 11
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 2800,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS02 Rachmaninoff Cele Pt 1",
+      "performanceDate": "2025-10-31",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 9,
+      "weeksUntilPerformance": 6,
+      "actualTickets": {
+        "total": 468,
+        "single": 122,
+        "subscription": 346
+      },
+      "revenue": {
+        "total": 30757,
+        "single": 6504,
+        "subscription": 24253
+      },
+      "budget": {
+        "total": 52000,
+        "single": 22000,
+        "subscription": 30000
+      },
+      "projected": {
+        "singleTickets": 451.8518519,
+        "totalTickets": 797.8518519,
+        "occupancy": 0.5567703083
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 923.95
+      },
+      "budgetAchievement": {
+        "total": 0.5914807692,
+        "single": 0.2956363636,
+        "subscription": 0.8084333333
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.3265875785
+      },
+      "pricing": {
+        "singleATP": 65.72008547
+      },
+      "audience": {
+        "newHouseholds": 10,
+        "returningHouseholds": 222,
+        "totalHouseholds": 232
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 30629,
+        "weeklyIncrease": 128
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS02 Rachmaninoff Cele Pt 1",
+      "performanceDate": "2025-11-01",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 9,
+      "weeksUntilPerformance": 6,
+      "actualTickets": {
+        "total": 927,
+        "single": 364,
+        "subscription": 563
+      },
+      "revenue": {
+        "total": 57693,
+        "single": 20977,
+        "subscription": 36716
+      },
+      "budget": {
+        "total": 86500,
+        "single": 31500,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": 1348.148148,
+        "totalTickets": 1911.148148,
+        "occupancy": 1.333669329
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 739.5
+      },
+      "budgetAchievement": {
+        "total": 0.6669710983,
+        "single": 0.6659365079,
+        "subscription": 0.6675636364
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.6468946267
+      },
+      "pricing": {
+        "singleATP": 62.23624595
+      },
+      "audience": {
+        "newHouseholds": 26,
+        "returningHouseholds": 397,
+        "totalHouseholds": 423
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 56104,
+        "weeklyIncrease": 1589
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS02 Rachmaninoff Cele Pt 1",
+      "performanceDate": "2025-11-02",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 9,
+      "weeksUntilPerformance": 6,
+      "actualTickets": {
+        "total": 817,
+        "single": 256,
+        "subscription": 561
+      },
+      "revenue": {
+        "total": 51432.1,
+        "single": 15120,
+        "subscription": 36312.1
+      },
+      "budget": {
+        "total": 86500,
+        "single": 31500,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": 948.1481481,
+        "totalTickets": 1509.148148,
+        "occupancy": 1.053138973
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 741.2
+      },
+      "budgetAchievement": {
+        "total": 0.5945907514,
+        "single": 0.48,
+        "subscription": 0.66022
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.570132589
+      },
+      "pricing": {
+        "singleATP": 62.95238678
+      },
+      "audience": {
+        "newHouseholds": 17,
+        "returningHouseholds": 407,
+        "totalHouseholds": 424
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 50340,
+        "weeklyIncrease": 1092.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 FS2 Carnival of the Animals",
+      "performanceDate": "2025-11-09",
+      "performanceType": "Family",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 10,
+      "weeksUntilPerformance": 7,
+      "actualTickets": {
+        "total": 443,
+        "single": 144,
+        "subscription": 299
+      },
+      "revenue": {
+        "total": 10703,
+        "single": 4064,
+        "subscription": 6639
+      },
+      "budget": {
+        "total": 19500,
+        "single": 10000,
+        "subscription": 9500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 850.85
+      },
+      "budgetAchievement": {
+        "total": 0.5488717949,
+        "single": 0.4064,
+        "subscription": 0.6988421053
+      },
+      "capacity": {
+        "max": 1300,
+        "currentOccupancy": 0.3407692308
+      },
+      "pricing": {
+        "singleATP": 24.16027088
+      },
+      "audience": {
+        "newHouseholds": 9,
+        "returningHouseholds": 103,
+        "totalHouseholds": 112
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 10523,
+        "weeklyIncrease": 180
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS03 Matthias and Mahler 7",
+      "performanceDate": "2025-11-21",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 12,
+      "weeksUntilPerformance": 9,
+      "actualTickets": {
+        "total": 438,
+        "single": 73,
+        "subscription": 365
+      },
+      "revenue": {
+        "total": 29114,
+        "single": 3848,
+        "subscription": 25266
+      },
+      "budget": {
+        "total": 40000,
+        "single": 15000,
+        "subscription": 25000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1041.25
+      },
+      "budgetAchievement": {
+        "total": 0.72785,
+        "single": 0.2565333333,
+        "subscription": 1.01064
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2754716981
+      },
+      "pricing": {
+        "singleATP": 66.47031963
+      },
+      "audience": {
+        "newHouseholds": 1,
+        "returningHouseholds": 221,
+        "totalHouseholds": 222
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 28960,
+        "weeklyIncrease": 154
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS03 Matthias and Mahler 7",
+      "performanceDate": "2025-11-22",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 12,
+      "weeksUntilPerformance": 9,
+      "actualTickets": {
+        "total": 706,
+        "single": 118,
+        "subscription": 588
+      },
+      "revenue": {
+        "total": 47477.9,
+        "single": 7407,
+        "subscription": 40070.9
+      },
+      "budget": {
+        "total": 66500,
+        "single": 11500,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 851.7
+      },
+      "budgetAchievement": {
+        "total": 0.7139533835,
+        "single": 0.6440869565,
+        "subscription": 0.7285618182
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4440251572
+      },
+      "pricing": {
+        "singleATP": 67.24915014
+      },
+      "audience": {
+        "newHouseholds": 4,
+        "returningHouseholds": 347,
+        "totalHouseholds": 351
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46306,
+        "weeklyIncrease": 1171.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS03 Matthias and Mahler 7",
+      "performanceDate": "2025-11-23",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 12,
+      "weeksUntilPerformance": 9,
+      "actualTickets": {
+        "total": 719,
+        "single": 98,
+        "subscription": 621
+      },
+      "revenue": {
+        "total": 46613.2,
+        "single": 6541,
+        "subscription": 40072.2
+      },
+      "budget": {
+        "total": 66500,
+        "single": 11500,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 823.65
+      },
+      "budgetAchievement": {
+        "total": 0.7009503759,
+        "single": 0.5687826087,
+        "subscription": 0.7285854545
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4522012579
+      },
+      "pricing": {
+        "singleATP": 64.83059805
+      },
+      "audience": {
+        "newHouseholds": 3,
+        "returningHouseholds": 391,
+        "totalHouseholds": 394
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46473,
+        "weeklyIncrease": 140.2
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Elf™ in Concert",
+      "performanceDate": "2025-11-28",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 13,
+      "weeksUntilPerformance": 10,
+      "actualTickets": {
+        "total": 310,
+        "single": 310,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 20977.6,
+        "single": 20977.6,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 107500,
+        "single": 107500,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.1951404651,
+        "single": 0.1951404651,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2380952381
+      },
+      "pricing": {
+        "singleATP": 67.66967742
+      },
+      "audience": {
+        "newHouseholds": 17,
+        "returningHouseholds": 45,
+        "totalHouseholds": 62
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 19726,
+        "weeklyIncrease": 1251.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Elf™ in Concert",
+      "performanceDate": "2025-11-29",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 13,
+      "weeksUntilPerformance": 10,
+      "actualTickets": {
+        "total": 370,
+        "single": 370,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 24414.6,
+        "single": 24414.6,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 107500,
+        "single": 107500,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.2271125581,
+        "single": 0.2271125581,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2841781874
+      },
+      "pricing": {
+        "singleATP": 65.98540541
+      },
+      "audience": {
+        "newHouseholds": 22,
+        "returningHouseholds": 53,
+        "totalHouseholds": 75
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 23630,
+        "weeklyIncrease": 784.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Elf™ in Concert",
+      "performanceDate": "2025-11-29",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 13,
+      "weeksUntilPerformance": 10,
+      "actualTickets": {
+        "total": 283,
+        "single": 283,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 19000,
+        "single": 19000,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 107500,
+        "single": 107500,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.176744186,
+        "single": 0.176744186,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2173579109
+      },
+      "pricing": {
+        "singleATP": 67.13780919
+      },
+      "audience": {
+        "newHouseholds": 12,
+        "returningHouseholds": 56,
+        "totalHouseholds": 68
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 18424,
+        "weeklyIncrease": 576
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Elf™ in Concert",
+      "performanceDate": "2025-11-30",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 13,
+      "weeksUntilPerformance": 10,
+      "actualTickets": {
+        "total": 493,
+        "single": 493,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 34569.6,
+        "single": 34569.6,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 107500,
+        "single": 107500,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.3215776744,
+        "single": 0.3215776744,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3786482335
+      },
+      "pricing": {
+        "singleATP": 70.12089249
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 88,
+        "totalHouseholds": 109
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 33261,
+        "weeklyIncrease": 1308.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Handel's Messiah",
+      "performanceDate": "2025-12-05",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 14,
+      "weeksUntilPerformance": 11,
+      "actualTickets": {
+        "total": 357,
+        "single": 357,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 18853.5,
+        "single": 18853.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 78333,
+        "single": 78333,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.2406840029,
+        "single": 0.2406840029,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.2491277041
+      },
+      "pricing": {
+        "singleATP": 52.81092437
+      },
+      "audience": {
+        "newHouseholds": 19,
+        "returningHouseholds": 86,
+        "totalHouseholds": 105
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 16236,
+        "weeklyIncrease": 2617.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Handel's Messiah",
+      "performanceDate": "2025-12-06",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 14,
+      "weeksUntilPerformance": 11,
+      "actualTickets": {
+        "total": 366,
+        "single": 366,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 22001.5,
+        "single": 22001.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 78334,
+        "single": 78334,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.2808678224,
+        "single": 0.2808678224,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.2554082345
+      },
+      "pricing": {
+        "singleATP": 60.11338798
+      },
+      "audience": {
+        "newHouseholds": 20,
+        "returningHouseholds": 95,
+        "totalHouseholds": 115
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 21562,
+        "weeklyIncrease": 439.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Handel's Messiah",
+      "performanceDate": "2025-12-07",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 14,
+      "weeksUntilPerformance": 11,
+      "actualTickets": {
+        "total": 408,
+        "single": 408,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 21652.5,
+        "single": 21652.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 78333,
+        "single": 78333,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.2764160699,
+        "single": 0.2764160699,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.2847173761
+      },
+      "pricing": {
+        "singleATP": 53.06985294
+      },
+      "audience": {
+        "newHouseholds": 26,
+        "returningHouseholds": 105,
+        "totalHouseholds": 131
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 20533,
+        "weeklyIncrease": 1119.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Leslie Odom Jr.: Christmas",
+      "performanceDate": "2025-12-12",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 15,
+      "weeksUntilPerformance": 12,
+      "actualTickets": {
+        "total": 1006,
+        "single": 1006,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 103427,
+        "single": 103427,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 150000,
+        "single": 150000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.6895133333,
+        "single": 0.6895133333,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.6327044025
+      },
+      "pricing": {
+        "singleATP": 102.8101392
+      },
+      "audience": {
+        "newHouseholds": 87,
+        "returningHouseholds": 264,
+        "totalHouseholds": 351
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 98177,
+        "weeklyIncrease": 5250
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Leslie Odom Jr.: Christmas",
+      "performanceDate": "2025-12-13",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 15,
+      "weeksUntilPerformance": 12,
+      "actualTickets": {
+        "total": 1233,
+        "single": 1233,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 123198,
+        "single": 123198,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 150000,
+        "single": 150000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.82132,
+        "single": 0.82132,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.7754716981
+      },
+      "pricing": {
+        "singleATP": 99.91727494
+      },
+      "audience": {
+        "newHouseholds": 128,
+        "returningHouseholds": 291,
+        "totalHouseholds": 419
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 118044,
+        "weeklyIncrease": 5154
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-18",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 218,
+        "single": 218,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 13189,
+        "single": 13189,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 75833,
+        "single": 75833,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.1739216436,
+        "single": 0.1739216436,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.152128402
+      },
+      "pricing": {
+        "singleATP": 60.5
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 12454,
+        "weeklyIncrease": 735
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-19",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 193,
+        "single": 193,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 11666.5,
+        "single": 11666.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 75833,
+        "single": 75833,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.1538446323,
+        "single": 0.1538446323,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.1346824843
+      },
+      "pricing": {
+        "singleATP": 60.44818653
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 11477,
+        "weeklyIncrease": 189.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-20",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 350,
+        "single": 350,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 21404.5,
+        "single": 21404.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 75833,
+        "single": 75833,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.2822583836,
+        "single": 0.2822583836,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.2442428472
+      },
+      "pricing": {
+        "singleATP": 61.15571429
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 20515,
+        "weeklyIncrease": 889.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-20",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 224,
+        "single": 224,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 13817,
+        "single": 13817,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 75833,
+        "single": 75833,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.1822029987,
+        "single": 0.1822029987,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.1563154222
+      },
+      "pricing": {
+        "singleATP": 61.68303571
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 12895,
+        "weeklyIncrease": 922
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-21",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 589,
+        "single": 290,
+        "subscription": 299
+      },
+      "revenue": {
+        "total": 23553,
+        "single": 16914,
+        "subscription": 6639
+      },
+      "budget": {
+        "total": 88284,
+        "single": 75834,
+        "subscription": 12450
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 963.9
+      },
+      "budgetAchievement": {
+        "total": 0.2667867337,
+        "single": 0.2230397975,
+        "subscription": 0.533253012
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.41102582
+      },
+      "pricing": {
+        "singleATP": 39.98811545
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 21923,
+        "weeklyIncrease": 1630
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Christmas Festival",
+      "performanceDate": "2025-12-21",
+      "performanceType": "Holiday",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 16,
+      "weeksUntilPerformance": 13,
+      "actualTickets": {
+        "total": 137,
+        "single": 137,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 7896,
+        "single": 7896,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 75834,
+        "single": 75834,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1218.05
+      },
+      "budgetAchievement": {
+        "total": 0.1041221616,
+        "single": 0.1041221616,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.09560362875
+      },
+      "pricing": {
+        "singleATP": 57.6350365
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 7706,
+        "weeklyIncrease": 190
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 It's a Wonderful Life",
+      "performanceDate": "2025-12-23",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 17,
+      "weeksUntilPerformance": 14,
+      "actualTickets": {
+        "total": 858,
+        "single": 858,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 66653.6,
+        "single": 66653.6,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 100000,
+        "single": 100000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.666536,
+        "single": 0.666536,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.6589861751
+      },
+      "pricing": {
+        "singleATP": 77.68484848
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 62594,
+        "weeklyIncrease": 4059.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 It's a Wonderful Life",
+      "performanceDate": "2025-12-24",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 17,
+      "weeksUntilPerformance": 14,
+      "actualTickets": {
+        "total": 210,
+        "single": 210,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 14364.4,
+        "single": 14364.4,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 100000,
+        "single": 100000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.143644,
+        "single": 0.143644,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.1612903226
+      },
+      "pricing": {
+        "singleATP": 68.40190476
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 13544,
+        "weeklyIncrease": 820.4
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS04 Brahms' Fourth Symphony",
+      "performanceDate": "2026-01-09",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 19,
+      "weeksUntilPerformance": 16,
+      "actualTickets": {
+        "total": 598,
+        "single": 29,
+        "subscription": 569
+      },
+      "revenue": {
+        "total": 39591,
+        "single": 1282,
+        "subscription": 38309
+      },
+      "budget": {
+        "total": 54999,
+        "single": 21666,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867.85
+      },
+      "budgetAchievement": {
+        "total": 0.7198494518,
+        "single": 0.05917105142,
+        "subscription": 1.149281493
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3761006289
+      },
+      "pricing": {
+        "singleATP": 66.20568562
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39591,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "27 CS04 Brahms' Fourth Symphony",
+      "performanceDate": "2026-01-10",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 19,
+      "weeksUntilPerformance": 16,
+      "actualTickets": {
+        "total": 623,
+        "single": 67,
+        "subscription": 556
+      },
+      "revenue": {
+        "total": 40128,
+        "single": 3760,
+        "subscription": 36368
+      },
+      "budget": {
+        "total": 54999,
+        "single": 21666,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 878.9
+      },
+      "budgetAchievement": {
+        "total": 0.7296132657,
+        "single": 0.1735438013,
+        "subscription": 1.091050911
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3918238994
+      },
+      "pricing": {
+        "singleATP": 64.41091493
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40067,
+        "weeklyIncrease": 61
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "28 CS04 Brahms' Fourth Symphony",
+      "performanceDate": "2026-01-11",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 19,
+      "weeksUntilPerformance": 16,
+      "actualTickets": {
+        "total": 621,
+        "single": 52,
+        "subscription": 569
+      },
+      "revenue": {
+        "total": 39791.5,
+        "single": 3088,
+        "subscription": 36703.5
+      },
+      "budget": {
+        "total": 55000,
+        "single": 21666,
+        "subscription": 33334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867.85
+      },
+      "budgetAchievement": {
+        "total": 0.7234818182,
+        "single": 0.1425274624,
+        "subscription": 1.101082978
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3905660377
+      },
+      "pricing": {
+        "singleATP": 64.07648953
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39442,
+        "weeklyIncrease": 349.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS05 Pines of Rome & Bruch",
+      "performanceDate": "2026-01-16",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 20,
+      "weeksUntilPerformance": 17,
+      "actualTickets": {
+        "total": 417,
+        "single": 50,
+        "subscription": 367
+      },
+      "revenue": {
+        "total": 28243,
+        "single": 2960,
+        "subscription": 25283
+      },
+      "budget": {
+        "total": 60000,
+        "single": 30000,
+        "subscription": 30000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1039.55
+      },
+      "budgetAchievement": {
+        "total": 0.4707166667,
+        "single": 0.09866666667,
+        "subscription": 0.8427666667
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2622641509
+      },
+      "pricing": {
+        "singleATP": 67.72901679
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 27996,
+        "weeklyIncrease": 247
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS05 Pines of Rome & Bruch",
+      "performanceDate": "2026-01-17",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 20,
+      "weeksUntilPerformance": 17,
+      "actualTickets": {
+        "total": 718,
+        "single": 118,
+        "subscription": 600
+      },
+      "revenue": {
+        "total": 47394.9,
+        "single": 6839,
+        "subscription": 40555.9
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "budgetAchievement": {
+        "total": 0.631932,
+        "single": 0.34195,
+        "subscription": 0.73738
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.451572327
+      },
+      "pricing": {
+        "singleATP": 66.00961003
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46870,
+        "weeklyIncrease": 524.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS05 Pines of Rome & Bruch",
+      "performanceDate": "2026-01-18",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 20,
+      "weeksUntilPerformance": 17,
+      "actualTickets": {
+        "total": 696,
+        "single": 89,
+        "subscription": 607
+      },
+      "revenue": {
+        "total": 44600.2,
+        "single": 5667,
+        "subscription": 38933.2
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 835.55
+      },
+      "budgetAchievement": {
+        "total": 0.5946693333,
+        "single": 0.28335,
+        "subscription": 0.7078763636
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4377358491
+      },
+      "pricing": {
+        "singleATP": 64.08074713
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 44645,
+        "weeklyIncrease": -44.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Indiana Jones: Raiders Lost",
+      "performanceDate": "2026-01-22",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 21,
+      "weeksUntilPerformance": 18,
+      "actualTickets": {
+        "total": 124,
+        "single": 124,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 7410,
+        "single": 7410,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 90000,
+        "single": 90000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.08233333333,
+        "single": 0.08233333333,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.09523809524
+      },
+      "pricing": {
+        "singleATP": 59.75806452
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 7349,
+        "weeklyIncrease": 61
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Indiana Jones: Raiders Lost",
+      "performanceDate": "2026-01-23",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 21,
+      "weeksUntilPerformance": 18,
+      "actualTickets": {
+        "total": 298,
+        "single": 298,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 21481.9,
+        "single": 21481.9,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 90000,
+        "single": 90000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.2386877778,
+        "single": 0.2386877778,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2288786482
+      },
+      "pricing": {
+        "singleATP": 72.08691275
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 21092,
+        "weeklyIncrease": 389.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Indiana Jones: Raiders Lost",
+      "performanceDate": "2026-01-24",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 21,
+      "weeksUntilPerformance": 18,
+      "actualTickets": {
+        "total": 481,
+        "single": 481,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 34988.1,
+        "single": 34988.1,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 90000,
+        "single": 90000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.3887566667,
+        "single": 0.3887566667,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3694316436
+      },
+      "pricing": {
+        "singleATP": 72.74033264
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 34163,
+        "weeklyIncrease": 825.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Indiana Jones: Raiders Lost",
+      "performanceDate": "2026-01-25",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 21,
+      "weeksUntilPerformance": 18,
+      "actualTickets": {
+        "total": 378,
+        "single": 378,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 26457.1,
+        "single": 26457.1,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 90000,
+        "single": 90000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.2939677778,
+        "single": 0.2939677778,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2903225806
+      },
+      "pricing": {
+        "singleATP": 69.99232804
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 25551,
+        "weeklyIncrease": 906.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS06 Beethoven+",
+      "performanceDate": "2026-01-30",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 22,
+      "weeksUntilPerformance": 19,
+      "actualTickets": {
+        "total": 428,
+        "single": 66,
+        "subscription": 362
+      },
+      "revenue": {
+        "total": 28368,
+        "single": 3581,
+        "subscription": 24787
+      },
+      "budget": {
+        "total": 54000,
+        "single": 24000,
+        "subscription": 30000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1043.8
+      },
+      "budgetAchievement": {
+        "total": 0.5253333333,
+        "single": 0.1492083333,
+        "subscription": 0.8262333333
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2691823899
+      },
+      "pricing": {
+        "singleATP": 66.28037383
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 28532,
+        "weeklyIncrease": -164
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS06 Beethoven+",
+      "performanceDate": "2026-01-31",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 22,
+      "weeksUntilPerformance": 19,
+      "actualTickets": {
+        "total": 691,
+        "single": 91,
+        "subscription": 600
+      },
+      "revenue": {
+        "total": 45500.9,
+        "single": 5377,
+        "subscription": 40123.9
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "budgetAchievement": {
+        "total": 0.6066786667,
+        "single": 0.26885,
+        "subscription": 0.7295254545
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.434591195
+      },
+      "pricing": {
+        "singleATP": 65.84790159
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45126,
+        "weeklyIncrease": 374.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS06 Beethoven+",
+      "performanceDate": "2026-02-01",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 22,
+      "weeksUntilPerformance": 19,
+      "actualTickets": {
+        "total": 677,
+        "single": 69,
+        "subscription": 608
+      },
+      "revenue": {
+        "total": 43394.2,
+        "single": 4454,
+        "subscription": 38940.2
+      },
+      "budget": {
+        "total": 75000,
+        "single": 20000,
+        "subscription": 55000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 834.7
+      },
+      "budgetAchievement": {
+        "total": 0.5785893333,
+        "single": 0.2227,
+        "subscription": 0.7080036364
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4257861635
+      },
+      "pricing": {
+        "singleATP": 64.09778434
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 43439,
+        "weeklyIncrease": -44.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 On-Stage 2",
+      "performanceDate": "2026-02-05",
+      "performanceType": "On Stage",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 23,
+      "weeksUntilPerformance": 20,
+      "actualTickets": {
+        "total": 19,
+        "single": 19,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 1960,
+        "single": 1960,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 9000,
+        "single": 9000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 85
+      },
+      "budgetAchievement": {
+        "total": 0.2177777778,
+        "single": 0.2177777778,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 100,
+        "currentOccupancy": 0.19
+      },
+      "pricing": {
+        "singleATP": 103.1578947
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 1960,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS07 Prokofiev's Fifth Symphony",
+      "performanceDate": "2026-02-06",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 23,
+      "weeksUntilPerformance": 20,
+      "actualTickets": {
+        "total": 618,
+        "single": 60,
+        "subscription": 558
+      },
+      "revenue": {
+        "total": 39823,
+        "single": 2488,
+        "subscription": 37335
+      },
+      "budget": {
+        "total": 46666,
+        "single": 13333,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 877.2
+      },
+      "budgetAchievement": {
+        "total": 0.8533621909,
+        "single": 0.1866046651,
+        "subscription": 1.120061201
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3886792453
+      },
+      "pricing": {
+        "singleATP": 64.43851133
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40002,
+        "weeklyIncrease": -179
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "27 CS07 Prokofiev's Fifth Symphony",
+      "performanceDate": "2026-02-07",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 23,
+      "weeksUntilPerformance": 20,
+      "actualTickets": {
+        "total": 604,
+        "single": 46,
+        "subscription": 558
+      },
+      "revenue": {
+        "total": 38606.2,
+        "single": 2312,
+        "subscription": 36294.2
+      },
+      "budget": {
+        "total": 46666,
+        "single": 13333,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 877.2
+      },
+      "budgetAchievement": {
+        "total": 0.8272875327,
+        "single": 0.1734043351,
+        "subscription": 1.088836888
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3798742138
+      },
+      "pricing": {
+        "singleATP": 63.91754967
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 38756,
+        "weeklyIncrease": -149.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "28 CS07 Prokofiev's Fifth Symphony",
+      "performanceDate": "2026-02-08",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 23,
+      "weeksUntilPerformance": 20,
+      "actualTickets": {
+        "total": 604,
+        "single": 44,
+        "subscription": 560
+      },
+      "revenue": {
+        "total": 38063.1,
+        "single": 1922,
+        "subscription": 36141.1
+      },
+      "budget": {
+        "total": 46667,
+        "single": 13333,
+        "subscription": 33334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 875.5
+      },
+      "budgetAchievement": {
+        "total": 0.8156320312,
+        "single": 0.1441536038,
+        "subscription": 1.084211316
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3798742138
+      },
+      "pricing": {
+        "singleATP": 63.01837748
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 37659,
+        "weeklyIncrease": 404.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Chris Thile",
+      "performanceDate": "2026-02-12",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 24,
+      "weeksUntilPerformance": 21,
+      "actualTickets": {
+        "total": 307,
+        "single": 307,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 27005,
+        "single": 27005,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 128900,
+        "single": 128900,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.2095034911,
+        "single": 0.2095034911,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.193081761
+      },
+      "pricing": {
+        "singleATP": 87.96416938
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 26876,
+        "weeklyIncrease": 129
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS3 She's Got Soul",
+      "performanceDate": "2026-02-13",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 24,
+      "weeksUntilPerformance": 21,
+      "actualTickets": {
+        "total": 787,
+        "single": 64,
+        "subscription": 723
+      },
+      "revenue": {
+        "total": 55909.1,
+        "single": 3895,
+        "subscription": 52014.1
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 736.95
+      },
+      "budgetAchievement": {
+        "total": 0.5905932436,
+        "single": 0.07303170645,
+        "subscription": 1.258415794
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4949685535
+      },
+      "pricing": {
+        "singleATP": 71.0407878
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 55761,
+        "weeklyIncrease": 148.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS3 She's Got Soul",
+      "performanceDate": "2026-02-14",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 24,
+      "weeksUntilPerformance": 21,
+      "actualTickets": {
+        "total": 715,
+        "single": 44,
+        "subscription": 671
+      },
+      "revenue": {
+        "total": 50570.8,
+        "single": 2021,
+        "subscription": 48549.8
+      },
+      "budget": {
+        "total": 94667,
+        "single": 53333,
+        "subscription": 41334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 781.15
+      },
+      "budgetAchievement": {
+        "total": 0.5341967106,
+        "single": 0.03789398684,
+        "subscription": 1.174572991
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4496855346
+      },
+      "pricing": {
+        "singleATP": 70.72839161
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 50567,
+        "weeklyIncrease": 3.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS3 She's Got Soul",
+      "performanceDate": "2026-02-15",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 24,
+      "weeksUntilPerformance": 21,
+      "actualTickets": {
+        "total": 439,
+        "single": 58,
+        "subscription": 381
+      },
+      "revenue": {
+        "total": 29655.3,
+        "single": 3704,
+        "subscription": 25951.3
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1027.65
+      },
+      "budgetAchievement": {
+        "total": 0.3132624173,
+        "single": 0.06945043407,
+        "subscription": 0.6278590956
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2761006289
+      },
+      "pricing": {
+        "singleATP": 67.55193622
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 29655,
+        "weeklyIncrease": 0.3
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Harry Potter 2: Chamber",
+      "performanceDate": "2026-02-19",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 25,
+      "weeksUntilPerformance": 22,
+      "actualTickets": {
+        "total": 132,
+        "single": 132,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 9361.5,
+        "single": 9361.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 111250,
+        "single": 111250,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.08414831461,
+        "single": 0.08414831461,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.1013824885
+      },
+      "pricing": {
+        "singleATP": 70.92045455
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 9362,
+        "weeklyIncrease": -0.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Harry Potter 2: Chamber",
+      "performanceDate": "2026-02-20",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 25,
+      "weeksUntilPerformance": 22,
+      "actualTickets": {
+        "total": 243,
+        "single": 243,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 17663,
+        "single": 17663,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 111250,
+        "single": 111250,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.1587685393,
+        "single": 0.1587685393,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.1866359447
+      },
+      "pricing": {
+        "singleATP": 72.6872428
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 17618,
+        "weeklyIncrease": 45
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Harry Potter 2: Chamber",
+      "performanceDate": "2026-02-21",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 25,
+      "weeksUntilPerformance": 22,
+      "actualTickets": {
+        "total": 418,
+        "single": 418,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 31515,
+        "single": 31515,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 111250,
+        "single": 111250,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.2832808989,
+        "single": 0.2832808989,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3210445469
+      },
+      "pricing": {
+        "singleATP": 75.39473684
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 29430,
+        "weeklyIncrease": 2085
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 Harry Potter 2: Chamber",
+      "performanceDate": "2026-02-22",
+      "performanceType": "Specials/Film",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 25,
+      "weeksUntilPerformance": 22,
+      "actualTickets": {
+        "total": 501,
+        "single": 501,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 33792.5,
+        "single": 33792.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 111250,
+        "single": 111250,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "budgetAchievement": {
+        "total": 0.303752809,
+        "single": 0.303752809,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3847926267
+      },
+      "pricing": {
+        "singleATP": 67.4500998
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 32563,
+        "weeklyIncrease": 1229.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 FS3 Philharmonia Fantastique",
+      "performanceDate": "2026-03-01",
+      "performanceType": "Family",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 26,
+      "weeksUntilPerformance": 23,
+      "actualTickets": {
+        "total": 349,
+        "single": 50,
+        "subscription": 299
+      },
+      "revenue": {
+        "total": 8100,
+        "single": 1461,
+        "subscription": 6639
+      },
+      "budget": {
+        "total": 19500,
+        "single": 10000,
+        "subscription": 9500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 852.55
+      },
+      "budgetAchievement": {
+        "total": 0.4153846154,
+        "single": 0.1461,
+        "subscription": 0.6988421053
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.2680491551
+      },
+      "pricing": {
+        "singleATP": 23.20916905
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 8100,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS08 Saint-Saëns & Strauss",
+      "performanceDate": "2026-03-13",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 28,
+      "weeksUntilPerformance": 25,
+      "actualTickets": {
+        "total": 618,
+        "single": 49,
+        "subscription": 569
+      },
+      "revenue": {
+        "total": 40846,
+        "single": 2637,
+        "subscription": 38209
+      },
+      "budget": {
+        "total": 54999,
+        "single": 18333,
+        "subscription": 36666
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 867.85
+      },
+      "budgetAchievement": {
+        "total": 0.7426680485,
+        "single": 0.1438389789,
+        "subscription": 1.042082583
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3886792453
+      },
+      "pricing": {
+        "singleATP": 66.09385113
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40801,
+        "weeklyIncrease": 45
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS08 Saint-Saëns & Strauss",
+      "performanceDate": "2026-03-14",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 28,
+      "weeksUntilPerformance": 25,
+      "actualTickets": {
+        "total": 622,
+        "single": 59,
+        "subscription": 563
+      },
+      "revenue": {
+        "total": 39753.2,
+        "single": 3194,
+        "subscription": 36559.2
+      },
+      "budget": {
+        "total": 55000,
+        "single": 18333,
+        "subscription": 36667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 872.95
+      },
+      "budgetAchievement": {
+        "total": 0.7227854545,
+        "single": 0.1742213495,
+        "subscription": 0.9970600267
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3911949686
+      },
+      "pricing": {
+        "singleATP": 63.91189711
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39207,
+        "weeklyIncrease": 546.2
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS08 Saint-Saëns & Strauss",
+      "performanceDate": "2026-03-15",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 28,
+      "weeksUntilPerformance": 25,
+      "actualTickets": {
+        "total": 642,
+        "single": 71,
+        "subscription": 571
+      },
+      "revenue": {
+        "total": 41030.1,
+        "single": 4324,
+        "subscription": 36706.1
+      },
+      "budget": {
+        "total": 55000,
+        "single": 18333,
+        "subscription": 36667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 866.15
+      },
+      "budgetAchievement": {
+        "total": 0.7460018182,
+        "single": 0.2358588338,
+        "subscription": 1.001066354
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4037735849
+      },
+      "pricing": {
+        "singleATP": 63.90981308
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40659,
+        "weeklyIncrease": 371.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "Final Symphony",
+      "performanceDate": "2026-03-25",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 30,
+      "weeksUntilPerformance": 27,
+      "actualTickets": {
+        "total": 86,
+        "single": 86,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 5437,
+        "single": 5437,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 84109,
+        "single": 84109,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.06464230938,
+        "single": 0.06464230938,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.05408805031
+      },
+      "pricing": {
+        "singleATP": 63.22093023
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 5227,
+        "weeklyIncrease": 210
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "Final Symphony",
+      "performanceDate": "2026-03-26",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 30,
+      "weeksUntilPerformance": 27,
+      "actualTickets": {
+        "total": 87,
+        "single": 87,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 5027.5,
+        "single": 5027.5,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 84109,
+        "single": 84109,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.05977362708,
+        "single": 0.05977362708,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.05471698113
+      },
+      "pricing": {
+        "singleATP": 57.78735632
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 4627,
+        "weeklyIncrease": 400.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS4 Billy Joel & Elton John",
+      "performanceDate": "2026-03-27",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 30,
+      "weeksUntilPerformance": 27,
+      "actualTickets": {
+        "total": 900,
+        "single": 161,
+        "subscription": 739
+      },
+      "revenue": {
+        "total": 64129.1,
+        "single": 10835,
+        "subscription": 53294.1
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 723.35
+      },
+      "budgetAchievement": {
+        "total": 0.677424841,
+        "single": 0.2031575197,
+        "subscription": 1.289383785
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.5660377358
+      },
+      "pricing": {
+        "singleATP": 71.25455556
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 63832,
+        "weeklyIncrease": 297.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS4 Billy Joel & Elton John",
+      "performanceDate": "2026-03-28",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 30,
+      "weeksUntilPerformance": 27,
+      "actualTickets": {
+        "total": 847,
+        "single": 173,
+        "subscription": 674
+      },
+      "revenue": {
+        "total": 60900.8,
+        "single": 12189,
+        "subscription": 48711.8
+      },
+      "budget": {
+        "total": 94667,
+        "single": 53333,
+        "subscription": 41334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 778.6
+      },
+      "budgetAchievement": {
+        "total": 0.6433160447,
+        "single": 0.2285451784,
+        "subscription": 1.178492282
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.5327044025
+      },
+      "pricing": {
+        "singleATP": 71.90177096
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 60453,
+        "weeklyIncrease": 447.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS4 Billy Joel & Elton John",
+      "performanceDate": "2026-03-29",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 30,
+      "weeksUntilPerformance": 27,
+      "actualTickets": {
+        "total": 604,
+        "single": 219,
+        "subscription": 385
+      },
+      "revenue": {
+        "total": 41992.6,
+        "single": 15849,
+        "subscription": 26143.6
+      },
+      "budget": {
+        "total": 94666,
+        "single": 53333,
+        "subscription": 41333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1024.25
+      },
+      "budgetAchievement": {
+        "total": 0.4435869267,
+        "single": 0.2971706073,
+        "subscription": 0.6325115525
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3798742138
+      },
+      "pricing": {
+        "singleATP": 69.52417219
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41009,
+        "weeklyIncrease": 983.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS09 Midsummer Night's Dream",
+      "performanceDate": "2026-04-10",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 32,
+      "weeksUntilPerformance": 29,
+      "actualTickets": {
+        "total": 415,
+        "single": 48,
+        "subscription": 367
+      },
+      "revenue": {
+        "total": 27729,
+        "single": 2074,
+        "subscription": 25655
+      },
+      "budget": {
+        "total": 52000,
+        "single": 22000,
+        "subscription": 30000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 906.1
+      },
+      "budgetAchievement": {
+        "total": 0.53325,
+        "single": 0.09427272727,
+        "subscription": 0.8551666667
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.2896022331
+      },
+      "pricing": {
+        "singleATP": 66.81686747
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 27619,
+        "weeklyIncrease": 110
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS09 Midsummer Night's Dream",
+      "performanceDate": "2026-04-11",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 32,
+      "weeksUntilPerformance": 29,
+      "actualTickets": {
+        "total": 660,
+        "single": 94,
+        "subscription": 566
+      },
+      "revenue": {
+        "total": 41302,
+        "single": 4786,
+        "subscription": 36516
+      },
+      "budget": {
+        "total": 74000,
+        "single": 24000,
+        "subscription": 50000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 736.95
+      },
+      "budgetAchievement": {
+        "total": 0.5581351351,
+        "single": 0.1994166667,
+        "subscription": 0.73032
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.4605722261
+      },
+      "pricing": {
+        "singleATP": 62.57878788
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 40940,
+        "weeklyIncrease": 362
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS09 Midsummer Night's Dream",
+      "performanceDate": "2026-04-12",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 32,
+      "weeksUntilPerformance": 29,
+      "actualTickets": {
+        "total": 634,
+        "single": 64,
+        "subscription": 570
+      },
+      "revenue": {
+        "total": 39738.1,
+        "single": 2879,
+        "subscription": 36859.1
+      },
+      "budget": {
+        "total": 74000,
+        "single": 24000,
+        "subscription": 50000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 733.55
+      },
+      "budgetAchievement": {
+        "total": 0.5370013514,
+        "single": 0.1199583333,
+        "subscription": 0.737182
+      },
+      "capacity": {
+        "max": 1433,
+        "currentOccupancy": 0.4424284717
+      },
+      "pricing": {
+        "singleATP": 62.67839117
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39401,
+        "weeklyIncrease": 337.1
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS10 Farrenc/Dvorák/Schuman",
+      "performanceDate": "2026-04-17",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 33,
+      "weeksUntilPerformance": 30,
+      "actualTickets": {
+        "total": 604,
+        "single": 30,
+        "subscription": 574
+      },
+      "revenue": {
+        "total": 39793,
+        "single": 1047,
+        "subscription": 38746
+      },
+      "budget": {
+        "total": 46666,
+        "single": 13333,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 863.6
+      },
+      "budgetAchievement": {
+        "total": 0.8527193246,
+        "single": 0.07852696317,
+        "subscription": 1.162391624
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3798742138
+      },
+      "pricing": {
+        "singleATP": 65.88245033
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39639,
+        "weeklyIncrease": 154
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS10 Farrenc/Dvorák/Schuman",
+      "performanceDate": "2026-04-18",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 33,
+      "weeksUntilPerformance": 30,
+      "actualTickets": {
+        "total": 626,
+        "single": 30,
+        "subscription": 596
+      },
+      "revenue": {
+        "total": 41723.9,
+        "single": 1233,
+        "subscription": 40490.9
+      },
+      "budget": {
+        "total": 46666,
+        "single": 13333,
+        "subscription": 33333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 844.9
+      },
+      "budgetAchievement": {
+        "total": 0.8940963442,
+        "single": 0.09247731193,
+        "subscription": 1.214739147
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3937106918
+      },
+      "pricing": {
+        "singleATP": 66.65159744
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41437,
+        "weeklyIncrease": 286.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS10 Farrenc/Dvorák/Schuman",
+      "performanceDate": "2026-04-19",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 33,
+      "weeksUntilPerformance": 30,
+      "actualTickets": {
+        "total": 654,
+        "single": 36,
+        "subscription": 618
+      },
+      "revenue": {
+        "total": 41460.2,
+        "single": 1580,
+        "subscription": 39880.2
+      },
+      "budget": {
+        "total": 46667,
+        "single": 13333,
+        "subscription": 33334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 826.2
+      },
+      "budgetAchievement": {
+        "total": 0.8884265112,
+        "single": 0.1185029626,
+        "subscription": 1.196382072
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4113207547
+      },
+      "pricing": {
+        "singleATP": 63.39480122
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41505,
+        "weeklyIncrease": -44.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS11 Grieg's Piano Concerto",
+      "performanceDate": "2026-05-08",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 36,
+      "weeksUntilPerformance": 33,
+      "actualTickets": {
+        "total": 420,
+        "single": 48,
+        "subscription": 372
+      },
+      "revenue": {
+        "total": 27937,
+        "single": 2256,
+        "subscription": 25681
+      },
+      "budget": {
+        "total": 45000,
+        "single": 20000,
+        "subscription": 25000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1035.3
+      },
+      "budgetAchievement": {
+        "total": 0.6208222222,
+        "single": 0.1128,
+        "subscription": 1.02724
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2641509434
+      },
+      "pricing": {
+        "singleATP": 66.51666667
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 27922,
+        "weeklyIncrease": 15
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS11 Grieg's Piano Concerto",
+      "performanceDate": "2026-05-09",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 36,
+      "weeksUntilPerformance": 33,
+      "actualTickets": {
+        "total": 689,
+        "single": 89,
+        "subscription": 600
+      },
+      "revenue": {
+        "total": 45768.9,
+        "single": 5356,
+        "subscription": 40412.9
+      },
+      "budget": {
+        "total": 65000,
+        "single": 17500,
+        "subscription": 47500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 841.5
+      },
+      "budgetAchievement": {
+        "total": 0.7041369231,
+        "single": 0.3060571429,
+        "subscription": 0.8507978947
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4333333333
+      },
+      "pricing": {
+        "singleATP": 66.42801161
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45567,
+        "weeklyIncrease": 201.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS11 Grieg's Piano Concerto",
+      "performanceDate": "2026-05-10",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 36,
+      "weeksUntilPerformance": 33,
+      "actualTickets": {
+        "total": 674,
+        "single": 64,
+        "subscription": 610
+      },
+      "revenue": {
+        "total": 42812.2,
+        "single": 3348,
+        "subscription": 39464.2
+      },
+      "budget": {
+        "total": 65000,
+        "single": 17500,
+        "subscription": 47500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 833
+      },
+      "budgetAchievement": {
+        "total": 0.6586492308,
+        "single": 0.1913142857,
+        "subscription": 0.8308252632
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4238993711
+      },
+      "pricing": {
+        "singleATP": 63.51958457
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 42846,
+        "weeklyIncrease": -33.8
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS5 Dolly Parton's Threads",
+      "performanceDate": "2026-05-15",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 37,
+      "weeksUntilPerformance": 34,
+      "actualTickets": {
+        "total": 807,
+        "single": 69,
+        "subscription": 738
+      },
+      "revenue": {
+        "total": 67716,
+        "single": 5283,
+        "subscription": 62433
+      },
+      "budget": {
+        "total": 103333,
+        "single": 60000,
+        "subscription": 43333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 479.4
+      },
+      "budgetAchievement": {
+        "total": 0.655318243,
+        "single": 0.08805,
+        "subscription": 1.440772621
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.6198156682
+      },
+      "pricing": {
+        "singleATP": 83.91078067
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 67528,
+        "weeklyIncrease": 188
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS5 Dolly Parton's Threads",
+      "performanceDate": "2026-05-16",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 37,
+      "weeksUntilPerformance": 34,
+      "actualTickets": {
+        "total": 744,
+        "single": 68,
+        "subscription": 676
+      },
+      "revenue": {
+        "total": 62277,
+        "single": 4810,
+        "subscription": 57467
+      },
+      "budget": {
+        "total": 103334,
+        "single": 60000,
+        "subscription": 43334
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 532.1
+      },
+      "budgetAchievement": {
+        "total": 0.6026767569,
+        "single": 0.08016666667,
+        "subscription": 1.326141136
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.5714285714
+      },
+      "pricing": {
+        "singleATP": 83.70564516
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 62273,
+        "weeklyIncrease": 4
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 PS5 Dolly Parton's Threads",
+      "performanceDate": "2026-05-17",
+      "performanceType": "Pops",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 37,
+      "weeksUntilPerformance": 34,
+      "actualTickets": {
+        "total": 502,
+        "single": 113,
+        "subscription": 389
+      },
+      "revenue": {
+        "total": 39876,
+        "single": 8946,
+        "subscription": 30930
+      },
+      "budget": {
+        "total": 103333,
+        "single": 60000,
+        "subscription": 43333
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 776.05
+      },
+      "budgetAchievement": {
+        "total": 0.385898019,
+        "single": 0.1491,
+        "subscription": 0.7137747213
+      },
+      "capacity": {
+        "max": 1302,
+        "currentOccupancy": 0.3855606759
+      },
+      "pricing": {
+        "singleATP": 79.43426295
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39876,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "Ben Rector",
+      "performanceDate": "2026-05-21",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 38,
+      "weeksUntilPerformance": 45,
+      "actualTickets": {
+        "total": 105,
+        "single": 105,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 8896,
+        "single": 8896,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 112468,
+        "single": 112468,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.07909805456,
+        "single": 0.07909805456,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.06603773585
+      },
+      "pricing": {
+        "singleATP": 84.72380952
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 8896,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "Ben Rector",
+      "performanceDate": "2026-05-22",
+      "performanceType": "Specials",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 38,
+      "weeksUntilPerformance": 45,
+      "actualTickets": {
+        "total": 184,
+        "single": 184,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 17072,
+        "single": 17072,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 112468,
+        "single": 112468,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1351.5
+      },
+      "budgetAchievement": {
+        "total": 0.1517942882,
+        "single": 0.1517942882,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.1157232704
+      },
+      "pricing": {
+        "singleATP": 92.7826087
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 15962,
+        "weeklyIncrease": 1110
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 On-Stage 3",
+      "performanceDate": "2026-05-28",
+      "performanceType": "On Stage",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 39,
+      "weeksUntilPerformance": 36,
+      "actualTickets": {
+        "total": 17,
+        "single": 17,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 1680,
+        "single": 1680,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 9000,
+        "single": 9000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 85
+      },
+      "budgetAchievement": {
+        "total": 0.1866666667,
+        "single": 0.1866666667,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 100,
+        "currentOccupancy": 0.17
+      },
+      "pricing": {
+        "singleATP": 98.82352941
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 1680,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS12 Gil Shaham Plays Brahm's 4th",
+      "performanceDate": "2026-05-29",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 39,
+      "weeksUntilPerformance": 36,
+      "actualTickets": {
+        "total": 607,
+        "single": 46,
+        "subscription": 561
+      },
+      "revenue": {
+        "total": 39074,
+        "single": 1476,
+        "subscription": 37598
+      },
+      "budget": {
+        "total": 51666,
+        "single": 20000,
+        "subscription": 31666
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 874.65
+      },
+      "budgetAchievement": {
+        "total": 0.7562807262,
+        "single": 0.0738,
+        "subscription": 1.18733026
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3817610063
+      },
+      "pricing": {
+        "singleATP": 64.3723229
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39098,
+        "weeklyIncrease": -24
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "27 CS12 Gil Shaham Plays Brahm's 4th",
+      "performanceDate": "2026-05-30",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 39,
+      "weeksUntilPerformance": 36,
+      "actualTickets": {
+        "total": 620,
+        "single": 47,
+        "subscription": 573
+      },
+      "revenue": {
+        "total": 38938,
+        "single": 1715,
+        "subscription": 37223
+      },
+      "budget": {
+        "total": 51667,
+        "single": 20000,
+        "subscription": 31667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 864.45
+      },
+      "budgetAchievement": {
+        "total": 0.7536338475,
+        "single": 0.08575,
+        "subscription": 1.175450785
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3899371069
+      },
+      "pricing": {
+        "singleATP": 62.80322581
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 38770,
+        "weeklyIncrease": 168
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "28 CS12 Gil Shaham Plays Brahm's 4th",
+      "performanceDate": "2026-05-31",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 39,
+      "weeksUntilPerformance": 36,
+      "actualTickets": {
+        "total": 636,
+        "single": 64,
+        "subscription": 572
+      },
+      "revenue": {
+        "total": 39947.5,
+        "single": 2881,
+        "subscription": 37066.5
+      },
+      "budget": {
+        "total": 51667,
+        "single": 20000,
+        "subscription": 31667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 865.3
+      },
+      "budgetAchievement": {
+        "total": 0.7731724311,
+        "single": 0.14405,
+        "subscription": 1.170508731
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4
+      },
+      "pricing": {
+        "singleATP": 62.81053459
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 39611,
+        "weeklyIncrease": 336.5
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 On-Stage 4",
+      "performanceDate": "2026-06-04",
+      "performanceType": "On Stage",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 40,
+      "weeksUntilPerformance": 37,
+      "actualTickets": {
+        "total": 20,
+        "single": 20,
+        "subscription": 0
+      },
+      "revenue": {
+        "total": 2100,
+        "single": 2100,
+        "subscription": 0
+      },
+      "budget": {
+        "total": 9000,
+        "single": 9000,
+        "subscription": 0
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 85
+      },
+      "budgetAchievement": {
+        "total": 0.2333333333,
+        "single": 0.2333333333,
+        "subscription": null
+      },
+      "capacity": {
+        "max": 100,
+        "currentOccupancy": 0.2
+      },
+      "pricing": {
+        "singleATP": 105
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 2100,
+        "weeklyIncrease": null
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS13 Rachmaninoff Cele Pt 2",
+      "performanceDate": "2026-06-05",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 40,
+      "weeksUntilPerformance": 37,
+      "actualTickets": {
+        "total": 622,
+        "single": 47,
+        "subscription": 575
+      },
+      "revenue": {
+        "total": 41049,
+        "single": 2422,
+        "subscription": 38627
+      },
+      "budget": {
+        "total": 66666,
+        "single": 30000,
+        "subscription": 36666
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 862.75
+      },
+      "budgetAchievement": {
+        "total": 0.6157411574,
+        "single": 0.08073333333,
+        "subscription": 1.053482791
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.3911949686
+      },
+      "pricing": {
+        "singleATP": 65.99517685
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 41193,
+        "weeklyIncrease": -144
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS13 Rachmaninoff Cele Pt 2",
+      "performanceDate": "2026-06-06",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 40,
+      "weeksUntilPerformance": 37,
+      "actualTickets": {
+        "total": 684,
+        "single": 81,
+        "subscription": 603
+      },
+      "revenue": {
+        "total": 45694.9,
+        "single": 4789,
+        "subscription": 40905.9
+      },
+      "budget": {
+        "total": 66667,
+        "single": 30000,
+        "subscription": 36667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 838.95
+      },
+      "budgetAchievement": {
+        "total": 0.6854200729,
+        "single": 0.1596333333,
+        "subscription": 1.115605313
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4301886792
+      },
+      "pricing": {
+        "singleATP": 66.80540936
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45445,
+        "weeklyIncrease": 249.9
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS13 Rachmaninoff Cele Pt 2",
+      "performanceDate": "2026-06-07",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 40,
+      "weeksUntilPerformance": 37,
+      "actualTickets": {
+        "total": 720,
+        "single": 90,
+        "subscription": 630
+      },
+      "revenue": {
+        "total": 46004.6,
+        "single": 5394,
+        "subscription": 40610.6
+      },
+      "budget": {
+        "total": 66667,
+        "single": 30000,
+        "subscription": 36667
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 816
+      },
+      "budgetAchievement": {
+        "total": 0.6900655497,
+        "single": 0.1798,
+        "subscription": 1.10755175
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4528301887
+      },
+      "pricing": {
+        "singleATP": 63.89527778
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 45813,
+        "weeklyIncrease": 191.6
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS14 Rhapsody in Blue",
+      "performanceDate": "2026-06-19",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 42,
+      "weeksUntilPerformance": 39,
+      "actualTickets": {
+        "total": 468,
+        "single": 89,
+        "subscription": 379
+      },
+      "revenue": {
+        "total": 31448,
+        "single": 5228,
+        "subscription": 26220
+      },
+      "budget": {
+        "total": 60000,
+        "single": 30000,
+        "subscription": 30000
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1029.35
+      },
+      "budgetAchievement": {
+        "total": 0.5241333333,
+        "single": 0.1742666667,
+        "subscription": 0.874
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.2943396226
+      },
+      "pricing": {
+        "singleATP": 67.1965812
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 31433,
+        "weeklyIncrease": 15
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS14 Rhapsody in Blue",
+      "performanceDate": "2026-06-20",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 42,
+      "weeksUntilPerformance": 39,
+      "actualTickets": {
+        "total": 783,
+        "single": 195,
+        "subscription": 588
+      },
+      "revenue": {
+        "total": 49815,
+        "single": 11643,
+        "subscription": 38172
+      },
+      "budget": {
+        "total": 70000,
+        "single": 27500,
+        "subscription": 42500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 851.7
+      },
+      "budgetAchievement": {
+        "total": 0.7116428571,
+        "single": 0.4233818182,
+        "subscription": 0.8981647059
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4924528302
+      },
+      "pricing": {
+        "singleATP": 63.62068966
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 49647,
+        "weeklyIncrease": 168
+      },
+      "pacingModel": null
+    },
+    {
+      "performanceName": "26 CS14 Rhapsody in Blue",
+      "performanceDate": "2026-06-21",
+      "performanceType": "Classical",
+      "seriesCode": null,
+      "dateRange": null,
+      "weekNumber": 42,
+      "weeksUntilPerformance": 39,
+      "actualTickets": {
+        "total": 746,
+        "single": 179,
+        "subscription": 567
+      },
+      "revenue": {
+        "total": 47300,
+        "single": 10594,
+        "subscription": 36706
+      },
+      "budget": {
+        "total": 70000,
+        "single": 27500,
+        "subscription": 42500
+      },
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 869.55
+      },
+      "budgetAchievement": {
+        "total": 0.6757142857,
+        "single": 0.3852363636,
+        "subscription": 0.8636705882
+      },
+      "capacity": {
+        "max": 1590,
+        "currentOccupancy": 0.4691823899
+      },
+      "pricing": {
+        "singleATP": 63.40482574
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 46963,
+        "weeklyIncrease": 337
+      },
+      "pacingModel": null
+    }
+  ]
+}
