@@ -880,17 +880,23 @@ class DataTable {
             });
         }
 
-        // Apply dropdown filters
+        // Apply dropdown filters (case-insensitive)
         if (this.filters.series !== 'all') {
-            filtered = filtered.filter(row => row.series === this.filters.series);
+            filtered = filtered.filter(row =>
+                row.series?.toLowerCase() === this.filters.series.toLowerCase()
+            );
         }
 
         if (this.filters.venue !== 'all') {
-            filtered = filtered.filter(row => row.venue === this.filters.venue);
+            filtered = filtered.filter(row =>
+                row.venue?.toLowerCase() === this.filters.venue.toLowerCase()
+            );
         }
 
         if (this.filters.season !== 'all') {
-            filtered = filtered.filter(row => row.season === this.filters.season);
+            filtered = filtered.filter(row =>
+                row.season?.toLowerCase() === this.filters.season.toLowerCase()
+            );
         }
 
         // Apply date range filter
