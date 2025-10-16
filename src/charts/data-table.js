@@ -6,11 +6,11 @@ class DataTable {
         this.sortDirection = 'asc';
         this.filterText = '';
         this.filters = {
-            series: 'all',
-            venue: 'Helzberg Hall',
             season: 'all',
             dateRange: 'all'
         };
+        this.groupByProduction = true;
+        this.expandedGroups = new Set();
 
         // Define columns and their properties
         this.columns = [
@@ -18,12 +18,20 @@ class DataTable {
                 key: 'title',
                 label: 'Performance',
                 sortable: true,
-                formatter: (value, row) => `
-                    <div class="performance-cell">
-                        <div class="performance-title">${value}</div>
-                        <div class="performance-code">${row.code || ''}</div>
-                    </div>
-                `
+                formatter: (value, row) => {
+                    const isExpanded = this.expandedGroups.has(row.groupKey);
+                    const chevron = row.isGroup ?
+                        `<span class="chevron ${isExpanded ? 'expanded' : ''}">${isExpanded ? '▼' : '▶'}</span>` :
+                        '';
+                    const indent = row.isChild ? '<span class="child-indent">└─</span>' : '';
+
+                    return `
+                        <div class="performance-cell">
+                            ${chevron}${indent}<div class="performance-title">${value}</div>
+                            <div class="performance-code">${row.code || ''}</div>
+                        </div>
+                    `;
+                }
             },
             {
                 key: 'date',
@@ -294,12 +302,12 @@ class DataTable {
             .append('div')
             .attr('class', 'table-filter-bar');
 
-        // Search input
-        const searchContainer = filterBar
+        // Left section - Search
+        const leftSection = filterBar
             .append('div')
-            .attr('class', 'search-container');
+            .attr('class', 'filter-left');
 
-        searchContainer
+        leftSection
             .append('input')
             .attr('type', 'text')
             .attr('placeholder', 'Search performances...')
@@ -309,32 +317,63 @@ class DataTable {
                 this.renderTableRows();
             });
 
-        // Filter dropdowns container
-        const filtersContainer = filterBar
+        // Center section - Filters and Toggle
+        const centerSection = filterBar
             .append('div')
-            .attr('class', 'filters-container');
+            .attr('class', 'filter-center');
 
-        // Series filter
-        this.createFilterDropdown(filtersContainer, 'series', 'Series', this.getUniqueValues('series'));
-
-        // Venue filter
-        this.createFilterDropdown(filtersContainer, 'venue', 'Venue', this.getUniqueValues('venue'));
-
-        // Season filter
-        this.createFilterDropdown(filtersContainer, 'season', 'Season', this.getUniqueValues('season'));
+        // Season filter (with cleaned values)
+        const seasonValues = this.getUniqueValues('season').map(s => s.replace(/^\d{2}-\d{2}\s+/, ''));
+        this.createFilterDropdown(centerSection, 'season', 'Season', seasonValues);
 
         // Date range filter
-        this.createDateRangeFilter(filtersContainer);
+        this.createDateRangeFilter(centerSection);
 
-        // Clear filters button
-        filtersContainer
+        // View mode toggle switch
+        const toggleContainer = centerSection
+            .append('div')
+            .attr('class', 'view-toggle-container');
+
+        toggleContainer
+            .append('span')
+            .attr('class', 'toggle-text')
+            .text('Grouped');
+
+        const toggleLabel = toggleContainer
+            .append('label')
+            .attr('class', 'toggle-switch');
+
+        const checkbox = toggleLabel
+            .append('input')
+            .attr('type', 'checkbox')
+            .property('checked', !this.groupByProduction)
+            .on('change', (event) => {
+                this.groupByProduction = !event.target.checked;
+                this.expandedGroups.clear();
+                this.render();
+            });
+
+        toggleLabel
+            .append('span')
+            .attr('class', 'toggle-slider');
+
+        toggleContainer
+            .append('span')
+            .attr('class', 'toggle-text')
+            .text('List');
+
+        // Right section - Clear button and info
+        const rightSection = filterBar
+            .append('div')
+            .attr('class', 'filter-right');
+
+        rightSection
             .append('button')
             .attr('class', 'clear-filters-btn')
             .text('Clear Filters')
             .on('click', () => this.clearAllFilters());
 
-        // Info display
-        filterBar
+        rightSection
             .append('div')
             .attr('class', 'table-info')
             .text(`${this.getFilteredData().length} performances`);
@@ -426,8 +465,6 @@ class DataTable {
 
     clearAllFilters() {
         this.filters = {
-            series: 'all',
-            venue: 'Helzberg Hall',
             season: 'all',
             dateRange: 'all'
         };
@@ -435,13 +472,7 @@ class DataTable {
 
         // Reset UI elements
         this.container.select('.search-input').property('value', '');
-        this.container.selectAll('.filter-select').each(function(d, i) {
-            if (i === 1) { // venue filter is the second dropdown (index 1)
-                d3.select(this).property('value', 'Helzberg Hall');
-            } else {
-                d3.select(this).property('value', 'all');
-            }
-        });
+        this.container.selectAll('.filter-select').property('value', 'all');
 
         this.renderTableRows();
     }
@@ -736,28 +767,66 @@ class DataTable {
     renderTableRows() {
         if (!this.tbody) return;
 
-        const filteredData = this.getFilteredData();
+        let filteredData = this.getFilteredData();
+        let displayData = [];
+
+        // Apply grouping if enabled
+        if (this.groupByProduction) {
+            const groups = this.groupDataByProduction(filteredData);
+
+            // Build display data with groups and optionally their children
+            groups.forEach(group => {
+                displayData.push(group);
+
+                // If group is expanded, add child performances
+                if (this.expandedGroups.has(group.groupKey)) {
+                    group.performances.forEach(perf => {
+                        displayData.push({
+                            ...perf,
+                            isChild: true,
+                            parentKey: group.groupKey
+                        });
+                    });
+                }
+            });
+        } else {
+            displayData = filteredData;
+        }
 
         // Update info display
+        const count = this.groupByProduction ?
+            displayData.filter(d => d.isGroup).length :
+            displayData.length;
         this.container.select('.table-info')
-            .text(`${filteredData.length} performances`);
+            .text(`${count} ${this.groupByProduction ? 'productions' : 'performances'}`);
 
         // Create rows
         const rows = this.tbody
             .selectAll('tr')
-            .data(filteredData);
+            .data(displayData, d => d.isGroup ? d.id : (d.isChild ? `child-${d.id}` : d.id));
 
         rows.exit().remove();
 
         const newRows = rows.enter()
             .append('tr')
-            .attr('class', 'table-row')
+            .attr('class', d => `table-row ${d.isGroup ? 'group-row' : ''} ${d.isChild ? 'child-row' : ''}`)
             .style('cursor', 'pointer')
             .on('click', (event, d) => {
-                this.showPerformanceDetails(d);
+                if (d.isGroup) {
+                    // Toggle expansion
+                    if (this.expandedGroups.has(d.groupKey)) {
+                        this.expandedGroups.delete(d.groupKey);
+                    } else {
+                        this.expandedGroups.add(d.groupKey);
+                    }
+                    this.renderTableRows();
+                } else {
+                    this.showPerformanceDetails(d);
+                }
             });
 
-        const allRows = newRows.merge(rows);
+        const allRows = newRows.merge(rows)
+            .attr('class', d => `table-row ${d.isGroup ? 'group-row' : ''} ${d.isChild ? 'child-row' : ''}`);
 
         // Create cells
         this.columns.forEach(column => {
@@ -908,22 +977,11 @@ class DataTable {
         }
 
         // Apply dropdown filters (case-insensitive)
-        if (this.filters.series !== 'all') {
-            filtered = filtered.filter(row =>
-                row.series?.toLowerCase() === this.filters.series.toLowerCase()
-            );
-        }
-
-        if (this.filters.venue !== 'all') {
-            filtered = filtered.filter(row =>
-                row.venue?.toLowerCase() === this.filters.venue.toLowerCase()
-            );
-        }
-
         if (this.filters.season !== 'all') {
-            filtered = filtered.filter(row =>
-                row.season?.toLowerCase() === this.filters.season.toLowerCase()
-            );
+            filtered = filtered.filter(row => {
+                const cleanSeason = row.season?.replace(/^\d{2}-\d{2}\s+/, '') || '';
+                return cleanSeason.toLowerCase() === this.filters.season.toLowerCase();
+            });
         }
 
         // Apply date range filter
@@ -973,6 +1031,65 @@ class DataTable {
         });
 
         return filtered;
+    }
+
+    groupDataByProduction(data) {
+        const groups = {};
+
+        // Group performances by title
+        data.forEach(perf => {
+            const title = perf.title || 'Unknown';
+            if (!groups[title]) {
+                groups[title] = {
+                    title: title,
+                    performances: [],
+                    isGroup: true,
+                    groupKey: title
+                };
+            }
+            groups[title].performances.push(perf);
+        });
+
+        // Calculate aggregated stats for each group
+        const groupedData = [];
+        Object.values(groups).forEach(group => {
+            const perfs = group.performances;
+            const count = perfs.length;
+
+            // Aggregate calculations
+            const totalCapacity = perfs.reduce((sum, p) => sum + (p.capacity || 0), 0);
+            const totalSingleTickets = perfs.reduce((sum, p) => sum + (p.singleTicketsSold || 0), 0);
+            const totalSubscriptionTickets = perfs.reduce((sum, p) => sum + (p.subscriptionTicketsSold || 0), 0);
+            const totalTickets = totalSingleTickets + totalSubscriptionTickets;
+            const totalRevenue = perfs.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
+            const totalBudget = perfs.reduce((sum, p) => sum + (p.budgetGoal || 0), 0);
+
+            // Average occupancy across all performances
+            const avgOccupancy = totalCapacity > 0 ? (totalTickets / totalCapacity * 100) : 0;
+
+            // Use first performance's metadata
+            const firstPerf = perfs[0];
+
+            groupedData.push({
+                ...group,
+                id: `group-${group.groupKey}`,
+                title: group.title,
+                code: `${count} performance${count > 1 ? 's' : ''}`,
+                date: firstPerf.date, // Use earliest date for sorting
+                venue: firstPerf.venue,
+                series: firstPerf.series,
+                season: firstPerf.season,
+                capacity: totalCapacity,
+                singleTicketsSold: totalSingleTickets,
+                subscriptionTicketsSold: totalSubscriptionTickets,
+                totalRevenue: totalRevenue,
+                budgetGoal: totalBudget,
+                occupancyGoal: firstPerf.occupancyGoal || 85,
+                performanceCount: count
+            });
+        });
+
+        return groupedData;
     }
 
     sortBy(column) {
@@ -1128,32 +1245,166 @@ const tableStyles = `
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    background: white;
-    border-bottom: 1px solid #dee2e6;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+    border-bottom: 2px solid #dee2e6;
+    gap: 20px;
 }
 
-.search-container {
+.filter-left {
+    flex: 0 0 auto;
+    min-width: 250px;
+}
+
+.filter-center {
     flex: 1;
-    max-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-right {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .search-input {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 10px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
     font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 .search-input:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-select:hover {
+    border-color: #667eea;
+}
+
+.view-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggle-text {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #667eea;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #ccc;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.clear-filters-btn {
+    padding: 8px 16px;
+    background: #ffffff;
+    color: #495057;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.clear-filters-btn:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    color: #667eea;
 }
 
 .table-info {
-    color: #6c757d;
+    color: #495057;
     font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .table-container {
@@ -1189,9 +1440,15 @@ const tableStyles = `
 }
 
 .data-table td {
-    padding: 12px 8px;
+    padding: 14px 8px;
     border-bottom: 1px solid #dee2e6;
     vertical-align: middle;
+    height: 60px;
+    box-sizing: border-box;
+}
+
+.table-row {
+    height: 60px;
 }
 
 .table-row:hover {
@@ -1205,6 +1462,52 @@ const tableStyles = `
 
 .performance-cell {
     min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chevron {
+    display: inline-block;
+    width: 16px;
+    cursor: pointer;
+    user-select: none;
+    color: #667eea;
+    font-size: 12px;
+}
+
+.child-indent {
+    color: #6c757d;
+    margin-left: 16px;
+    margin-right: 4px;
+}
+
+.group-row {
+    background: #f8f9fa;
+    font-weight: 500;
+    height: 60px;
+}
+
+.group-row td {
+    height: 60px;
+}
+
+.group-row:hover {
+    background: #e9ecef !important;
+}
+
+.group-row:hover td {
+    background: #e9ecef !important;
+}
+
+.child-row {
+    background: #ffffff;
+    height: 60px;
+}
+
+.child-row td {
+    border-bottom: 1px dotted #dee2e6;
+    height: 60px;
 }
 
 .sparkline-container {
