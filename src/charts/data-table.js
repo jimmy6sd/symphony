@@ -71,7 +71,12 @@ class DataTable {
                 key: 'season',
                 label: 'Season',
                 sortable: true,
-                formatter: (value) => `<span class="season-cell">${value || 'N/A'}</span>`
+                formatter: (value) => {
+                    if (!value) return '<span class="season-cell">N/A</span>';
+                    // Remove leading "25-26 " or similar year prefix
+                    const cleanValue = value.replace(/^\d{2}-\d{2}\s+/, '');
+                    return `<span class="season-cell">${cleanValue}</span>`;
+                }
             },
             {
                 key: 'capacity',
@@ -87,14 +92,39 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
+                }
+            },
+            {
+                key: 'occupancyRate',
+                label: 'Occupancy',
+                sortable: true,
+                align: 'center',
+                formatter: (value, row) => {
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
                     const capacity = row.capacity || 0;
-                    const percentage = capacity > 0 ? (total / capacity * 100).toFixed(1) : 0;
-                    return `
-                        <div class="tickets-cell">
-                            <div class="tickets-total">${total.toLocaleString()}</div>
-                            <div class="tickets-percentage">${percentage}%</div>
-                        </div>
-                    `;
+                    if (capacity === 0) return 'N/A';
+                    const rate = (total / capacity * 100);
+                    return `${rate.toFixed(1)}%`;
+                }
+            },
+            {
+                key: 'vsTargetOcc',
+                label: 'vs Target Occ',
+                sortable: true,
+                align: 'center',
+                formatter: (value, row) => {
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const capacity = row.capacity || 0;
+                    if (capacity === 0) return 'N/A';
+
+                    const rate = (total / capacity * 100);
+                    const goal = row.occupancyGoal || 85;
+                    const variance = rate - goal;
+                    const isOver = variance >= 0;
+                    const varClass = isOver ? 'over-target' : 'under-target';
+
+                    return `<span class="target-variance ${varClass}">${isOver ? '+' : ''}${variance.toFixed(1)}%</span>`;
                 }
             },
             {
@@ -102,6 +132,7 @@ class DataTable {
                 label: 'Single',
                 sortable: true,
                 align: 'center',
+                hidden: true,
                 formatter: (value) => (value || 0).toLocaleString()
             },
             {
@@ -109,16 +140,36 @@ class DataTable {
                 label: 'Subscription',
                 sortable: true,
                 align: 'center',
+                hidden: true,
                 formatter: (value) => (value || 0).toLocaleString()
             },
             {
                 key: 'totalRevenue',
-                label: 'Revenue',
+                label: 'Actual Revenue',
                 sortable: true,
                 align: 'right',
-                formatter: (value) => {
-                    if (!value || value === 0) return '$0';
-                    return `$${value.toLocaleString()}`;
+                formatter: (value, row) => {
+                    const revenue = value || 0;
+                    const budget = row.budgetGoal || 0;
+
+                    if (budget === 0) {
+                        return `
+                            <div class="revenue-cell">
+                                <div class="revenue-amount">$${revenue.toLocaleString()}</div>
+                            </div>
+                        `;
+                    }
+
+                    const variance = revenue - budget;
+                    const isOver = variance >= 0;
+                    const varClass = isOver ? 'over-budget' : 'under-budget';
+
+                    return `
+                        <div class="revenue-cell">
+                            <div class="revenue-amount">$${revenue.toLocaleString()}</div>
+                            <div class="revenue-variance ${varClass}">${isOver ? '+' : ''}$${variance.toLocaleString()}</div>
+                        </div>
+                    `;
                 }
             },
             {
@@ -143,35 +194,11 @@ class DataTable {
                 }
             },
             {
-                key: 'occupancyRate',
-                label: 'Occupancy',
-                sortable: true,
-                align: 'center',
-                formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const capacity = row.capacity || 0;
-                    if (capacity === 0) return 'N/A';
-
-                    const rate = (total / capacity * 100);
-                    const goal = row.occupancyGoal || 85;
-                    const status = rate >= goal ? 'good' : rate >= goal * 0.8 ? 'warning' : 'poor';
-
-                    return `
-                        <div class="occupancy-cell">
-                            <div class="occupancy-bar">
-                                <div class="occupancy-fill occupancy-${status}" style="width: ${Math.min(rate, 100)}%"></div>
-                                <div class="occupancy-goal" style="left: ${Math.min(goal, 100)}%"></div>
-                            </div>
-                            <div class="occupancy-text">${rate.toFixed(1)}%</div>
-                        </div>
-                    `;
-                }
-            },
-            {
                 key: 'salesTarget',
                 label: 'Status',
                 sortable: true,
                 align: 'center',
+                hidden: true,
                 formatter: (value, row) => {
                     const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
                     const capacity = row.capacity || 2000;
@@ -1219,6 +1246,41 @@ const tableStyles = `
 
 .venue-cell {
     min-width: 120px;
+}
+
+.revenue-cell {
+    min-width: 100px;
+}
+
+.revenue-amount {
+    font-weight: 500;
+}
+
+.revenue-variance {
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.revenue-variance.over-budget {
+    color: #28a745;
+}
+
+.revenue-variance.under-budget {
+    color: #dc3545;
+}
+
+.target-variance.over-target {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.target-variance.under-target {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.tickets-sold {
+    font-weight: 500;
 }
 
 .tickets-cell {
