@@ -22,7 +22,7 @@ class SalesCurveChart {
         }
     }
 
-    render() {
+    async render() {
         // Safety check for data availability
         if (!this.data || !Array.isArray(this.data) || this.data.length === 0) {
             console.warn('⚠️ SalesCurveChart render: No data available');
@@ -60,7 +60,7 @@ class SalesCurveChart {
             this.selectedPerformance = this.data[0].id;
         }
 
-        this.renderSalesCurve(g, innerWidth, innerHeight);
+        await this.renderSalesCurve(g, innerWidth, innerHeight);
     }
 
     addPerformanceSelector(container) {
@@ -77,9 +77,9 @@ class SalesCurveChart {
             .append("select")
             .style("padding", "5px")
             .style("font-size", "14px")
-            .on("change", (event) => {
+            .on("change", async (event) => {
                 this.selectedPerformance = event.target.value;
-                this.renderSalesCurve(
+                await this.renderSalesCurve(
                     this.svg.select("g"),
                     this.width - this.margin.left - this.margin.right,
                     this.height - this.margin.top - this.margin.bottom
@@ -98,7 +98,7 @@ class SalesCurveChart {
         }
     }
 
-    renderSalesCurve(g, innerWidth, innerHeight) {
+    async renderSalesCurve(g, innerWidth, innerHeight) {
         // Clear previous chart
         g.selectAll(".sales-curve-content").remove();
 
@@ -128,7 +128,12 @@ class SalesCurveChart {
 
         console.log('📊 Single ticket sales:', currentSales, 'Subscription sales:', subscriptionSales, 'Weeks to performance:', weeksToPerformance);
 
-        const maxWeeks = 10;
+        // Calculate maxWeeks dynamically based on comparisons
+        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+        const maxComparisonWeeks = comparisons && comparisons.length > 0
+            ? Math.max(...comparisons.map(c => c.weeksArray.length))
+            : 0;
+        const maxWeeks = Math.max(10, maxComparisonWeeks); // Minimum 10 weeks, extend if comparisons need more
 
         // Debug capacity issue
         console.log('📊 Performance capacity:', performance.capacity);
@@ -280,6 +285,9 @@ class SalesCurveChart {
         }
 
         // No multiple actual sales points - only the single current sales point above
+
+        // Render comparison lines
+        this.renderComparisonLines(chartGroup, xScale, yScale, performance);
 
         // Add data points for expected sales (6 weeks only)
         const expectedPoints = chartGroup.selectAll(".expected-point")
@@ -642,6 +650,156 @@ class SalesCurveChart {
             .on("mouseout", function() {
                 return tooltip.style("visibility", "hidden");
             });
+    }
+
+    async renderComparisonLines(chartGroup, xScale, yScale, performance) {
+        // Fetch comparisons for this performance
+        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+
+        if (!comparisons || comparisons.length === 0) {
+            return; // No comparisons to render
+        }
+
+        // Calculate max weeks from comparisons to potentially extend x-axis
+        const maxComparisonWeeks = Math.max(...comparisons.map(c => c.weeksArray.length));
+
+        // Render each comparison line
+        comparisons.forEach(comparison => {
+            this.renderSingleComparison(chartGroup, xScale, yScale, comparison);
+        });
+
+        // Update legend to include comparisons
+        this.updateLegendWithComparisons(chartGroup, comparisons);
+    }
+
+    renderSingleComparison(chartGroup, xScale, yScale, comparison) {
+        // Parse CSV data
+        // Input format: "10,20,30,40,50,60,70,80,90"
+        // First value (10) = farthest week out
+        // Last value (90) = performance day (week 0)
+        const weeksArray = [...comparison.weeksArray]; // Make a copy to avoid mutating original
+        const numWeeks = weeksArray.length;
+
+        // Create data points
+        const comparisonData = [];
+
+        // Map array: first value = week (N-1), last value = week 0
+        for (let i = 0; i < numWeeks; i++) {
+            comparisonData.push({
+                week: numWeeks - 1 - i, // First iteration: week N-1, last iteration: week 0
+                sales: weeksArray[i]
+            });
+        }
+
+        // Line generator
+        const line = d3.line()
+            .x(d => xScale(d.week))
+            .y(d => yScale(d.sales))
+            .curve(d3.curveMonotoneX);
+
+        // Draw comparison line
+        chartGroup.append("path")
+            .datum(comparisonData)
+            .attr("class", `comparison-line comparison-${comparison.comparison_id}`)
+            .attr("d", line)
+            .attr("fill", "none")
+            .attr("stroke", comparison.line_color)
+            .attr("stroke-width", 2.5)
+            .attr("stroke-dasharray", this.getStrokeDashArray(comparison.line_style))
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("opacity", 0.8)
+            .style("filter", `drop-shadow(0 1px 2px ${comparison.line_color}40)`);
+
+        // Add data points for comparison line
+        chartGroup.selectAll(`.comparison-point-${comparison.comparison_id}`)
+            .data(comparisonData)
+            .enter()
+            .append("circle")
+            .attr("class", `comparison-point comparison-point-${comparison.comparison_id}`)
+            .attr("cx", d => xScale(d.week))
+            .attr("cy", d => yScale(d.sales))
+            .attr("r", 3)
+            .attr("fill", comparison.line_color)
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.5)
+            .attr("opacity", 0.7)
+            .style("cursor", "pointer")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 5)
+                    .attr("opacity", 1);
+
+                // Show tooltip
+                const tooltip = d3.select(".sales-curve-tooltip");
+                if (tooltip.empty()) return;
+
+                const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
+                tooltip.html(`
+                    <strong>${comparison.comparison_name}</strong><br/>
+                    ${weekLabel}<br/>
+                    Target: ${d.sales.toLocaleString()} tickets
+                `);
+                tooltip.style("visibility", "visible");
+            })
+            .on("mousemove", function(event) {
+                const tooltip = d3.select(".sales-curve-tooltip");
+                tooltip
+                    .style("top", (event.pageY - 10) + "px")
+                    .style("left", (event.pageX + 10) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 3)
+                    .attr("opacity", 0.7);
+
+                const tooltip = d3.select(".sales-curve-tooltip");
+                tooltip.style("visibility", "hidden");
+            });
+    }
+
+    getStrokeDashArray(style) {
+        const styles = {
+            'solid': 'none',
+            'dashed': '8,4',
+            'dotted': '2,3'
+        };
+        return styles[style] || 'none';
+    }
+
+    updateLegendWithComparisons(chartGroup, comparisons) {
+        // Find existing legend and add comparison items
+        const legend = chartGroup.select("g[transform*='150']"); // The legend is at y=150
+
+        if (legend.empty()) return;
+
+        // Count existing legend items (5 default items)
+        const startIndex = 5;
+
+        comparisons.forEach((comp, i) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(0, ${(startIndex + i) * 20})`);
+
+            legendRow.append("line")
+                .attr("x1", 0)
+                .attr("x2", 20)
+                .attr("y1", 10)
+                .attr("y2", 10)
+                .attr("stroke", comp.line_color)
+                .attr("stroke-width", 2.5)
+                .attr("stroke-dasharray", this.getStrokeDashArray(comp.line_style));
+
+            legendRow.append("text")
+                .attr("x", 25)
+                .attr("y", 14)
+                .style("font-size", "11px")
+                .style("font-weight", "500")
+                .text(comp.comparison_name);
+        });
     }
 }
 

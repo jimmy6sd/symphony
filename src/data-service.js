@@ -339,6 +339,80 @@ class DataService {
         return await tessituraAPI.testConnection();
     }
 
+    // ==================== COMPARISON API METHODS ====================
+
+    // Get all comparisons for a performance
+    async getPerformanceComparisons(performanceId) {
+        try {
+            const response = await fetch(`/.netlify/functions/performance-comparisons?performanceId=${performanceId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch comparisons: ${response.status} ${response.statusText}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching comparisons:', error);
+            return [];
+        }
+    }
+
+    // Create a new comparison
+    async createComparison(performanceId, comparisonData) {
+        try {
+            const response = await fetch('/.netlify/functions/performance-comparisons', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    performanceId,
+                    ...comparisonData
+                })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create comparison');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error creating comparison:', error);
+            throw error;
+        }
+    }
+
+    // Update an existing comparison
+    async updateComparison(comparisonId, updates) {
+        try {
+            const response = await fetch(`/.netlify/functions/performance-comparisons/${comparisonId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to update comparison');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error updating comparison:', error);
+            throw error;
+        }
+    }
+
+    // Delete a comparison
+    async deleteComparison(comparisonId) {
+        try {
+            const response = await fetch(`/.netlify/functions/performance-comparisons/${comparisonId}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to delete comparison');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error deleting comparison:', error);
+            throw error;
+        }
+    }
+
     // Add visual indicator for data source
     updateDataSourceIndicator(source, count, status) {
         // Create or update data source indicator in the UI

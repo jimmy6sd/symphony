@@ -477,7 +477,7 @@ class DataTable {
         this.renderTableRows();
     }
 
-    showPerformanceDetails(performance) {
+    async showPerformanceDetails(performance) {
         // Create modal overlay
         const modalOverlay = d3.select('body')
             .append('div')
@@ -506,7 +506,7 @@ class DataTable {
             .style('padding', '25px')
             .style('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.3)');
 
-        // Modal header
+        // Modal header with navigation
         const header = modal.append('div')
             .attr('class', 'modal-header')
             .style('display', 'flex')
@@ -517,12 +517,94 @@ class DataTable {
             .style('background', '#2c3e50')
             .style('border-radius', '8px 8px 0 0');
 
-        header.append('h2')
-            .style('margin', '0')
+        // Get all performances for navigation
+        const allPerformances = this.filteredData || this.data || [];
+        const currentIndex = allPerformances.findIndex(p =>
+            p.id === performance.id || p.performanceId === performance.performanceId
+        );
+        const hasPrevious = currentIndex > 0;
+        const hasNext = currentIndex < allPerformances.length - 1;
+
+        // Left side: Previous button
+        const leftSection = header.append('div')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('gap', '15px');
+
+        if (hasPrevious) {
+            leftSection.append('button')
+                .attr('class', 'nav-prev')
+                .style('background', 'rgba(255, 255, 255, 0.2)')
+                .style('border', 'none')
+                .style('color', 'white')
+                .style('padding', '8px 16px')
+                .style('border-radius', '4px')
+                .style('cursor', 'pointer')
+                .style('font-size', '14px')
+                .style('font-weight', '600')
+                .style('transition', 'background 0.2s')
+                .text('← Previous')
+                .on('mouseover', function() {
+                    d3.select(this).style('background', 'rgba(255, 255, 255, 0.3)');
+                })
+                .on('mouseout', function() {
+                    d3.select(this).style('background', 'rgba(255, 255, 255, 0.2)');
+                })
+                .on('click', async () => {
+                    const previousPerf = allPerformances[currentIndex - 1];
+                    modalOverlay.remove();
+                    await this.showPerformanceDetails(previousPerf);
+                });
+        }
+
+        // Center: Title and counter
+        const centerSection = header.append('div')
+            .style('text-align', 'center')
+            .style('flex', '1');
+
+        centerSection.append('h2')
+            .style('margin', '0 0 5px 0')
             .style('color', 'white')
             .text(performance.title);
 
-        header.append('button')
+        centerSection.append('div')
+            .style('font-size', '12px')
+            .style('color', 'rgba(255, 255, 255, 0.7)')
+            .text(`Performance ${currentIndex + 1} of ${allPerformances.length}`);
+
+        // Right side: Next button and close
+        const rightSection = header.append('div')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('gap', '15px');
+
+        if (hasNext) {
+            rightSection.append('button')
+                .attr('class', 'nav-next')
+                .style('background', 'rgba(255, 255, 255, 0.2)')
+                .style('border', 'none')
+                .style('color', 'white')
+                .style('padding', '8px 16px')
+                .style('border-radius', '4px')
+                .style('cursor', 'pointer')
+                .style('font-size', '14px')
+                .style('font-weight', '600')
+                .style('transition', 'background 0.2s')
+                .text('Next →')
+                .on('mouseover', function() {
+                    d3.select(this).style('background', 'rgba(255, 255, 255, 0.3)');
+                })
+                .on('mouseout', function() {
+                    d3.select(this).style('background', 'rgba(255, 255, 255, 0.2)');
+                })
+                .on('click', async () => {
+                    const nextPerf = allPerformances[currentIndex + 1];
+                    modalOverlay.remove();
+                    await this.showPerformanceDetails(nextPerf);
+                });
+        }
+
+        rightSection.append('button')
             .attr('class', 'close-modal')
             .style('background', 'none')
             .style('border', 'none')
@@ -532,6 +614,33 @@ class DataTable {
             .style('line-height', '1')
             .text('×')
             .on('click', () => modalOverlay.remove());
+
+        // Add keyboard navigation for arrow keys
+        const handleKeyPress = async (event) => {
+            if (event.key === 'ArrowLeft' && hasPrevious) {
+                const previousPerf = allPerformances[currentIndex - 1];
+                document.removeEventListener('keydown', handleKeyPress);
+                modalOverlay.remove();
+                await this.showPerformanceDetails(previousPerf);
+            } else if (event.key === 'ArrowRight' && hasNext) {
+                const nextPerf = allPerformances[currentIndex + 1];
+                document.removeEventListener('keydown', handleKeyPress);
+                modalOverlay.remove();
+                await this.showPerformanceDetails(nextPerf);
+            } else if (event.key === 'Escape') {
+                document.removeEventListener('keydown', handleKeyPress);
+                modalOverlay.remove();
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+
+        // Clean up event listener when modal closes
+        modalOverlay.on('click', function(event) {
+            if (event.target === this) {
+                document.removeEventListener('keydown', handleKeyPress);
+                modalOverlay.remove();
+            }
+        });
 
         // Sales curve chart section - now the main content
         modal.append('h3')
@@ -546,7 +655,7 @@ class DataTable {
             .style('height', '450px')
             .style('margin-bottom', '25px');
 
-        this.renderSalesChart(chartContainer, performance);
+        await this.renderSalesChart(chartContainer, performance);
 
         // Performance details - now below the chart
         const detailsGrid = modal.append('div')
@@ -689,6 +798,9 @@ class DataTable {
                 .text(item.value);
         });
 
+        // Add Comparisons Management section
+        await this.renderComparisonsSection(modal, performance);
+
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {
             if (event.target === modalOverlay.node()) {
@@ -697,10 +809,430 @@ class DataTable {
         });
     }
 
-    renderSalesChart(container, performance) {
-        // Use the proper SalesCurveChart class instead of duplicating code
-        const chartId = 'modal-sales-chart-inner';
-        container.attr('id', chartId);
+    async renderComparisonsSection(modal, performance) {
+        // Add comparisons section header
+        modal.append('h3')
+            .style('margin-top', '30px')
+            .style('margin-bottom', '15px')
+            .style('font-size', '1.1em')
+            .style('color', '#333')
+            .text('Sales Progression Comparisons');
+
+        const comparisonsContainer = modal.append('div')
+            .attr('class', 'comparisons-container')
+            .style('background', '#f8f9fa')
+            .style('padding', '20px')
+            .style('border-radius', '8px');
+
+        // Add comparison button
+        const addButton = comparisonsContainer.append('button')
+            .attr('class', 'add-comparison-btn')
+            .style('background', '#3498db')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '10px 20px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-weight', '600')
+            .style('margin-bottom', '20px')
+            .text('+ Add Comparison')
+            .on('click', () => this.showComparisonForm(comparisonsContainer, performance));
+
+        // Load and display existing comparisons
+        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+
+        const comparisonsList = comparisonsContainer.append('div')
+            .attr('class', 'comparisons-list');
+
+        if (comparisons && comparisons.length > 0) {
+            comparisons.forEach(comp => {
+                this.renderComparisonItem(comparisonsList, comp, performance);
+            });
+        } else {
+            comparisonsList.append('p')
+                .style('color', '#6c757d')
+                .style('font-style', 'italic')
+                .text('No comparisons added yet. Click "Add Comparison" to create one.');
+        }
+    }
+
+    renderComparisonItem(container, comparison, performance) {
+        // Capture 'this' context for async handlers
+        const self = this;
+
+        const item = container.append('div')
+            .attr('class', 'comparison-item')
+            .style('background', 'white')
+            .style('padding', '15px')
+            .style('margin-bottom', '10px')
+            .style('border-radius', '6px')
+            .style('border-left', `4px solid ${comparison.line_color}`)
+            .style('display', 'flex')
+            .style('justify-content', 'space-between')
+            .style('align-items', 'center');
+
+        const info = item.append('div')
+            .style('flex', '1');
+
+        info.append('div')
+            .style('font-weight', '600')
+            .style('margin-bottom', '5px')
+            .text(comparison.comparison_name);
+
+        const styleIndicator = this.getLineStyleChar(comparison.line_style);
+        info.append('div')
+            .style('font-size', '12px')
+            .style('color', '#6c757d')
+            .html(`<span style="color: ${comparison.line_color}; font-weight: bold;">${styleIndicator}</span> ${comparison.line_color}, ${comparison.weeksArray.length} weeks`);
+
+        const actions = item.append('div')
+            .style('display', 'flex')
+            .style('gap', '10px');
+
+        actions.append('button')
+            .style('background', '#ffc107')
+            .style('color', '#000')
+            .style('border', 'none')
+            .style('padding', '6px 12px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-size', '12px')
+            .text('Edit')
+            .on('click', () => this.editComparison(container, comparison, performance));
+
+        actions.append('button')
+            .style('background', '#dc3545')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '6px 12px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-size', '12px')
+            .text('Delete')
+            .on('click', async function() {
+                if (confirm(`Delete comparison "${comparison.comparison_name}"?`)) {
+                    const button = d3.select(this);
+
+                    // Show loading state
+                    button
+                        .property('disabled', true)
+                        .style('cursor', 'not-allowed')
+                        .style('opacity', '0.7')
+                        .html('<span class="spinner-small"></span> Deleting...');
+
+                    // Add spinner styles if not already present
+                    if (!d3.select('style.delete-spinner-styles').node()) {
+                        d3.select('head').append('style')
+                            .attr('class', 'delete-spinner-styles')
+                            .text(`
+                                .spinner-small {
+                                    display: inline-block;
+                                    width: 10px;
+                                    height: 10px;
+                                    border: 2px solid rgba(255,255,255,0.3);
+                                    border-top: 2px solid white;
+                                    border-radius: 50%;
+                                    animation: spin 0.6s linear infinite;
+                                    margin-right: 4px;
+                                }
+                            `);
+                    }
+
+                    try {
+                        await window.dataService.deleteComparison(comparison.comparison_id);
+
+                        // Fade out and remove
+                        item.transition()
+                            .duration(300)
+                            .style('opacity', '0')
+                            .remove();
+
+                        // Refresh the sales chart to remove the comparison line
+                        await self.refreshModalChart(performance);
+                    } catch (error) {
+                        // Show error state
+                        button
+                            .property('disabled', false)
+                            .style('cursor', 'pointer')
+                            .style('opacity', '1')
+                            .text('Error - Try Again');
+
+                        alert(`Error deleting comparison: ${error.message}`);
+
+                        // Reset button after 2 seconds
+                        setTimeout(() => {
+                            button.text('Delete');
+                        }, 2000);
+                    }
+                }
+            });
+    }
+
+    getLineStyleChar(style) {
+        const styles = {
+            'solid': '━━━',
+            'dashed': '╌╌╌',
+            'dotted': '···'
+        };
+        return styles[style] || '━━━';
+    }
+
+    showComparisonForm(container, performance, existingComparison = null) {
+        // Remove any existing form
+        container.selectAll('.comparison-form').remove();
+
+        const form = container.insert('div', ':first-child')
+            .attr('class', 'comparison-form')
+            .style('background', 'white')
+            .style('padding', '20px')
+            .style('margin-bottom', '20px')
+            .style('border-radius', '6px')
+            .style('border', '2px solid #3498db');
+
+        form.append('h4')
+            .style('margin-top', '0')
+            .style('margin-bottom', '15px')
+            .text(existingComparison ? 'Edit Comparison' : 'Add New Comparison');
+
+        // Name input
+        form.append('label')
+            .style('display', 'block')
+            .style('margin-bottom', '5px')
+            .style('font-weight', '600')
+            .text('Name:');
+
+        const nameInput = form.append('input')
+            .attr('type', 'text')
+            .attr('class', 'comp-name-input')
+            .attr('placeholder', 'e.g., Optimistic Target, Conservative Estimate')
+            .style('width', '100%')
+            .style('padding', '8px')
+            .style('margin-bottom', '15px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .property('value', existingComparison?.comparison_name || '');
+
+        // Weeks data input
+        form.append('label')
+            .style('display', 'block')
+            .style('margin-bottom', '5px')
+            .style('font-weight', '600')
+            .html('Weekly Sales Data <span style="font-weight: normal; font-size: 12px; color: #6c757d;">(comma-separated, farthest week first)</span>:');
+
+        const weeksInput = form.append('input')
+            .attr('type', 'text')
+            .attr('class', 'comp-weeks-input')
+            .attr('placeholder', '1200,2400,3500,4800,6200,7500,8800')
+            .style('width', '100%')
+            .style('padding', '8px')
+            .style('margin-bottom', '5px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .property('value', existingComparison?.weeks_data || '');
+
+        form.append('div')
+            .style('font-size', '11px')
+            .style('color', '#6c757d')
+            .style('margin-bottom', '15px')
+            .style('font-style', 'italic')
+            .text('← Farthest week ... Closest to performance →');
+
+        // Color picker
+        form.append('label')
+            .style('display', 'block')
+            .style('margin-bottom', '5px')
+            .style('font-weight', '600')
+            .text('Line Color:');
+
+        const colorInput = form.append('input')
+            .attr('type', 'color')
+            .attr('class', 'comp-color-input')
+            .style('width', '60px')
+            .style('height', '35px')
+            .style('margin-bottom', '15px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .property('value', existingComparison?.line_color || '#4285f4');
+
+        // Line style selector
+        form.append('label')
+            .style('display', 'block')
+            .style('margin-bottom', '5px')
+            .style('font-weight', '600')
+            .text('Line Style:');
+
+        const styleContainer = form.append('div')
+            .style('margin-bottom', '20px');
+
+        const styles = [
+            { value: 'solid', label: 'Solid ━━━' },
+            { value: 'dashed', label: 'Dashed ╌╌╌' },
+            { value: 'dotted', label: 'Dotted ···' }
+        ];
+
+        styles.forEach(style => {
+            const radio = styleContainer.append('label')
+                .style('margin-right', '15px')
+                .style('cursor', 'pointer');
+
+            radio.append('input')
+                .attr('type', 'radio')
+                .attr('name', 'line-style')
+                .attr('value', style.value)
+                .property('checked', (!existingComparison && style.value === 'dashed') || (existingComparison?.line_style === style.value))
+                .style('margin-right', '5px');
+
+            radio.append('span')
+                .text(style.label);
+        });
+
+        // Buttons
+        const buttonContainer = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '10px')
+            .style('margin-top', '20px');
+
+        // Capture 'this' context for the async handler
+        const self = this;
+
+        const saveButton = buttonContainer.append('button')
+            .style('background', '#28a745')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '10px 20px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-weight', '600')
+            .style('position', 'relative')
+            .text(existingComparison ? 'Update' : 'Save')
+            .on('click', async function() {
+                const button = d3.select(this);
+                const originalText = button.text();
+
+                const name = nameInput.property('value');
+                const weeksData = weeksInput.property('value');
+                const color = colorInput.property('value');
+                const lineStyle = form.select('input[name="line-style"]:checked').property('value');
+
+                if (!name || !weeksData) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                // Show loading state
+                button
+                    .property('disabled', true)
+                    .style('cursor', 'not-allowed')
+                    .style('opacity', '0.7')
+                    .html('<span class="spinner"></span> Saving...');
+
+                // Add spinner styles
+                form.append('style')
+                    .text(`
+                        .spinner {
+                            display: inline-block;
+                            width: 12px;
+                            height: 12px;
+                            border: 2px solid rgba(255,255,255,0.3);
+                            border-top: 2px solid white;
+                            border-radius: 50%;
+                            animation: spin 0.6s linear infinite;
+                            margin-right: 5px;
+                        }
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `);
+
+                try {
+                    if (existingComparison) {
+                        await window.dataService.updateComparison(existingComparison.comparison_id, {
+                            comparisonName: name,
+                            weeksData,
+                            lineColor: color,
+                            lineStyle
+                        });
+                    } else {
+                        await window.dataService.createComparison(performance.performanceId, {
+                            comparisonName: name,
+                            weeksData,
+                            lineColor: color,
+                            lineStyle
+                        });
+                    }
+
+                    // Show success state briefly
+                    button
+                        .style('background', '#218838')
+                        .html('✓ Saved!');
+
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // First refresh the chart to show updated comparison
+                    await self.refreshModalChart(performance);
+
+                    // Then reload the comparisons section
+                    form.remove();
+                    const modalElement = d3.select('.performance-modal');
+                    modalElement.selectAll('.comparisons-container').remove();
+                    await self.renderComparisonsSection(modalElement, performance);
+                } catch (error) {
+                    // Show error state
+                    button
+                        .property('disabled', false)
+                        .style('cursor', 'pointer')
+                        .style('opacity', '1')
+                        .style('background', '#dc3545')
+                        .text('Error - Try Again');
+
+                    alert(`Error saving comparison: ${error.message}`);
+
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        button
+                            .style('background', '#28a745')
+                            .text(originalText);
+                    }, 2000);
+                }
+            });
+
+        buttonContainer.append('button')
+            .style('background', '#6c757d')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '10px 20px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .text('Cancel')
+            .on('click', () => form.remove());
+    }
+
+    async editComparison(container, comparison, performance) {
+        const modalElement = d3.select('.performance-modal');
+        const comparisonsContainer = d3.select('.comparisons-container');
+        this.showComparisonForm(comparisonsContainer, performance, comparison);
+    }
+
+    async refreshModalChart(performance) {
+        // Re-render the sales chart with updated comparisons
+        const chartContainer = d3.select('#modal-sales-chart');
+        if (!chartContainer.empty()) {
+            console.log('🔄 Refreshing chart for performance:', performance.performanceId || performance.id);
+            chartContainer.html('');
+            await this.renderSalesChart(chartContainer, performance);
+            console.log('✅ Chart refresh complete');
+        } else {
+            console.warn('⚠️ Chart container not found');
+        }
+    }
+
+    async renderSalesChart(container, performance) {
+        console.log('🔄 renderSalesChart called for performance:', performance.performanceId || performance.id);
+
+        // Use the chart container's existing ID
+        const chartId = container.attr('id') || 'modal-sales-chart';
 
         // Create a sales curve chart instance without the selector
         const salesChart = new SalesCurveChart(chartId, { showSelector: false });
@@ -710,9 +1242,10 @@ class DataTable {
         salesChart.data = chartData;
         salesChart.selectedPerformance = performance.id;
 
-        // Render the chart
-        salesChart.render();
+        // Render the chart (now async to fetch comparisons)
+        await salesChart.render();
 
+        console.log('✅ renderSalesChart complete');
     }
 
     createTableHeader() {
