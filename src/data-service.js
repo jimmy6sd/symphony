@@ -234,9 +234,9 @@ class DataService {
         }
     }
 
-    // Load dashboard data from BigQuery via API
+    // Load dashboard data from BigQuery via API (using snapshots for longitudinal tracking)
     async loadDashboardData() {
-        const response = await fetch('/.netlify/functions/bigquery-data?action=get-performances');
+        const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-performances');
         if (!response.ok) {
             throw new Error(`BigQuery API request failed: ${response.status} ${response.statusText}`);
         }
