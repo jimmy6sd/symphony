@@ -244,27 +244,21 @@ async function processPdfBase64(base64Data, metadata) {
             const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
+            // Yellow columns (subscriptions) = Fixed + Non-Fixed packages
             const subscriptionTickets = fixedCount + nonFixedCount;
+            // Green column (single tickets)
             const totalSold = subscriptionTickets + singleCount;
-            const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
 
+            // NOTE: Only sales data is included here (goes to snapshots table)
+            // Metadata (capacity, budget_goal, etc.) comes from performances table
             const performance = {
-              performance_id: Date.now() + Math.floor(Math.random() * 10000),
               performance_code: performanceCode,
-              title: `Performance ${performanceCode}`,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              venue: 'Helzberg Hall',
-              series: 'Classical',
-              season: '25-26',
-              capacity: capacity,
               single_tickets_sold: singleCount,
               subscription_tickets_sold: subscriptionTickets,
               total_revenue: totalRevenue,
-              capacity_percent: capacityPercent,
-              budget_percent: budgetPercent,
-              occupancy_percent: capacityPercent,
-              occupancy_goal: 85,
-              budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+              capacity_percent: capacityPercent,  // From report (can validate)
+              budget_percent: budgetPercent       // From report
             };
 
             console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
@@ -363,25 +357,15 @@ async function processPdfUrl(url, metadata) {
 
             const subscriptionTickets = fixedCount + nonFixedCount;
             const totalSold = subscriptionTickets + singleCount;
-            const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
 
             performances.push({
-              performance_id: Date.now() + Math.floor(Math.random() * 10000),
               performance_code: performanceCode,
-              title: `Performance ${performanceCode}`,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              venue: 'Helzberg Hall',
-              series: 'Classical',
-              season: '25-26',
-              capacity: capacity,
               single_tickets_sold: singleCount,
               subscription_tickets_sold: subscriptionTickets,
               total_revenue: totalRevenue,
               capacity_percent: capacityPercent,
-              budget_percent: budgetPercent,
-              occupancy_percent: capacityPercent,
-              occupancy_goal: 85,
-              budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+              budget_percent: budgetPercent
             });
 
             console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
@@ -669,29 +653,14 @@ async function parseDirectLineFormat(lines) {
       // Calculate total subscription tickets (fixed + non-fixed packages)
       const subscriptionTickets = fixedPkgCount + nonFixedPkgCount;
 
-      // Calculate capacity from percentage and sold tickets
-      const totalSold = subscriptionTickets + singleCount;
-      const capacity = totalSold > 0 && capacityPercent > 0
-        ? Math.round(totalSold / (capacityPercent / 100))
-        : 1500;
-
       const performance = {
-        performance_id: Date.now() + Math.floor(Math.random() * 10000),
         performance_code: performanceCode,
-        title: `Performance ${performanceCode}`,
         performance_date: parseDate(date) || '2025-01-01',
-        venue: 'Helzberg Hall',
-        series: 'Classical',
-        season: '25-26',
-        capacity: capacity,
         single_tickets_sold: singleCount,
         subscription_tickets_sold: subscriptionTickets,
         total_revenue: totalRevenue,
         capacity_percent: capacityPercent,
-        budget_percent: budgetPercent,
-        occupancy_percent: capacityPercent,
-        occupancy_goal: 85,
-        budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+        budget_percent: budgetPercent
       };
 
       console.log(`   ✅ SUCCESS: ${performanceCode} (${date}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
@@ -735,26 +704,15 @@ async function parseTabularFormat(lines) {
       const capacityPercent = parts.length > 13 ? parseFloat(parts[13]) : 0;
 
       const subscriptionTickets = fixedCount + nonFixedCount;
-      const totalSold = subscriptionTickets + singleCount;
-      const capacity = availSeats > 0 ? totalSold + availSeats : 1500;
 
       const performance = {
-        performance_id: Date.now() + Math.floor(Math.random() * 10000),
         performance_code: performanceCode,
-        title: `Performance ${performanceCode}`,
         performance_date: parseDate(dateTime) || '2025-01-01',
-        venue: 'Helzberg Hall',
-        series: 'Classical',
-        season: '25-26',
-        capacity: capacity,
         single_tickets_sold: singleCount,
         subscription_tickets_sold: subscriptionTickets,
         total_revenue: totalRevenue,
         capacity_percent: capacityPercent,
-        budget_percent: budgetPercent,
-        occupancy_percent: capacityPercent,
-        occupancy_goal: 85,
-        budget_goal: budgetPercent > 0 ? Math.round(totalRevenue / (budgetPercent / 100)) : 0
+        budget_percent: budgetPercent
       };
 
       console.log(`✅ Parsed: ${performanceCode} - Single:${singleCount} Sub:${subscriptionTickets} Rev:$${Math.round(totalRevenue)} Cap:${capacityPercent}%`);
