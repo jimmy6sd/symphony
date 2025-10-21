@@ -970,22 +970,23 @@ async function createDataSnapshot(bigquery, data, executionId) {
   return snapshotId;
 }
 
-// OPTIMIZED: Batch processing - 2 queries instead of 100+
+// OPTIMIZED: Batch processing with DUAL-WRITE (snapshots + performances)
+// Writes to BOTH systems for backwards compatibility and longitudinal tracking
 async function processPerformanceData(bigquery, performances, snapshotId, executionId) {
   let processed = 0, inserted = 0, updated = 0, trendsAdjusted = 0, anomalies = 0;
 
-  console.log(`🚀 Batch processing ${performances.length} performances...`);
+  console.log(`🚀 Batch processing ${performances.length} performances with dual-write...`);
 
-  // STEP 1: Get all existing performance codes in ONE query
+  // STEP 1: Get all existing performance codes and IDs in ONE query
   const codes = performances.map(p => `'${p.performance_code}'`).join(',');
   const checkQuery = `
-    SELECT performance_code
+    SELECT performance_code, performance_id
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
     WHERE performance_code IN (${codes})
   `;
 
   const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
-  const existingCodes = new Set(existingRows.map(row => row.performance_code));
+  const existingCodes = new Map(existingRows.map(row => [row.performance_code, row.performance_id]));
 
   console.log(`📋 Found ${existingCodes.size}/${performances.length} existing performances`);
 
@@ -1002,7 +1003,42 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
     return { processed, inserted, updated, trendsAdjusted, anomalies };
   }
 
-  // STEP 2: Batch UPDATE with CASE statements in ONE query
+  // STEP 2A: INSERT SNAPSHOTS (new longitudinal approach)
+  console.log(`📸 Inserting ${validPerfs.length} snapshots...`);
+
+  const snapshotValues = validPerfs.map(p => {
+    const perfId = existingCodes.get(p.performance_code);
+    return `(
+      '${crypto.randomBytes(8).toString('hex')}',
+      ${perfId},
+      '${p.performance_code}',
+      CURRENT_DATE(),
+      ${p.single_tickets_sold || 0},
+      ${p.subscription_tickets_sold || 0},
+      ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)},
+      ${p.total_revenue || 0},
+      ${p.capacity_percent || 0},
+      ${p.budget_percent || 0},
+      'pdf_webhook',
+      CURRENT_TIMESTAMP()
+    )`;
+  }).join(',\n');
+
+  const insertSnapshots = `
+    INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+    (snapshot_id, performance_id, performance_code, snapshot_date,
+     single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
+     total_revenue, capacity_percent, budget_percent, source, created_at)
+    VALUES ${snapshotValues}
+  `;
+
+  await bigquery.query({ query: insertSnapshots, location: 'US' });
+  inserted = validPerfs.length;
+  console.log(`✅ Inserted ${inserted} snapshots for longitudinal tracking`);
+
+  // STEP 2B: UPDATE PERFORMANCES (old approach - for backwards compatibility)
+  console.log(`🔄 Updating performances table for backwards compatibility...`);
+
   const batchUpdate = `
     UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
     SET
@@ -1020,11 +1056,10 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
   `;
 
   await bigquery.query({ query: batchUpdate, location: 'US' });
-
   updated = validPerfs.length;
   processed = validPerfs.length;
 
-  console.log(`✅ Updated ${updated} performances in 2 queries (was 100+ queries)`);
+  console.log(`✅ Dual-write complete: ${inserted} snapshots + ${updated} performance updates`);
 
   return { processed, inserted, updated, trendsAdjusted, anomalies };
 }

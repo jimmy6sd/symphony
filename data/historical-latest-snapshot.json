@@ -1,0 +1,1916 @@
+{
+  "extractedAt": "2025-10-20T20:21:50.955Z",
+  "snapshotDate": "Week ending 2026-07-05",
+  "source": "Ticket Sales by Period_1132700.csv",
+  "summary": {
+    "totalPerformances": 238,
+    "totalTickets": 83359,
+    "totalRevenue": 4805799.029999999
+  },
+  "performances": [
+    {
+      "performanceCode": "250902E",
+      "performanceDate": "Tue, 9/2/2025 8:00 PM",
+      "singleTickets": 1064,
+      "subscriptionTickets": 56,
+      "totalTickets": 1120,
+      "totalRevenue": 137168
+    },
+    {
+      "performanceCode": "250903E",
+      "performanceDate": "Wed, 9/3/2025 8:00 PM",
+      "singleTickets": 1062,
+      "subscriptionTickets": 37,
+      "totalTickets": 1099,
+      "totalRevenue": 134186
+    },
+    {
+      "performanceCode": "250905E",
+      "performanceDate": "Fri, 9/5/2025 8:00 PM",
+      "singleTickets": 668,
+      "subscriptionTickets": -7,
+      "totalTickets": 661,
+      "totalRevenue": 20005
+    },
+    {
+      "performanceCode": "SY250902P",
+      "performanceDate": "Tue, 9/2/2025 8:00 PM",
+      "singleTickets": 371,
+      "subscriptionTickets": 22,
+      "totalTickets": 393,
+      "totalRevenue": 6999
+    },
+    {
+      "performanceCode": "SY250903P",
+      "performanceDate": "Wed, 9/3/2025 8:00 PM",
+      "singleTickets": 356,
+      "subscriptionTickets": 17,
+      "totalTickets": 373,
+      "totalRevenue": 6589
+    },
+    {
+      "performanceCode": "SY250905P",
+      "performanceDate": "Fri, 9/5/2025 8:00 PM",
+      "singleTickets": 191,
+      "subscriptionTickets": -3,
+      "totalTickets": 188,
+      "totalRevenue": 3321
+    },
+    {
+      "performanceCode": "250911E",
+      "performanceDate": "Thu, 9/11/2025 7:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "250912M",
+      "performanceDate": "Fri, 9/12/2025 11:00 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "SY250911P",
+      "performanceDate": "Thu, 9/11/2025 7:00 PM",
+      "singleTickets": 23,
+      "subscriptionTickets": 0,
+      "totalTickets": 23,
+      "totalRevenue": 395
+    },
+    {
+      "performanceCode": "250919E",
+      "performanceDate": "Fri, 9/19/2025 8:00 PM",
+      "singleTickets": 584,
+      "subscriptionTickets": 493,
+      "totalTickets": 1077,
+      "totalRevenue": 75282.79999999999
+    },
+    {
+      "performanceCode": "250920E",
+      "performanceDate": "Sat, 9/20/2025 8:00 PM",
+      "singleTickets": 669,
+      "subscriptionTickets": 371,
+      "totalTickets": 1040,
+      "totalRevenue": 74220.6
+    },
+    {
+      "performanceCode": "250921M",
+      "performanceDate": "Sun, 9/21/2025 2:00 PM",
+      "singleTickets": 633,
+      "subscriptionTickets": 328,
+      "totalTickets": 961,
+      "totalRevenue": 63947.799999999996
+    },
+    {
+      "performanceCode": "SY250919P",
+      "performanceDate": "Fri, 9/19/2025 8:00 PM",
+      "singleTickets": 181,
+      "subscriptionTickets": 184,
+      "totalTickets": 365,
+      "totalRevenue": 6389
+    },
+    {
+      "performanceCode": "SY250920P",
+      "performanceDate": "Sat, 9/20/2025 8:00 PM",
+      "singleTickets": 199,
+      "subscriptionTickets": 156,
+      "totalTickets": 355,
+      "totalRevenue": 6074
+    },
+    {
+      "performanceCode": "SY250921P",
+      "performanceDate": "Sun, 9/21/2025 2:00 PM",
+      "singleTickets": 187,
+      "subscriptionTickets": 134,
+      "totalTickets": 321,
+      "totalRevenue": 5532
+    },
+    {
+      "performanceCode": "250928M",
+      "performanceDate": "Sun, 9/28/2025 2:00 PM",
+      "singleTickets": 458,
+      "subscriptionTickets": 162,
+      "totalTickets": 620,
+      "totalRevenue": 16786
+    },
+    {
+      "performanceCode": "SY250928P",
+      "performanceDate": "Sun, 9/28/2025 2:00 PM",
+      "singleTickets": 83,
+      "subscriptionTickets": 33,
+      "totalTickets": 116,
+      "totalRevenue": 1973
+    },
+    {
+      "performanceCode": "251002E",
+      "performanceDate": "Thu, 10/2/2025 5:30 PM",
+      "singleTickets": 110,
+      "subscriptionTickets": 0,
+      "totalTickets": 110,
+      "totalRevenue": 8250
+    },
+    {
+      "performanceCode": "251004E",
+      "performanceDate": "Sat, 10/4/2025 8:00 PM",
+      "singleTickets": 22,
+      "subscriptionTickets": -22,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "SY251004P",
+      "performanceDate": "Sat, 10/4/2025 8:00 PM",
+      "singleTickets": 8,
+      "subscriptionTickets": -8,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251010E",
+      "performanceDate": "Fri, 10/10/2025 8:00 PM",
+      "singleTickets": 551,
+      "subscriptionTickets": 460,
+      "totalTickets": 1011,
+      "totalRevenue": 62663.600000000006
+    },
+    {
+      "performanceCode": "251011A",
+      "performanceDate": "Sat, 10/11/2025 9:30 AM",
+      "singleTickets": 82,
+      "subscriptionTickets": 0,
+      "totalTickets": 82,
+      "totalRevenue": 656
+    },
+    {
+      "performanceCode": "251011B",
+      "performanceDate": "Sat, 10/11/2025 10:30 AM",
+      "singleTickets": 113,
+      "subscriptionTickets": 0,
+      "totalTickets": 113,
+      "totalRevenue": 904
+    },
+    {
+      "performanceCode": "251011C",
+      "performanceDate": "Sat, 10/11/2025 11:30 AM",
+      "singleTickets": 65,
+      "subscriptionTickets": 0,
+      "totalTickets": 65,
+      "totalRevenue": 520
+    },
+    {
+      "performanceCode": "251011E",
+      "performanceDate": "Sat, 10/11/2025 8:00 PM",
+      "singleTickets": 605,
+      "subscriptionTickets": 457,
+      "totalTickets": 1062,
+      "totalRevenue": 67353.7
+    },
+    {
+      "performanceCode": "251012M",
+      "performanceDate": "Sun, 10/12/2025 2:00 PM",
+      "singleTickets": 706,
+      "subscriptionTickets": 492,
+      "totalTickets": 1198,
+      "totalRevenue": 72776.1
+    },
+    {
+      "performanceCode": "SY251010P",
+      "performanceDate": "Fri, 10/10/2025 8:00 PM",
+      "singleTickets": 168,
+      "subscriptionTickets": 187,
+      "totalTickets": 355,
+      "totalRevenue": 6112
+    },
+    {
+      "performanceCode": "SY251011P",
+      "performanceDate": "Sat, 10/11/2025 8:00 PM",
+      "singleTickets": 170,
+      "subscriptionTickets": 191,
+      "totalTickets": 361,
+      "totalRevenue": 6244
+    },
+    {
+      "performanceCode": "SY251012P",
+      "performanceDate": "Sun, 10/12/2025 2:00 PM",
+      "singleTickets": 250,
+      "subscriptionTickets": 182,
+      "totalTickets": 432,
+      "totalRevenue": 7326
+    },
+    {
+      "performanceCode": "251017E",
+      "performanceDate": "Fri, 10/17/2025 7:00 PM",
+      "singleTickets": 1048,
+      "subscriptionTickets": 105,
+      "totalTickets": 1153,
+      "totalRevenue": 87476.5
+    },
+    {
+      "performanceCode": "251018E",
+      "performanceDate": "Sat, 10/18/2025 7:00 PM",
+      "singleTickets": 1201,
+      "subscriptionTickets": 66,
+      "totalTickets": 1267,
+      "totalRevenue": 96349
+    },
+    {
+      "performanceCode": "251019M",
+      "performanceDate": "Sun, 10/19/2025 2:00 PM",
+      "singleTickets": 912,
+      "subscriptionTickets": 68,
+      "totalTickets": 980,
+      "totalRevenue": 77374.5
+    },
+    {
+      "performanceCode": "SY251017P",
+      "performanceDate": "Fri, 10/17/2025 7:00 PM",
+      "singleTickets": 283,
+      "subscriptionTickets": 40,
+      "totalTickets": 323,
+      "totalRevenue": 5465
+    },
+    {
+      "performanceCode": "SY251018P",
+      "performanceDate": "Sat, 10/18/2025 7:00 PM",
+      "singleTickets": 312,
+      "subscriptionTickets": 28,
+      "totalTickets": 340,
+      "totalRevenue": 5811
+    },
+    {
+      "performanceCode": "SY251019P",
+      "performanceDate": "Sun, 10/19/2025 2:00 PM",
+      "singleTickets": 259,
+      "subscriptionTickets": 17,
+      "totalTickets": 276,
+      "totalRevenue": 4675
+    },
+    {
+      "performanceCode": "251022E",
+      "performanceDate": "Wed, 10/22/2025 7:00 PM",
+      "singleTickets": 272,
+      "subscriptionTickets": 65,
+      "totalTickets": 337,
+      "totalRevenue": 18597.3
+    },
+    {
+      "performanceCode": "251024E",
+      "performanceDate": "Fri, 10/24/2025 8:00 PM",
+      "singleTickets": 353,
+      "subscriptionTickets": 503,
+      "totalTickets": 856,
+      "totalRevenue": 62904.1
+    },
+    {
+      "performanceCode": "251025E",
+      "performanceDate": "Sat, 10/25/2025 8:00 PM",
+      "singleTickets": 467,
+      "subscriptionTickets": 375,
+      "totalTickets": 842,
+      "totalRevenue": 60890.5
+    },
+    {
+      "performanceCode": "251026M",
+      "performanceDate": "Sun, 10/26/2025 2:00 PM",
+      "singleTickets": 273,
+      "subscriptionTickets": 311,
+      "totalTickets": 584,
+      "totalRevenue": 41112.7
+    },
+    {
+      "performanceCode": "SY251022P",
+      "performanceDate": "Wed, 10/22/2025 7:00 PM",
+      "singleTickets": 81,
+      "subscriptionTickets": 24,
+      "totalTickets": 105,
+      "totalRevenue": 1788
+    },
+    {
+      "performanceCode": "SY251024P",
+      "performanceDate": "Fri, 10/24/2025 8:00 PM",
+      "singleTickets": 107,
+      "subscriptionTickets": 194,
+      "totalTickets": 301,
+      "totalRevenue": 5212
+    },
+    {
+      "performanceCode": "SY251025P",
+      "performanceDate": "Sat, 10/25/2025 8:00 PM",
+      "singleTickets": 125,
+      "subscriptionTickets": 159,
+      "totalTickets": 284,
+      "totalRevenue": 4859
+    },
+    {
+      "performanceCode": "SY251026P",
+      "performanceDate": "Sun, 10/26/2025 2:00 PM",
+      "singleTickets": 81,
+      "subscriptionTickets": 121,
+      "totalTickets": 202,
+      "totalRevenue": 3529
+    },
+    {
+      "performanceCode": "251029E",
+      "performanceDate": "Wed, 10/29/2025 8:00 PM",
+      "singleTickets": 26,
+      "subscriptionTickets": 7,
+      "totalTickets": 33,
+      "totalRevenue": 4620
+    },
+    {
+      "performanceCode": "251031E",
+      "performanceDate": "Fri, 10/31/2025 8:00 PM",
+      "singleTickets": 290,
+      "subscriptionTickets": 256,
+      "totalTickets": 546,
+      "totalRevenue": 35879.3
+    },
+    {
+      "performanceCode": "251101E",
+      "performanceDate": "Sat, 11/1/2025 8:00 PM",
+      "singleTickets": 656,
+      "subscriptionTickets": 548,
+      "totalTickets": 1204,
+      "totalRevenue": 73716.8
+    },
+    {
+      "performanceCode": "251102M",
+      "performanceDate": "Sun, 11/2/2025 2:00 PM",
+      "singleTickets": 530,
+      "subscriptionTickets": 510,
+      "totalTickets": 1040,
+      "totalRevenue": 66443.5
+    },
+    {
+      "performanceCode": "SY251029P",
+      "performanceDate": "Wed, 10/29/2025 8:00 PM",
+      "singleTickets": 4,
+      "subscriptionTickets": 0,
+      "totalTickets": 4,
+      "totalRevenue": 73
+    },
+    {
+      "performanceCode": "SY251031P",
+      "performanceDate": "Fri, 10/31/2025 8:00 PM",
+      "singleTickets": 102,
+      "subscriptionTickets": 114,
+      "totalTickets": 216,
+      "totalRevenue": 3771
+    },
+    {
+      "performanceCode": "SY251101P",
+      "performanceDate": "Sat, 11/1/2025 8:00 PM",
+      "singleTickets": 192,
+      "subscriptionTickets": 217,
+      "totalTickets": 409,
+      "totalRevenue": 7064
+    },
+    {
+      "performanceCode": "SY251102P",
+      "performanceDate": "Sun, 11/2/2025 2:00 PM",
+      "singleTickets": 166,
+      "subscriptionTickets": 197,
+      "totalTickets": 363,
+      "totalRevenue": 6231
+    },
+    {
+      "performanceCode": "251105E",
+      "performanceDate": "Wed, 11/5/2025 6:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251109M",
+      "performanceDate": "Sun, 11/9/2025 2:00 PM",
+      "singleTickets": 367,
+      "subscriptionTickets": 179,
+      "totalTickets": 546,
+      "totalRevenue": 15081.5
+    },
+    {
+      "performanceCode": "SY251105P",
+      "performanceDate": "Wed, 11/5/2025 6:00 PM",
+      "singleTickets": 50,
+      "subscriptionTickets": 0,
+      "totalTickets": 50,
+      "totalRevenue": 818
+    },
+    {
+      "performanceCode": "SY251109P",
+      "performanceDate": "Sun, 11/9/2025 2:00 PM",
+      "singleTickets": 69,
+      "subscriptionTickets": 38,
+      "totalTickets": 107,
+      "totalRevenue": 1802
+    },
+    {
+      "performanceCode": "251121E",
+      "performanceDate": "Fri, 11/21/2025 8:00 PM",
+      "singleTickets": 168,
+      "subscriptionTickets": 285,
+      "totalTickets": 453,
+      "totalRevenue": 31658.6
+    },
+    {
+      "performanceCode": "251122E",
+      "performanceDate": "Sat, 11/22/2025 8:00 PM",
+      "singleTickets": 270,
+      "subscriptionTickets": 491,
+      "totalTickets": 761,
+      "totalRevenue": 51598.7
+    },
+    {
+      "performanceCode": "251123E",
+      "performanceDate": "Sun, 11/23/2025 7:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251123M",
+      "performanceDate": "Sun, 11/23/2025 2:00 PM",
+      "singleTickets": 290,
+      "subscriptionTickets": 459,
+      "totalTickets": 749,
+      "totalRevenue": 49747.100000000006
+    },
+    {
+      "performanceCode": "SY251121P",
+      "performanceDate": "Fri, 11/21/2025 8:00 PM",
+      "singleTickets": 61,
+      "subscriptionTickets": 123,
+      "totalTickets": 184,
+      "totalRevenue": 3214
+    },
+    {
+      "performanceCode": "SY251122P",
+      "performanceDate": "Sat, 11/22/2025 8:00 PM",
+      "singleTickets": 84,
+      "subscriptionTickets": 199,
+      "totalTickets": 283,
+      "totalRevenue": 4969
+    },
+    {
+      "performanceCode": "SY251123P",
+      "performanceDate": "Sun, 11/23/2025 2:00 PM",
+      "singleTickets": 102,
+      "subscriptionTickets": 181,
+      "totalTickets": 283,
+      "totalRevenue": 4789
+    },
+    {
+      "performanceCode": "SY251123P2",
+      "performanceDate": "Sun, 11/23/2025 7:00 PM",
+      "singleTickets": 72,
+      "subscriptionTickets": 0,
+      "totalTickets": 72,
+      "totalRevenue": 1224
+    },
+    {
+      "performanceCode": "251128E",
+      "performanceDate": "Fri, 11/28/2025 7:00 PM",
+      "singleTickets": 570,
+      "subscriptionTickets": 36,
+      "totalTickets": 606,
+      "totalRevenue": 44347.2
+    },
+    {
+      "performanceCode": "251129AM",
+      "performanceDate": "Sat, 11/29/2025 1:00 PM",
+      "singleTickets": 586,
+      "subscriptionTickets": 11,
+      "totalTickets": 597,
+      "totalRevenue": 41435.2
+    },
+    {
+      "performanceCode": "251129BE",
+      "performanceDate": "Sat, 11/29/2025 7:00 PM",
+      "singleTickets": 451,
+      "subscriptionTickets": 34,
+      "totalTickets": 485,
+      "totalRevenue": 35496.880000000005
+    },
+    {
+      "performanceCode": "251130M",
+      "performanceDate": "Sun, 11/30/2025 2:00 PM",
+      "singleTickets": 713,
+      "subscriptionTickets": 35,
+      "totalTickets": 748,
+      "totalRevenue": 53394.4
+    },
+    {
+      "performanceCode": "SY251128P",
+      "performanceDate": "Fri, 11/28/2025 7:00 PM",
+      "singleTickets": 99,
+      "subscriptionTickets": 10,
+      "totalTickets": 109,
+      "totalRevenue": 1879
+    },
+    {
+      "performanceCode": "SY251129AP",
+      "performanceDate": "Sat, 11/29/2025 1:00 PM",
+      "singleTickets": 93,
+      "subscriptionTickets": 2,
+      "totalTickets": 95,
+      "totalRevenue": 1628
+    },
+    {
+      "performanceCode": "SY251129BP",
+      "performanceDate": "Sat, 11/29/2025 7:00 PM",
+      "singleTickets": 89,
+      "subscriptionTickets": 9,
+      "totalTickets": 98,
+      "totalRevenue": 1721
+    },
+    {
+      "performanceCode": "SY251130P",
+      "performanceDate": "Sun, 11/30/2025 2:00 PM",
+      "singleTickets": 141,
+      "subscriptionTickets": 12,
+      "totalTickets": 153,
+      "totalRevenue": 2646
+    },
+    {
+      "performanceCode": "251205E",
+      "performanceDate": "Fri, 12/5/2025 7:00 PM",
+      "singleTickets": 485,
+      "subscriptionTickets": 53,
+      "totalTickets": 538,
+      "totalRevenue": 29558
+    },
+    {
+      "performanceCode": "251205M",
+      "performanceDate": "Fri, 12/5/2025 12:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251206A",
+      "performanceDate": "Sat, 12/6/2025 9:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251206B",
+      "performanceDate": "Sat, 12/6/2025 10:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251206C",
+      "performanceDate": "Sat, 12/6/2025 11:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251206E",
+      "performanceDate": "Sat, 12/6/2025 7:00 PM",
+      "singleTickets": 454,
+      "subscriptionTickets": 53,
+      "totalTickets": 507,
+      "totalRevenue": 30609.5
+    },
+    {
+      "performanceCode": "251207M",
+      "performanceDate": "Sun, 12/7/2025 2:00 PM",
+      "singleTickets": 556,
+      "subscriptionTickets": 54,
+      "totalTickets": 610,
+      "totalRevenue": 33539
+    },
+    {
+      "performanceCode": "SY251205P",
+      "performanceDate": "Fri, 12/5/2025 7:00 PM",
+      "singleTickets": 124,
+      "subscriptionTickets": 21,
+      "totalTickets": 145,
+      "totalRevenue": 2473
+    },
+    {
+      "performanceCode": "SY251205P1",
+      "performanceDate": "Fri, 12/5/2025 12:00 PM",
+      "singleTickets": 29,
+      "subscriptionTickets": 0,
+      "totalTickets": 29,
+      "totalRevenue": 482
+    },
+    {
+      "performanceCode": "SY251206P",
+      "performanceDate": "Sat, 12/6/2025 7:00 PM",
+      "singleTickets": 122,
+      "subscriptionTickets": 17,
+      "totalTickets": 139,
+      "totalRevenue": 2467
+    },
+    {
+      "performanceCode": "SY251207P",
+      "performanceDate": "Sun, 12/7/2025 2:00 PM",
+      "singleTickets": 153,
+      "subscriptionTickets": 21,
+      "totalTickets": 174,
+      "totalRevenue": 3144
+    },
+    {
+      "performanceCode": "251211M",
+      "performanceDate": "Thu, 12/11/2025 3:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251212E",
+      "performanceDate": "Fri, 12/12/2025 7:00 PM",
+      "singleTickets": 1156,
+      "subscriptionTickets": 77,
+      "totalTickets": 1233,
+      "totalRevenue": 125595
+    },
+    {
+      "performanceCode": "251213E",
+      "performanceDate": "Sat, 12/13/2025 7:00 PM",
+      "singleTickets": 1343,
+      "subscriptionTickets": 86,
+      "totalTickets": 1429,
+      "totalRevenue": 141104.5
+    },
+    {
+      "performanceCode": "251214AM",
+      "performanceDate": "Sun, 12/14/2025 3:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251214BE",
+      "performanceDate": "Sun, 12/14/2025 6:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "SY251212P",
+      "performanceDate": "Fri, 12/12/2025 7:00 PM",
+      "singleTickets": 275,
+      "subscriptionTickets": 27,
+      "totalTickets": 302,
+      "totalRevenue": 5282
+    },
+    {
+      "performanceCode": "SY251213P",
+      "performanceDate": "Sat, 12/13/2025 7:00 PM",
+      "singleTickets": 330,
+      "subscriptionTickets": 28,
+      "totalTickets": 358,
+      "totalRevenue": 6403
+    },
+    {
+      "performanceCode": "251215M",
+      "performanceDate": "Mon, 12/15/2025 12:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "251218E",
+      "performanceDate": "Thu, 12/18/2025 7:00 PM",
+      "singleTickets": 259,
+      "subscriptionTickets": 28,
+      "totalTickets": 287,
+      "totalRevenue": 17976.45
+    },
+    {
+      "performanceCode": "251219E",
+      "performanceDate": "Fri, 12/19/2025 7:00 PM",
+      "singleTickets": 269,
+      "subscriptionTickets": 32,
+      "totalTickets": 301,
+      "totalRevenue": 18937.5
+    },
+    {
+      "performanceCode": "251220AM",
+      "performanceDate": "Sat, 12/20/2025 1:00 PM",
+      "singleTickets": 425,
+      "subscriptionTickets": 38,
+      "totalTickets": 463,
+      "totalRevenue": 29165
+    },
+    {
+      "performanceCode": "251220BE",
+      "performanceDate": "Sat, 12/20/2025 7:00 PM",
+      "singleTickets": 299,
+      "subscriptionTickets": 51,
+      "totalTickets": 350,
+      "totalRevenue": 22907
+    },
+    {
+      "performanceCode": "251221AM",
+      "performanceDate": "Sun, 12/21/2025 2:00 PM",
+      "singleTickets": 503,
+      "subscriptionTickets": 207,
+      "totalTickets": 710,
+      "totalRevenue": 31665
+    },
+    {
+      "performanceCode": "251221BE",
+      "performanceDate": "Sun, 12/21/2025 7:00 PM",
+      "singleTickets": 184,
+      "subscriptionTickets": 16,
+      "totalTickets": 200,
+      "totalRevenue": 12928.5
+    },
+    {
+      "performanceCode": "SY251215P",
+      "performanceDate": "Mon, 12/15/2025 12:00 PM",
+      "singleTickets": 21,
+      "subscriptionTickets": 0,
+      "totalTickets": 21,
+      "totalRevenue": 336
+    },
+    {
+      "performanceCode": "SY251218P",
+      "performanceDate": "Thu, 12/18/2025 7:00 PM",
+      "singleTickets": 59,
+      "subscriptionTickets": 6,
+      "totalTickets": 65,
+      "totalRevenue": 1148
+    },
+    {
+      "performanceCode": "SY251219P",
+      "performanceDate": "Fri, 12/19/2025 7:00 PM",
+      "singleTickets": 64,
+      "subscriptionTickets": 11,
+      "totalTickets": 75,
+      "totalRevenue": 1290
+    },
+    {
+      "performanceCode": "SY251220AP",
+      "performanceDate": "Sat, 12/20/2025 1:00 PM",
+      "singleTickets": 94,
+      "subscriptionTickets": 12,
+      "totalTickets": 106,
+      "totalRevenue": 1885
+    },
+    {
+      "performanceCode": "SY251220BP",
+      "performanceDate": "Sat, 12/20/2025 7:00 PM",
+      "singleTickets": 70,
+      "subscriptionTickets": 15,
+      "totalTickets": 85,
+      "totalRevenue": 1459
+    },
+    {
+      "performanceCode": "SY251221AP",
+      "performanceDate": "Sun, 12/21/2025 2:00 PM",
+      "singleTickets": 115,
+      "subscriptionTickets": 43,
+      "totalTickets": 158,
+      "totalRevenue": 2780
+    },
+    {
+      "performanceCode": "SY251221BP",
+      "performanceDate": "Sun, 12/21/2025 7:00 PM",
+      "singleTickets": 44,
+      "subscriptionTickets": 1,
+      "totalTickets": 45,
+      "totalRevenue": 837
+    },
+    {
+      "performanceCode": "251223E",
+      "performanceDate": "Tue, 12/23/2025 7:00 PM",
+      "singleTickets": 1014,
+      "subscriptionTickets": 67,
+      "totalTickets": 1081,
+      "totalRevenue": 90585.1
+    },
+    {
+      "performanceCode": "251224M",
+      "performanceDate": "Wed, 12/24/2025 11:00 AM",
+      "singleTickets": 286,
+      "subscriptionTickets": 24,
+      "totalTickets": 310,
+      "totalRevenue": 23953.8
+    },
+    {
+      "performanceCode": "SY251223P",
+      "performanceDate": "Tue, 12/23/2025 7:00 PM",
+      "singleTickets": 221,
+      "subscriptionTickets": 25,
+      "totalTickets": 246,
+      "totalRevenue": 4278
+    },
+    {
+      "performanceCode": "SY251224P",
+      "performanceDate": "Wed, 12/24/2025 11:00 AM",
+      "singleTickets": 80,
+      "subscriptionTickets": 8,
+      "totalTickets": 88,
+      "totalRevenue": 1543
+    },
+    {
+      "performanceCode": "260109E",
+      "performanceDate": "Fri, 1/9/2026 8:00 PM",
+      "singleTickets": 145,
+      "subscriptionTickets": 445,
+      "totalTickets": 590,
+      "totalRevenue": 40570.7
+    },
+    {
+      "performanceCode": "260110E",
+      "performanceDate": "Sat, 1/10/2026 8:00 PM",
+      "singleTickets": 163,
+      "subscriptionTickets": 462,
+      "totalTickets": 625,
+      "totalRevenue": 41496.5
+    },
+    {
+      "performanceCode": "260111M",
+      "performanceDate": "Sun, 1/11/2026 2:00 PM",
+      "singleTickets": 188,
+      "subscriptionTickets": 428,
+      "totalTickets": 616,
+      "totalRevenue": 40386.8
+    },
+    {
+      "performanceCode": "SY260109P",
+      "performanceDate": "Fri, 1/9/2026 8:00 PM",
+      "singleTickets": 51,
+      "subscriptionTickets": 182,
+      "totalTickets": 233,
+      "totalRevenue": 4052
+    },
+    {
+      "performanceCode": "SY260110P",
+      "performanceDate": "Sat, 1/10/2026 8:00 PM",
+      "singleTickets": 51,
+      "subscriptionTickets": 189,
+      "totalTickets": 240,
+      "totalRevenue": 4128
+    },
+    {
+      "performanceCode": "SY260111P",
+      "performanceDate": "Sun, 1/11/2026 2:00 PM",
+      "singleTickets": 63,
+      "subscriptionTickets": 161,
+      "totalTickets": 224,
+      "totalRevenue": 3827
+    },
+    {
+      "performanceCode": "260116E",
+      "performanceDate": "Fri, 1/16/2026 8:00 PM",
+      "singleTickets": 106,
+      "subscriptionTickets": 296,
+      "totalTickets": 402,
+      "totalRevenue": 29273.4
+    },
+    {
+      "performanceCode": "260117E",
+      "performanceDate": "Sat, 1/17/2026 8:00 PM",
+      "singleTickets": 207,
+      "subscriptionTickets": 512,
+      "totalTickets": 719,
+      "totalRevenue": 48510.9
+    },
+    {
+      "performanceCode": "260118M",
+      "performanceDate": "Sun, 1/18/2026 2:00 PM",
+      "singleTickets": 237,
+      "subscriptionTickets": 455,
+      "totalTickets": 692,
+      "totalRevenue": 45872.4
+    },
+    {
+      "performanceCode": "SY260116P",
+      "performanceDate": "Fri, 1/16/2026 8:00 PM",
+      "singleTickets": 37,
+      "subscriptionTickets": 119,
+      "totalTickets": 156,
+      "totalRevenue": 2721
+    },
+    {
+      "performanceCode": "SY260117P",
+      "performanceDate": "Sat, 1/17/2026 8:00 PM",
+      "singleTickets": 67,
+      "subscriptionTickets": 205,
+      "totalTickets": 272,
+      "totalRevenue": 4748
+    },
+    {
+      "performanceCode": "SY260118P",
+      "performanceDate": "Sun, 1/18/2026 2:00 PM",
+      "singleTickets": 87,
+      "subscriptionTickets": 179,
+      "totalTickets": 266,
+      "totalRevenue": 4499
+    },
+    {
+      "performanceCode": "260122E",
+      "performanceDate": "Thu, 1/22/2026 7:00 PM",
+      "singleTickets": 128,
+      "subscriptionTickets": 7,
+      "totalTickets": 135,
+      "totalRevenue": 9575
+    },
+    {
+      "performanceCode": "260123E",
+      "performanceDate": "Fri, 1/23/2026 7:00 PM",
+      "singleTickets": 262,
+      "subscriptionTickets": 59,
+      "totalTickets": 321,
+      "totalRevenue": 25178.9
+    },
+    {
+      "performanceCode": "260124E",
+      "performanceDate": "Sat, 1/24/2026 7:00 PM",
+      "singleTickets": 429,
+      "subscriptionTickets": 108,
+      "totalTickets": 537,
+      "totalRevenue": 41054.1
+    },
+    {
+      "performanceCode": "260125M",
+      "performanceDate": "Sun, 1/25/2026 2:00 PM",
+      "singleTickets": 341,
+      "subscriptionTickets": 62,
+      "totalTickets": 403,
+      "totalRevenue": 29381.100000000002
+    },
+    {
+      "performanceCode": "SY260122P",
+      "performanceDate": "Thu, 1/22/2026 7:00 PM",
+      "singleTickets": 34,
+      "subscriptionTickets": 1,
+      "totalTickets": 35,
+      "totalRevenue": 587
+    },
+    {
+      "performanceCode": "SY260123P",
+      "performanceDate": "Fri, 1/23/2026 7:00 PM",
+      "singleTickets": 68,
+      "subscriptionTickets": 25,
+      "totalTickets": 93,
+      "totalRevenue": 1612
+    },
+    {
+      "performanceCode": "SY260124P",
+      "performanceDate": "Sat, 1/24/2026 7:00 PM",
+      "singleTickets": 108,
+      "subscriptionTickets": 39,
+      "totalTickets": 147,
+      "totalRevenue": 2514
+    },
+    {
+      "performanceCode": "SY260125P",
+      "performanceDate": "Sun, 1/25/2026 2:00 PM",
+      "singleTickets": 91,
+      "subscriptionTickets": 17,
+      "totalTickets": 108,
+      "totalRevenue": 1836
+    },
+    {
+      "performanceCode": "260130E",
+      "performanceDate": "Fri, 1/30/2026 8:00 PM",
+      "singleTickets": 122,
+      "subscriptionTickets": 291,
+      "totalTickets": 413,
+      "totalRevenue": 29261.4
+    },
+    {
+      "performanceCode": "260131E",
+      "performanceDate": "Sat, 1/31/2026 8:00 PM",
+      "singleTickets": 194,
+      "subscriptionTickets": 490,
+      "totalTickets": 684,
+      "totalRevenue": 46243.5
+    },
+    {
+      "performanceCode": "260201M",
+      "performanceDate": "Sun, 2/1/2026 2:00 PM",
+      "singleTickets": 214,
+      "subscriptionTickets": 450,
+      "totalTickets": 664,
+      "totalRevenue": 44132.5
+    },
+    {
+      "performanceCode": "SY260130P",
+      "performanceDate": "Fri, 1/30/2026 8:00 PM",
+      "singleTickets": 39,
+      "subscriptionTickets": 123,
+      "totalTickets": 162,
+      "totalRevenue": 2817
+    },
+    {
+      "performanceCode": "SY260131P",
+      "performanceDate": "Sat, 1/31/2026 8:00 PM",
+      "singleTickets": 61,
+      "subscriptionTickets": 193,
+      "totalTickets": 254,
+      "totalRevenue": 4442
+    },
+    {
+      "performanceCode": "SY260201P",
+      "performanceDate": "Sun, 2/1/2026 2:00 PM",
+      "singleTickets": 80,
+      "subscriptionTickets": 179,
+      "totalTickets": 259,
+      "totalRevenue": 4378
+    },
+    {
+      "performanceCode": "260205E",
+      "performanceDate": "Thu, 2/5/2026 8:00 PM",
+      "singleTickets": 7,
+      "subscriptionTickets": 8,
+      "totalTickets": 15,
+      "totalRevenue": 2100
+    },
+    {
+      "performanceCode": "260206E",
+      "performanceDate": "Fri, 2/6/2026 8:00 PM",
+      "singleTickets": 158,
+      "subscriptionTickets": 448,
+      "totalTickets": 606,
+      "totalRevenue": 40972
+    },
+    {
+      "performanceCode": "260207E",
+      "performanceDate": "Sat, 2/7/2026 8:00 PM",
+      "singleTickets": 143,
+      "subscriptionTickets": 447,
+      "totalTickets": 590,
+      "totalRevenue": 39152.5
+    },
+    {
+      "performanceCode": "260208M",
+      "performanceDate": "Sun, 2/8/2026 2:00 PM",
+      "singleTickets": 170,
+      "subscriptionTickets": 420,
+      "totalTickets": 590,
+      "totalRevenue": 38324.1
+    },
+    {
+      "performanceCode": "SY260206P",
+      "performanceDate": "Fri, 2/6/2026 8:00 PM",
+      "singleTickets": 54,
+      "subscriptionTickets": 186,
+      "totalTickets": 240,
+      "totalRevenue": 4182
+    },
+    {
+      "performanceCode": "SY260207P",
+      "performanceDate": "Sat, 2/7/2026 8:00 PM",
+      "singleTickets": 50,
+      "subscriptionTickets": 186,
+      "totalTickets": 236,
+      "totalRevenue": 4064
+    },
+    {
+      "performanceCode": "SY260208P",
+      "performanceDate": "Sun, 2/8/2026 2:00 PM",
+      "singleTickets": 60,
+      "subscriptionTickets": 158,
+      "totalTickets": 218,
+      "totalRevenue": 3695
+    },
+    {
+      "performanceCode": "260212E",
+      "performanceDate": "Thu, 2/12/2026 7:00 PM",
+      "singleTickets": 282,
+      "subscriptionTickets": 66,
+      "totalTickets": 348,
+      "totalRevenue": 33082.1
+    },
+    {
+      "performanceCode": "260213E",
+      "performanceDate": "Fri, 2/13/2026 8:00 PM",
+      "singleTickets": 255,
+      "subscriptionTickets": 519,
+      "totalTickets": 774,
+      "totalRevenue": 56567.8
+    },
+    {
+      "performanceCode": "260214E",
+      "performanceDate": "Sat, 2/14/2026 8:00 PM",
+      "singleTickets": 243,
+      "subscriptionTickets": 463,
+      "totalTickets": 706,
+      "totalRevenue": 51607.8
+    },
+    {
+      "performanceCode": "260215M",
+      "performanceDate": "Sun, 2/15/2026 2:00 PM",
+      "singleTickets": 139,
+      "subscriptionTickets": 292,
+      "totalTickets": 431,
+      "totalRevenue": 30988.9
+    },
+    {
+      "performanceCode": "SY260212P",
+      "performanceDate": "Thu, 2/12/2026 7:00 PM",
+      "singleTickets": 74,
+      "subscriptionTickets": 24,
+      "totalTickets": 98,
+      "totalRevenue": 1640
+    },
+    {
+      "performanceCode": "SY260213P",
+      "performanceDate": "Fri, 2/13/2026 8:00 PM",
+      "singleTickets": 86,
+      "subscriptionTickets": 200,
+      "totalTickets": 286,
+      "totalRevenue": 4963
+    },
+    {
+      "performanceCode": "SY260214P",
+      "performanceDate": "Sat, 2/14/2026 8:00 PM",
+      "singleTickets": 80,
+      "subscriptionTickets": 185,
+      "totalTickets": 265,
+      "totalRevenue": 4474
+    },
+    {
+      "performanceCode": "SY260215P",
+      "performanceDate": "Sun, 2/15/2026 2:00 PM",
+      "singleTickets": 53,
+      "subscriptionTickets": 110,
+      "totalTickets": 163,
+      "totalRevenue": 2860
+    },
+    {
+      "performanceCode": "260219E",
+      "performanceDate": "Thu, 2/19/2026 7:00 PM",
+      "singleTickets": 138,
+      "subscriptionTickets": 12,
+      "totalTickets": 150,
+      "totalRevenue": 11731.5
+    },
+    {
+      "performanceCode": "260220E",
+      "performanceDate": "Fri, 2/20/2026 7:00 PM",
+      "singleTickets": 258,
+      "subscriptionTickets": 26,
+      "totalTickets": 284,
+      "totalRevenue": 21339
+    },
+    {
+      "performanceCode": "260221E",
+      "performanceDate": "Sat, 2/21/2026 7:00 PM",
+      "singleTickets": 471,
+      "subscriptionTickets": 47,
+      "totalTickets": 518,
+      "totalRevenue": 40062.5
+    },
+    {
+      "performanceCode": "260222M",
+      "performanceDate": "Sun, 2/22/2026 2:00 PM",
+      "singleTickets": 483,
+      "subscriptionTickets": 70,
+      "totalTickets": 553,
+      "totalRevenue": 38732
+    },
+    {
+      "performanceCode": "SY260219P",
+      "performanceDate": "Thu, 2/19/2026 7:00 PM",
+      "singleTickets": 33,
+      "subscriptionTickets": 5,
+      "totalTickets": 38,
+      "totalRevenue": 653
+    },
+    {
+      "performanceCode": "SY260220P",
+      "performanceDate": "Fri, 2/20/2026 7:00 PM",
+      "singleTickets": 67,
+      "subscriptionTickets": 11,
+      "totalTickets": 78,
+      "totalRevenue": 1302
+    },
+    {
+      "performanceCode": "SY260221P",
+      "performanceDate": "Sat, 2/21/2026 7:00 PM",
+      "singleTickets": 115,
+      "subscriptionTickets": 14,
+      "totalTickets": 129,
+      "totalRevenue": 2172
+    },
+    {
+      "performanceCode": "SY260222P",
+      "performanceDate": "Sun, 2/22/2026 2:00 PM",
+      "singleTickets": 81,
+      "subscriptionTickets": 17,
+      "totalTickets": 98,
+      "totalRevenue": 1685
+    },
+    {
+      "performanceCode": "260301M",
+      "performanceDate": "Sun, 3/1/2026 2:00 PM",
+      "singleTickets": 187,
+      "subscriptionTickets": 179,
+      "totalTickets": 366,
+      "totalRevenue": 9512.5
+    },
+    {
+      "performanceCode": "SY260301P",
+      "performanceDate": "Sun, 3/1/2026 2:00 PM",
+      "singleTickets": 31,
+      "subscriptionTickets": 38,
+      "totalTickets": 69,
+      "totalRevenue": 1176
+    },
+    {
+      "performanceCode": "260304E",
+      "performanceDate": "Wed, 3/4/2026 6:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260313E",
+      "performanceDate": "Fri, 3/13/2026 8:00 PM",
+      "singleTickets": 162,
+      "subscriptionTickets": 462,
+      "totalTickets": 624,
+      "totalRevenue": 42015.5
+    },
+    {
+      "performanceCode": "260314A",
+      "performanceDate": "Sat, 3/14/2026 9:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260314B",
+      "performanceDate": "Sat, 3/14/2026 10:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260314C",
+      "performanceDate": "Sat, 3/14/2026 11:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260314E",
+      "performanceDate": "Sat, 3/14/2026 8:00 PM",
+      "singleTickets": 148,
+      "subscriptionTickets": 470,
+      "totalTickets": 618,
+      "totalRevenue": 41015.9
+    },
+    {
+      "performanceCode": "260315M",
+      "performanceDate": "Sun, 3/15/2026 2:00 PM",
+      "singleTickets": 183,
+      "subscriptionTickets": 450,
+      "totalTickets": 633,
+      "totalRevenue": 41708.4
+    },
+    {
+      "performanceCode": "SY260313P",
+      "performanceDate": "Fri, 3/13/2026 8:00 PM",
+      "singleTickets": 49,
+      "subscriptionTickets": 187,
+      "totalTickets": 236,
+      "totalRevenue": 4109
+    },
+    {
+      "performanceCode": "SY260314P",
+      "performanceDate": "Sat, 3/14/2026 8:00 PM",
+      "singleTickets": 49,
+      "subscriptionTickets": 194,
+      "totalTickets": 243,
+      "totalRevenue": 4194
+    },
+    {
+      "performanceCode": "SY260315P",
+      "performanceDate": "Sun, 3/15/2026 2:00 PM",
+      "singleTickets": 60,
+      "subscriptionTickets": 172,
+      "totalTickets": 232,
+      "totalRevenue": 3937
+    },
+    {
+      "performanceCode": "260325E",
+      "performanceDate": "Wed, 3/25/2026 7:00 PM",
+      "singleTickets": 76,
+      "subscriptionTickets": 0,
+      "totalTickets": 76,
+      "totalRevenue": 6417
+    },
+    {
+      "performanceCode": "260326E",
+      "performanceDate": "Thu, 3/26/2026 7:00 PM",
+      "singleTickets": 78,
+      "subscriptionTickets": 7,
+      "totalTickets": 85,
+      "totalRevenue": 6822.5
+    },
+    {
+      "performanceCode": "260327E",
+      "performanceDate": "Fri, 3/27/2026 8:00 PM",
+      "singleTickets": 363,
+      "subscriptionTickets": 550,
+      "totalTickets": 913,
+      "totalRevenue": 66788.8
+    },
+    {
+      "performanceCode": "260328E",
+      "performanceDate": "Sat, 3/28/2026 8:00 PM",
+      "singleTickets": 379,
+      "subscriptionTickets": 483,
+      "totalTickets": 862,
+      "totalRevenue": 63481.6
+    },
+    {
+      "performanceCode": "260329M",
+      "performanceDate": "Sun, 3/29/2026 2:00 PM",
+      "singleTickets": 323,
+      "subscriptionTickets": 311,
+      "totalTickets": 634,
+      "totalRevenue": 46264.4
+    },
+    {
+      "performanceCode": "SY260325P",
+      "performanceDate": "Wed, 3/25/2026 7:00 PM",
+      "singleTickets": 23,
+      "subscriptionTickets": 0,
+      "totalTickets": 23,
+      "totalRevenue": 386
+    },
+    {
+      "performanceCode": "SY260326P",
+      "performanceDate": "Thu, 3/26/2026 7:00 PM",
+      "singleTickets": 22,
+      "subscriptionTickets": 2,
+      "totalTickets": 24,
+      "totalRevenue": 411
+    },
+    {
+      "performanceCode": "SY260327P",
+      "performanceDate": "Fri, 3/27/2026 8:00 PM",
+      "singleTickets": 117,
+      "subscriptionTickets": 209,
+      "totalTickets": 326,
+      "totalRevenue": 5621
+    },
+    {
+      "performanceCode": "SY260328P",
+      "performanceDate": "Sat, 3/28/2026 8:00 PM",
+      "singleTickets": 114,
+      "subscriptionTickets": 195,
+      "totalTickets": 309,
+      "totalRevenue": 5232
+    },
+    {
+      "performanceCode": "SY260329P",
+      "performanceDate": "Sun, 3/29/2026 2:00 PM",
+      "singleTickets": 108,
+      "subscriptionTickets": 120,
+      "totalTickets": 228,
+      "totalRevenue": 3972
+    },
+    {
+      "performanceCode": "260410E",
+      "performanceDate": "Fri, 4/10/2026 8:00 PM",
+      "singleTickets": 99,
+      "subscriptionTickets": 291,
+      "totalTickets": 390,
+      "totalRevenue": 28635
+    },
+    {
+      "performanceCode": "260411E",
+      "performanceDate": "Sat, 4/11/2026 8:00 PM",
+      "singleTickets": 157,
+      "subscriptionTickets": 492,
+      "totalTickets": 649,
+      "totalRevenue": 42161.8
+    },
+    {
+      "performanceCode": "260412M",
+      "performanceDate": "Sun, 4/12/2026 2:00 PM",
+      "singleTickets": 176,
+      "subscriptionTickets": 450,
+      "totalTickets": 626,
+      "totalRevenue": 40515.6
+    },
+    {
+      "performanceCode": "SY260410P",
+      "performanceDate": "Fri, 4/10/2026 8:00 PM",
+      "singleTickets": 35,
+      "subscriptionTickets": 125,
+      "totalTickets": 160,
+      "totalRevenue": 2785
+    },
+    {
+      "performanceCode": "SY260411P",
+      "performanceDate": "Sat, 4/11/2026 8:00 PM",
+      "singleTickets": 55,
+      "subscriptionTickets": 201,
+      "totalTickets": 256,
+      "totalRevenue": 4429
+    },
+    {
+      "performanceCode": "SY260412P",
+      "performanceDate": "Sun, 4/12/2026 2:00 PM",
+      "singleTickets": 61,
+      "subscriptionTickets": 166,
+      "totalTickets": 227,
+      "totalRevenue": 3848
+    },
+    {
+      "performanceCode": "260417E",
+      "performanceDate": "Fri, 4/17/2026 8:00 PM",
+      "singleTickets": 121,
+      "subscriptionTickets": 457,
+      "totalTickets": 578,
+      "totalRevenue": 39747.9
+    },
+    {
+      "performanceCode": "260418E",
+      "performanceDate": "Sat, 4/18/2026 8:00 PM",
+      "singleTickets": 158,
+      "subscriptionTickets": 442,
+      "totalTickets": 600,
+      "totalRevenue": 41647.7
+    },
+    {
+      "performanceCode": "260419M",
+      "performanceDate": "Sun, 4/19/2026 2:00 PM",
+      "singleTickets": 199,
+      "subscriptionTickets": 446,
+      "totalTickets": 645,
+      "totalRevenue": 42292.9
+    },
+    {
+      "performanceCode": "SY260417P",
+      "performanceDate": "Fri, 4/17/2026 8:00 PM",
+      "singleTickets": 46,
+      "subscriptionTickets": 188,
+      "totalTickets": 234,
+      "totalRevenue": 4050
+    },
+    {
+      "performanceCode": "SY260418P",
+      "performanceDate": "Sat, 4/18/2026 8:00 PM",
+      "singleTickets": 51,
+      "subscriptionTickets": 178,
+      "totalTickets": 229,
+      "totalRevenue": 4015
+    },
+    {
+      "performanceCode": "SY260419P",
+      "performanceDate": "Sun, 4/19/2026 2:00 PM",
+      "singleTickets": 75,
+      "subscriptionTickets": 176,
+      "totalTickets": 251,
+      "totalRevenue": 4250
+    },
+    {
+      "performanceCode": "260508E",
+      "performanceDate": "Fri, 5/8/2026 8:00 PM",
+      "singleTickets": 100,
+      "subscriptionTickets": 296,
+      "totalTickets": 396,
+      "totalRevenue": 28187.7
+    },
+    {
+      "performanceCode": "260509A",
+      "performanceDate": "Sat, 5/9/2026 9:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260509B",
+      "performanceDate": "Sat, 5/9/2026 10:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260509C",
+      "performanceDate": "Sat, 5/9/2026 11:30 AM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "260509E",
+      "performanceDate": "Sat, 5/9/2026 8:00 PM",
+      "singleTickets": 180,
+      "subscriptionTickets": 492,
+      "totalTickets": 672,
+      "totalRevenue": 46085.7
+    },
+    {
+      "performanceCode": "260510M",
+      "performanceDate": "Sun, 5/10/2026 2:00 PM",
+      "singleTickets": 212,
+      "subscriptionTickets": 454,
+      "totalTickets": 666,
+      "totalRevenue": 43861.7
+    },
+    {
+      "performanceCode": "SY260508P",
+      "performanceDate": "Fri, 5/8/2026 8:00 PM",
+      "singleTickets": 34,
+      "subscriptionTickets": 130,
+      "totalTickets": 164,
+      "totalRevenue": 2849
+    },
+    {
+      "performanceCode": "SY260509P",
+      "performanceDate": "Sat, 5/9/2026 8:00 PM",
+      "singleTickets": 60,
+      "subscriptionTickets": 200,
+      "totalTickets": 260,
+      "totalRevenue": 4529
+    },
+    {
+      "performanceCode": "SY260510P",
+      "performanceDate": "Sun, 5/10/2026 2:00 PM",
+      "singleTickets": 80,
+      "subscriptionTickets": 177,
+      "totalTickets": 257,
+      "totalRevenue": 4337
+    },
+    {
+      "performanceCode": "260515E",
+      "performanceDate": "Fri, 5/15/2026 8:00 PM",
+      "singleTickets": 253,
+      "subscriptionTickets": 536,
+      "totalTickets": 789,
+      "totalRevenue": 68320.6
+    },
+    {
+      "performanceCode": "260516E",
+      "performanceDate": "Sat, 5/16/2026 8:00 PM",
+      "singleTickets": 263,
+      "subscriptionTickets": 456,
+      "totalTickets": 719,
+      "totalRevenue": 62388
+    },
+    {
+      "performanceCode": "260517M",
+      "performanceDate": "Sun, 5/17/2026 2:00 PM",
+      "singleTickets": 209,
+      "subscriptionTickets": 298,
+      "totalTickets": 507,
+      "totalRevenue": 42448.600000000006
+    },
+    {
+      "performanceCode": "SY260515P",
+      "performanceDate": "Fri, 5/15/2026 8:00 PM",
+      "singleTickets": 79,
+      "subscriptionTickets": 206,
+      "totalTickets": 285,
+      "totalRevenue": 4956
+    },
+    {
+      "performanceCode": "SY260516P",
+      "performanceDate": "Sat, 5/16/2026 8:00 PM",
+      "singleTickets": 80,
+      "subscriptionTickets": 187,
+      "totalTickets": 267,
+      "totalRevenue": 4506
+    },
+    {
+      "performanceCode": "SY260517P",
+      "performanceDate": "Sun, 5/17/2026 2:00 PM",
+      "singleTickets": 71,
+      "subscriptionTickets": 115,
+      "totalTickets": 186,
+      "totalRevenue": 3255
+    },
+    {
+      "performanceCode": "260521E",
+      "performanceDate": "Thu, 5/21/2026 8:00 PM",
+      "singleTickets": 99,
+      "subscriptionTickets": 4,
+      "totalTickets": 103,
+      "totalRevenue": 10496
+    },
+    {
+      "performanceCode": "260522E",
+      "performanceDate": "Fri, 5/22/2026 8:00 PM",
+      "singleTickets": 229,
+      "subscriptionTickets": 7,
+      "totalTickets": 236,
+      "totalRevenue": 23312
+    },
+    {
+      "performanceCode": "SY260521P",
+      "performanceDate": "Thu, 5/21/2026 8:00 PM",
+      "singleTickets": 24,
+      "subscriptionTickets": 1,
+      "totalTickets": 25,
+      "totalRevenue": 436
+    },
+    {
+      "performanceCode": "SY260522P",
+      "performanceDate": "Fri, 5/22/2026 8:00 PM",
+      "singleTickets": 41,
+      "subscriptionTickets": 1,
+      "totalTickets": 42,
+      "totalRevenue": 708
+    },
+    {
+      "performanceCode": "260528E",
+      "performanceDate": "Thu, 5/28/2026 8:00 PM",
+      "singleTickets": 11,
+      "subscriptionTickets": 5,
+      "totalTickets": 16,
+      "totalRevenue": 2240
+    },
+    {
+      "performanceCode": "260529E",
+      "performanceDate": "Fri, 5/29/2026 8:00 PM",
+      "singleTickets": 132,
+      "subscriptionTickets": 448,
+      "totalTickets": 580,
+      "totalRevenue": 39839.9
+    },
+    {
+      "performanceCode": "260530E",
+      "performanceDate": "Sat, 5/30/2026 8:00 PM",
+      "singleTickets": 144,
+      "subscriptionTickets": 448,
+      "totalTickets": 592,
+      "totalRevenue": 39283.899999999994
+    },
+    {
+      "performanceCode": "260531M",
+      "performanceDate": "Sun, 5/31/2026 2:00 PM",
+      "singleTickets": 167,
+      "subscriptionTickets": 442,
+      "totalTickets": 609,
+      "totalRevenue": 40209.3
+    },
+    {
+      "performanceCode": "SY260529P",
+      "performanceDate": "Fri, 5/29/2026 8:00 PM",
+      "singleTickets": 49,
+      "subscriptionTickets": 181,
+      "totalTickets": 230,
+      "totalRevenue": 3977
+    },
+    {
+      "performanceCode": "SY260530P",
+      "performanceDate": "Sat, 5/30/2026 8:00 PM",
+      "singleTickets": 51,
+      "subscriptionTickets": 185,
+      "totalTickets": 236,
+      "totalRevenue": 4082
+    },
+    {
+      "performanceCode": "SY260531P",
+      "performanceDate": "Sun, 5/31/2026 2:00 PM",
+      "singleTickets": 57,
+      "subscriptionTickets": 170,
+      "totalTickets": 227,
+      "totalRevenue": 3884
+    },
+    {
+      "performanceCode": "260604E",
+      "performanceDate": "Thu, 6/4/2026 8:00 PM",
+      "singleTickets": 10,
+      "subscriptionTickets": 5,
+      "totalTickets": 15,
+      "totalRevenue": 2100
+    },
+    {
+      "performanceCode": "260605E",
+      "performanceDate": "Fri, 6/5/2026 8:00 PM",
+      "singleTickets": 137,
+      "subscriptionTickets": 468,
+      "totalTickets": 605,
+      "totalRevenue": 41471.2
+    },
+    {
+      "performanceCode": "260606E",
+      "performanceDate": "Sat, 6/6/2026 8:00 PM",
+      "singleTickets": 196,
+      "subscriptionTickets": 472,
+      "totalTickets": 668,
+      "totalRevenue": 46186.6
+    },
+    {
+      "performanceCode": "260607M",
+      "performanceDate": "Sun, 6/7/2026 2:00 PM",
+      "singleTickets": 236,
+      "subscriptionTickets": 474,
+      "totalTickets": 710,
+      "totalRevenue": 46679.6
+    },
+    {
+      "performanceCode": "SY260605P",
+      "performanceDate": "Fri, 6/5/2026 8:00 PM",
+      "singleTickets": 53,
+      "subscriptionTickets": 193,
+      "totalTickets": 246,
+      "totalRevenue": 4269
+    },
+    {
+      "performanceCode": "SY260606P",
+      "performanceDate": "Sat, 6/6/2026 8:00 PM",
+      "singleTickets": 62,
+      "subscriptionTickets": 189,
+      "totalTickets": 251,
+      "totalRevenue": 4367
+    },
+    {
+      "performanceCode": "SY260607P",
+      "performanceDate": "Sun, 6/7/2026 2:00 PM",
+      "singleTickets": 92,
+      "subscriptionTickets": 187,
+      "totalTickets": 279,
+      "totalRevenue": 4680
+    },
+    {
+      "performanceCode": "260619E",
+      "performanceDate": "Fri, 6/19/2026 8:00 PM",
+      "singleTickets": 161,
+      "subscriptionTickets": 322,
+      "totalTickets": 483,
+      "totalRevenue": 34322.4
+    },
+    {
+      "performanceCode": "260620E",
+      "performanceDate": "Sat, 6/20/2026 8:00 PM",
+      "singleTickets": 245,
+      "subscriptionTickets": 579,
+      "totalTickets": 824,
+      "totalRevenue": 53450
+    },
+    {
+      "performanceCode": "260621M",
+      "performanceDate": "Sun, 6/21/2026 2:00 PM",
+      "singleTickets": 271,
+      "subscriptionTickets": 488,
+      "totalTickets": 759,
+      "totalRevenue": 48753.2
+    },
+    {
+      "performanceCode": "SY260619P",
+      "performanceDate": "Fri, 6/19/2026 8:00 PM",
+      "singleTickets": 49,
+      "subscriptionTickets": 135,
+      "totalTickets": 184,
+      "totalRevenue": 3205
+    },
+    {
+      "performanceCode": "SY260620P",
+      "performanceDate": "Sat, 6/20/2026 8:00 PM",
+      "singleTickets": 84,
+      "subscriptionTickets": 227,
+      "totalTickets": 311,
+      "totalRevenue": 5354
+    },
+    {
+      "performanceCode": "SY260621P",
+      "performanceDate": "Sun, 6/21/2026 2:00 PM",
+      "singleTickets": 93,
+      "subscriptionTickets": 178,
+      "totalTickets": 271,
+      "totalRevenue": 4597
+    },
+    {
+      "performanceCode": "26QUARTET1",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 2,
+      "totalTickets": 2,
+      "totalRevenue": 96
+    },
+    {
+      "performanceCode": "26QUARTET2",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 2,
+      "totalTickets": 2,
+      "totalRevenue": 96
+    },
+    {
+      "performanceCode": "26QUARTET3",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 2,
+      "totalTickets": 2,
+      "totalRevenue": 96
+    },
+    {
+      "performanceCode": "26QUARTET4",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 2,
+      "totalTickets": 2,
+      "totalRevenue": 96
+    },
+    {
+      "performanceCode": "26STUPASS",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 71,
+      "totalTickets": 71,
+      "totalRevenue": 3600
+    },
+    {
+      "performanceCode": "26TRIO1",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "26TRIO2",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "26TRIO3",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    },
+    {
+      "performanceCode": "SY260630P",
+      "performanceDate": "Tue, 6/30/2026 8:00 PM",
+      "singleTickets": 0,
+      "subscriptionTickets": 0,
+      "totalTickets": 0,
+      "totalRevenue": 0
+    }
+  ]
+}
