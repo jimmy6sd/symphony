@@ -43,7 +43,7 @@
 
 # Cache static assets
 [[headers]]
-  for = "/js/*"
+  for = "/src/*"
   [headers.values]
     Cache-Control = "public, max-age=3600, s-maxage=3600"
 

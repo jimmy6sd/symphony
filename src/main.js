@@ -39,7 +39,7 @@
             '/src/charts/ticket-type-chart.js',
             '/src/charts/data-table.js',
             '/src/admin-panel.js',
-            '/js/pipeline-status.js'
+            '/src/components/pipeline-status.js'
         ],
 
         // Components

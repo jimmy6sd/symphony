@@ -21,7 +21,9 @@
       "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"./symphony-bigquery-key.json\")",
       "Bash(export GOOGLE_APPLICATION_CREDENTIALS=\"../symphony-bigquery-key.json\")",
       "Bash(git checkout:*)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
