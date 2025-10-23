@@ -2,10 +2,11 @@
 // Accepts raw PDF data from Make.com and handles all processing internally
 
 const { BigQuery } = require('@google-cloud/bigquery');
+const { Storage } = require('@google-cloud/storage');
 const crypto = require('crypto');
 
-// Initialize BigQuery client
-const initializeBigQuery = () => {
+// Initialize Google Cloud clients with shared credentials
+const initializeCredentials = () => {
   try {
     const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
@@ -34,19 +35,90 @@ const initializeBigQuery = () => {
       credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
     }
 
-    return new BigQuery({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
-      credentials: {
-        client_email: credentials.client_email,
-        private_key: credentials.private_key,
-      },
-      location: 'US'
-    });
+    return credentials;
   } catch (error) {
-    console.error('BigQuery initialization error:', error.message);
+    console.error('Credentials initialization error:', error.message);
     throw error;
   }
 };
+
+// Initialize BigQuery client
+const initializeBigQuery = () => {
+  const credentials = initializeCredentials();
+  return new BigQuery({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
+    credentials: {
+      client_email: credentials.client_email,
+      private_key: credentials.private_key,
+    },
+    location: 'US'
+  });
+};
+
+// Initialize Cloud Storage client
+const initializeStorage = () => {
+  const credentials = initializeCredentials();
+  return new Storage({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
+    credentials: {
+      client_email: credentials.client_email,
+      private_key: credentials.private_key,
+    }
+  });
+};
+
+// Backup PDF to Google Cloud Storage
+async function backupPdfToStorage(base64Data, executionId, metadata) {
+  try {
+    const storage = initializeStorage();
+    const bucketName = process.env.GCS_PDF_BACKUP_BUCKET || 'symphony-dashboard-pdfs';
+
+    // Create date-based path: 2025/10/filename.pdf
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const timestamp = now.toISOString().replace(/[:.]/g, '-').substring(0, 19);
+
+    // Generate filename with timestamp and execution ID
+    const originalFilename = metadata?.filename || 'performance_sales_summary';
+    const cleanFilename = originalFilename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filename = `${year}/${month}/${cleanFilename}_${timestamp}_${executionId}.pdf`;
+
+    console.log(`💾 Backing up PDF to gs://${bucketName}/${filename}`);
+
+    // Convert base64 to buffer
+    const pdfBuffer = Buffer.from(base64Data, 'base64');
+
+    // Upload to GCS
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(filename);
+
+    await file.save(pdfBuffer, {
+      metadata: {
+        contentType: 'application/pdf',
+        metadata: {
+          executionId: executionId,
+          uploadedAt: now.toISOString(),
+          originalFilename: metadata?.filename || 'unknown',
+          emailSubject: metadata?.email_subject || 'unknown',
+          emailDate: metadata?.email_date || 'unknown',
+          source: 'pdf_webhook'
+        }
+      }
+    });
+
+    console.log(`✅ PDF backed up successfully to Cloud Storage`);
+    console.log(`   Location: gs://${bucketName}/${filename}`);
+    console.log(`   Size: ${Math.round(pdfBuffer.length / 1024)}KB`);
+
+    return filename;
+  } catch (error) {
+    // Don't fail the webhook if backup fails - just log it
+    console.error('⚠️  PDF backup failed (continuing with processing):', error.message);
+    return null;
+  }
+}
 
 // Main webhook handler
 exports.handler = async (event, context) => {
@@ -81,6 +153,11 @@ exports.handler = async (event, context) => {
     // Log pipeline execution start
     const bigquery = initializeBigQuery();
     await logPipelineStart(bigquery, executionId, requestData);
+
+    // BACKUP: Save PDF to Cloud Storage before processing
+    if (requestData.pdf_base64) {
+      await backupPdfToStorage(requestData.pdf_base64, executionId, requestData.metadata);
+    }
 
     // Determine the input type and process accordingly
     let performanceData;
