@@ -209,6 +209,7 @@ exports.handler = async (event, context) => {
         success: true,
         execution_id: executionId,
         snapshot_id: snapshotId,
+        backup: backupResult || { success: false, error: 'No backup attempted' },
         summary: {
           received: performanceData?.length || 0,
           processed: processedData.processed,
