@@ -117,25 +117,6 @@ class DataTable {
                 }
             },
             {
-                key: 'vsTargetOcc',
-                label: 'vs Target Occ',
-                sortable: true,
-                align: 'center',
-                formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const capacity = row.capacity || 0;
-                    if (capacity === 0) return 'N/A';
-
-                    const rate = (total / capacity * 100);
-                    const goal = row.occupancyGoal || 85;
-                    const variance = rate - goal;
-                    const isOver = variance >= 0;
-                    const varClass = isOver ? 'over-target' : 'under-target';
-
-                    return `<span class="target-variance ${varClass}">${isOver ? '+' : ''}${variance.toFixed(1)}%</span>`;
-                }
-            },
-            {
                 key: 'singleTicketsSold',
                 label: 'Single',
                 sortable: true,
