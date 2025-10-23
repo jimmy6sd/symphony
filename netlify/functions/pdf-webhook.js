@@ -155,8 +155,9 @@ exports.handler = async (event, context) => {
     await logPipelineStart(bigquery, executionId, requestData);
 
     // BACKUP: Save PDF to Cloud Storage before processing
+    let backupResult = null;
     if (requestData.pdf_base64) {
-      await backupPdfToStorage(requestData.pdf_base64, executionId, requestData.metadata);
+      backupResult = await backupPdfToStorage(requestData.pdf_base64, executionId, requestData.metadata);
     }
 
     // Determine the input type and process accordingly
