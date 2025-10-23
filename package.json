@@ -51,6 +51,9 @@
     "analytics",
     "tessitura"
   ],
+  "engines": {
+    "node": ">=20.18.0"
+  },
   "author": "",
   "license": "MIT"
 }
