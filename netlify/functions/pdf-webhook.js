@@ -112,11 +112,11 @@ async function backupPdfToStorage(base64Data, executionId, metadata) {
     console.log(`   Location: gs://${bucketName}/${filename}`);
     console.log(`   Size: ${Math.round(pdfBuffer.length / 1024)}KB`);
 
-    return filename;
+    return { success: true, filename: filename };
   } catch (error) {
     // Don't fail the webhook if backup fails - just log it
     console.error('⚠️  PDF backup failed (continuing with processing):', error.message);
-    return null;
+    return { success: false, error: error.message };
   }
 }
 
