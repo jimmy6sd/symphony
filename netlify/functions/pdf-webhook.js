@@ -150,6 +150,16 @@ exports.handler = async (event, context) => {
 
     const requestData = JSON.parse(event.body);
 
+    // Debug: Log what fields we received
+    const receivedFields = Object.keys(requestData);
+    console.log(`📋 Received fields: ${receivedFields.join(', ')}`);
+    if (requestData.pdf_base64) {
+      console.log(`📄 pdf_base64 length: ${requestData.pdf_base64.length} characters`);
+    }
+    if (requestData.pdf_text) {
+      console.log(`📝 pdf_text length: ${requestData.pdf_text.length} characters`);
+    }
+
     // Log pipeline execution start
     const bigquery = initializeBigQuery();
     await logPipelineStart(bigquery, executionId, requestData);
@@ -157,7 +167,14 @@ exports.handler = async (event, context) => {
     // BACKUP: Save PDF to Cloud Storage before processing
     let backupResult = null;
     if (requestData.pdf_base64) {
+      console.log('🔄 Attempting PDF backup...');
       backupResult = await backupPdfToStorage(requestData.pdf_base64, executionId, requestData.metadata);
+      console.log(`💾 Backup result: ${JSON.stringify(backupResult)}`);
+    } else if (requestData.pdf_text) {
+      // PDF was sent as pre-extracted text, cannot backup
+      backupResult = { success: false, error: 'PDF sent as text - cannot backup. Configure Make.com to send pdf_base64 field with raw PDF data.' };
+    } else {
+      backupResult = { success: false, error: 'No PDF data received (expected pdf_base64 or pdf_text field)' };
     }
 
     // Determine the input type and process accordingly
