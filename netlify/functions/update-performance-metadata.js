@@ -53,7 +53,7 @@ exports.handler = async (event, context) => {
     }
 
     // Validate that only metadata fields are being updated (not sales data)
-    const allowedFields = ['title', 'series', 'performance_date', 'venue', 'season', 'capacity', 'occupancy_goal', 'budget_goal'];
+    const allowedFields = ['title', 'series', 'performance_date', 'venue', 'season', 'capacity', 'occupancy_goal', 'budget_goal', 'cancelled'];
     const updateFields = Object.keys(updates);
     const invalidFields = updateFields.filter(field => !allowedFields.includes(field));
 
@@ -78,6 +78,8 @@ exports.handler = async (event, context) => {
     Object.entries(updates).forEach(([field, value]) => {
       if (typeof value === 'string') {
         setClauses.push(`${field} = '${value.replace(/'/g, "\\'")}'`);
+      } else if (typeof value === 'boolean') {
+        setClauses.push(`${field} = ${value ? 'TRUE' : 'FALSE'}`);
       } else {
         setClauses.push(`${field} = ${value}`);
       }

@@ -106,6 +106,7 @@ async function getPerformances(bigquery, params, headers) {
     dateFrom,
     dateTo,
     hasRevenue,
+    showCancelled,  // Parameter to include cancelled performances (for admin page)
     limit = '1000',  // Increased default limit to get all performances
     offset = '0'
   } = params;
@@ -130,9 +131,10 @@ async function getPerformances(bigquery, params, headers) {
       budget_percent,
       has_sales_data,
       last_pdf_import_date,
+      cancelled,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
-    WHERE 1=1
+    WHERE (cancelled = FALSE OR cancelled IS NULL ${showCancelled === 'true' ? 'OR cancelled = TRUE' : ''})
   `;
 
   const queryParams = [];

@@ -162,6 +162,7 @@
           <th>Date</th>
           <th>Venue</th>
           <th>Capacity</th>
+          <th>Status</th>
           <th>Last PDF Import</th>
           <th>Actions</th>
         </tr>
@@ -231,6 +232,13 @@
           <input type="number" id="edit_capacity" required min="1">
         </div>
 
+        <div class="form-group">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" id="edit_cancelled" style="width: auto; margin-right: 10px;">
+            <span>Mark as Cancelled (will hide from main table)</span>
+          </label>
+        </div>
+
         <div class="info-box">
           <strong>Sales Data (Read-Only):</strong><br>
           Tickets Sold: <span id="readonly_tickets">-</span><br>
@@ -257,7 +265,7 @@
         // If no token, try to fetch without auth (local dev mode)
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-        const response = await fetch('/.netlify/functions/bigquery-data', headers);
+        const response = await fetch('/.netlify/functions/bigquery-data?showCancelled=true', headers);
 
         if (!response.ok) {
           throw new Error('Failed to load performances');
@@ -286,15 +294,20 @@
       tbody.innerHTML = performances.map(perf => {
         const perfDate = perf.performance_date?.value || perf.performance_date || '-';
         const importDate = perf.last_pdf_import_date?.value || perf.last_pdf_import_date;
+        const isCancelled = perf.cancelled === true;
+        const statusBadge = isCancelled
+          ? '<span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">CANCELLED</span>'
+          : '<span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span>';
 
         return `
-        <tr>
+        <tr style="${isCancelled ? 'opacity: 0.6; background: #fff5f5;' : ''}">
           <td>${perf.performance_code}</td>
           <td>${perf.title || '-'}</td>
           <td>${perf.series || '-'}</td>
           <td>${perfDate}</td>
           <td>${perf.venue || '-'}</td>
           <td>${perf.capacity || '-'}</td>
+          <td>${statusBadge}</td>
           <td>${importDate ? new Date(importDate).toLocaleDateString() : 'Never'}</td>
           <td>
             <button class="edit-btn" onclick="openEditModal('${perf.performance_code}')">Edit</button>
@@ -319,6 +332,7 @@
       document.getElementById('edit_venue').value = perf.venue || '';
       document.getElementById('edit_season').value = perf.season || '';
       document.getElementById('edit_capacity').value = perf.capacity || '';
+      document.getElementById('edit_cancelled').checked = perf.cancelled === true;
 
       document.getElementById('readonly_tickets').textContent =
         `${perf.total_tickets_sold || 0} (${perf.single_tickets_sold || 0} single, ${perf.subscription_tickets_sold || 0} sub)`;
@@ -344,7 +358,8 @@
         performance_date: document.getElementById('edit_date').value,
         venue: document.getElementById('edit_venue').value,
         season: document.getElementById('edit_season').value,
-        capacity: parseInt(document.getElementById('edit_capacity').value)
+        capacity: parseInt(document.getElementById('edit_capacity').value),
+        cancelled: document.getElementById('edit_cancelled').checked
       };
 
       try {
