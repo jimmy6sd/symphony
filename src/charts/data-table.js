@@ -25,10 +25,15 @@ class DataTable {
                         '';
                     const indent = row.isChild ? '<span class="child-indent">└─</span>' : '';
 
+                    // Make performance code a clickable link
+                    const codeDisplay = row.code ?
+                        `<a href="/performance/${row.code}" data-route class="performance-code-link">${row.code}</a>` :
+                        '';
+
                     return `
                         <div class="performance-cell">
                             ${chevron}${indent}<div class="performance-title">${value}</div>
-                            <div class="performance-code">${row.code || ''}</div>
+                            <div class="performance-code">${codeDisplay}</div>
                         </div>
                     `;
                 }
@@ -2337,6 +2342,18 @@ const tableStyles = `
     font-size: 12px;
     color: #6c757d;
     margin-top: 2px;
+}
+
+.performance-code-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.performance-code-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
 }
 
 .date-cell {
