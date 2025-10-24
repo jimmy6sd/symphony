@@ -30,14 +30,141 @@ class DashboardUI extends BaseComponent {
         try {
             this.log('info', 'Initializing Dashboard UI');
 
+            // Setup URL routing before anything else
+            this.setupRoutes();
+
             this.setupEventListeners();
 
             // Initialize data table view directly
             await this.initializeTableView();
 
+            // Handle initial route (if user navigated directly to a URL)
+            if (window.router) {
+                window.router.handleRoute(false);
+            }
+
             this.log('info', 'Dashboard UI initialized successfully');
         } catch (error) {
             this.handleError(error, 'Dashboard UI Initialization');
+        }
+    }
+
+    setupRoutes() {
+        if (!window.router) {
+            this.log('warn', 'Router not available, skipping route setup');
+            return;
+        }
+
+        this.log('info', 'Setting up URL routes');
+
+        // Home route - close any open modals
+        window.router.register('/', () => {
+            this.log('debug', 'Route: Home');
+            this.closeModalSilent(); // Close without changing URL
+        });
+
+        // Performance detail with group context: /performance/cs02-rach-cele-pt-1/250903E
+        window.router.register('/performance/:groupSlug/:code', async (params) => {
+            this.log('debug', 'Route: Performance detail with group', params);
+            await this.openPerformanceByCode(params.code);
+        });
+
+        // Performance detail (legacy): /performance/250903E
+        window.router.register('/performance/:code', async (params) => {
+            this.log('debug', 'Route: Performance detail', params.code);
+            await this.openPerformanceByCode(params.code);
+        });
+
+        // Short alias: /p/250903E
+        window.router.register('/p/:code', async (params) => {
+            this.log('debug', 'Route: Performance detail (short)', params.code);
+            await this.openPerformanceByCode(params.code);
+        });
+
+        // Chart view: /charts/sales-curve
+        window.router.register('/charts/:type', (params) => {
+            this.log('debug', 'Route: Chart view', params.type);
+            this.expandChart(params.type);
+        });
+
+        // Table filter: /table/cs02-rach-cele-pt-1-piazza-1 (expand group by slug)
+        window.router.register('/table/:series', (params) => {
+            this.log('debug', 'Route: Table filter/expand', params.series);
+            const slug = decodeURIComponent(params.series);
+            if (window.dataTable) {
+                // Convert slug back to original group key
+                const groupKey = window.dataTable.getGroupKeyFromSlug(slug);
+                // Expand the group in the table
+                window.dataTable.expandedGroups.add(groupKey);
+                window.dataTable.renderTableRows();
+            }
+        });
+
+        // Table view (no filter): /table
+        window.router.register('/table', () => {
+            this.log('debug', 'Route: Table view');
+            // Already in table view by default
+        });
+    }
+
+    /**
+     * Open performance modal by code (from URL)
+     * @param {string} code - Performance code like '250903E'
+     * @param {string} view - Optional view to expand (e.g., 'sales-curve')
+     */
+    async openPerformanceByCode(code, view = null) {
+        try {
+            this.log('info', `Opening performance from URL: ${code}`, view);
+
+            // Ensure data is loaded - data lives in dataTable, not dataService
+            let performances = [];
+            if (window.dataTable && window.dataTable.data) {
+                performances = window.dataTable.data;
+                this.log('debug', `Found ${performances.length} performances in dataTable`);
+            } else if (window.dataService) {
+                // Load data if table hasn't been initialized yet
+                this.log('debug', 'Loading data from dataService...');
+                performances = await window.dataService.getPerformances();
+                this.log('debug', `Loaded ${performances.length} performances from dataService`);
+            } else {
+                throw new Error('No data source available');
+            }
+
+            // Find performance in loaded data - check multiple property names
+            const performance = performances.find(
+                p => (p.performanceCode === code || p.performance_code === code || p.code === code || p.id === code)
+            );
+
+            if (performance) {
+                this.log('info', `Found performance: ${performance.title || performance.id}`);
+
+                // Use the data table's full modal (with charts, comparisons, navigation)
+                if (window.dataTable && window.dataTable.showPerformanceDetails) {
+                    await window.dataTable.showPerformanceDetails(performance);
+                } else {
+                    // Fallback to simple details view
+                    this.showPerformanceDetailsSilent(performance);
+                }
+
+                // If specific view requested, expand it
+                if (view) {
+                    setTimeout(() => {
+                        this.expandChart(view);
+                    }, 100);
+                }
+            } else {
+                // Performance not found
+                this.log('warn', `Performance ${code} not found in ${performances.length} performances`);
+                this.handleError(
+                    new Error(`Performance ${code} not found`),
+                    'URL Navigation'
+                );
+                // Redirect to home
+                window.router.navigate('/');
+            }
+        } catch (error) {
+            this.handleError(error, 'Open Performance from URL');
+            window.router.navigate('/');
         }
     }
 
@@ -417,40 +544,48 @@ class DashboardUI extends BaseComponent {
         }
 
         const perf = this.selectedPerformance;
-        const occupancy = ((perf.singleTicketsSold + perf.subscriptionTicketsSold) / perf.capacity * 100).toFixed(1);
+
+        // Handle both camelCase and snake_case property names
+        const singleTickets = perf.singleTicketsSold || perf.single_tickets_sold || 0;
+        const subscriptionTickets = perf.subscriptionTicketsSold || perf.subscription_tickets_sold || 0;
+        const capacity = perf.capacity || 0;
+        const totalRevenue = perf.totalRevenue || perf.total_revenue || 0;
+        const performanceDate = perf.date || perf.performance_date?.value || perf.performance_date;
+
+        const occupancy = capacity > 0 ? ((singleTickets + subscriptionTickets) / capacity * 100).toFixed(1) : 0;
 
         container.innerHTML = `
             <div class="performance-details">
                 <div class="detail-header">
-                    <h3>${perf.title}</h3>
-                    <p class="detail-date">${new Date(perf.date).toLocaleDateString('en-US', {
+                    <h3>${perf.title || 'Untitled Performance'}</h3>
+                    <p class="detail-date">${performanceDate ? new Date(performanceDate).toLocaleDateString('en-US', {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
-                    })}</p>
+                    }) : 'Date not available'}</p>
                 </div>
                 <div class="detail-grid">
                     <div class="detail-section">
                         <h4>Ticket Sales</h4>
                         <div class="detail-item">
                             <span class="detail-label">Single Tickets:</span>
-                            <span class="detail-value">${perf.singleTicketsSold?.toLocaleString() || 0}</span>
+                            <span class="detail-value">${singleTickets.toLocaleString()}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Subscription Tickets:</span>
-                            <span class="detail-value">${perf.subscriptionTicketsSold?.toLocaleString() || 0}</span>
+                            <span class="detail-value">${subscriptionTickets.toLocaleString()}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Total Sold:</span>
-                            <span class="detail-value">${((perf.singleTicketsSold || 0) + (perf.subscriptionTicketsSold || 0)).toLocaleString()}</span>
+                            <span class="detail-value">${(singleTickets + subscriptionTickets).toLocaleString()}</span>
                         </div>
                     </div>
                     <div class="detail-section">
                         <h4>Performance Metrics</h4>
                         <div class="detail-item">
                             <span class="detail-label">Capacity:</span>
-                            <span class="detail-value">${perf.capacity?.toLocaleString() || 'N/A'}</span>
+                            <span class="detail-value">${capacity > 0 ? capacity.toLocaleString() : 'N/A'}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Occupancy:</span>
@@ -458,7 +593,7 @@ class DashboardUI extends BaseComponent {
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Total Revenue:</span>
-                            <span class="detail-value">${this.formatCurrency(perf.totalRevenue || 0)}</span>
+                            <span class="detail-value">${this.formatCurrency(totalRevenue)}</span>
                         </div>
                     </div>
                 </div>
@@ -527,15 +662,35 @@ class DashboardUI extends BaseComponent {
         document.head.appendChild(styles);
     }
 
+    /**
+     * Show performance details and update URL
+     */
     showPerformanceDetails(performance) {
         this.selectedPerformance = performance;
         this.log('debug', 'Performance selected for details', performance);
+
+        // Update URL to reflect current performance
+        const code = performance.performanceCode || performance.performance_code;
+        if (code && window.router) {
+            window.history.pushState({}, '', `/performance/${code}`);
+        }
 
         // Update the details panel
         const detailsContainer = document.getElementById('performance-details');
         if (detailsContainer) {
             this.renderPerformanceDetailsPanel(detailsContainer);
         }
+    }
+
+    /**
+     * Show performance details WITHOUT updating URL (used by router)
+     */
+    showPerformanceDetailsSilent(performance) {
+        this.selectedPerformance = performance;
+        this.log('debug', 'Performance selected for details (silent)', performance);
+
+        // Open the modal to show performance details
+        this.expandChart('details');
     }
 
     renderPerformanceDetailsPanel(container) {
@@ -566,8 +721,25 @@ class DashboardUI extends BaseComponent {
         `;
     }
 
+    /**
+     * Close modal and navigate to home URL
+     */
     closeModal() {
         this.log('debug', 'Closing modal, returning to overview');
+
+        // Navigate to home (this will trigger closeModalSilent via router)
+        if (window.router) {
+            window.router.navigate('/');
+        } else {
+            this.closeModalSilent();
+        }
+    }
+
+    /**
+     * Close modal WITHOUT changing URL (used by router)
+     */
+    closeModalSilent() {
+        this.log('debug', 'Closing modal silently');
 
         const modalView = document.getElementById('detailed-view');
         if (modalView) {
@@ -583,6 +755,9 @@ class DashboardUI extends BaseComponent {
         if (dataTableView) {
             dataTableView.classList.add('active');
         }
+
+        // Clear selected performance
+        this.selectedPerformance = null;
     }
 
     async initializeTableView() {
@@ -590,6 +765,9 @@ class DashboardUI extends BaseComponent {
         if (window.DataTable) {
             this.dataTable = new window.DataTable();
             await this.dataTable.init();
+
+            // Make it globally available for route handlers
+            window.dataTable = this.dataTable;
         } else if (window.symphonyApp) {
             // Fallback to app method
             await window.symphonyApp.initializeDataTable();

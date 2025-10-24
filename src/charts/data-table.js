@@ -11,6 +11,7 @@ class DataTable {
         };
         this.groupByProduction = true;
         this.expandedGroups = new Set();
+        this.slugToGroupKey = new Map(); // Map URL slugs back to original group keys
 
         // Define columns and their properties
         this.columns = [
@@ -25,10 +26,12 @@ class DataTable {
                         '';
                     const indent = row.isChild ? '<span class="child-indent">└─</span>' : '';
 
-                    // Make performance code a clickable link
-                    const codeDisplay = row.code ?
-                        `<a href="/performance/${row.code}" data-route class="performance-code-link">${row.code}</a>` :
-                        '';
+                    // Make performance code a clickable link with group slug for context
+                    let codeDisplay = '';
+                    if (row.code) {
+                        const groupSlug = row.groupKey ? this.slugify(row.groupKey) : 'other';
+                        codeDisplay = `<a href="/performance/${groupSlug}/${row.code}" data-route class="performance-code-link">${row.code}</a>`;
+                    }
 
                     return `
                         <div class="performance-cell">
@@ -240,6 +243,24 @@ class DataTable {
         this.container = d3.select(`#${containerId}`);
         this.render();
         return this;
+    }
+
+    // Convert group name to URL-friendly slug
+    slugify(text) {
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
+    }
+
+    // Get original group key from slug
+    getGroupKeyFromSlug(slug) {
+        return this.slugToGroupKey.get(slug) || slug;
     }
 
     async init() {
@@ -1250,17 +1271,18 @@ class DataTable {
             console.warn('⚠️ Error fetching historical data:', error.message);
         }
 
-        // If we have historical data (more than 1 unique date), render timeline chart
+        // Always use the standard sales curve chart (weeks-out view)
+        const chartId = container.attr('id') || 'modal-sales-chart';
+        const salesChart = new SalesCurveChart(chartId, { showSelector: false });
+        const chartData = [performance];
+        salesChart.data = chartData;
+        salesChart.selectedPerformance = performance.id;
+        await salesChart.render();
+
+        // If we have historical data, overlay it on top of the weeks-out chart
         if (historicalData && historicalData.length > 1) {
-            this.renderHistoricalTimelineChart(container, performance, historicalData);
-        } else {
-            // Fallback to standard sales curve chart
-            const chartId = container.attr('id') || 'modal-sales-chart';
-            const salesChart = new SalesCurveChart(chartId, { showSelector: false });
-            const chartData = [performance];
-            salesChart.data = chartData;
-            salesChart.selectedPerformance = performance.id;
-            await salesChart.render();
+            console.log(`📈 Overlaying ${historicalData.length} historical snapshots on weeks-out chart`);
+            this.overlayHistoricalData(container, performance, historicalData);
         }
 
         console.log('✅ renderSalesChart complete');
@@ -1491,36 +1513,163 @@ class DataTable {
         .style('font-size', '12px')
         .text('Revenue');
 
-    // Add summary stats below chart
-    const stats = container.append('div')
-        .style('margin-top', '20px')
-        .style('padding', '15px')
-        .style('background', '#f8f9fa')
-        .style('border-radius', '4px')
-        .style('display', 'grid')
-        .style('grid-template-columns', 'repeat(auto-fit, minmax(200px, 1fr))')
-        .style('gap', '15px');
-
-    const firstSnapshot = data[0];
-    const lastSnapshot = data[data.length - 1];
-    const ticketGrowth = lastSnapshot.tickets - firstSnapshot.tickets;
-    const revenueGrowth = lastSnapshot.revenue - firstSnapshot.revenue;
-    const days = Math.round((lastSnapshot.date - firstSnapshot.date) / (1000 * 60 * 60 * 24));
-    const ticketsPerDay = days > 0 ? (ticketGrowth / days).toFixed(1) : 0;
-
-    stats.append('div')
-        .html(`<strong>Total Growth</strong><br/>${ticketGrowth > 0 ? '+' : ''}${ticketGrowth} tickets<br/>${revenueGrowth > 0 ? '+' : ''}$${Math.round(revenueGrowth).toLocaleString()}`);
-
-    stats.append('div')
-        .html(`<strong>Tracking Period</strong><br/>${days} days<br/>${data.length} snapshots`);
-
-    stats.append('div')
-        .html(`<strong>Sales Velocity</strong><br/>${ticketsPerDay} tickets/day<br/>$${Math.round(revenueGrowth / days).toLocaleString()}/day`);
-
-    stats.append('div')
-        .html(`<strong>Current Status</strong><br/>${lastSnapshot.tickets.toLocaleString()} tickets<br/>${lastSnapshot.capacity.toFixed(1)}% capacity`);
-
     console.log('✅ Historical timeline chart rendered');
+}
+
+/**
+ * Overlay Historical Data on Weeks-Out Chart
+ * Adds historical sales progression as a line overlay on the existing SalesCurveChart
+ */
+overlayHistoricalData(container, performance, historicalData) {
+    console.log('📈 Overlaying historical data on weeks-out chart');
+
+    // Find the SVG element in the container
+    const svg = container.select('svg');
+    if (svg.empty()) {
+        console.warn('⚠️ No SVG found in container, cannot overlay historical data');
+        return;
+    }
+
+    // Get the chart group (where the main chart is drawn)
+    const chartGroup = svg.select('g g.sales-curve-content');
+    if (chartGroup.empty()) {
+        console.warn('⚠️ No chart group found, cannot overlay historical data');
+        return;
+    }
+
+    // Parse performance date to calculate weeks
+    const performanceDate = new Date(performance.date);
+    const parseDate = d3.timeParse('%Y-%m-%d');
+
+    // Transform historical data to weeks-out format
+    const historicalPoints = historicalData.map(snapshot => {
+        const snapshotDate = parseDate(snapshot.snapshot_date);
+        const weeksOut = Math.ceil((performanceDate - snapshotDate) / (7 * 24 * 60 * 60 * 1000));
+        return {
+            week: Math.max(0, weeksOut),
+            tickets: snapshot.total_tickets_sold || 0,
+            date: snapshotDate,
+            snapshot_date: snapshot.snapshot_date
+        };
+    }).filter(d => d.week >= 0 && d.week <= 10) // Only show last 10 weeks
+      .sort((a, b) => b.week - a.week); // Sort by week descending
+
+    console.log('📊 Historical points to overlay:', historicalPoints);
+
+    if (historicalPoints.length === 0) {
+        console.warn('⚠️ No valid historical points to overlay');
+        return;
+    }
+
+    // Get scales from the existing chart (reconstruct them)
+    const svgNode = svg.node();
+    const bounds = svgNode.getBoundingClientRect();
+    const margin = { top: 50, right: 220, bottom: 75, left: 70 };
+    const innerWidth = bounds.width - margin.left - margin.right;
+    const innerHeight = bounds.height - margin.top - margin.bottom;
+
+    // Reconstruct scales to match the SalesCurveChart
+    const capacity = performance.capacity && performance.capacity > 0 ? performance.capacity : 2000;
+    const maxSales = Math.max(capacity, d3.max(historicalPoints, d => d.tickets), 100);
+
+    const xScale = d3.scaleLinear()
+        .domain([10, 0])
+        .range([0, innerWidth]);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, maxSales])
+        .range([innerHeight, 0]);
+
+    // Create line generator for historical data
+    const historicalLine = d3.line()
+        .x(d => xScale(d.week))
+        .y(d => yScale(d.tickets))
+        .curve(d3.curveMonotoneX);
+
+    // Draw historical data line
+    chartGroup.append('path')
+        .datum(historicalPoints)
+        .attr('class', 'historical-overlay-line')
+        .attr('d', historicalLine)
+        .attr('fill', 'none')
+        .attr('stroke', '#3498db') // Blue color for historical data
+        .attr('stroke-width', 3)
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-linejoin', 'round')
+        .style('filter', 'drop-shadow(0 1px 2px rgba(52, 152, 219, 0.3))')
+        .attr('opacity', 0.9);
+
+    // Add data points for historical snapshots
+    chartGroup.selectAll('.historical-overlay-point')
+        .data(historicalPoints)
+        .enter()
+        .append('circle')
+        .attr('class', 'historical-overlay-point')
+        .attr('cx', d => xScale(d.week))
+        .attr('cy', d => yScale(d.tickets))
+        .attr('r', 5)
+        .attr('fill', '#3498db')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            // Create tooltip
+            const tooltip = d3.select('body')
+                .append('div')
+                .attr('class', 'historical-tooltip')
+                .style('position', 'absolute')
+                .style('background', 'rgba(0, 0, 0, 0.8)')
+                .style('color', 'white')
+                .style('padding', '10px')
+                .style('border-radius', '4px')
+                .style('font-size', '12px')
+                .style('pointer-events', 'none')
+                .style('z-index', '10000')
+                .html(`
+                    <strong>Week ${d.week} (${d.snapshot_date})</strong><br/>
+                    <span style="color: #3498db;">●</span> Tickets Sold: ${d.tickets.toLocaleString()}
+                `);
+
+            tooltip
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px');
+
+            d3.select(this)
+                .attr('r', 7)
+                .attr('fill', '#2980b9');
+        })
+        .on('mouseout', function() {
+            d3.selectAll('.historical-tooltip').remove();
+            d3.select(this)
+                .attr('r', 5)
+                .attr('fill', '#3498db');
+        });
+
+    // Add legend entry for historical data
+    const legend = svg.select('.legend');
+    if (!legend.empty()) {
+        // Get legend position
+        const legendY = legend.selectAll('g').size() * 20; // Calculate next position
+
+        const legendItem = legend.append('g')
+            .attr('transform', `translate(0, ${legendY})`);
+
+        legendItem.append('line')
+            .attr('x1', 0)
+            .attr('x2', 20)
+            .attr('y1', 0)
+            .attr('y2', 0)
+            .attr('stroke', '#3498db')
+            .attr('stroke-width', 3);
+
+        legendItem.append('text')
+            .attr('x', 25)
+            .attr('y', 4)
+            .style('font-size', '12px')
+            .text('Historical Sales');
+    }
+
+    console.log('✅ Historical data overlay complete');
 }
 
     createTableHeader() {
@@ -1630,17 +1779,22 @@ class DataTable {
                         }
                     } else {
                         this.expandedGroups.add(d.groupKey);
-                        // Update URL to show expanded series
+                        // Update URL with clean slug
                         if (window.router) {
-                            window.router.navigate(`/table/${encodeURIComponent(d.groupKey)}`);
+                            const slug = this.slugify(d.groupKey);
+                            this.slugToGroupKey.set(slug, d.groupKey);
+                            window.router.navigate(`/table/${slug}`);
                         }
                     }
                     this.renderTableRows();
                 } else {
-                    // Update URL when clicking performance
+                    // Update URL when clicking performance - include group slug for context
                     const perfCode = d.code || d.performance_code || d.performanceCode || d.id;
                     if (window.router && perfCode) {
-                        window.router.navigate(`/performance/${perfCode}`);
+                        // Include group slug for better readability
+                        const groupSlug = d.groupKey ? this.slugify(d.groupKey) : 'other';
+                        this.slugToGroupKey.set(groupSlug, d.groupKey);
+                        window.router.navigate(`/performance/${groupSlug}/${perfCode}`);
                     }
                     this.showPerformanceDetails(d);
                 }
