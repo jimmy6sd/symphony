@@ -20,16 +20,47 @@
   status = 200
 
 [[redirects]]
-  # Serve the main dashboard for authenticated users
+  # Admin edit routes - serve admin-edit.html
+  from = "/admin/edit/*"
+  to = "/admin-edit.html"
+  status = 200
+
+[[redirects]]
+  # Serve the main dashboard for authenticated users (exact match)
   from = "/"
   to = "/index.html"
   status = 200
 
 [[redirects]]
-  # Handle client-side routing (fallback to main page)
+  # Client-side routing for performance URLs - serve index.html
+  from = "/performance/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  # Client-side routing for short performance URLs
+  from = "/p/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  # Client-side routing for charts
+  from = "/charts/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  # Client-side routing for table views
+  from = "/table/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  # Fallback for any other routes EXCEPT functions (must be last)
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
 
 # Security headers
 [[headers]]
