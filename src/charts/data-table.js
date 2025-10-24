@@ -1224,13 +1224,18 @@ class DataTable {
         let historicalData = [];
 
         try {
+            const apiUrl = `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`;
             console.log(`📊 Fetching historical snapshots for ${performanceCode}...`);
-            const response = await fetch(
-                `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
-            );
+            console.log(`   URL: ${apiUrl}`);
+
+            const response = await fetch(apiUrl);
+            console.log(`   Response status: ${response.status}`);
+            console.log(`   Content-Type: ${response.headers.get('content-type')}`);
 
             if (response.ok) {
-                const apiResponse = await response.json();
+                const text = await response.text();
+                console.log(`   Response text (first 200 chars): ${text.substring(0, 200)}`);
+                const apiResponse = JSON.parse(text);
                 // API returns {performanceCode, snapshots: [...]}
                 historicalData = apiResponse.snapshots || [];
                 console.log(`✅ Fetched ${historicalData.length} historical snapshots`);
@@ -1623,14 +1628,27 @@ class DataTable {
             .style('cursor', 'pointer')
             .on('click', (event, d) => {
                 if (d.isGroup) {
-                    // Toggle expansion
+                    // Toggle expansion and update URL
                     if (this.expandedGroups.has(d.groupKey)) {
                         this.expandedGroups.delete(d.groupKey);
+                        // Navigate back to home when collapsing
+                        if (window.router) {
+                            window.router.navigate('/');
+                        }
                     } else {
                         this.expandedGroups.add(d.groupKey);
+                        // Update URL to show expanded series
+                        if (window.router) {
+                            window.router.navigate(`/table/${encodeURIComponent(d.groupKey)}`);
+                        }
                     }
                     this.renderTableRows();
                 } else {
+                    // Update URL when clicking performance
+                    const perfCode = d.code || d.performance_code || d.performanceCode || d.id;
+                    if (window.router && perfCode) {
+                        window.router.navigate(`/performance/${perfCode}`);
+                    }
                     this.showPerformanceDetails(d);
                 }
             });
