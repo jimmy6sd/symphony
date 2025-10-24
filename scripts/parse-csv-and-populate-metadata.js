@@ -92,12 +92,12 @@ async function parseAndPopulateMetadata() {
   console.log('📊 Parsing Weekly Sales Report CSV...\n');
 
   // Read the CSV file
-  const csvPath = path.join(__dirname, '../data/source-files/KCS 25-26 Weekly Sales Report - Sep 17.xlsx - Performances by Week.csv');
+  const csvPath = path.join(__dirname, '../KCS 25-26 Weekly Sales Report - 20250925.xlsx - Performances by Week.csv');
   const csvContent = fs.readFileSync(csvPath, 'utf8');
   const lines = csvContent.split('\n');
 
-  // Skip header rows (first 7 lines are headers)
-  const dataRows = lines.slice(7);
+  // Skip header rows (first 6 lines are headers)
+  const dataRows = lines.slice(6);
 
   const metadataUpdates = [];
   const skipped = [];
@@ -112,12 +112,12 @@ async function parseAndPopulateMetadata() {
     // 3 = Performance name (Column D)
     // 6 = Performance Date (Column G)
     // 12 = TOTAL BUDGET (Column M)
-    // 27 = Max CAP (Column AB, which is index 27 in the array)
+    // 32 = Max CAP (Column AG)
 
     const performanceName = columns[3]?.trim();
     const performanceDate = columns[6]?.trim();
     const budgetStr = columns[12];
-    const capacityStr = columns[27];
+    const capacityStr = columns[32];
 
     // Skip OPEN weeks, summary rows, and empty rows
     if (!performanceName ||
@@ -194,28 +194,34 @@ async function parseAndPopulateMetadata() {
   let failCount = 0;
 
   for (const update of metadataUpdates) {
+    // Extract the date portion (YYMMDD) from the performance code
+    // This allows us to update ALL performances on that date (both M and E)
+    const datePattern = update.performance_code.substring(0, 6); // YYMMDD
+
     const query = `
       UPDATE \`${projectId}.${datasetId}.performances\`
       SET
         capacity = ${update.capacity},
         budget_goal = ${update.budget_goal},
         updated_at = CURRENT_TIMESTAMP()
-      WHERE performance_code = '${update.performance_code}'
+      WHERE performance_code LIKE '${datePattern}%'
     `;
 
     try {
       const [job] = await bigquery.query({ query, location: 'US' });
 
-      // Check if any rows were actually updated
-      if (job.statistics?.query?.numDmlAffectedRows === '0') {
-        console.log(`⚠️  ${update.performance_code}: No matching row found (${update.name})`);
+      // Check how many rows were updated
+      const numUpdated = parseInt(job.statistics?.query?.numDmlAffectedRows || '0');
+      if (numUpdated === 0) {
+        console.log(`⚠️  ${datePattern}*: No matching row found (${update.name})`);
         failCount++;
       } else {
-        console.log(`✅ ${update.performance_code}: capacity=${update.capacity.toLocaleString()}, budget=$${update.budget_goal.toLocaleString()}`);
-        successCount++;
+        const perfLabel = numUpdated === 1 ? 'perf' : 'perfs';
+        console.log(`✅ ${datePattern}* (${numUpdated} ${perfLabel}): capacity=${update.capacity.toLocaleString()}, budget=$${update.budget_goal.toLocaleString()}`);
+        successCount += numUpdated;
       }
     } catch (error) {
-      console.error(`❌ Failed to update ${update.performance_code}:`, error.message);
+      console.error(`❌ Failed to update ${datePattern}*:`, error.message);
       failCount++;
     }
   }

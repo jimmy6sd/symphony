@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Routing</title>
+</head>
+<body>
+    <h1>Test URL Routing</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        async function testRouting() {
+            output.innerHTML += '<h2>Testing URL Routing</h2>';
+
+            // Test 1: Check if we're on /performance/250903E
+            output.innerHTML += `<p>Current pathname: ${window.location.pathname}</p>`;
+
+            // Test 2: Load performance data
+            output.innerHTML += '<p>Loading performance data...</p>';
+            try {
+                const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-performances');
+                const performances = await response.json();
+                output.innerHTML += `<p>✅ Loaded ${performances.length} performances</p>`;
+
+                // Test 3: Find performance by code
+                const code = '250903E';
+                const perf = performances.find(p =>
+                    p.performance_code === code || p.code === code || p.id === code
+                );
+
+                if (perf) {
+                    output.innerHTML += `<p>✅ Found performance: ${perf.title}</p>`;
+                    output.innerHTML += `<pre>${JSON.stringify(perf, null, 2)}</pre>`;
+                } else {
+                    output.innerHTML += `<p>❌ Performance ${code} not found</p>`;
+                }
+            } catch (error) {
+                output.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        testRouting();
+    </script>
+</body>
+</html>

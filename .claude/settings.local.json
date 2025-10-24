@@ -23,7 +23,10 @@
       "Bash(git checkout:*)",
       "Bash(npx kill-port:*)",
       "Bash(mv:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(echo \"Let me check the browser console to see if there are any errors. Can you open the browser console (F12) and tell me what errors you see when you click on a performance?\n\nIn the meantime, let me verify the chart is being called...\")",
+      "Bash(cat:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

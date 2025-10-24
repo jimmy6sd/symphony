@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Historical Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        #chart-container {
+            width: 800px;
+            height: 500px;
+            border: 1px solid #ccc;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Historical Timeline Chart Test</h1>
+    <div id="chart-container"></div>
+
+    <script>
+        // Fetch the API data
+        fetch('https://kcsdashboard.netlify.app/netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=250902E')
+            .then(response => response.json())
+            .then(apiResponse => {
+                console.log('API Response:', apiResponse);
+
+                let historicalData = apiResponse.snapshots || [];
+                console.log(`Fetched ${historicalData.length} historical snapshots`);
+
+                // Deduplicate by date
+                const uniqueByDate = {};
+                for (const snapshot of historicalData) {
+                    const date = snapshot.snapshot_date;
+                    if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
+                        uniqueByDate[date] = snapshot;
+                    }
+                }
+                historicalData = Object.values(uniqueByDate);
+                console.log(`Unique dates: ${historicalData.length}`, historicalData.map(d => d.snapshot_date));
+
+                // Check condition
+                if (historicalData && historicalData.length > 1) {
+                    console.log('✅ Condition met! Should render timeline chart');
+                    console.log('Historical data:', historicalData);
+
+                    // Try to render chart
+                    renderChart(historicalData);
+                } else {
+                    console.log('❌ Condition NOT met. historicalData.length =', historicalData.length);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        function renderChart(historicalData) {
+            const container = d3.select('#chart-container');
+            container.html('');
+
+            const margin = { top: 20, right: 120, bottom: 60, left: 70 };
+            const width = 800 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            const svg = container.append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Parse dates
+            const parseDate = d3.timeParse('%Y-%m-%d');
+            const data = historicalData.map(d => ({
+                date: parseDate(d.snapshot_date),
+                tickets: d.total_tickets_sold || 0,
+                revenue: d.total_revenue || 0
+            })).sort((a, b) => a.date - b.date);
+
+            console.log('Parsed data:', data);
+
+            // Scales
+            const xScale = d3.scaleTime()
+                .domain(d3.extent(data, d => d.date))
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.tickets) * 1.1])
+                .range([height, 0]);
+
+            // Line
+            const line = d3.line()
+                .x(d => xScale(d.date))
+                .y(d => yScale(d.tickets));
+
+            // Draw line
+            svg.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#667eea')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Axes
+            svg.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+
+            svg.append('g')
+                .call(d3.axisLeft(yScale));
+
+            // Title
+            svg.append('text')
+                .attr('x', width / 2)
+                .attr('y', -5)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '16px')
+                .text('Ticket Sales Over Time');
+
+            console.log('✅ Chart rendered!');
+        }
+    </script>
+</body>
+</html>

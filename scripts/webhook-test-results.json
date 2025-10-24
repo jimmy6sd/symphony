@@ -1,0 +1,17 @@
+[
+  {
+    "case": "text_input",
+    "success": false,
+    "error": "read ECONNRESET"
+  },
+  {
+    "case": "multi_performance",
+    "success": false,
+    "error": ""
+  },
+  {
+    "case": "make_com_format",
+    "success": false,
+    "error": ""
+  }
+]

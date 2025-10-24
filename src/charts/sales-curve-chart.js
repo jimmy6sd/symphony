@@ -541,7 +541,7 @@ class SalesCurveChart {
             .attr("y", 60)
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
-            .text(`${variancePercentage > 0 ? '+' : ''}${variancePercentage}% vs target`);
+            .text(`${variance > 0 ? '+' : ''}${variance.toLocaleString()} tickets vs target`);
     }
 
     addLegend(chartGroup, innerWidth) {

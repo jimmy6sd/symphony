@@ -1,0 +1,6680 @@
+[
+  {
+    "id": 24085,
+    "performanceId": 24085,
+    "performanceCode": "250902E",
+    "title": "Morgan Freeman's Symphonic Blu",
+    "series": "Special Event",
+    "date": "2025-09-02",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1156,
+    "subscriptionTicketsSold": 8,
+    "totalTicketsSold": 1164,
+    "totalRevenue": 137168,
+    "capacity": 1302,
+    "capacityPercent": 80.9,
+    "occupancyGoal": 90,
+    "budgetGoal": 153473,
+    "budgetPercent": 90.5,
+    "singleTicketATP": 71.19446366782007,
+    "performanceType": "Special Event",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.471Z",
+    "updatedAt": "2025-10-24T15:03:07.792382000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 173,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 208,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 243,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 277,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 312,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 347,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 451,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 532,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 682,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1156,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24090,
+    "performanceId": 24090,
+    "performanceCode": "250903E",
+    "title": "Morgan Freeman's Symphonic Blu",
+    "series": "Special Event",
+    "date": "2025-09-03",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1135,
+    "subscriptionTicketsSold": 7,
+    "totalTicketsSold": 1142,
+    "totalRevenue": 133606,
+    "capacity": 1302,
+    "capacityPercent": 78.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 153474,
+    "budgetPercent": 90.6,
+    "singleTicketATP": 70.62872246696034,
+    "performanceType": "Special Event",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:09.816443000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 170,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 204,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 238,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 272,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 306,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 341,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 443,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 522,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 670,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1135,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24235,
+    "performanceId": 24235,
+    "performanceCode": "250905E",
+    "title": "La nuit sombre",
+    "series": null,
+    "date": "2025-09-05",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 699,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 699,
+    "totalRevenue": 20005,
+    "capacity": 600,
+    "capacityPercent": 95.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 55000,
+    "budgetPercent": 71.8,
+    "singleTicketATP": 17.17167381974249,
+    "performanceType": "Specials",
+    "supplemental": {
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 510
+      },
+      "audience": {
+        "newHouseholds": 86,
+        "returningHouseholds": 209,
+        "totalHouseholds": 295
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 20005,
+        "weeklyIncrease": null
+      },
+      "timeline": {
+        "weekNumber": 1,
+        "weeksUntilPerformance": -2
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:12.172094000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 105,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 126,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 147,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 168,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 189,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 210,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 273,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 322,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 412,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 699,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24498,
+    "performanceId": 24498,
+    "performanceCode": "250911E",
+    "title": "26 Live @ HH Recording Session",
+    "series": null,
+    "date": "2025-09-11",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Special",
+    "singleTicketsSold": 58,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 58,
+    "totalRevenue": 0,
+    "capacity": 1500,
+    "capacityPercent": 0,
+    "occupancyGoal": 85,
+    "budgetGoal": 0,
+    "budgetPercent": 0,
+    "singleTicketATP": 0,
+    "performanceType": "Other",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T12:00:42.610822000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 10,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 12,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 14,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 16,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 17,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 23,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 27,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 34,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 58,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24499,
+    "performanceId": 24499,
+    "performanceCode": "250912M",
+    "title": "26 Live @ HH Recording Session",
+    "series": null,
+    "date": "2025-09-12",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Special",
+    "singleTicketsSold": 24,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 24,
+    "totalRevenue": 0,
+    "capacity": 1500,
+    "capacityPercent": 0,
+    "occupancyGoal": 85,
+    "budgetGoal": 0,
+    "budgetPercent": 0,
+    "singleTicketATP": 0,
+    "performanceType": "Other",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T12:00:42.610822000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 4,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 4,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 5,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 6,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 6,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 7,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 9,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 11,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 14,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 24,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23668,
+    "performanceId": 23668,
+    "performanceCode": "250919E",
+    "title": "PS1 Music of Journey",
+    "series": "PS1",
+    "date": "2025-09-19",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 508,
+    "subscriptionTicketsSold": 619,
+    "totalTicketsSold": 1127,
+    "totalRevenue": 75282.8,
+    "capacity": 1590,
+    "capacityPercent": 68,
+    "occupancyGoal": 85,
+    "budgetGoal": 100666,
+    "budgetPercent": 90.9,
+    "singleTicketATP": 88.91669291338583,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:14.540506000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 76,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 91,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 107,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 122,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 137,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 152,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 198,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 234,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 300,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 508,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23677,
+    "performanceId": 23677,
+    "performanceCode": "250920E",
+    "title": "PS1 Music of Journey",
+    "series": "PS1",
+    "date": "2025-09-20",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 550,
+    "subscriptionTicketsSold": 518,
+    "totalTicketsSold": 1068,
+    "totalRevenue": 74220.6,
+    "capacity": 1590,
+    "capacityPercent": 67,
+    "occupancyGoal": 85,
+    "budgetGoal": 100667,
+    "budgetPercent": 90.9,
+    "singleTicketATP": 80.96792727272728,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:16.575684000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 83,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 99,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 116,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 132,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 149,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 165,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 215,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 253,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 325,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 550,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23678,
+    "performanceId": 23678,
+    "performanceCode": "250921M",
+    "title": "PS1 Music of Journey",
+    "series": "PS1",
+    "date": "2025-09-21",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 656,
+    "subscriptionTicketsSold": 346,
+    "totalTicketsSold": 1002,
+    "totalRevenue": 63947.8,
+    "capacity": 1590,
+    "capacityPercent": 57.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 100667,
+    "budgetPercent": 90.9,
+    "singleTicketATP": 58.48884146341464,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:19.705578000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 98,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 118,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 138,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 157,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 177,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 197,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 256,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 302,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 387,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 656,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23768,
+    "performanceId": 23768,
+    "performanceCode": "250928M",
+    "title": "FS1 The Orchestra Gamez",
+    "series": "FS1",
+    "date": "2025-09-28",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Family",
+    "singleTicketsSold": 503,
+    "subscriptionTicketsSold": 220,
+    "totalTicketsSold": 723,
+    "totalRevenue": 16786,
+    "capacity": 1302,
+    "capacityPercent": 32.5,
+    "occupancyGoal": 85,
+    "budgetGoal": 19500,
+    "budgetPercent": 37.7,
+    "singleTicketATP": 20.023061630218688,
+    "performanceType": "Family",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:21.961648000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 75,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 91,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 106,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 121,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 136,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 151,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 196,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 231,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 297,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 503,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24412,
+    "performanceId": 24412,
+    "performanceCode": "251002E",
+    "title": "26 Forte",
+    "series": null,
+    "date": "2025-10-02",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Off Season",
+    "singleTicketsSold": 8250,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 8250,
+    "totalRevenue": 75,
+    "capacity": 1500,
+    "capacityPercent": 13,
+    "occupancyGoal": 85,
+    "budgetGoal": 0,
+    "budgetPercent": 0,
+    "singleTicketATP": 0.005454545454545455,
+    "performanceType": "Other",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T12:00:42.610822000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 1238,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 1485,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 1733,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 1980,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 2228,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 2475,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 3218,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 3795,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 4868,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 8250,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24272,
+    "performanceId": 24272,
+    "performanceCode": "251004E",
+    "title": "Chicken-Fried: Country Rock",
+    "series": "Other",
+    "date": "2025-10-04",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 0,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 0,
+    "totalRevenue": 0,
+    "capacity": 1590,
+    "capacityPercent": 26,
+    "occupancyGoal": 85,
+    "budgetGoal": 58000,
+    "budgetPercent": 48,
+    "singleTicketATP": 0,
+    "performanceType": "Special Event",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T20:34:46.991103000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 0,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 0,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 0,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 0,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 0,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 0,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 0,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 0,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 0,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 0,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23620,
+    "performanceId": 23620,
+    "performanceCode": "251010E",
+    "title": "CS01 Copland's Appalachian Spr",
+    "series": "CS01",
+    "date": "2025-10-10",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 621,
+    "subscriptionTicketsSold": 460,
+    "totalTicketsSold": 1081,
+    "totalRevenue": 62471.6,
+    "capacity": 1433,
+    "capacityPercent": 63.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 50000,
+    "budgetPercent": 51.1,
+    "singleTicketATP": 60.35903381642512,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:24.088567000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 93,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 112,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 130,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 149,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 168,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 186,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 242,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 286,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 366,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 621,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23621,
+    "performanceId": 23621,
+    "performanceCode": "251011E",
+    "title": "CS01 Copland's Appalachian Spr",
+    "series": "CS01",
+    "date": "2025-10-11",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 626,
+    "subscriptionTicketsSold": 492,
+    "totalTicketsSold": 1118,
+    "totalRevenue": 67153.7,
+    "capacity": 1433,
+    "capacityPercent": 68.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 50000,
+    "budgetPercent": 51.1,
+    "singleTicketATP": 64.36456869009584,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:26.120105000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 94,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 113,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 131,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 150,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 169,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 188,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 244,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 288,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 369,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 626,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23622,
+    "performanceId": 23622,
+    "performanceCode": "251012M",
+    "title": "CS01 Copland's Appalachian Spr",
+    "series": "CS01",
+    "date": "2025-10-12",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 701,
+    "subscriptionTicketsSold": 531,
+    "totalTicketsSold": 1232,
+    "totalRevenue": 72460.1,
+    "capacity": 1433,
+    "capacityPercent": 74.1,
+    "occupancyGoal": 85,
+    "budgetGoal": 50000,
+    "budgetPercent": 51.1,
+    "singleTicketATP": 62.02005706134095,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:35.466035000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 105,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 126,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 147,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 168,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 189,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 210,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 273,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 322,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 414,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 701,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23912,
+    "performanceId": 23912,
+    "performanceCode": "251017E",
+    "title": "Top Gun: Maverick in Concert",
+    "series": "Top Gun Concert",
+    "date": "2025-10-17",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1162,
+    "subscriptionTicketsSold": 6,
+    "totalTicketsSold": 1168,
+    "totalRevenue": 87476.5,
+    "capacity": 1342,
+    "capacityPercent": 87.4,
+    "occupancyGoal": 85,
+    "budgetGoal": 103497,
+    "budgetPercent": 103.4,
+    "singleTicketATP": 45.16858864027539,
+    "performanceType": "Film",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:37.861955000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 174,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 209,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 244,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 279,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 314,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 349,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 453,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 535,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 686,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1162,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23913,
+    "performanceId": 23913,
+    "performanceCode": "251018E",
+    "title": "Top Gun: Maverick in Concert",
+    "series": "Top Gun Concert",
+    "date": "2025-10-18",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1268,
+    "subscriptionTicketsSold": 12,
+    "totalTicketsSold": 1280,
+    "totalRevenue": 96649,
+    "capacity": 1342,
+    "capacityPercent": 96.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 103497,
+    "budgetPercent": 103.4,
+    "singleTicketATP": 45.732965299684544,
+    "performanceType": "Film",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:40.316297000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 190,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 228,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 266,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 304,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 342,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 380,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 495,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 583,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 748,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1268,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23914,
+    "performanceId": 23914,
+    "performanceCode": "251019M",
+    "title": "Top Gun: Maverick in Concert",
+    "series": "Top Gun Concert",
+    "date": "2025-10-19",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 982,
+    "subscriptionTicketsSold": 14,
+    "totalTicketsSold": 996,
+    "totalRevenue": 77074.5,
+    "capacity": 1342,
+    "capacityPercent": 77,
+    "occupancyGoal": 85,
+    "budgetGoal": 103496,
+    "budgetPercent": 103.4,
+    "singleTicketATP": 47.09236252545825,
+    "performanceType": "Film",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:42.410697000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 147,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 177,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 206,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 236,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 265,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 295,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 383,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 452,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 579,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 982,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23725,
+    "performanceId": 23725,
+    "performanceCode": "251022E",
+    "title": "The Lodger Silent Film + Organ",
+    "series": null,
+    "date": "2025-10-22",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 375,
+    "subscriptionTicketsSold": 2,
+    "totalTicketsSold": 377,
+    "totalRevenue": 19285.3,
+    "capacity": 1342,
+    "capacityPercent": 27.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 50000,
+    "budgetPercent": 71.7,
+    "singleTicketATP": 30.856479999999998,
+    "performanceType": "Specials/Film",
+    "supplemental": {
+      "projected": {
+        "singleTickets": 693.3333333,
+        "totalTickets": 693.3333333,
+        "occupancy": 0.5325140809
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "audience": {
+        "newHouseholds": 5,
+        "returningHouseholds": 78,
+        "totalHouseholds": 83
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 10238,
+        "weeklyIncrease": 350
+      },
+      "timeline": {
+        "weekNumber": 8,
+        "weeksUntilPerformance": 5
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "HIGH",
+      "pacingStatus": "BEHIND",
+      "budgetStatus": "BELOW",
+      "pacingVariance": -0.4591346153586123,
+      "budgetAchievement": 0.385706
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:45.844884000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 56,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 68,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 79,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 90,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 101,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 113,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 146,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 173,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 221,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 375,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23680,
+    "performanceId": 23680,
+    "performanceCode": "251024E",
+    "title": "PS2 90s Mixtape",
+    "series": "PS2",
+    "date": "2025-10-24",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 254,
+    "subscriptionTicketsSold": 644,
+    "totalTicketsSold": 898,
+    "totalRevenue": 63223.1,
+    "capacity": 1601,
+    "capacityPercent": 57.1,
+    "occupancyGoal": 85,
+    "budgetGoal": 92333,
+    "budgetPercent": 83.4,
+    "singleTicketATP": 149.34590551181103,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:47.941565000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 38,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 46,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 53,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 61,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 69,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 76,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 99,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 117,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 150,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 254,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23681,
+    "performanceId": 23681,
+    "performanceCode": "251025E",
+    "title": "PS2 90s Mixtape",
+    "series": "PS2",
+    "date": "2025-10-25",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 344,
+    "subscriptionTicketsSold": 543,
+    "totalTicketsSold": 887,
+    "totalRevenue": 61238.5,
+    "capacity": 1601,
+    "capacityPercent": 55.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 92333,
+    "budgetPercent": 83.4,
+    "singleTicketATP": 106.81133720930232,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:50.714661000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 52,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 62,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 72,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 83,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 93,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 103,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 134,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 158,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 203,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 344,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23682,
+    "performanceId": 23682,
+    "performanceCode": "251026M",
+    "title": "PS2 90s Mixtape",
+    "series": "PS2",
+    "date": "2025-10-26",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 334,
+    "subscriptionTicketsSold": 343,
+    "totalTicketsSold": 677,
+    "totalRevenue": 41726.2,
+    "capacity": 1601,
+    "capacityPercent": 37.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 92334,
+    "budgetPercent": 83.4,
+    "singleTicketATP": 74.95724550898203,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:53.487821000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 50,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 60,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 70,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 80,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 90,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 100,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 130,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 154,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 197,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 334,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23791,
+    "performanceId": 23791,
+    "performanceCode": "251029E",
+    "title": "On Stage 1 with George Li",
+    "series": "On Stage",
+    "date": "2025-10-29",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 38,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 38,
+    "totalRevenue": 4620,
+    "capacity": 100,
+    "capacityPercent": 33,
+    "occupancyGoal": 85,
+    "budgetGoal": 11200,
+    "budgetPercent": 80,
+    "singleTicketATP": 72.94736842105263,
+    "performanceType": "On Stage",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:55.912271000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 8,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 9,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 10,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 11,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 15,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 17,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 22,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 38,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23624,
+    "performanceId": 23624,
+    "performanceCode": "251031E",
+    "title": "CS02 Rach Cele Pt 1 (Piazza 1)",
+    "series": "CS02",
+    "date": "2025-10-31",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 306,
+    "subscriptionTicketsSold": 324,
+    "totalTicketsSold": 630,
+    "totalRevenue": 36789.3,
+    "capacity": 1450,
+    "capacityPercent": 37.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 52000,
+    "budgetPercent": 53.1,
+    "singleTicketATP": 72.13588235294118,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:03:58.329999000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 46,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 55,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 64,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 73,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 83,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 92,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 119,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 141,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 181,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 306,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23625,
+    "performanceId": 23625,
+    "performanceCode": "251101E",
+    "title": "CS02 Rachmaninoff Celeb: Pt. 1",
+    "series": "CS02",
+    "date": "2025-11-01",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 756,
+    "subscriptionTicketsSold": 532,
+    "totalTicketsSold": 1288,
+    "totalRevenue": 75996.3,
+    "capacity": 1450,
+    "capacityPercent": 77.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 86500,
+    "budgetPercent": 88.4,
+    "singleTicketATP": 60.314523809523806,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:00.685997000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 113,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 136,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 159,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 181,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 204,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 227,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 295,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 348,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 446,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 756,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23626,
+    "performanceId": 23626,
+    "performanceCode": "251102M",
+    "title": "CS02 Rachmaninoff Celeb: Pt. 1",
+    "series": "CS02",
+    "date": "2025-11-02",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 529,
+    "subscriptionTicketsSold": 564,
+    "totalTicketsSold": 1093,
+    "totalRevenue": 67166,
+    "capacity": 1450,
+    "capacityPercent": 68.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 86500,
+    "budgetPercent": 88.4,
+    "singleTicketATP": 76.18071833648393,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:02.876698000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 79,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 95,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 111,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 127,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 143,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 159,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 206,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 243,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 312,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 529,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23694,
+    "performanceId": 23694,
+    "performanceCode": "251109M",
+    "title": "FS2 Carnival of the Animals",
+    "series": "FS2",
+    "date": "2025-11-09",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Family",
+    "singleTicketsSold": 243,
+    "subscriptionTicketsSold": 333,
+    "totalTicketsSold": 576,
+    "totalRevenue": 15314,
+    "capacity": 1380,
+    "capacityPercent": 29.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 19500,
+    "budgetPercent": 37.7,
+    "singleTicketATP": 37.812345679012346,
+    "performanceType": "Family",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:04.919398000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 36,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 44,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 51,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 58,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 66,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 73,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 95,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 112,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 143,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 243,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23627,
+    "performanceId": 23627,
+    "performanceCode": "251121E",
+    "title": "CS03 Mahler No. #7 (Piazza 2)",
+    "series": "CS03",
+    "date": "2025-11-21",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 152,
+    "subscriptionTicketsSold": 370,
+    "totalTicketsSold": 522,
+    "totalRevenue": 33337.6,
+    "capacity": 1607,
+    "capacityPercent": 32.6,
+    "occupancyGoal": 85,
+    "budgetGoal": 40000,
+    "budgetPercent": 39.1,
+    "singleTicketATP": 131.5957894736842,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:07.255381000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 23,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 27,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 32,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 36,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 41,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 46,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 59,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 70,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 90,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 152,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23628,
+    "performanceId": 23628,
+    "performanceCode": "251122E",
+    "title": "CS03 Matthias and Mahler #7",
+    "series": "CS03",
+    "date": "2025-11-22",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 216,
+    "subscriptionTicketsSold": 586,
+    "totalTicketsSold": 802,
+    "totalRevenue": 52220.7,
+    "capacity": 1607,
+    "capacityPercent": 51,
+    "occupancyGoal": 85,
+    "budgetGoal": 66500,
+    "budgetPercent": 64.9,
+    "singleTicketATP": 145.0575,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:10.282095000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 32,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 39,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 45,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 52,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 58,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 65,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 84,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 99,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 127,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 216,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24644,
+    "performanceId": 24644,
+    "performanceCode": "251123E",
+    "title": "26 ProAm",
+    "series": "Education",
+    "date": "2025-11-23",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 698,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 698,
+    "totalRevenue": 0,
+    "capacity": 1607,
+    "capacityPercent": 0,
+    "occupancyGoal": 85,
+    "budgetGoal": 66500,
+    "budgetPercent": 0,
+    "singleTicketATP": 0,
+    "performanceType": "Special Event",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:12.537722000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 105,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 126,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 147,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 168,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 188,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 209,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 272,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 321,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 412,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 698,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23629,
+    "performanceId": 23629,
+    "performanceCode": "251123M",
+    "title": "CS03 Matthias and Mahler #7",
+    "series": "CS03",
+    "date": "2025-11-23",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 167,
+    "subscriptionTicketsSold": 614,
+    "totalTicketsSold": 781,
+    "totalRevenue": 50039.1,
+    "capacity": 1607,
+    "capacityPercent": 48.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 66500,
+    "budgetPercent": 64.9,
+    "singleTicketATP": 179.7811976047904,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:12.537722000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 25,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 30,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 35,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 40,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 45,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 50,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 65,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 77,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 99,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 167,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23795,
+    "performanceId": 23795,
+    "performanceCode": "251128E",
+    "title": "Elf™ in Concert",
+    "series": null,
+    "date": "2025-11-28",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 669,
+    "subscriptionTicketsSold": 4,
+    "totalTicketsSold": 673,
+    "totalRevenue": 47169.2,
+    "capacity": 1302,
+    "capacityPercent": 47.2,
+    "occupancyGoal": 85,
+    "budgetGoal": 107500,
+    "budgetPercent": 107.6,
+    "singleTicketATP": 42.304215246636765,
+    "performanceType": "Specials/Film",
+    "supplemental": {
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "audience": {
+        "newHouseholds": 17,
+        "returningHouseholds": 45,
+        "totalHouseholds": 62
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 19726,
+        "weeklyIncrease": 1251.6
+      },
+      "timeline": {
+        "weekNumber": 13,
+        "weeksUntilPerformance": 10
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:14.991454000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 100,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 120,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 140,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 161,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 181,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 201,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 261,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 308,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 395,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 669,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23798,
+    "performanceId": 23798,
+    "performanceCode": "251130M",
+    "title": "Elf™ in Concert",
+    "series": null,
+    "date": "2025-11-30",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 789,
+    "subscriptionTicketsSold": 10,
+    "totalTicketsSold": 799,
+    "totalRevenue": 55834.4,
+    "capacity": 1302,
+    "capacityPercent": 55.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 107500,
+    "budgetPercent": 107.6,
+    "singleTicketATP": 42.45961977186312,
+    "performanceType": "Specials/Film",
+    "supplemental": {
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "audience": {
+        "newHouseholds": 21,
+        "returningHouseholds": 88,
+        "totalHouseholds": 109
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 33261,
+        "weeklyIncrease": 1308.6
+      },
+      "timeline": {
+        "weekNumber": 13,
+        "weeksUntilPerformance": 10
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:23.154324000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 118,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 142,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 166,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 189,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 213,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 237,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 308,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 363,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 466,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 789,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23792,
+    "performanceId": 23792,
+    "performanceCode": "251205E",
+    "title": "Handel's Messiah",
+    "series": "Handel's Messiah",
+    "date": "2025-12-05",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Off Season",
+    "singleTicketsSold": 603,
+    "subscriptionTicketsSold": 4,
+    "totalTicketsSold": 607,
+    "totalRevenue": 33858.5,
+    "capacity": 1433,
+    "capacityPercent": 43.1,
+    "occupancyGoal": 85,
+    "budgetGoal": 78333,
+    "budgetPercent": 99.8,
+    "singleTicketATP": 33.69004975124378,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:25.214793000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 90,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 109,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 127,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 145,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 163,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 181,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 235,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 277,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 356,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 603,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23793,
+    "performanceId": 23793,
+    "performanceCode": "251206E",
+    "title": "Handel's Messiah",
+    "series": "Handel's Messiah",
+    "date": "2025-12-06",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Off Season",
+    "singleTicketsSold": 634,
+    "subscriptionTicketsSold": 9,
+    "totalTicketsSold": 643,
+    "totalRevenue": 34756,
+    "capacity": 1433,
+    "capacityPercent": 44.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 78334,
+    "budgetPercent": 99.8,
+    "singleTicketATP": 32.89211356466877,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:27.570249000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 95,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 114,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 133,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 152,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 171,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 190,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 247,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 292,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 374,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 634,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23794,
+    "performanceId": 23794,
+    "performanceCode": "251207M",
+    "title": "Handel's Messiah",
+    "series": "Handel's Messiah",
+    "date": "2025-12-07",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Off Season",
+    "singleTicketsSold": 672,
+    "subscriptionTicketsSold": 14,
+    "totalTicketsSold": 686,
+    "totalRevenue": 37850,
+    "capacity": 1433,
+    "capacityPercent": 48.2,
+    "occupancyGoal": 85,
+    "budgetGoal": 78333,
+    "budgetPercent": 99.8,
+    "singleTicketATP": 33.794642857142854,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:29.687745000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 101,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 121,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 141,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 161,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 181,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 202,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 262,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 309,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 396,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 672,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24550,
+    "performanceId": 24550,
+    "performanceCode": "251211M",
+    "title": "26 Edward Jones Holiday",
+    "series": "Christmas Festival",
+    "date": "2025-12-11",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 1660,
+    "subscriptionTicketsSold": 0,
+    "totalTicketsSold": 1660,
+    "totalRevenue": 0,
+    "capacity": 1500,
+    "capacityPercent": 0,
+    "occupancyGoal": 85,
+    "budgetGoal": 0,
+    "budgetPercent": 0,
+    "singleTicketATP": 0,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T12:00:42.610822000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 249,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 299,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 349,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 398,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 448,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 498,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 647,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 764,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 979,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1660,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23998,
+    "performanceId": 23998,
+    "performanceCode": "251212E",
+    "title": "Leslie Odom Jr. Christmas Tour",
+    "series": "Christmas Festival",
+    "date": "2025-12-12",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1285,
+    "subscriptionTicketsSold": 2,
+    "totalTicketsSold": 1287,
+    "totalRevenue": 128600,
+    "capacity": 1590,
+    "capacityPercent": 81,
+    "occupancyGoal": 85,
+    "budgetGoal": 150000,
+    "budgetPercent": 94.5,
+    "singleTicketATP": 60.04669260700389,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:31.661770000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 193,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 231,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 270,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 308,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 347,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 386,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 501,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 591,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 758,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1285,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23999,
+    "performanceId": 23999,
+    "performanceCode": "251213E",
+    "title": "Leslie Odom Jr. Christmas Tour",
+    "series": "Christmas Festival",
+    "date": "2025-12-13",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1459,
+    "subscriptionTicketsSold": 4,
+    "totalTicketsSold": 1463,
+    "totalRevenue": 142519.5,
+    "capacity": 1590,
+    "capacityPercent": 89.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 150000,
+    "budgetPercent": 94.5,
+    "singleTicketATP": 58.609801233721726,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:33.839218000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 219,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 263,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 306,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 350,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 394,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 438,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 569,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 671,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 861,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1459,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23696,
+    "performanceId": 23696,
+    "performanceCode": "251218E",
+    "title": "Christmas Festival",
+    "series": "Christmas Festival",
+    "date": "2025-12-18",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Family",
+    "singleTicketsSold": 306,
+    "subscriptionTicketsSold": 8,
+    "totalTicketsSold": 314,
+    "totalRevenue": 20294.5,
+    "capacity": 1433,
+    "capacityPercent": 22.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 75833,
+    "budgetPercent": 88,
+    "singleTicketATP": 39.79313725490196,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:36.367383000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 46,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 55,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 64,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 73,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 83,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 92,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 119,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 141,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 181,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 306,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23697,
+    "performanceId": 23697,
+    "performanceCode": "251219E",
+    "title": "Christmas Festival",
+    "series": "Christmas Festival",
+    "date": "2025-12-19",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Family",
+    "singleTicketsSold": 342,
+    "subscriptionTicketsSold": 2,
+    "totalTicketsSold": 344,
+    "totalRevenue": 21142.5,
+    "capacity": 1433,
+    "capacityPercent": 23.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 75833,
+    "budgetPercent": 88,
+    "singleTicketATP": 37.0921052631579,
+    "performanceType": "Holiday",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:39.473753000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 51,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 62,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 72,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 82,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 92,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 103,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 133,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 157,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 202,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 342,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23800,
+    "performanceId": 23800,
+    "performanceCode": "251223E",
+    "title": "It's a Wonderful Life in Conce",
+    "series": null,
+    "date": "2025-12-23",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 1144,
+    "subscriptionTicketsSold": 4,
+    "totalTicketsSold": 1148,
+    "totalRevenue": 95160.1,
+    "capacity": 1302,
+    "capacityPercent": 95,
+    "occupancyGoal": 85,
+    "budgetGoal": 100000,
+    "budgetPercent": 99.8,
+    "singleTicketATP": 49.90914335664336,
+    "performanceType": "Specials/Film",
+    "supplemental": {
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 62594,
+        "weeklyIncrease": 4059.6
+      },
+      "timeline": {
+        "weekNumber": 17,
+        "weeksUntilPerformance": 14
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:51.019864000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 172,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 206,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 240,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 275,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 309,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 343,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 446,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 526,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 675,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 1144,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23801,
+    "performanceId": 23801,
+    "performanceCode": "251224M",
+    "title": "It's a Wonderful Life in Conce",
+    "series": null,
+    "date": "2025-12-24",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 367,
+    "subscriptionTicketsSold": 2,
+    "totalTicketsSold": 369,
+    "totalRevenue": 26562.2,
+    "capacity": 1302,
+    "capacityPercent": 26.5,
+    "occupancyGoal": 85,
+    "budgetGoal": 100000,
+    "budgetPercent": 99.8,
+    "singleTicketATP": 43.42594005449591,
+    "performanceType": "Specials/Film",
+    "supplemental": {
+      "projected": {
+        "singleTickets": null,
+        "totalTickets": null,
+        "occupancy": null
+      },
+      "targets": {
+        "singleTicketsFor85Occ": 1106.7
+      },
+      "audience": {
+        "newHouseholds": 0,
+        "returningHouseholds": 0,
+        "totalHouseholds": 0
+      },
+      "salesVelocity": {
+        "revenueLastWeek": 13544,
+        "weeklyIncrease": 820.4
+      },
+      "timeline": {
+        "weekNumber": 17,
+        "weeksUntilPerformance": 14
+      }
+    },
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": true,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:53.147695000Z",
+    "lastPdfImport": "2025-10-24T12:00:42.610822000Z",
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 55,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 66,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 77,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 88,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 99,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 110,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 143,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 169,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 217,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 367,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23631,
+    "performanceId": 23631,
+    "performanceCode": "260110E",
+    "title": "CS04 Brahms' Fourth Symphony",
+    "series": "CS04",
+    "date": "2026-01-10",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 38,
+    "subscriptionTicketsSold": 572,
+    "totalTicketsSold": 610,
+    "totalRevenue": 39210.3,
+    "capacity": 1590,
+    "capacityPercent": 38.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 54999,
+    "budgetPercent": 53.7,
+    "singleTicketATP": 619.11,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:04:59.035985000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 8,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 9,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 10,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 11,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 15,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 17,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 22,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 38,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23635,
+    "performanceId": 23635,
+    "performanceCode": "260117E",
+    "title": "CS05 Pines of Rome & Bruch",
+    "series": "CS05",
+    "date": "2026-01-17",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 91,
+    "subscriptionTicketsSold": 600,
+    "totalTicketsSold": 691,
+    "totalRevenue": 45838.3,
+    "capacity": 1590,
+    "capacityPercent": 44.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 75000,
+    "budgetPercent": 73.2,
+    "singleTicketATP": 302.23054945054946,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:09.077522000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 14,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 16,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 19,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 22,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 25,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 27,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 35,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 42,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 54,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 91,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23637,
+    "performanceId": 23637,
+    "performanceCode": "260118M",
+    "title": "CS05 Pines of Rome & Bruch",
+    "series": "CS05",
+    "date": "2026-01-18",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 63,
+    "subscriptionTicketsSold": 623,
+    "totalTicketsSold": 686,
+    "totalRevenue": 43967.4,
+    "capacity": 1590,
+    "capacityPercent": 42.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 75000,
+    "budgetPercent": 73.2,
+    "singleTicketATP": 418.7371428571428,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:11.270537000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 11,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 13,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 15,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 17,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 19,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 25,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 29,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 37,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 63,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23917,
+    "performanceId": 23917,
+    "performanceCode": "260124E",
+    "title": "Indiana Jones: Raiders of Lost",
+    "series": "Indiana Jones Concert",
+    "date": "2026-01-24",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 429,
+    "subscriptionTicketsSold": 10,
+    "totalTicketsSold": 439,
+    "totalRevenue": 32128.1,
+    "capacity": 1302,
+    "capacityPercent": 32.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 90000,
+    "budgetPercent": 91.8,
+    "singleTicketATP": 44.93440559440559,
+    "performanceType": "Film",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:18.176156000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 64,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 77,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 90,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 103,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 116,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 129,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 167,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 197,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 253,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 429,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23639,
+    "performanceId": 23639,
+    "performanceCode": "260131E",
+    "title": "CS06 Beethoven+",
+    "series": "CS06",
+    "date": "2026-01-31",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 53,
+    "subscriptionTicketsSold": 614,
+    "totalTicketsSold": 667,
+    "totalRevenue": 44237.1,
+    "capacity": 1590,
+    "capacityPercent": 43.2,
+    "occupancyGoal": 85,
+    "budgetGoal": 75000,
+    "budgetPercent": 73.2,
+    "singleTicketATP": 500.797358490566,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:25.406001000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 8,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 10,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 11,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 13,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 14,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 16,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 21,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 24,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 31,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 53,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23640,
+    "performanceId": 23640,
+    "performanceCode": "260201M",
+    "title": "CS06 Beethoven+",
+    "series": "CS06",
+    "date": "2026-02-01",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 41,
+    "subscriptionTicketsSold": 617,
+    "totalTicketsSold": 658,
+    "totalRevenue": 41792.9,
+    "capacity": 1590,
+    "capacityPercent": 40.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 75000,
+    "budgetPercent": 73.2,
+    "singleTicketATP": 611.6034146341464,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:36.000637000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 9,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 10,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 11,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 12,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 16,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 19,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 24,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 41,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24004,
+    "performanceId": 24004,
+    "performanceCode": "260205E",
+    "title": "On Stage 2 w/ Leila Josefowicz",
+    "series": "On Stage",
+    "date": "2026-02-05",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 19,
+    "subscriptionTicketsSold": 8,
+    "totalTicketsSold": 27,
+    "totalRevenue": 1960,
+    "capacity": 100,
+    "capacityPercent": 14,
+    "occupancyGoal": 85,
+    "budgetGoal": 9000,
+    "budgetPercent": 64.3,
+    "singleTicketATP": 61.89473684210526,
+    "performanceType": "On Stage",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:38.433426000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 3,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 3,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 4,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 5,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 5,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 6,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 7,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 9,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 11,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 19,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23642,
+    "performanceId": 23642,
+    "performanceCode": "260206E",
+    "title": "CS07 Prokofiev, Symphony No. 5",
+    "series": "CS07",
+    "date": "2026-02-06",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 44,
+    "subscriptionTicketsSold": 573,
+    "totalTicketsSold": 617,
+    "totalRevenue": 39853.3,
+    "capacity": 1590,
+    "capacityPercent": 38.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 46666,
+    "budgetPercent": 45.6,
+    "singleTicketATP": 543.454090909091,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:41.774683000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 7,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 8,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 9,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 11,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 12,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 13,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 17,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 20,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 26,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 44,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23683,
+    "performanceId": 23683,
+    "performanceCode": "260213E",
+    "title": "PS3 She's Got Soul",
+    "series": "PS3",
+    "date": "2026-02-13",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 48,
+    "subscriptionTicketsSold": 723,
+    "totalTicketsSold": 771,
+    "totalRevenue": 55079.7,
+    "capacity": 1590,
+    "capacityPercent": 49.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 94666,
+    "budgetPercent": 85.5,
+    "singleTicketATP": 688.49625,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:51.702382000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 7,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 9,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 10,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 12,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 13,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 14,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 19,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 22,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 28,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 48,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23684,
+    "performanceId": 23684,
+    "performanceCode": "260214E",
+    "title": "PS3 She's Got Soul",
+    "series": "PS3",
+    "date": "2026-02-14",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 38,
+    "subscriptionTicketsSold": 660,
+    "totalTicketsSold": 698,
+    "totalRevenue": 49814.5,
+    "capacity": 1590,
+    "capacityPercent": 45,
+    "occupancyGoal": 85,
+    "budgetGoal": 94667,
+    "budgetPercent": 85.5,
+    "singleTicketATP": 786.5447368421052,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:05:53.724124000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 8,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 9,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 10,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 11,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 15,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 17,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 22,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 38,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23805,
+    "performanceId": 23805,
+    "performanceCode": "260222M",
+    "title": "Harry Potter 2 Chamber Secrets",
+    "series": "Harry Potter Concert",
+    "date": "2026-02-22",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Special",
+    "singleTicketsSold": 390,
+    "subscriptionTicketsSold": 7,
+    "totalTicketsSold": 397,
+    "totalRevenue": 29349,
+    "capacity": 1302,
+    "capacityPercent": 29.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 111250,
+    "budgetPercent": 113,
+    "singleTicketATP": 45.15230769230769,
+    "performanceType": "Film",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:11.705529000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 59,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 70,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 82,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 94,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 105,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 117,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 152,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 179,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 230,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 390,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23645,
+    "performanceId": 23645,
+    "performanceCode": "260313E",
+    "title": "CS08 Saint-Saëns & Strauss",
+    "series": "CS08",
+    "date": "2026-03-13",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 32,
+    "subscriptionTicketsSold": 579,
+    "totalTicketsSold": 611,
+    "totalRevenue": 40372.9,
+    "capacity": 1590,
+    "capacityPercent": 39.4,
+    "occupancyGoal": 85,
+    "budgetGoal": 54999,
+    "budgetPercent": 53.7,
+    "singleTicketATP": 756.991875,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:16.154906000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 5,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 6,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 7,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 8,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 9,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 10,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 12,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 15,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 19,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 32,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23646,
+    "performanceId": 23646,
+    "performanceCode": "260314E",
+    "title": "CS08 Saint-Saëns & Strauss",
+    "series": "CS08",
+    "date": "2026-03-14",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 37,
+    "subscriptionTicketsSold": 573,
+    "totalTicketsSold": 610,
+    "totalRevenue": 39045.7,
+    "capacity": 1590,
+    "capacityPercent": 38.1,
+    "occupancyGoal": 85,
+    "budgetGoal": 55000,
+    "budgetPercent": 53.7,
+    "singleTicketATP": 633.1735135135135,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:20.488251000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 8,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 9,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 10,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 11,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 14,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 17,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 22,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 37,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23647,
+    "performanceId": 23647,
+    "performanceCode": "260315M",
+    "title": "CS08 Saint-Saëns & Strauss",
+    "series": "CS08",
+    "date": "2026-03-15",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 51,
+    "subscriptionTicketsSold": 569,
+    "totalTicketsSold": 620,
+    "totalRevenue": 39736,
+    "capacity": 1590,
+    "capacityPercent": 38.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 55001,
+    "budgetPercent": 53.7,
+    "singleTicketATP": 467.48235294117643,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:22.620640000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 8,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 9,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 11,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 12,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 14,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 15,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 20,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 23,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 30,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 51,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23686,
+    "performanceId": 23686,
+    "performanceCode": "260327E",
+    "title": "PS4 Billy Joel & Elton John",
+    "series": "PS4",
+    "date": "2026-03-27",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 136,
+    "subscriptionTicketsSold": 741,
+    "totalTicketsSold": 877,
+    "totalRevenue": 62827.3,
+    "capacity": 1590,
+    "capacityPercent": 56.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 94666,
+    "budgetPercent": 85.5,
+    "singleTicketATP": 277.17926470588236,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:29.216325000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 20,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 24,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 29,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 33,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 37,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 41,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 53,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 63,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 80,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 136,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23687,
+    "performanceId": 23687,
+    "performanceCode": "260328E",
+    "title": "PS4 Billy Joel & Elton John",
+    "series": "PS4",
+    "date": "2026-03-28",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 139,
+    "subscriptionTicketsSold": 670,
+    "totalTicketsSold": 809,
+    "totalRevenue": 58524.3,
+    "capacity": 1590,
+    "capacityPercent": 52.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 94667,
+    "budgetPercent": 85.5,
+    "singleTicketATP": 252.62287769784174,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:31.499894000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 21,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 25,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 29,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 33,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 38,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 42,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 54,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 64,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 82,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 139,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23688,
+    "performanceId": 23688,
+    "performanceCode": "260329M",
+    "title": "PS4 Billy Joel & Elton John",
+    "series": "PS4",
+    "date": "2026-03-29",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 164,
+    "subscriptionTicketsSold": 406,
+    "totalTicketsSold": 570,
+    "totalRevenue": 39496.2,
+    "capacity": 1590,
+    "capacityPercent": 37.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 94667,
+    "budgetPercent": 90.9,
+    "singleTicketATP": 144.4982926829268,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:33.561091000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 25,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 30,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 34,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 39,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 44,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 49,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 64,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 75,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 97,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 164,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23649,
+    "performanceId": 23649,
+    "performanceCode": "260411E",
+    "title": "CS09 A Midsummer Night's Dream",
+    "series": "CS09",
+    "date": "2026-04-11",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 69,
+    "subscriptionTicketsSold": 574,
+    "totalTicketsSold": 643,
+    "totalRevenue": 40572.7,
+    "capacity": 1433,
+    "capacityPercent": 41.5,
+    "occupancyGoal": 85,
+    "budgetGoal": 74000,
+    "budgetPercent": 75.6,
+    "singleTicketATP": 352.8060869565217,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:37.821345000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 10,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 12,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 14,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 17,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 19,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 21,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 27,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 32,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 41,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 69,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23650,
+    "performanceId": 23650,
+    "performanceCode": "260412M",
+    "title": "CS09 A Midsummer Night's Dream",
+    "series": "CS09",
+    "date": "2026-04-12",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 43,
+    "subscriptionTicketsSold": 569,
+    "totalTicketsSold": 612,
+    "totalRevenue": 38434.6,
+    "capacity": 1433,
+    "capacityPercent": 39.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 74000,
+    "budgetPercent": 75.6,
+    "singleTicketATP": 536.2967441860465,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:40.241305000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 8,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 9,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 10,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 12,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 13,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 17,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 20,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 25,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 43,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23652,
+    "performanceId": 23652,
+    "performanceCode": "260418E",
+    "title": "CS10 Farrenc, Dvorák, Schumann",
+    "series": "CS10",
+    "date": "2026-04-18",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 18,
+    "subscriptionTicketsSold": 600,
+    "totalTicketsSold": 618,
+    "totalRevenue": 41356.7,
+    "capacity": 1590,
+    "capacityPercent": 40.4,
+    "occupancyGoal": 85,
+    "budgetGoal": 46666,
+    "budgetPercent": 45.6,
+    "singleTicketATP": 1378.5566666666664,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:44.658994000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 3,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 3,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 4,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 4,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 5,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 5,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 7,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 8,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 11,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 18,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23653,
+    "performanceId": 23653,
+    "performanceCode": "260419M",
+    "title": "CS10 Farrenc, Dvorák, Schumann",
+    "series": "CS10",
+    "date": "2026-04-19",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 24,
+    "subscriptionTicketsSold": 624,
+    "totalTicketsSold": 648,
+    "totalRevenue": 40994.9,
+    "capacity": 1590,
+    "capacityPercent": 40,
+    "occupancyGoal": 85,
+    "budgetGoal": 46668,
+    "budgetPercent": 45.6,
+    "singleTicketATP": 1024.8725,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:46.725383000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 4,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 4,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 5,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 6,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 6,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 7,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 9,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 11,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 14,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 24,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23655,
+    "performanceId": 23655,
+    "performanceCode": "260509E",
+    "title": "CS11 Grieg's Piano Concerto",
+    "series": "CS11",
+    "date": "2026-05-09",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 61,
+    "subscriptionTicketsSold": 607,
+    "totalTicketsSold": 668,
+    "totalRevenue": 44337.3,
+    "capacity": 1590,
+    "capacityPercent": 43.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 65000,
+    "budgetPercent": 63.5,
+    "singleTicketATP": 436.10459016393446,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:57.638149000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 11,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 13,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 15,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 16,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 18,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 24,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 28,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 36,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 61,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23656,
+    "performanceId": 23656,
+    "performanceCode": "260510M",
+    "title": "CS11 Grieg's Piano Concerto",
+    "series": "CS11",
+    "date": "2026-05-10",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 40,
+    "subscriptionTicketsSold": 626,
+    "totalTicketsSold": 666,
+    "totalRevenue": 42307.7,
+    "capacity": 1590,
+    "capacityPercent": 41.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 65000,
+    "budgetPercent": 63.5,
+    "singleTicketATP": 634.6155,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:06:59.727830000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 6,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 7,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 8,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 10,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 11,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 12,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 16,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 18,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 24,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 40,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23689,
+    "performanceId": 23689,
+    "performanceCode": "260515E",
+    "title": "PS5 Dolly Parton's Threads",
+    "series": "PS5",
+    "date": "2026-05-15",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 60,
+    "subscriptionTicketsSold": 734,
+    "totalTicketsSold": 794,
+    "totalRevenue": 66945.1,
+    "capacity": 1302,
+    "capacityPercent": 56.8,
+    "occupancyGoal": 85,
+    "budgetGoal": 103333,
+    "budgetPercent": 87.7,
+    "singleTicketATP": 669.4510000000001,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:01.923119000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 11,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 13,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 14,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 16,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 18,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 23,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 28,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 35,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 60,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23690,
+    "performanceId": 23690,
+    "performanceCode": "260516E",
+    "title": "PS5 Dolly Parton's Threads",
+    "series": "PS5",
+    "date": "2026-05-16",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 59,
+    "subscriptionTicketsSold": 669,
+    "totalTicketsSold": 728,
+    "totalRevenue": 61516.5,
+    "capacity": 1302,
+    "capacityPercent": 52.2,
+    "occupancyGoal": 85,
+    "budgetGoal": 103334,
+    "budgetPercent": 87.7,
+    "singleTicketATP": 625.5915254237289,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:03.863856000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 11,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 12,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 14,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 16,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 18,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 23,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 27,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 35,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 59,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23691,
+    "performanceId": 23691,
+    "performanceCode": "260517M",
+    "title": "PS5 Dolly Parton's Threads",
+    "series": "PS5",
+    "date": "2026-05-17",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Pops",
+    "singleTicketsSold": 90,
+    "subscriptionTicketsSold": 403,
+    "totalTicketsSold": 493,
+    "totalRevenue": 39232.4,
+    "capacity": 1302,
+    "capacityPercent": 33.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 103333,
+    "budgetPercent": 87.7,
+    "singleTicketATP": 261.5493333333333,
+    "performanceType": "Pops",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:07.005380000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 14,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 16,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 19,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 22,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 24,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 27,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 35,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 41,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 53,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 90,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24007,
+    "performanceId": 24007,
+    "performanceCode": "260528E",
+    "title": "On Stage 3 with Gil Shaham",
+    "series": "CS12",
+    "date": "2026-05-28",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 17,
+    "subscriptionTicketsSold": 7,
+    "totalTicketsSold": 24,
+    "totalRevenue": 1680,
+    "capacity": 100,
+    "capacityPercent": 12,
+    "occupancyGoal": 85,
+    "budgetGoal": 9000,
+    "budgetPercent": 64.3,
+    "singleTicketATP": 59.294117647058826,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:14.440053000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 3,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 3,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 4,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 4,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 5,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 5,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 7,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 8,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 10,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 17,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23658,
+    "performanceId": 23658,
+    "performanceCode": "260530E",
+    "title": "CS12 Gil Shaham Plays Brahms",
+    "series": "CS12",
+    "date": "2026-05-30",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 31,
+    "subscriptionTicketsSold": 577,
+    "totalTicketsSold": 608,
+    "totalRevenue": 38191.1,
+    "capacity": 1590,
+    "capacityPercent": 37.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 51667,
+    "budgetPercent": 50.5,
+    "singleTicketATP": 739.1825806451612,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:21.448839000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 5,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 6,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 7,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 7,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 8,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 9,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 12,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 14,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 18,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 31,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23659,
+    "performanceId": 23659,
+    "performanceCode": "260531M",
+    "title": "CS12 Gil Shaham Plays Brahms",
+    "series": "CS12",
+    "date": "2026-05-31",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 47,
+    "subscriptionTicketsSold": 574,
+    "totalTicketsSold": 621,
+    "totalRevenue": 39203.3,
+    "capacity": 1590,
+    "capacityPercent": 38.3,
+    "occupancyGoal": 85,
+    "budgetGoal": 51667,
+    "budgetPercent": 50.5,
+    "singleTicketATP": 500.4676595744681,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:23.430793000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 7,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 8,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 10,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 11,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 13,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 14,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 18,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 22,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 28,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 47,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 24008,
+    "performanceId": 24008,
+    "performanceCode": "260604E",
+    "title": "On Stage 4 with Yefim Bronfman",
+    "series": "On Stage",
+    "date": "2026-06-04",
+    "venue": "SY-G/A Hall",
+    "season": "25-26 Season",
+    "singleTicketsSold": 20,
+    "subscriptionTicketsSold": 8,
+    "totalTicketsSold": 28,
+    "totalRevenue": 2100,
+    "capacity": 100,
+    "capacityPercent": 15,
+    "occupancyGoal": 85,
+    "budgetGoal": 9000,
+    "budgetPercent": 64.3,
+    "singleTicketATP": 63,
+    "performanceType": "On Stage",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:25.550325000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 3,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 4,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 4,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 5,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 5,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 6,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 8,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 9,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 12,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 20,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23662,
+    "performanceId": 23662,
+    "performanceCode": "260605E",
+    "title": "CS13 Rachmaninoff Celeb: Pt. 2",
+    "series": "CS13",
+    "date": "2026-06-05",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 35,
+    "subscriptionTicketsSold": 585,
+    "totalTicketsSold": 620,
+    "totalRevenue": 40915,
+    "capacity": 1590,
+    "capacityPercent": 40,
+    "occupancyGoal": 85,
+    "budgetGoal": 66666,
+    "budgetPercent": 65.1,
+    "singleTicketATP": 701.4,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:27.579112000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 5,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 6,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 7,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 8,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 9,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 11,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 14,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 16,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 21,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 35,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23661,
+    "performanceId": 23661,
+    "performanceCode": "260606E",
+    "title": "CS13 Rachmaninoff Celeb: Pt. 2",
+    "series": "CS13",
+    "date": "2026-06-06",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 53,
+    "subscriptionTicketsSold": 613,
+    "totalTicketsSold": 666,
+    "totalRevenue": 44551.9,
+    "capacity": 1590,
+    "capacityPercent": 43.5,
+    "occupancyGoal": 85,
+    "budgetGoal": 66667,
+    "budgetPercent": 65.1,
+    "singleTicketATP": 504.3611320754717,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:29.640423000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 8,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 10,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 11,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 13,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 14,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 16,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 21,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 24,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 31,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 53,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23663,
+    "performanceId": 23663,
+    "performanceCode": "260607M",
+    "title": "CS13 Rachmaninoff Celeb: Pt. 2",
+    "series": "CS13",
+    "date": "2026-06-07",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 58,
+    "subscriptionTicketsSold": 643,
+    "totalTicketsSold": 701,
+    "totalRevenue": 44788.6,
+    "capacity": 1590,
+    "capacityPercent": 43.7,
+    "occupancyGoal": 85,
+    "budgetGoal": 66667,
+    "budgetPercent": 65.1,
+    "singleTicketATP": 463.3303448275862,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:31.901614000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 9,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 10,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 12,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 14,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 16,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 17,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 23,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 27,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 34,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 58,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23666,
+    "performanceId": 23666,
+    "performanceCode": "260620E",
+    "title": "CS14 Rhapsody in Blue",
+    "series": "CS14",
+    "date": "2026-06-20",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 152,
+    "subscriptionTicketsSold": 603,
+    "totalTicketsSold": 755,
+    "totalRevenue": 48586.5,
+    "capacity": 1590,
+    "capacityPercent": 47.5,
+    "occupancyGoal": 85,
+    "budgetGoal": 70000,
+    "budgetPercent": 68.4,
+    "singleTicketATP": 191.78881578947366,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:37.901355000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 23,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 27,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 32,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 36,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 41,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 46,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 59,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 70,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 90,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 152,
+        "percentage": 100
+      }
+    ]
+  },
+  {
+    "id": 23667,
+    "performanceId": 23667,
+    "performanceCode": "260621M",
+    "title": "CS14 Rhapsody in Blue",
+    "series": "CS14",
+    "date": "2026-06-21",
+    "venue": "HELZBERG HALL",
+    "season": "25-26 Classical",
+    "singleTicketsSold": 133,
+    "subscriptionTicketsSold": 588,
+    "totalTicketsSold": 721,
+    "totalRevenue": 45992.2,
+    "capacity": 1590,
+    "capacityPercent": 44.9,
+    "occupancyGoal": 85,
+    "budgetGoal": 70000,
+    "budgetPercent": 68.4,
+    "singleTicketATP": 207.48360902255635,
+    "performanceType": "Classical",
+    "supplemental": null,
+    "riskMetrics": {
+      "riskLevel": "UNKNOWN",
+      "pacingStatus": "NO_DATA",
+      "budgetStatus": "NO_DATA",
+      "message": "No projection data available"
+    },
+    "hasSalesData": true,
+    "hasExcelData": false,
+    "createdAt": "2025-10-01T15:47:57.472Z",
+    "updatedAt": "2025-10-24T15:07:40.051463000Z",
+    "lastPdfImport": null,
+    "weeklySales": [
+      {
+        "week": 1,
+        "ticketsSold": 20,
+        "percentage": 15
+      },
+      {
+        "week": 2,
+        "ticketsSold": 24,
+        "percentage": 18
+      },
+      {
+        "week": 3,
+        "ticketsSold": 28,
+        "percentage": 21
+      },
+      {
+        "week": 4,
+        "ticketsSold": 32,
+        "percentage": 24
+      },
+      {
+        "week": 5,
+        "ticketsSold": 36,
+        "percentage": 27
+      },
+      {
+        "week": 6,
+        "ticketsSold": 40,
+        "percentage": 30
+      },
+      {
+        "week": 7,
+        "ticketsSold": 52,
+        "percentage": 39
+      },
+      {
+        "week": 8,
+        "ticketsSold": 61,
+        "percentage": 46
+      },
+      {
+        "week": 9,
+        "ticketsSold": 78,
+        "percentage": 59
+      },
+      {
+        "week": 10,
+        "ticketsSold": 133,
+        "percentage": 100
+      }
+    ]
+  }
+]

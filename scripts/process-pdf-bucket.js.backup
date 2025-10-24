@@ -24,7 +24,7 @@ const bigquery = new BigQuery({
   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
 });
 
-const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
+const DATASET_ID = 'symphony_data';
 const TABLE_ID = 'performance_sales_snapshots';
 
 // Extract snapshot date from PDF filename
@@ -149,7 +149,6 @@ async function insertSnapshots(snapshots) {
 
   const rows = snapshots.map(snapshot => ({
     snapshot_id: snapshot.snapshot_id,
-    performance_id: 0, // Will be updated by trigger
     performance_code: snapshot.performance_code,
     snapshot_date: snapshot.snapshot_date,
     single_tickets_sold: snapshot.single_tickets_sold,
@@ -159,7 +158,7 @@ async function insertSnapshots(snapshots) {
     capacity_percent: snapshot.capacity_percent,
     budget_percent: snapshot.budget_percent,
     source: snapshot.source,
-    // source_filename removed - not in schema
+    source_filename: snapshot.source_filename,
     created_at: new Date().toISOString()
   }));
 
@@ -274,9 +273,7 @@ async function processGCSBucket(bucketPath) {
     try {
       // Download PDF to temporary buffer
       const [contents] = await file.download();
-      const os = require('os');
-      const tempDir = os.tmpdir();
-      const tempPath = path.join(tempDir, filename);
+      const tempPath = `/tmp/${filename}`;
       fs.writeFileSync(tempPath, contents);
 
       const performances = await parsePDF(tempPath, filename);
@@ -317,22 +314,17 @@ async function processGCSBucket(bucketPath) {
 // Main execution
 async function main() {
   const inputPath = process.argv[2];
-  const isDryRun = process.argv.includes('--dry-run');
 
   if (!inputPath) {
-    console.error('❌ Usage: node process-pdf-bucket.js <path> [--dry-run]');
+    console.error('❌ Usage: node process-pdf-bucket.js <path>');
     console.error('   Examples:');
     console.error('     node process-pdf-bucket.js ./pdfs');
     console.error('     node process-pdf-bucket.js gs://symphony-dashboard-pdfs/2025');
-    console.error('     node process-pdf-bucket.js gs://symphony-dashboard-pdfs/2025 --dry-run');
     process.exit(1);
   }
 
   console.log('═'.repeat(80));
   console.log('📊 PDF Bucket Processor - Historical Sales Snapshot Importer');
-  if (isDryRun) {
-    console.log('🔍 DRY RUN MODE - No data will be inserted into BigQuery');
-  }
   console.log('═'.repeat(80));
   console.log('');
 
@@ -374,75 +366,7 @@ async function main() {
   });
   console.log('');
 
-  // Group snapshots by performance code to show sample
-  const byPerformanceCode = {};
-  for (const snapshot of allSnapshots) {
-    if (!byPerformanceCode[snapshot.performance_code]) {
-      byPerformanceCode[snapshot.performance_code] = [];
-    }
-    byPerformanceCode[snapshot.performance_code].push(snapshot);
-  }
-
-  // Show sample performance codes with snapshot counts
-  console.log(`📊 Sample performance codes (top 10 by snapshot count):`);
-  const sortedPerfs = Object.entries(byPerformanceCode)
-    .sort((a, b) => b[1].length - a[1].length)
-    .slice(0, 10);
-
-  sortedPerfs.forEach(([code, snapshots]) => {
-    const dates = snapshots.map(s => s.snapshot_date).sort();
-    console.log(`   ${code}: ${snapshots.length} snapshots (${dates[0]} to ${dates[dates.length - 1]})`);
-  });
-  console.log('');
-
-  // DRY RUN: Save to file and exit
-  if (isDryRun) {
-    const outputPath = './temp/dry-run-results.json';
-    const fs = require('fs');
-
-    // Ensure temp directory exists
-    if (!fs.existsSync('./temp')) {
-      fs.mkdirSync('./temp', { recursive: true });
-    }
-
-    const report = {
-      summary: {
-        total_pdfs: successCount,
-        failed_pdfs: errorCount,
-        total_snapshots: allSnapshots.length,
-        unique_dates: Object.keys(byDate).length,
-        unique_performances: Object.keys(byPerformanceCode).length,
-        date_range: {
-          start: Object.keys(byDate).sort()[0],
-          end: Object.keys(byDate).sort()[Object.keys(byDate).length - 1]
-        }
-      },
-      snapshots_by_date: byDate,
-      snapshots_by_performance: byPerformanceCode,
-      all_snapshots: allSnapshots
-    };
-
-    fs.writeFileSync(outputPath, JSON.stringify(report, null, 2));
-
-    console.log('═'.repeat(80));
-    console.log('🔍 DRY RUN COMPLETE');
-    console.log('═'.repeat(80));
-    console.log(`   Report saved to: ${outputPath}`);
-    console.log('');
-    console.log('📊 Summary:');
-    console.log(`   Total PDFs processed: ${successCount}`);
-    console.log(`   Failed PDFs: ${errorCount}`);
-    console.log(`   Total snapshots: ${allSnapshots.length}`);
-    console.log(`   Unique dates: ${Object.keys(byDate).length}`);
-    console.log(`   Unique performances: ${Object.keys(byPerformanceCode).length}`);
-    console.log(`   Date range: ${report.summary.date_range.start} to ${report.summary.date_range.end}`);
-    console.log('');
-    console.log('🎯 Next step:');
-    console.log('   Run: npm run backfill-historical (to actually import to BigQuery)');
-    return;
-  }
-
-  // LIVE RUN: Confirm before inserting
+  // Confirm before inserting
   console.log('💾 Ready to insert snapshots into BigQuery');
   console.log(`   Dataset: ${DATASET_ID}`);
   console.log(`   Table: ${TABLE_ID}`);
@@ -459,7 +383,7 @@ async function main() {
     console.log(`   ${insertResult.count} snapshots successfully imported`);
     console.log('');
     console.log('🎯 Next steps:');
-    console.log('   1. Validate: npm run validate-backfill');
+    console.log('   1. Query snapshots: node scripts/check-snapshot-timeline.js');
     console.log('   2. Update modal to display historical progression');
     console.log('   3. Build sales curve visualizations');
   } else {

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Browser Fetch</title>
+</head>
+<body>
+    <h1>Testing Browser Fetch</h1>
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        async function testFetch() {
+            const url = 'https://kcsdashboard.netlify.app/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=250902E';
+
+            output.innerHTML += `<p>Testing: ${url}</p>`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include',  // Include cookies for authentication
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                output.innerHTML += `<p>Status: ${response.status}</p>`;
+                output.innerHTML += `<p>Headers:</p><pre>${JSON.stringify([...response.headers.entries()], null, 2)}</pre>`;
+
+                const contentType = response.headers.get('content-type');
+                output.innerHTML += `<p>Content-Type: ${contentType}</p>`;
+
+                const text = await response.text();
+                output.innerHTML += `<p>Response (first 500 chars):</p><pre>${text.substring(0, 500)}</pre>`;
+
+                if (contentType && contentType.includes('application/json')) {
+                    const json = JSON.parse(text);
+                    output.innerHTML += `<p>✅ Successfully parsed JSON</p>`;
+                    output.innerHTML += `<p>Snapshots: ${json.snapshots ? json.snapshots.length : 0}</p>`;
+                } else {
+                    output.innerHTML += `<p>❌ Not JSON - got ${contentType}</p>`;
+                }
+
+            } catch (error) {
+                output.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+                output.innerHTML += `<pre>${error.stack}</pre>`;
+            }
+        }
+
+        testFetch();
+    </script>
+</body>
+</html>
