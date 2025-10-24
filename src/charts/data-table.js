@@ -1217,28 +1217,18 @@ class DataTable {
 // Patch for data-table.js - add after line 1211
 
     async renderSalesChart(container, performance) {
-        console.log('🔄 renderSalesChart called for performance:', performance);
-        console.log('   performance.code:', performance.code);
-        console.log('   performance.performanceCode:', performance.performanceCode);
-        console.log('   performance.id:', performance.id);
-
         // Fetch historical snapshots for this performance
-        const performanceCode = performance.code || performance.performanceCode || performance.id;
+        // Note: performance.id contains the performance_code from BigQuery
+        const performanceCode = performance.id;
         let historicalData = [];
 
         try {
-            const apiUrl = `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`;
-            console.log(`📊 Fetching historical snapshots for ${performanceCode}...`);
-            console.log(`   URL: ${apiUrl}`);
-
-            const response = await fetch(apiUrl);
-            console.log(`   Response status: ${response.status}`);
-            console.log(`   Content-Type: ${response.headers.get('content-type')}`);
+            const response = await fetch(
+                `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
+            );
 
             if (response.ok) {
-                const text = await response.text();
-                console.log(`   Response text (first 200 chars): ${text.substring(0, 200)}`);
-                const apiResponse = JSON.parse(text);
+                const apiResponse = await response.json();
                 // API returns {performanceCode, snapshots: [...]}
                 historicalData = apiResponse.snapshots || [];
                 console.log(`✅ Fetched ${historicalData.length} historical snapshots`);
