@@ -550,6 +550,7 @@ class SalesCurveChart {
 
         const legendItems = [
             { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
+            { label: "Actual Ticket Sales", color: "#3498db", style: "solid", lineWidth: 3 },
             { label: "Target Sales (85% of avail.)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
             { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
             { label: "Total Capacity", color: "#ccc", style: "dashed" }
@@ -565,7 +566,7 @@ class SalesCurveChart {
                 .attr("y1", 10)
                 .attr("y2", 10)
                 .attr("stroke", item.color)
-                .attr("stroke-width", 3)
+                .attr("stroke-width", item.lineWidth || 3)
                 .attr("stroke-dasharray", item.style === "dashed" ? "5,3" : "none");
 
             legendRow.append("text")

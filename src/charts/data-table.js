@@ -1040,9 +1040,16 @@ class DataTable {
         form.append('div')
             .style('font-size', '11px')
             .style('color', '#6c757d')
-            .style('margin-bottom', '15px')
+            .style('margin-bottom', '5px')
             .style('font-style', 'italic')
             .text('← Farthest week ... Closest to performance →');
+
+        form.append('div')
+            .style('font-size', '11px')
+            .style('color', '#e67e22')
+            .style('margin-bottom', '15px')
+            .style('font-weight', '600')
+            .html('⚠️ Enter <strong>single tickets + non-fixed packages only</strong> (exclude fixed subscription packages)');
 
         // Color picker
         form.append('label')
@@ -1550,7 +1557,7 @@ overlayHistoricalData(container, performance, historicalData) {
             week: Math.max(0, exactWeeksOut),
             weeksRounded: Math.max(0, Math.ceil(exactWeeksOut)),
             daysOut: Math.max(0, daysOut),
-            tickets: snapshot.total_tickets_sold || 0,
+            tickets: snapshot.single_tickets_sold || 0,  // Only single tickets (includes non-fixed packages, excludes fixed subscriptions)
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date
         };
@@ -1799,8 +1806,11 @@ overlayHistoricalData(container, performance, historicalData) {
                         const groupSlug = d.groupKey ? this.slugify(d.groupKey) : 'other';
                         this.slugToGroupKey.set(groupSlug, d.groupKey);
                         window.router.navigate(`/performance/${groupSlug}/${perfCode}`);
+                        // Router will handle opening the modal via URL routing
+                    } else {
+                        // Fallback if router not available
+                        this.showPerformanceDetails(d);
                     }
-                    this.showPerformanceDetails(d);
                 }
             });
 

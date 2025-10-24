@@ -266,7 +266,8 @@ async function createDashboardData() {
       lastPdfImport: bq.last_pdf_import_date?.value || bq.last_pdf_import_date,
 
       // Weekly sales progression (generated from current data for visualization)
-      weeklySales: generateWeeklySalesProgression(bq.total_tickets_sold || 0)
+      // Uses single_tickets_sold (which includes non-fixed packages) to match sales curve chart
+      weeklySales: generateWeeklySalesProgression(bq.single_tickets_sold || 0)
     };
 
     if (excelSupplemental) {
