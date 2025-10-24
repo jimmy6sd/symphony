@@ -83,12 +83,12 @@ async function validateBackfill() {
   console.log('');
 
   // 3. Check for date gaps
+  let gaps = [];
   if (dateResults.length > 1) {
     console.log('🔍 CHECKING FOR DATE GAPS');
     console.log('═'.repeat(80));
 
     const dates = dateResults.map(r => r.snapshot_date.value);
-    const gaps = [];
 
     for (let i = 1; i < dates.length; i++) {
       const prevDate = new Date(dates[i - 1]);

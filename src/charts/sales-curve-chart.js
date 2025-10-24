@@ -129,7 +129,10 @@ class SalesCurveChart {
         console.log('📊 Single ticket sales:', currentSales, 'Subscription sales:', subscriptionSales, 'Weeks to performance:', weeksToPerformance);
 
         // Calculate maxWeeks dynamically based on comparisons
-        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+        // Use performanceCode (Tessitura code) for comp lookups, fallback to performanceId
+        const performanceCode = performance.performanceCode || performance.performanceId;
+        console.log('📊 Looking up comps for:', performanceCode);
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         const maxComparisonWeeks = comparisons && comparisons.length > 0
             ? Math.max(...comparisons.map(c => c.weeksArray.length))
             : 0;
@@ -257,7 +260,7 @@ class SalesCurveChart {
                 .attr("class", "current-sales-glow")
                 .attr("cx", xScale(weeksToPerformance))
                 .attr("cy", yScale(currentSales))
-                .attr("r", 12)
+                .attr("r", 6)
                 .attr("fill", CONFIG.charts.colors.actualSales)
                 .attr("opacity", 0.2);
 
@@ -265,10 +268,10 @@ class SalesCurveChart {
                 .attr("class", "current-sales-point")
                 .attr("cx", xScale(weeksToPerformance))
                 .attr("cy", yScale(currentSales))
-                .attr("r", 8)
+                .attr("r", 2)
                 .attr("fill", CONFIG.charts.colors.actualSales)
                 .attr("stroke", "white")
-                .attr("stroke-width", 3)
+                .attr("stroke-width", 1.5)
                 .style("filter", "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))");
         }
 
@@ -285,24 +288,24 @@ class SalesCurveChart {
             .attr("class", "expected-point")
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.expectedCumulative))
-            .attr("r", 4)
+            .attr("r", 2.5)
             .attr("fill", CONFIG.charts.colors.onTrackLine || "#2ca02c")
             .attr("stroke", "white")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 1.5)
             .attr("opacity", 0.8)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 6)
+                    .attr("r", 5)
                     .attr("opacity", 1);
             })
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 4)
+                    .attr("r", 2.5)
                     .attr("opacity", 0.8);
             });
 
@@ -642,7 +645,9 @@ class SalesCurveChart {
 
     async renderComparisonLines(chartGroup, xScale, yScale, performance) {
         // Fetch comparisons for this performance
-        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+        // Use performanceCode (Tessitura code) for comp lookups
+        const performanceCode = performance.performanceCode || performance.performanceId;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
 
         if (!comparisons || comparisons.length === 0) {
             return; // No comparisons to render
@@ -685,18 +690,24 @@ class SalesCurveChart {
             .y(d => yScale(d.sales))
             .curve(d3.curveMonotoneX);
 
+        // Determine styling based on is_target flag
+        const isTarget = comparison.is_target === true;
+        const strokeWidth = isTarget ? 4 : 2.5;
+        const strokeDasharray = isTarget ? 'none' : this.getStrokeDashArray(comparison.line_style);
+        const opacity = isTarget ? 1.0 : 0.8;
+
         // Draw comparison line
         chartGroup.append("path")
             .datum(comparisonData)
-            .attr("class", `comparison-line comparison-${comparison.comparison_id}`)
+            .attr("class", `comparison-line comparison-${comparison.comparison_id} ${isTarget ? 'target-comp' : ''}`)
             .attr("d", line)
             .attr("fill", "none")
             .attr("stroke", comparison.line_color)
-            .attr("stroke-width", 2.5)
-            .attr("stroke-dasharray", this.getStrokeDashArray(comparison.line_style))
+            .attr("stroke-width", strokeWidth)
+            .attr("stroke-dasharray", strokeDasharray)
             .attr("stroke-linecap", "round")
             .attr("stroke-linejoin", "round")
-            .attr("opacity", 0.8)
+            .attr("opacity", opacity)
             .style("filter", `drop-shadow(0 1px 2px ${comparison.line_color}40)`);
 
         // Add data points for comparison line
@@ -707,7 +718,7 @@ class SalesCurveChart {
             .attr("class", `comparison-point comparison-point-${comparison.comparison_id}`)
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.sales))
-            .attr("r", 3)
+            .attr("r", 2)
             .attr("fill", comparison.line_color)
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
@@ -717,7 +728,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 5)
+                    .attr("r", 4.5)
                     .attr("opacity", 1);
 
                 // Show tooltip
@@ -725,7 +736,9 @@ class SalesCurveChart {
                 if (tooltip.empty()) return;
 
                 const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
+                const targetBadge = comparison.is_target ? '<span style="color: gold; font-weight: bold;">★ TARGET COMP</span><br/>' : '';
                 tooltip.html(`
+                    ${targetBadge}
                     <strong>${comparison.comparison_name}</strong><br/>
                     ${weekLabel}<br/>
                     Target: ${d.sales.toLocaleString()} tickets
@@ -742,7 +755,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 3)
+                    .attr("r", 2)
                     .attr("opacity", 0.7);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
@@ -769,6 +782,7 @@ class SalesCurveChart {
         const startIndex = 4;
 
         comparisons.forEach((comp, i) => {
+            const isTarget = comp.is_target === true;
             const legendRow = legend.append("g")
                 .attr("transform", `translate(0, ${(startIndex + i) * 20})`);
 
@@ -778,14 +792,24 @@ class SalesCurveChart {
                 .attr("y1", 10)
                 .attr("y2", 10)
                 .attr("stroke", comp.line_color)
-                .attr("stroke-width", 2.5)
-                .attr("stroke-dasharray", this.getStrokeDashArray(comp.line_style));
+                .attr("stroke-width", isTarget ? 4 : 2.5)
+                .attr("stroke-dasharray", isTarget ? 'none' : this.getStrokeDashArray(comp.line_style));
+
+            // Add star marker for target comp
+            if (isTarget) {
+                legendRow.append("text")
+                    .attr("x", -10)
+                    .attr("y", 14)
+                    .style("font-size", "14px")
+                    .style("fill", "gold")
+                    .text("★");
+            }
 
             legendRow.append("text")
                 .attr("x", 25)
                 .attr("y", 14)
                 .style("font-size", "11px")
-                .style("font-weight", "500")
+                .style("font-weight", isTarget ? "700" : "500")
                 .text(comp.comparison_name);
         });
     }

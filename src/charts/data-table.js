@@ -846,7 +846,9 @@ class DataTable {
             .on('click', () => this.showComparisonForm(comparisonsContainer, performance));
 
         // Load and display existing comparisons
-        const comparisons = await window.dataService.getPerformanceComparisons(performance.performanceId);
+        // Use performanceCode (Tessitura code) for comp lookups
+        const performanceCode = performance.performanceCode || performance.performanceId;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
 
         const comparisonsList = comparisonsContainer.append('div')
             .attr('class', 'comparisons-list');
@@ -1161,6 +1163,9 @@ class DataTable {
                     `);
 
                 try {
+                    // Use performanceCode (Tessitura code) for comp lookups
+                    const performanceCode = performance.performanceCode || performance.performanceId;
+
                     if (existingComparison) {
                         await window.dataService.updateComparison(existingComparison.comparison_id, {
                             comparisonName: name,
@@ -1169,7 +1174,7 @@ class DataTable {
                             lineStyle
                         });
                     } else {
-                        await window.dataService.createComparison(performance.performanceId, {
+                        await window.dataService.createComparison(performanceCode, {
                             comparisonName: name,
                             weeksData,
                             lineColor: color,
@@ -1446,10 +1451,10 @@ class DataTable {
         .attr('class', 'dot-tickets')
         .attr('cx', d => xScale(d.date))
         .attr('cy', d => yScaleTickets(d.tickets))
-        .attr('r', 5)
+        .attr('r', 2)
         .attr('fill', '#2E86AB')
         .attr('stroke', 'white')
-        .attr('stroke-width', 2)
+        .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             const tooltip = container.append('div')
@@ -1476,13 +1481,13 @@ class DataTable {
                 .style('top', (event.pageY - bbox.top - 10) + 'px');
 
             d3.select(this)
-                .attr('r', 7)
+                .attr('r', 5)
                 .attr('fill', '#F18F01');
         })
         .on('mouseout', function() {
             container.selectAll('.chart-tooltip').remove();
             d3.select(this)
-                .attr('r', 5)
+                .attr('r', 2)
                 .attr('fill', '#2E86AB');
         });
 
@@ -1617,10 +1622,10 @@ overlayHistoricalData(container, performance, historicalData) {
         .attr('class', 'historical-overlay-point')
         .attr('cx', d => xScale(d.week))
         .attr('cy', d => yScale(d.tickets))
-        .attr('r', 5)
+        .attr('r', 3)
         .attr('fill', '#3498db')
         .attr('stroke', 'white')
-        .attr('stroke-width', 2)
+        .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             // Create tooltip
@@ -1646,13 +1651,13 @@ overlayHistoricalData(container, performance, historicalData) {
                 .style('top', (event.pageY - 10) + 'px');
 
             d3.select(this)
-                .attr('r', 7)
+                .attr('r', 5)
                 .attr('fill', '#2980b9');
         })
         .on('mouseout', function() {
             d3.selectAll('.historical-tooltip').remove();
             d3.select(this)
-                .attr('r', 5)
+                .attr('r', 3)
                 .attr('fill', '#3498db');
         });
 

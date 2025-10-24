@@ -150,10 +150,10 @@ export function renderHistoricalTimelineChart(container, performance, historical
         .attr('class', 'dot-tickets')
         .attr('cx', d => xScale(d.date))
         .attr('cy', d => yScaleTickets(d.tickets))
-        .attr('r', 5)
+        .attr('r', 2)
         .attr('fill', '#2E86AB')
         .attr('stroke', 'white')
-        .attr('stroke-width', 2)
+        .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             const tooltip = container.append('div')
@@ -180,13 +180,13 @@ export function renderHistoricalTimelineChart(container, performance, historical
                 .style('top', (event.pageY - bbox.top - 10) + 'px');
 
             d3.select(this)
-                .attr('r', 7)
+                .attr('r', 5)
                 .attr('fill', '#F18F01');
         })
         .on('mouseout', function() {
             container.selectAll('.chart-tooltip').remove();
             d3.select(this)
-                .attr('r', 5)
+                .attr('r', 2)
                 .attr('fill', '#2E86AB');
         });
 

@@ -68,12 +68,28 @@ async function parsePDF(pdfPath, filename) {
 
     pdfParser.on('pdfParser_dataReady', pdfData => {
       const performances = [];
+      let reportDate = null;
 
       for (const page of pdfData.Pages) {
         const allItems = [];
         for (const textItem of page.Texts) {
           const content = decodeURIComponent(textItem.R[0].T);
           allItems.push(content);
+        }
+
+        // Extract report date from "Run by ... on MM/DD/YYYY ..." line
+        if (!reportDate) {
+          for (let i = 0; i < allItems.length; i++) {
+            const runByMatch = allItems[i].match(/Run by .* on (\d{1,2}\/\d{1,2}\/\d{4})/);
+            if (runByMatch) {
+              const dateParts = runByMatch[1].split('/');
+              const month = dateParts[0].padStart(2, '0');
+              const day = dateParts[1].padStart(2, '0');
+              const year = dateParts[2];
+              reportDate = `${year}-${month}-${day}`;
+              break;
+            }
+          }
         }
 
         // Find performance codes and extract data
@@ -136,7 +152,7 @@ async function parsePDF(pdfPath, filename) {
         }
       }
 
-      resolve(performances);
+      resolve({ performances, reportDate });
     });
 
     pdfParser.loadPDF(pdfPath);
@@ -195,12 +211,14 @@ async function processLocalDirectory(dirPath) {
 
   for (const filename of files) {
     const filepath = path.join(dirPath, filename);
-    const snapshotDate = extractSnapshotDate(filename, filepath);
-
-    console.log(`📄 Processing: ${filename} (date: ${snapshotDate})`);
+    const fallbackDate = extractSnapshotDate(filename, filepath);
 
     try {
-      const performances = await parsePDF(filepath, filename);
+      const result = await parsePDF(filepath, filename);
+      const performances = result.performances;
+      const snapshotDate = result.reportDate || fallbackDate;
+
+      console.log(`📄 Processing: ${filename} (date: ${snapshotDate})`);
       console.log(`   ✅ Parsed ${performances.length} performances`);
 
       // Convert to snapshot format
@@ -214,7 +232,7 @@ async function processLocalDirectory(dirPath) {
         total_revenue: perf.total_revenue,
         capacity_percent: perf.capacity_percent,
         budget_percent: perf.budget_percent,
-        source: 'historical_pdf_import',
+        source: 'historical_pdf_import_v2',
         source_filename: filename
       }));
 
@@ -267,9 +285,7 @@ async function processGCSBucket(bucketPath) {
 
   for (const file of pdfFiles) {
     const filename = path.basename(file.name);
-    const snapshotDate = extractSnapshotDate(filename, file.name);
-
-    console.log(`📄 Processing: ${file.name} (date: ${snapshotDate})`);
+    const fallbackDate = extractSnapshotDate(filename, file.name);
 
     try {
       // Download PDF to temporary buffer
@@ -279,7 +295,11 @@ async function processGCSBucket(bucketPath) {
       const tempPath = path.join(tempDir, filename);
       fs.writeFileSync(tempPath, contents);
 
-      const performances = await parsePDF(tempPath, filename);
+      const result = await parsePDF(tempPath, filename);
+      const performances = result.performances;
+      const snapshotDate = result.reportDate || fallbackDate;
+
+      console.log(`📄 Processing: ${file.name} (date: ${snapshotDate})`);
       console.log(`   ✅ Parsed ${performances.length} performances`);
 
       // Clean up temp file
@@ -296,7 +316,7 @@ async function processGCSBucket(bucketPath) {
         total_revenue: perf.total_revenue,
         capacity_percent: perf.capacity_percent,
         budget_percent: perf.budget_percent,
-        source: 'historical_pdf_import',
+        source: 'historical_pdf_import_v2',
         source_filename: file.name
       }));
 
