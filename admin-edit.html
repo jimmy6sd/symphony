@@ -260,12 +260,7 @@
     // Load performances on page load
     async function loadPerformances() {
       try {
-        const token = localStorage.getItem('authToken');
-
-        // If no token, try to fetch without auth (local dev mode)
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-        const response = await fetch('/.netlify/functions/bigquery-data?showCancelled=true', headers);
+        const response = await fetch('/.netlify/functions/bigquery-data?showCancelled=true');
 
         if (!response.ok) {
           throw new Error('Failed to load performances');
@@ -310,7 +305,7 @@
           <td>${statusBadge}</td>
           <td>${importDate ? new Date(importDate).toLocaleDateString() : 'Never'}</td>
           <td>
-            <button class="edit-btn" onclick="openEditModal('${perf.performance_code}')">Edit</button>
+            <a href="/admin/edit/${perf.performance_code}" class="edit-btn" onclick="event.preventDefault(); openEditModal('${perf.performance_code}');">Edit</a>
           </td>
         </tr>
       `}).join('');
@@ -320,6 +315,9 @@
       const perf = performances.find(p => p.performance_code === performanceCode);
       if (!perf) return;
 
+      // Update URL to reflect the performance being edited
+      window.history.pushState({}, '', `/admin/edit/${performanceCode}`);
+
       // Extract date value from object if needed
       const perfDate = perf.performance_date?.value || perf.performance_date || '';
       const importDate = perf.last_pdf_import_date?.value || perf.last_pdf_import_date;
@@ -327,9 +325,31 @@
       document.getElementById('edit_performance_code').value = perf.performance_code;
       document.getElementById('edit_code_display').value = perf.performance_code;
       document.getElementById('edit_title').value = perf.title || '';
-      document.getElementById('edit_series').value = perf.series || '';
+
+      // Set series - handle exact match or add as option if not in list
+      const seriesSelect = document.getElementById('edit_series');
+      const seriesValue = perf.series || '';
+      if (seriesValue && !Array.from(seriesSelect.options).some(opt => opt.value === seriesValue)) {
+        // Add the current series value as an option if it doesn't exist
+        const newOption = new Option(seriesValue, seriesValue, false, true);
+        seriesSelect.add(newOption);
+      } else {
+        seriesSelect.value = seriesValue;
+      }
+
       document.getElementById('edit_date').value = perfDate;
-      document.getElementById('edit_venue').value = perf.venue || '';
+
+      // Set venue - handle exact match or add as option if not in list
+      const venueSelect = document.getElementById('edit_venue');
+      const venueValue = perf.venue || '';
+      if (venueValue && !Array.from(venueSelect.options).some(opt => opt.value === venueValue)) {
+        // Add the current venue value as an option if it doesn't exist
+        const newOption = new Option(venueValue, venueValue, false, true);
+        venueSelect.add(newOption);
+      } else {
+        venueSelect.value = venueValue;
+      }
+
       document.getElementById('edit_season').value = perf.season || '';
       document.getElementById('edit_capacity').value = perf.capacity || '';
       document.getElementById('edit_cancelled').checked = perf.cancelled === true;
@@ -346,6 +366,9 @@
 
     function closeEditModal() {
       document.getElementById('editModal').style.display = 'none';
+
+      // Clear performance code from URL
+      window.history.pushState({}, '', '/admin-edit.html');
     }
 
     document.getElementById('editForm').addEventListener('submit', async (e) => {
@@ -363,18 +386,18 @@
       };
 
       try {
-        const token = localStorage.getItem('authToken');
         const response = await fetch('/.netlify/functions/update-performance-metadata', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ performance_code: performanceCode, updates })
         });
 
+        const responseData = await response.json();
+
         if (!response.ok) {
-          throw new Error('Failed to update performance');
+          throw new Error(responseData.message || 'Failed to update performance');
         }
 
         alert('Performance updated successfully!');
@@ -395,7 +418,15 @@
     });
 
     // Load performances on page load
-    loadPerformances();
+    loadPerformances().then(() => {
+      // Check URL path for performance code to auto-open edit modal
+      const pathMatch = window.location.pathname.match(/\/admin\/edit\/([^\/]+)/);
+      if (pathMatch) {
+        const performanceCode = pathMatch[1];
+        // Wait a bit for table rendering, then open modal
+        setTimeout(() => openEditModal(performanceCode), 300);
+      }
+    });
   </script>
 </body>
 </html>

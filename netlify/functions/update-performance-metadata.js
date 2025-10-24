@@ -35,12 +35,6 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Verify authentication
-    const authHeader = event.headers.authorization;
-    const decoded = verifyToken(authHeader);
-
-    console.log(`User ${decoded.username} updating performance metadata`);
-
     // Parse request body
     const { performance_code, updates } = JSON.parse(event.body);
 
@@ -68,18 +62,35 @@ exports.handler = async (event, context) => {
     }
 
     // Initialize BigQuery
-    const bigquery = new BigQuery({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-    });
+    let bigquery;
+    if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+      // Production: Use JSON credentials from environment variable
+      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+      bigquery = new BigQuery({
+        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        credentials: credentials
+      });
+    } else {
+      // Local development: Use key file
+      bigquery = new BigQuery({
+        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+      });
+    }
 
-    // Build UPDATE query dynamically
+    // Build UPDATE query dynamically with proper escaping
     const setClauses = [];
     Object.entries(updates).forEach(([field, value]) => {
-      if (typeof value === 'string') {
-        setClauses.push(`${field} = '${value.replace(/'/g, "\\'")}'`);
+      if (value === null || value === undefined) {
+        setClauses.push(`${field} = NULL`);
+      } else if (typeof value === 'string') {
+        // Escape single quotes for SQL
+        const escapedValue = value.replace(/'/g, "''");
+        setClauses.push(`${field} = '${escapedValue}'`);
       } else if (typeof value === 'boolean') {
         setClauses.push(`${field} = ${value ? 'TRUE' : 'FALSE'}`);
+      } else if (typeof value === 'number') {
+        setClauses.push(`${field} = ${value}`);
       } else {
         setClauses.push(`${field} = ${value}`);
       }
@@ -90,7 +101,7 @@ exports.handler = async (event, context) => {
       SET
         ${setClauses.join(',\n        ')},
         updated_at = CURRENT_TIMESTAMP()
-      WHERE performance_code = '${performance_code}'
+      WHERE performance_code = '${performance_code.replace(/'/g, "''")}'
     `;
 
     console.log('Executing update:', updateQuery);
@@ -111,28 +122,28 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         message: 'Performance metadata updated successfully',
         performance_code: performance_code,
-        updated_fields: updateFields,
-        updated_by: decoded.username
+        updated_fields: updateFields
       })
     };
 
   } catch (error) {
     console.error('Error updating performance metadata:', error);
-
-    if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ message: 'Invalid or expired token' })
-      };
-    }
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
 
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
         message: 'Failed to update performance metadata',
-        error: error.message
+        error: error.message,
+        errorType: error.name,
+        errorCode: error.code,
+        details: error.errors ? error.errors.map(e => e.message).join(', ') : undefined
       })
     };
   }
