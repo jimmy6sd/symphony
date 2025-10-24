@@ -1209,22 +1209,45 @@ class DataTable {
         }
     }
 
+// Patch for data-table.js - add after line 1211
+
     async renderSalesChart(container, performance) {
         console.log('🔄 renderSalesChart called for performance:', performance.performanceId || performance.id);
 
-        // Use the chart container's existing ID
-        const chartId = container.attr('id') || 'modal-sales-chart';
+        // Fetch historical snapshots for this performance
+        const performanceCode = performance.code || performance.performanceCode;
+        let historicalData = [];
 
-        // Create a sales curve chart instance without the selector
-        const salesChart = new SalesCurveChart(chartId, { showSelector: false });
+        try {
+            console.log(`📊 Fetching historical snapshots for ${performanceCode}...`);
+            const response = await fetch(
+                `/netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
+            );
 
-        // Set up the performance data for the chart
-        const chartData = [performance];
-        salesChart.data = chartData;
-        salesChart.selectedPerformance = performance.id;
+            if (response.ok) {
+                historicalData = await response.json();
+                console.log(`✅ Fetched ${historicalData.length} historical snapshots`);
+            } else {
+                console.warn('⚠️ No historical data available, using current data only');
+            }
+        } catch (error) {
+            console.warn('⚠️ Error fetching historical data:', error.message);
+        }
 
-        // Render the chart (now async to fetch comparisons)
-        await salesChart.render();
+        // If we have historical data (more than 1 snapshot), render timeline chart
+        if (historicalData && historicalData.length > 1) {
+            // Import and use the historical timeline chart
+            const { renderHistoricalTimelineChart } = await import('./historical-timeline-chart.js');
+            renderHistoricalTimelineChart(container, performance, historicalData);
+        } else {
+            // Fallback to standard sales curve chart
+            const chartId = container.attr('id') || 'modal-sales-chart';
+            const salesChart = new SalesCurveChart(chartId, { showSelector: false });
+            const chartData = [performance];
+            salesChart.data = chartData;
+            salesChart.selectedPerformance = performance.id;
+            await salesChart.render();
+        }
 
         console.log('✅ renderSalesChart complete');
     }
