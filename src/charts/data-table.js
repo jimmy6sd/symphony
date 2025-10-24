@@ -1226,7 +1226,7 @@ class DataTable {
         try {
             console.log(`📊 Fetching historical snapshots for ${performanceCode}...`);
             const response = await fetch(
-                `/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
+                `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
             );
 
             if (response.ok) {
