@@ -1217,10 +1217,13 @@ class DataTable {
 // Patch for data-table.js - add after line 1211
 
     async renderSalesChart(container, performance) {
-        console.log('🔄 renderSalesChart called for performance:', performance.performanceId || performance.id);
+        console.log('🔄 renderSalesChart called for performance:', performance);
+        console.log('   performance.code:', performance.code);
+        console.log('   performance.performanceCode:', performance.performanceCode);
+        console.log('   performance.id:', performance.id);
 
         // Fetch historical snapshots for this performance
-        const performanceCode = performance.code || performance.performanceCode;
+        const performanceCode = performance.code || performance.performanceCode || performance.id;
         let historicalData = [];
 
         try {
