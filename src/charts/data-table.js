@@ -1541,18 +1541,21 @@ overlayHistoricalData(container, performance, historicalData) {
     const performanceDate = new Date(performance.date);
     const parseDate = d3.timeParse('%Y-%m-%d');
 
-    // Transform historical data to weeks-out format
+    // Transform historical data to exact days-out format (not rounded to weeks)
     const historicalPoints = historicalData.map(snapshot => {
         const snapshotDate = parseDate(snapshot.snapshot_date);
-        const weeksOut = Math.ceil((performanceDate - snapshotDate) / (7 * 24 * 60 * 60 * 1000));
+        const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
+        const exactWeeksOut = daysOut / 7; // Precise decimal weeks (e.g., 4.3 weeks)
         return {
-            week: Math.max(0, weeksOut),
+            week: Math.max(0, exactWeeksOut),
+            weeksRounded: Math.max(0, Math.ceil(exactWeeksOut)),
+            daysOut: Math.max(0, daysOut),
             tickets: snapshot.total_tickets_sold || 0,
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date
         };
     }).filter(d => d.week >= 0 && d.week <= 10) // Only show last 10 weeks
-      .sort((a, b) => b.week - a.week); // Sort by week descending
+      .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
 
     console.log('📊 Historical points to overlay:', historicalPoints);
 
@@ -1626,7 +1629,8 @@ overlayHistoricalData(container, performance, historicalData) {
                 .style('pointer-events', 'none')
                 .style('z-index', '10000')
                 .html(`
-                    <strong>Week ${d.week} (${d.snapshot_date})</strong><br/>
+                    <strong>${d.snapshot_date}</strong><br/>
+                    <span style="color: #999;">●</span> ${Math.round(d.daysOut)} days before performance<br/>
                     <span style="color: #3498db;">●</span> Tickets Sold: ${d.tickets.toLocaleString()}
                 `);
 

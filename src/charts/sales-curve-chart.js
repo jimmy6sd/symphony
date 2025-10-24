@@ -204,6 +204,16 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5");
 
+        // Label for total capacity line
+        chartGroup.append("text")
+            .attr("x", innerWidth - 5)
+            .attr("y", yScale(capacity) - 5)
+            .attr("text-anchor", "end")
+            .attr("fill", "#999")
+            .attr("font-size", "12px")
+            .attr("font-weight", "600")
+            .text(`Total Capacity (${capacity.toLocaleString()})`);
+
         // Draw available single tickets line (capacity minus subscriptions)
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
@@ -225,28 +235,6 @@ class SalesCurveChart {
             .attr("font-size", "12px")
             .attr("font-weight", "600")
             .text(`Available Single Tickets (${availableSingleCapacity.toLocaleString()})`);
-
-        // Draw occupancy goal line (now based on subscription + single ticket target)
-        const singleTicketTarget = Math.floor(availableSingleCapacity * (performance.occupancyGoal / 100));
-        const occupancyTarget = subscriptionSeats + singleTicketTarget;
-        chartGroup.append("line")
-            .attr("x1", 0)
-            .attr("x2", innerWidth)
-            .attr("y1", yScale(occupancyTarget))
-            .attr("y2", yScale(occupancyTarget))
-            .attr("stroke", CONFIG.charts.colors.occupancyGoal)
-            .attr("stroke-width", 2)
-            .attr("stroke-dasharray", "3,3");
-
-        // Label for occupancy goal line
-        chartGroup.append("text")
-            .attr("x", innerWidth - 5)
-            .attr("y", yScale(occupancyTarget) - 5)
-            .attr("text-anchor", "end")
-            .attr("fill", CONFIG.charts.colors.occupancyGoal)
-            .attr("font-size", "12px")
-            .attr("font-weight", "600")
-            .text(`Occupancy Goal (${occupancyTarget.toLocaleString()})`);
 
         // Draw expected sales line (on-track heuristic) - 6 weeks only
         chartGroup.append("path")
@@ -563,7 +551,6 @@ class SalesCurveChart {
         const legendItems = [
             { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
             { label: "Target Sales (85% of avail.)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
-            { label: "Occupancy Goal", color: CONFIG.charts.colors.occupancyGoal, style: "dashed" },
             { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
             { label: "Total Capacity", color: "#ccc", style: "dashed" }
         ];
@@ -777,8 +764,8 @@ class SalesCurveChart {
 
         if (legend.empty()) return;
 
-        // Count existing legend items (5 default items)
-        const startIndex = 5;
+        // Count existing legend items (4 default items)
+        const startIndex = 4;
 
         comparisons.forEach((comp, i) => {
             const legendRow = legend.append("g")
