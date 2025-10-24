@@ -15,7 +15,8 @@
         utilities: [
             '/src/utils/logger.js',
             '/src/utils/error-handler.js',
-            '/src/utils/validators.js'
+            '/src/utils/validators.js',
+            '/src/utils/router.js'
         ],
 
         // Configuration

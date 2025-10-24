@@ -35,9 +35,10 @@ class DataService {
                 venue: perf.venue || "HELZBERG HALL",
                 season: perf.season,
                 capacity: capacity,
-                singleTicketsSold: perf.breakdown?.single?.count || Math.round(ticketsSold * 0.6),
-                subscriptionTicketsSold: (perf.breakdown?.fixedPackages?.count || 0) +
-                                       (perf.breakdown?.nonFixedPackages?.count || 0) ||
+                singleTicketsSold: ((perf.breakdown?.single?.count || 0) +
+                                   (perf.breakdown?.nonFixedPackages?.count || 0)) ||
+                                   Math.round(ticketsSold * 0.6),
+                subscriptionTicketsSold: (perf.breakdown?.fixedPackages?.count || 0) ||
                                        Math.round(ticketsSold * 0.4),
                 totalRevenue: revenue,
                 occupancyGoal: 85,

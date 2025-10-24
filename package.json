@@ -20,6 +20,7 @@
     "merge-data": "node scripts/merge-excel-bigquery.js",
     "build-dashboard-data": "node scripts/create-dashboard-data.js",
     "refresh-dashboard": "npm run extract-excel && npm run build-dashboard-data",
+    "fix-subscription-data": "node scripts/fix-subscription-data.js",
     "feature:start": "git checkout develop && git pull origin develop && git checkout -b",
     "deploy:production": "git checkout main && git merge develop && git push origin main",
     "deploy:preview": "git push origin HEAD"

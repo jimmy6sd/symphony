@@ -340,24 +340,25 @@ async function processPdfBase64(base64Data, metadata) {
             const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
-            // Yellow columns (subscriptions) = Fixed + Non-Fixed packages
-            const subscriptionTickets = fixedCount + nonFixedCount;
-            // Green column (single tickets)
-            const totalSold = subscriptionTickets + singleCount;
+            // Fixed packages = subscriptions
+            const subscriptionTickets = fixedCount;
+            // Single tickets + Non-Fixed packages = single tickets
+            const singleTicketsTotal = singleCount + nonFixedCount;
+            const totalSold = subscriptionTickets + singleTicketsTotal;
 
             // NOTE: Only sales data is included here (goes to snapshots table)
             // Metadata (capacity, budget_goal, etc.) comes from performances table
             const performance = {
               performance_code: performanceCode,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              single_tickets_sold: singleCount,
+              single_tickets_sold: singleTicketsTotal,
               subscription_tickets_sold: subscriptionTickets,
               total_revenue: totalRevenue,
               capacity_percent: capacityPercent,  // From report (can validate)
               budget_percent: budgetPercent       // From report
             };
 
-            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleTicketsTotal} single (incl. non-fixed), ${subscriptionTickets} sub (fixed only), $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
             performances.push(performance);
           }
         }
@@ -451,13 +452,14 @@ async function processPdfUrl(url, metadata) {
             const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
-            const subscriptionTickets = fixedCount + nonFixedCount;
-            const totalSold = subscriptionTickets + singleCount;
+            const subscriptionTickets = fixedCount;
+            const singleTicketsTotal = singleCount + nonFixedCount;
+            const totalSold = subscriptionTickets + singleTicketsTotal;
 
             performances.push({
               performance_code: performanceCode,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              single_tickets_sold: singleCount,
+              single_tickets_sold: singleTicketsTotal,
               subscription_tickets_sold: subscriptionTickets,
               total_revenue: totalRevenue,
               capacity_percent: capacityPercent,
@@ -799,12 +801,13 @@ async function parseTabularFormat(lines) {
       const availSeats = parts.length > 12 ? parseInt(parts[12]) || 0 : 0;
       const capacityPercent = parts.length > 13 ? parseFloat(parts[13]) : 0;
 
-      const subscriptionTickets = fixedCount + nonFixedCount;
+      const subscriptionTickets = fixedCount;
+      const singleTicketsTotal = singleCount + nonFixedCount;
 
       const performance = {
         performance_code: performanceCode,
         performance_date: parseDate(dateTime) || '2025-01-01',
-        single_tickets_sold: singleCount,
+        single_tickets_sold: singleTicketsTotal,
         subscription_tickets_sold: subscriptionTickets,
         total_revenue: totalRevenue,
         capacity_percent: capacityPercent,
