@@ -806,7 +806,12 @@ class DataTable {
         });
 
         // Add Comparisons Management section
-        await this.renderComparisonsSection(modal, performance);
+        // Ensure performanceCode is available for comparisons
+        const enrichedPerfForComps = {
+            ...performance,
+            performanceCode: performance.performanceCode || performance.performance_code || performance.id
+        };
+        await this.renderComparisonsSection(modal, enrichedPerfForComps);
 
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {
@@ -1286,9 +1291,16 @@ class DataTable {
         // Always use the standard sales curve chart (weeks-out view)
         const chartId = container.attr('id') || 'modal-sales-chart';
         const salesChart = new SalesCurveChart(chartId, { showSelector: false });
-        const chartData = [performance];
+
+        // Ensure performanceCode is available (use performance_code from BigQuery or performanceCode field)
+        const enrichedPerformance = {
+            ...performance,
+            performanceCode: performance.performanceCode || performance.performance_code || performance.id
+        };
+
+        const chartData = [enrichedPerformance];
         salesChart.data = chartData;
-        salesChart.selectedPerformance = performance.id;
+        salesChart.selectedPerformance = enrichedPerformance.id;
         await salesChart.render();
 
         // If we have historical data, overlay it on top of the weeks-out chart

@@ -1,5 +1,6 @@
 class SalesCurveChart {
     constructor(containerId, options = {}) {
+        console.log('🔥 SalesCurveChart v2.0 - PERFORMANCECODE FIX LOADED - Oct 24 10:30pm');
         this.containerId = containerId;
         this.data = [];
         this.svg = null;
@@ -130,9 +131,15 @@ class SalesCurveChart {
 
         // Calculate maxWeeks dynamically based on comparisons
         // Use performanceCode (Tessitura code) for comp lookups, fallback to performanceId
+        console.log('🔍 DEBUG: performance.performanceCode =', performance.performanceCode);
+        console.log('🔍 DEBUG: performance.performanceId =', performance.performanceId);
         const performanceCode = performance.performanceCode || performance.performanceId;
-        console.log('📊 Looking up comps for:', performanceCode);
+        console.log('📊 Looking up comps for:', performanceCode, '(type:', typeof performanceCode, ')');
         const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        console.log('🔍 DEBUG: Fetched comparisons:', comparisons);
+        if (comparisons && comparisons.length > 0) {
+            comparisons.forEach(c => console.log('   📊 Comp:', c.comparison_name, '| is_target:', c.is_target, '| color:', c.line_color, '| style:', c.line_style));
+        }
         const maxComparisonWeeks = comparisons && comparisons.length > 0
             ? Math.max(...comparisons.map(c => c.weeksArray.length))
             : 0;
@@ -692,9 +699,11 @@ class SalesCurveChart {
 
         // Determine styling based on is_target flag
         const isTarget = comparison.is_target === true;
-        const strokeWidth = isTarget ? 4 : 2.5;
+        console.log('🎨 Styling comp:', comparison.comparison_name, '| is_target:', comparison.is_target, '| isTarget:', isTarget);
+        const strokeWidth = isTarget ? 6 : 2.5;  // Make target even thicker
         const strokeDasharray = isTarget ? 'none' : this.getStrokeDashArray(comparison.line_style);
-        const opacity = isTarget ? 1.0 : 0.8;
+        const opacity = isTarget ? 1.0 : 0.7;  // Make others more transparent
+        console.log('   strokeWidth:', strokeWidth, '| dasharray:', strokeDasharray, '| opacity:', opacity);
 
         // Draw comparison line
         chartGroup.append("path")
@@ -778,35 +787,39 @@ class SalesCurveChart {
 
         if (legend.empty()) return;
 
-        // Count existing legend items (4 default items)
-        const startIndex = 4;
+        // Count existing legend items (5 default items: Actual Sales, Actual Ticket Sales, Target Sales, Available Single Tickets, Total Capacity)
+        const startIndex = 5;
 
         comparisons.forEach((comp, i) => {
             const isTarget = comp.is_target === true;
             const legendRow = legend.append("g")
                 .attr("transform", `translate(0, ${(startIndex + i) * 20})`);
 
-            legendRow.append("line")
-                .attr("x1", 0)
-                .attr("x2", 20)
-                .attr("y1", 10)
-                .attr("y2", 10)
-                .attr("stroke", comp.line_color)
-                .attr("stroke-width", isTarget ? 4 : 2.5)
-                .attr("stroke-dasharray", isTarget ? 'none' : this.getStrokeDashArray(comp.line_style));
-
             // Add star marker for target comp
             if (isTarget) {
                 legendRow.append("text")
-                    .attr("x", -10)
+                    .attr("x", 0)
                     .attr("y", 14)
-                    .style("font-size", "14px")
+                    .style("font-size", "16px")
                     .style("fill", "gold")
+                    .style("font-weight", "bold")
                     .text("★");
             }
 
+            // Shift line and text right if target to make room for star
+            const xOffset = isTarget ? 18 : 0;
+
+            legendRow.append("line")
+                .attr("x1", xOffset)
+                .attr("x2", 20 + xOffset)
+                .attr("y1", 10)
+                .attr("y2", 10)
+                .attr("stroke", comp.line_color)
+                .attr("stroke-width", isTarget ? 6 : 2.5)
+                .attr("stroke-dasharray", isTarget ? 'none' : this.getStrokeDashArray(comp.line_style));
+
             legendRow.append("text")
-                .attr("x", 25)
+                .attr("x", 25 + xOffset)
                 .attr("y", 14)
                 .style("font-size", "11px")
                 .style("font-weight", isTarget ? "700" : "500")

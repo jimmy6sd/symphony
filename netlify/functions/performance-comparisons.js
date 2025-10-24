@@ -138,11 +138,12 @@ async function getComparisons(bigquery, params, headers) {
       weeks_data,
       line_color,
       line_style,
+      is_target,
       created_at,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
     WHERE performance_id = ?
-    ORDER BY created_at DESC
+    ORDER BY is_target DESC, created_at DESC
   `;
 
   const [rows] = await bigquery.query({
@@ -171,7 +172,8 @@ async function createComparison(bigquery, data, headers) {
     comparisonName,
     weeksData,
     lineColor = '#4285f4',
-    lineStyle = 'dashed'
+    lineStyle = 'dashed',
+    isTarget = false
   } = data;
 
   // Validation
@@ -201,10 +203,25 @@ async function createComparison(bigquery, data, headers) {
   const comparisonId = uuidv4();
   const now = new Date().toISOString();
 
+  // Business Rule: If setting this as target, unset all other targets for this performance
+  if (isTarget) {
+    const unsetQuery = `
+      UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      SET is_target = FALSE, updated_at = CURRENT_TIMESTAMP()
+      WHERE performance_id = ? AND is_target = TRUE
+    `;
+
+    await bigquery.query({
+      query: unsetQuery,
+      params: [String(performanceId)],
+      location: 'US'
+    });
+  }
+
   const query = `
     INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
+    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
   `;
 
   await bigquery.query({
@@ -216,6 +233,7 @@ async function createComparison(bigquery, data, headers) {
       weeksData.trim(),
       lineColor,
       lineStyle,
+      isTarget,
       now,
       now
     ],
@@ -232,6 +250,7 @@ async function createComparison(bigquery, data, headers) {
       weeksData: weeksData.trim(),
       lineColor,
       lineStyle,
+      isTarget,
       weeksArray,
       createdAt: now
     })
@@ -244,8 +263,42 @@ async function updateComparison(bigquery, comparisonId, data, headers) {
     comparisonName,
     weeksData,
     lineColor,
-    lineStyle
+    lineStyle,
+    isTarget
   } = data;
+
+  // Business Rule: If setting this as target, first get performance_id, then unset other targets
+  if (isTarget === true) {
+    // Get performance_id for this comparison
+    const getPerformanceQuery = `
+      SELECT performance_id
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      WHERE comparison_id = ?
+    `;
+
+    const [perfRows] = await bigquery.query({
+      query: getPerformanceQuery,
+      params: [comparisonId],
+      location: 'US'
+    });
+
+    if (perfRows.length > 0) {
+      const performanceId = perfRows[0].performance_id;
+
+      // Unset all other targets for this performance
+      const unsetQuery = `
+        UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+        SET is_target = FALSE, updated_at = CURRENT_TIMESTAMP()
+        WHERE performance_id = ? AND comparison_id != ? AND is_target = TRUE
+      `;
+
+      await bigquery.query({
+        query: unsetQuery,
+        params: [performanceId, comparisonId],
+        location: 'US'
+      });
+    }
+  }
 
   // Build dynamic update query based on provided fields
   const updates = [];
@@ -277,6 +330,10 @@ async function updateComparison(bigquery, comparisonId, data, headers) {
   if (lineStyle !== undefined) {
     updates.push('line_style = ?');
     params.push(lineStyle);
+  }
+  if (isTarget !== undefined) {
+    updates.push('is_target = ?');
+    params.push(isTarget);
   }
 
   if (updates.length === 0) {
