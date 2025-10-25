@@ -138,7 +138,7 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
     LEFT JOIN latest_snapshots s
       ON p.performance_code = s.performance_code AND s.rn = 1
-    WHERE 1=1
+    WHERE (p.cancelled = FALSE OR p.cancelled IS NULL)
   `;
 
   const queryParams = [];
