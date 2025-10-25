@@ -763,16 +763,10 @@ class DataTable {
             { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
             { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true, spacing: 'bottom' },
             { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
-            { label: 'Single Ticket Target (85%)', value: singleTicketTarget.toLocaleString() },
-            { label: 'Single Sales Progress', value: singleTicketProgress.toFixed(1) + '%',
-              color: singleTicketProgress >= 85 ? '#27ae60' : singleTicketProgress >= 60 ? '#f39c12' : '#e74c3c' },
+            // Note: Target comp data is shown in the comparisons chart below
             // Add projection data if available
             ...(projection.canProject ? [
                 { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isBold: true },
-                { label: 'Projected vs Target', value: projectionPerformance.percentage.toFixed(1) + '%',
-                  color: projectionPerformance.status === 'excellent' ? '#27ae60' :
-                         projectionPerformance.status === 'good' ? '#27ae60' :
-                         projectionPerformance.status === 'warning' ? '#f39c12' : '#e74c3c' },
                 { label: 'Projection Basis', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }
             ] : [
                 { label: 'Projected Singles', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }

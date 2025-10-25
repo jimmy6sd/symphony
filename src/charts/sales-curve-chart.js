@@ -246,19 +246,8 @@ class SalesCurveChart {
             .attr("font-weight", "600")
             .text(`Available Single Tickets (${availableSingleCapacity.toLocaleString()})`);
 
-        // Draw expected sales line (on-track heuristic) - 6 weeks only
-        chartGroup.append("path")
-            .datum(onTrackData)
-            .attr("class", "expected-line")
-            .attr("d", expectedLine)
-            .attr("fill", "none")
-            .attr("stroke", CONFIG.charts.colors.onTrackLine || "#2ca02c")
-            .attr("stroke-width", 3)
-            .attr("stroke-dasharray", "8,4") // Dashed line to indicate target
-            .attr("stroke-linecap", "round")
-            .attr("stroke-linejoin", "round")
-            .style("filter", "drop-shadow(0 1px 2px rgba(44, 160, 44, 0.2))")
-            .attr("opacity", 0.9);
+        // REMOVED: Green target sales line - now using historical comp lines instead
+        // The target comp is marked with is_target flag and shown with thick orange line
 
         // Draw single actual sales point (current sales at current week)
         if (currentSales > 0 && weeksToPerformance <= maxWeeks) {
@@ -287,34 +276,7 @@ class SalesCurveChart {
         // Render comparison lines
         this.renderComparisonLines(chartGroup, xScale, yScale, performance);
 
-        // Add data points for expected sales (6 weeks only)
-        const expectedPoints = chartGroup.selectAll(".expected-point")
-            .data(onTrackData.filter(d => d.hasTarget && d.expectedCumulative !== null))
-            .enter()
-            .append("circle")
-            .attr("class", "expected-point")
-            .attr("cx", d => xScale(d.week))
-            .attr("cy", d => yScale(d.expectedCumulative))
-            .attr("r", 2.5)
-            .attr("fill", CONFIG.charts.colors.onTrackLine || "#2ca02c")
-            .attr("stroke", "white")
-            .attr("stroke-width", 1.5)
-            .attr("opacity", 0.8)
-            .style("cursor", "pointer")
-            .on("mouseover", function(event, d) {
-                d3.select(this)
-                    .transition()
-                    .duration(200)
-                    .attr("r", 5)
-                    .attr("opacity", 1);
-            })
-            .on("mouseout", function(event, d) {
-                d3.select(this)
-                    .transition()
-                    .duration(200)
-                    .attr("r", 2.5)
-                    .attr("opacity", 0.8);
-            });
+        // REMOVED: Target line data points - now using historical comp data points instead
 
         // X-axis
         const xAxis = chartGroup.append("g")
@@ -371,7 +333,7 @@ class SalesCurveChart {
             .text("Cumulative Tickets Sold");
 
         // Add performance tracking status
-        this.addTrackingStatus(chartGroup, performance, innerWidth);
+        await this.addTrackingStatus(chartGroup, performance, innerWidth);
 
         // Add legend
         this.addLegend(chartGroup, innerWidth);
@@ -490,30 +452,40 @@ class SalesCurveChart {
         return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
     }
 
-    addTrackingStatus(chartGroup, performance, innerWidth) {
-        // Track ONLY single ticket sales vs single ticket target
+    async addTrackingStatus(chartGroup, performance, innerWidth) {
+        // Track ONLY single ticket sales vs target historical comp
         const singleTicketsSold = performance.singleTicketsSold || 0;
 
         const today = new Date();
         const performanceDate = new Date(performance.date);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
-        const onTrackData = this.generateOnTrackLine(performance, 10);
-        const expectedAtCurrentWeek = onTrackData.find(d => d.week === weeksToPerformance);
+        // Get target comp data
+        const performanceCode = performance.performanceCode || performance.performanceId;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        const targetComp = comparisons?.find(c => c.is_target === true);
 
-        if (!expectedAtCurrentWeek || !expectedAtCurrentWeek.expectedCumulative) return;
+        if (!targetComp || !targetComp.weeksArray) return; // No target comp set
 
-        // Calculate variance based on SINGLE TICKET sales only
-        const variance = singleTicketsSold - expectedAtCurrentWeek.expectedCumulative;
-        const variancePercentage = ((variance / expectedAtCurrentWeek.expectedCumulative) * 100).toFixed(1);
+        // Find target comp value at current week
+        const numWeeks = targetComp.weeksArray.length;
+        const weekIndex = numWeeks - 1 - weeksToPerformance; // Map week to array index
+
+        if (weekIndex < 0 || weekIndex >= numWeeks) return; // Week out of range
+
+        const targetCompSales = targetComp.weeksArray[weekIndex];
+
+        // Calculate variance based on SINGLE TICKET sales vs target comp
+        const variance = singleTicketsSold - targetCompSales;
+        const variancePercentage = ((variance / targetCompSales) * 100).toFixed(1);
 
         let status = "On Track";
-        let statusColor = CONFIG.charts.colors.onTrackLine;
+        let statusColor = targetComp.line_color || "#f97316";
 
-        if (variance < -expectedAtCurrentWeek.expectedCumulative * 0.1) {
+        if (variance < -targetCompSales * 0.1) {
             status = "Behind";
             statusColor = "#d62728";
-        } else if (variance > expectedAtCurrentWeek.expectedCumulative * 0.1) {
+        } else if (variance > targetCompSales * 0.1) {
             status = "Ahead";
             statusColor = "#2ca02c";
         }
@@ -535,7 +507,7 @@ class SalesCurveChart {
             .attr("text-anchor", "middle")
             .attr("font-size", "14px")
             .attr("font-weight", "bold")
-            .text("Sales Tracking Status");
+            .text("Sales vs Target Comp");
 
         statusGroup.append("text")
             .attr("x", 90)
@@ -551,7 +523,7 @@ class SalesCurveChart {
             .attr("y", 60)
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
-            .text(`${variance > 0 ? '+' : ''}${variance.toLocaleString()} tickets vs target`);
+            .text(`${variance > 0 ? '+' : ''}${variance.toLocaleString()} tickets`);
     }
 
     addLegend(chartGroup, innerWidth) {
@@ -561,7 +533,6 @@ class SalesCurveChart {
         const legendItems = [
             { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
             { label: "Actual Ticket Sales", color: "#3498db", style: "solid", lineWidth: 3 },
-            { label: "Target Sales (85% of avail.)", color: CONFIG.charts.colors.onTrackLine || "#2ca02c", style: "dashed" },
             { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
             { label: "Total Capacity", color: "#ccc", style: "dashed" }
         ];
@@ -604,16 +575,13 @@ class SalesCurveChart {
         // Tooltip for current sales point
         this.svg.selectAll(".current-sales-point")
             .on("mouseover", function(event) {
-                const expected = expectedData.find(e => e.week === weeksToPerformance);
-                const variance = expected ? currentSales - expected.expectedCumulative : 0;
                 const capacityPercent = performance.capacity ? ((currentSales / performance.capacity) * 100).toFixed(1) : 'N/A';
 
                 tooltip.html(`
                     <strong>Current Sales (${weeksToPerformance} weeks before)</strong><br/>
                     Actual: ${currentSales.toLocaleString()} tickets<br/>
-                    Target: ${expected ? expected.expectedCumulative.toLocaleString() : 'N/A'} tickets<br/>
-                    Variance: ${variance > 0 ? '+' : ''}${variance.toLocaleString()}<br/>
-                    Capacity: ${capacityPercent}%
+                    Capacity: ${capacityPercent}%<br/>
+                    <em>Compare to historical comp lines below</em>
                 `);
                 return tooltip.style("visibility", "visible");
             })
@@ -626,28 +594,7 @@ class SalesCurveChart {
                 return tooltip.style("visibility", "hidden");
             });
 
-        // Tooltip for expected sales points (target line)
-        this.svg.selectAll(".expected-point")
-            .on("mouseover", function(event, d) {
-                const targetPercent = performance.capacity ? ((d.expectedCumulative / performance.capacity) * 100).toFixed(1) : 'N/A';
-                const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
-
-                tooltip.html(`
-                    <strong>Target Sales (${weekLabel})</strong><br/>
-                    Expected: ${d.expectedCumulative.toLocaleString()} tickets<br/>
-                    Target %: ${d.expectedPercentage.toFixed(1)}% of goal<br/>
-                    Capacity: ${targetPercent}%
-                `);
-                return tooltip.style("visibility", "visible");
-            })
-            .on("mousemove", function(event) {
-                return tooltip
-                    .style("top", (event.pageY - 10) + "px")
-                    .style("left", (event.pageX + 10) + "px");
-            })
-            .on("mouseout", function() {
-                return tooltip.style("visibility", "hidden");
-            });
+        // REMOVED: Tooltip for target line points - using historical comp tooltips instead
     }
 
     async renderComparisonLines(chartGroup, xScale, yScale, performance) {
@@ -787,8 +734,8 @@ class SalesCurveChart {
 
         if (legend.empty()) return;
 
-        // Count existing legend items (5 default items: Actual Sales, Actual Ticket Sales, Target Sales, Available Single Tickets, Total Capacity)
-        const startIndex = 5;
+        // Count existing legend items (4 default items: Actual Sales, Actual Ticket Sales, Available Single Tickets, Total Capacity)
+        const startIndex = 4;
 
         comparisons.forEach((comp, i) => {
             const isTarget = comp.is_target === true;
