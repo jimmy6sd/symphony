@@ -331,9 +331,12 @@ async function getSalesProgression(bigquery, params, headers) {
 }
 
 // Get week-over-week changes for all performances in one efficient query
+// W/W = (This Week's Tickets) - (Last Week's Tickets)
+// Example: This week = 100 tickets, Last week = 80 tickets => W/W = +20
 async function getAllWeekOverWeek(bigquery, params, headers) {
   const query = `
     WITH LatestSnapshots AS (
+      -- Get most recent snapshot for each performance (THIS WEEK's data)
       SELECT
         performance_code,
         snapshot_date,
@@ -343,6 +346,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
     ),
     WeekAgoSnapshots AS (
+      -- Find snapshot from ~7 days ago (LAST WEEK's data)
       SELECT
         s.performance_code,
         s.snapshot_date,
@@ -359,7 +363,9 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
     )
     SELECT
       l.performance_code,
+      l.snapshot_date as this_week_date,
       l.single_tickets_sold as current_tickets,
+      w.snapshot_date as last_week_date,
       w.single_tickets_sold as week_ago_tickets,
       l.single_tickets_sold - COALESCE(w.single_tickets_sold, 0) as tickets_change,
       l.total_revenue as current_revenue,
