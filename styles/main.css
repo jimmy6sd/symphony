@@ -777,6 +777,47 @@ body {
 .budget-warning { color: var(--warning-color); }
 .budget-poor { color: var(--danger-color); }
 
+/* Revenue cell with W/W */
+.revenue-cell {
+    text-align: right;
+}
+
+.revenue-amount {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.revenue-wow {
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+/* Tickets cell with W/W */
+.tickets-cell {
+    text-align: center;
+}
+
+.tickets-amount {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.tickets-wow {
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+/* Week-over-week styling */
+.wow-positive {
+    color: var(--success-color);
+}
+
+.wow-negative {
+    color: var(--danger-color);
+}
+
 /* Data table as main view */
 #data-table-view {
     margin-top: var(--spacing-md);
