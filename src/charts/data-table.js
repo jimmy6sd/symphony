@@ -349,6 +349,12 @@ class DataTable {
         await Promise.all(promises);
 
         console.log('✅ Completed enrichWithSnapshotData - sample data:', this.data[0]?._weekOverWeek);
+
+        // Re-render table rows to show W/W data
+        if (this.container) {
+            console.log('🔄 Re-rendering table with W/W data');
+            this.renderTableRows();
+        }
     }
 
     calculateWeekOverWeekChanges(snapshots) {
