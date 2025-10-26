@@ -810,6 +810,22 @@ body {
     font-weight: 600;
 }
 
+/* Occupancy cell with W/W */
+.occupancy-cell {
+    text-align: center;
+}
+
+.occupancy-amount {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.occupancy-wow {
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
 /* Week-over-week styling */
 .wow-positive {
     color: var(--success-color);
@@ -828,6 +844,21 @@ body {
     overflow-x: auto;
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
+}
+
+/* Group row styling - different background for production groups */
+.group-row {
+    background-color: rgba(102, 126, 234, 0.05);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.group-row:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+}
+
+.child-row {
+    background-color: var(--surface-color);
 }
 
 /* Filter Bar Styles */

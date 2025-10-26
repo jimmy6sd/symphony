@@ -249,29 +249,7 @@ class SalesCurveChart {
         // REMOVED: Green target sales line - now using historical comp lines instead
         // The target comp is marked with is_target flag and shown with thick orange line
 
-        // Draw single actual sales point (current sales at current week)
-        if (currentSales > 0 && weeksToPerformance <= maxWeeks) {
-            // Add a subtle glow effect
-            chartGroup.append("circle")
-                .attr("class", "current-sales-glow")
-                .attr("cx", xScale(weeksToPerformance))
-                .attr("cy", yScale(currentSales))
-                .attr("r", 6)
-                .attr("fill", CONFIG.charts.colors.actualSales)
-                .attr("opacity", 0.2);
-
-            chartGroup.append("circle")
-                .attr("class", "current-sales-point")
-                .attr("cx", xScale(weeksToPerformance))
-                .attr("cy", yScale(currentSales))
-                .attr("r", 2)
-                .attr("fill", CONFIG.charts.colors.actualSales)
-                .attr("stroke", "white")
-                .attr("stroke-width", 1.5)
-                .style("filter", "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))");
-        }
-
-        // No multiple actual sales points - only the single current sales point above
+        // REMOVED: Current sales point (red dot) - no longer needed
 
         // Render comparison lines
         this.renderComparisonLines(chartGroup, xScale, yScale, performance);

@@ -155,7 +155,43 @@ class DataTable {
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
 
-                    return `${rate.toFixed(1)}%`;
+                    // For group rows, aggregate W/W from child performances
+                    if (row.isGroup && row.performances) {
+                        const totalWowTickets = row.performances.reduce((sum, perf) => {
+                            return sum + (perf._weekOverWeek?.tickets || 0);
+                        }, 0);
+
+                        const totalCapacity = row.performances.reduce((sum, perf) => sum + (perf.capacity || 0), 0);
+
+                        if (totalWowTickets !== 0 && totalCapacity > 0) {
+                            const wowOccupancyChange = (totalWowTickets / totalCapacity * 100);
+                            const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
+                            return `
+                                <div class="occupancy-cell">
+                                    <div class="occupancy-amount">${rate.toFixed(1)}%</div>
+                                    <div class="occupancy-wow ${changeClass}">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
+                                </div>
+                            `;
+                        }
+
+                        return `${rate.toFixed(1)}%`;
+                    }
+
+                    const wow = row._weekOverWeek;
+
+                    if (!wow || !wow.available || !capacity) {
+                        return `${rate.toFixed(1)}%`;
+                    }
+
+                    const wowOccupancyChange = (wow.tickets / capacity * 100);
+                    const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
+
+                    return `
+                        <div class="occupancy-cell">
+                            <div class="occupancy-amount">${rate.toFixed(1)}%</div>
+                            <div class="occupancy-wow ${changeClass}">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
+                        </div>
+                    `;
                 }
             },
             {
