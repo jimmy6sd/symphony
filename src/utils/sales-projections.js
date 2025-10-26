@@ -142,3 +142,96 @@ function formatProjectionText(projection) {
 
     return `Based on ${Math.round(projection.pacing * 100)}% pacing (${weeksText})`;
 }
+
+/**
+ * Calculate projected final sales based on target comp variance
+ * @param {number} currentSingleTicketsSold - Current single tickets sold
+ * @param {string} performanceDate - Date string in YYYY-MM-DD format
+ * @param {Object} targetComp - Target comparison object from API (with weeksArray)
+ * @returns {Object} Projection data with comp-based logic
+ */
+function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp) {
+    const weeksUntil = calculateWeeksUntilPerformance(performanceDate);
+
+    // Can't project if no target comp or no sales
+    if (!targetComp || !targetComp.weeksArray || currentSingleTicketsSold === 0) {
+        return {
+            projected: null,
+            variance: null,
+            targetCompCurrent: null,
+            targetCompFinal: null,
+            weeksUntil,
+            canProject: false,
+            reason: !targetComp ? 'no_target_comp' : 'no_sales'
+        };
+    }
+
+    const numWeeks = targetComp.weeksArray.length;
+    const weekIndex = numWeeks - 1 - weeksUntil; // Map weeks to array index
+
+    // Check if current week is within comp data range
+    if (weekIndex < 0 || weekIndex >= numWeeks) {
+        return {
+            projected: null,
+            variance: null,
+            targetCompCurrent: null,
+            targetCompFinal: null,
+            weeksUntil,
+            canProject: false,
+            reason: 'week_out_of_range'
+        };
+    }
+
+    // Get target comp data
+    const targetCompCurrent = targetComp.weeksArray[weekIndex]; // Comp sales at this week
+    const targetCompFinal = targetComp.weeksArray[numWeeks - 1]; // Comp final sales (last value)
+
+    // Calculate variance (how far ahead/behind we are)
+    const variance = currentSingleTicketsSold - targetCompCurrent;
+
+    // Project final sales: target comp final + our current variance
+    const projected = targetCompFinal + variance;
+
+    return {
+        projected: Math.max(0, projected), // Don't allow negative projections
+        variance,
+        targetCompCurrent,
+        targetCompFinal,
+        weeksUntil,
+        canProject: true,
+        comparisonName: targetComp.comparison_name || 'Target Comp',
+        confidence: getProjectionConfidence(weeksUntil)
+    };
+}
+
+/**
+ * Format comp-based projection display text
+ * @param {Object} projection - Projection data from calculateCompBasedProjection
+ * @returns {string} Human-readable projection description
+ */
+function formatCompProjectionText(projection) {
+    if (!projection.canProject) {
+        if (projection.reason === 'no_target_comp') {
+            return 'No target comp set';
+        }
+        if (projection.reason === 'no_sales') {
+            return 'No sales data yet';
+        }
+        if (projection.reason === 'week_out_of_range') {
+            return 'Outside comp data range';
+        }
+        return 'Cannot project';
+    }
+
+    const weeksText = projection.weeksUntil === 0 ? 'today' :
+                      projection.weeksUntil === 1 ? '1 week out' :
+                      `${projection.weeksUntil} weeks out`;
+
+    const varianceText = projection.variance > 0 ?
+        `${projection.variance.toLocaleString()} ahead` :
+        projection.variance < 0 ?
+        `${Math.abs(projection.variance).toLocaleString()} behind` :
+        'on pace with';
+
+    return `${varianceText} ${projection.comparisonName} (${weeksText})`;
+}

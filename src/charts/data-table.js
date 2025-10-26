@@ -746,30 +746,34 @@ class DataTable {
             .style('padding-bottom', '8px')
             .text('Sales Information');
 
-        // Calculate single ticket targets
+        // Get target comp data for comp-based projection
+        const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        const targetComp = comparisons?.find(c => c.is_target === true);
+
+        // Calculate single ticket data
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleTickets = performance.capacity - subscriptionSeats;
-        const singleTicketTarget = Math.floor(availableSingleTickets * (performance.occupancyGoal || 85) / 100);
         const singleTicketsSold = performance.singleTicketsSold || 0;
-        const singleTicketProgress = availableSingleTickets > 0 ? (singleTicketsSold / singleTicketTarget * 100) : 0;
 
-        // Calculate sales projections
-        const projection = calculateProjectedSales(singleTicketsSold, performance.date);
-        const projectionPerformance = projection.canProject ?
-            calculateProjectionPerformance(projection.projected, singleTicketTarget) : null;
+        // Calculate sales projections using comp-based method
+        const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp);
 
         const rightInfoItems = [
             { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
             { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
             { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true, spacing: 'bottom' },
             { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
-            // Note: Target comp data is shown in the comparisons chart below
-            // Add projection data if available
+            // Add comp-based projection data if available
             ...(projection.canProject ? [
+                { label: 'Current vs Target Comp', value: `${projection.variance > 0 ? '+' : ''}${projection.variance.toLocaleString()} tickets`,
+                  color: projection.variance >= 0 ? '#27ae60' : '#e74c3c', isBold: true },
+                { label: 'Target Comp Current', value: projection.targetCompCurrent.toLocaleString() },
                 { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isBold: true },
-                { label: 'Projection Basis', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }
+                { label: 'Target Comp Final', value: projection.targetCompFinal.toLocaleString() },
+                { label: 'Projection Basis', value: formatCompProjectionText(projection), isSmall: true, spacing: 'bottom' }
             ] : [
-                { label: 'Projected Singles', value: formatProjectionText(projection), isSmall: true, spacing: 'bottom' }
+                { label: 'Projection Status', value: formatCompProjectionText(projection), isSmall: true, spacing: 'bottom' }
             ]),
             { label: 'Total Sold', value: totalSold.toLocaleString() },
             { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
