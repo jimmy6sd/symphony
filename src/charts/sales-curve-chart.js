@@ -531,7 +531,6 @@ class SalesCurveChart {
             .attr("transform", `translate(${innerWidth + 20}, 150)`);
 
         const legendItems = [
-            { label: "Actual Sales", color: CONFIG.charts.colors.actualSales, style: "solid" },
             { label: "Actual Ticket Sales", color: "#3498db", style: "solid", lineWidth: 3 },
             { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
             { label: "Total Capacity", color: "#ccc", style: "dashed" }
@@ -734,8 +733,8 @@ class SalesCurveChart {
 
         if (legend.empty()) return;
 
-        // Count existing legend items (4 default items: Actual Sales, Actual Ticket Sales, Available Single Tickets, Total Capacity)
-        const startIndex = 4;
+        // Count existing legend items (3 default items: Actual Ticket Sales, Available Single Tickets, Total Capacity)
+        const startIndex = 3;
 
         comparisons.forEach((comp, i) => {
             const isTarget = comp.is_target === true;

@@ -108,7 +108,46 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
+                    const targetComp = row._targetComp; // Stored during init
+
+                    if (!targetComp || !targetComp.weeksArray) {
+                        return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
+                    }
+
+                    // Get target comp final sales (last value in array)
+                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
+                    const variance = total - compFinal;
+                    const isOver = variance >= 0;
+                    const varClass = isOver ? 'over-comp' : 'under-comp';
+
+                    return `
+                        <div class="tickets-cell">
+                            <div class="tickets-amount">${total.toLocaleString()}</div>
+                            <div class="tickets-variance ${varClass}">${isOver ? '+' : ''}${variance.toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                key: 'ticketsComp',
+                label: 'Target Comp',
+                sortable: true,
+                align: 'center',
+                formatter: (value, row) => {
+                    const targetComp = row._targetComp;
+                    if (!targetComp || !targetComp.weeksArray) return 'No Comp';
+
+                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const percentage = (total / compFinal * 100);
+                    const status = percentage >= 100 ? 'good' : percentage >= 85 ? 'warning' : 'poor';
+
+                    return `
+                        <div class="comp-cell">
+                            <div class="comp-value">${compFinal.toLocaleString()}</div>
+                            <div class="comp-performance comp-${status}">${percentage.toFixed(1)}%</div>
+                        </div>
+                    `;
                 }
             },
             {
@@ -121,7 +160,50 @@ class DataTable {
                     const capacity = row.capacity || 0;
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
-                    return `${rate.toFixed(1)}%`;
+
+                    const targetComp = row._targetComp;
+                    if (!targetComp || !targetComp.weeksArray || !capacity) {
+                        return `${rate.toFixed(1)}%`;
+                    }
+
+                    // Calculate target comp occupancy (comp final / this performance's capacity)
+                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
+                    const compOccupancy = (compFinal / capacity * 100);
+                    const variance = rate - compOccupancy;
+                    const isOver = variance >= 0;
+                    const varClass = isOver ? 'over-comp' : 'under-comp';
+
+                    return `
+                        <div class="occupancy-cell">
+                            <div class="occupancy-rate">${rate.toFixed(1)}%</div>
+                            <div class="occupancy-variance ${varClass}">${isOver ? '+' : ''}${variance.toFixed(1)}%</div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                key: 'occupancyComp',
+                label: 'Target Comp Occ.',
+                sortable: true,
+                align: 'center',
+                formatter: (value, row) => {
+                    const targetComp = row._targetComp;
+                    const capacity = row.capacity || 0;
+                    if (!targetComp || !targetComp.weeksArray || !capacity) return 'No Comp';
+
+                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
+                    const compOccupancy = (compFinal / capacity * 100);
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const actualOccupancy = (total / capacity * 100);
+                    const percentage = (actualOccupancy / compOccupancy * 100);
+                    const status = percentage >= 100 ? 'good' : percentage >= 85 ? 'warning' : 'poor';
+
+                    return `
+                        <div class="comp-cell">
+                            <div class="comp-value">${compOccupancy.toFixed(1)}%</div>
+                            <div class="comp-performance comp-${status}">${percentage.toFixed(1)}%</div>
+                        </div>
+                    `;
                 }
             },
             {
@@ -276,6 +358,9 @@ class DataTable {
                 const dataService = new window.DataService();
                 this.data = await dataService.getPerformances();
             }
+
+            // Fetch target comp data for each performance
+            await this.enrichWithCompData();
         } catch (error) {
             this.data = [];
         }
@@ -284,6 +369,28 @@ class DataTable {
         this.render();
 
         return this;
+    }
+
+    async enrichWithCompData() {
+        // Fetch target comp data for all performances and attach to each row
+        if (!this.data || this.data.length === 0) return;
+
+        // Fetch comps for each performance
+        const promises = this.data.map(async (performance) => {
+            try {
+                const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
+                const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+                const targetComp = comparisons?.find(c => c.is_target === true);
+
+                // Attach target comp to performance object
+                performance._targetComp = targetComp || null;
+            } catch (error) {
+                performance._targetComp = null;
+            }
+        });
+
+        // Wait for all comp data to be fetched
+        await Promise.all(promises);
     }
 
     updateData(data) {
