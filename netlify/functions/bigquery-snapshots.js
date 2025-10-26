@@ -74,6 +74,9 @@ exports.handler = async (event, context) => {
       case 'get-sales-progression':
         return await getSalesProgression(bigquery, params, headers);
 
+      case 'get-all-week-over-week':
+        return await getAllWeekOverWeek(bigquery, params, headers);
+
       default:
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
     }
@@ -324,5 +327,69 @@ async function getSalesProgression(bigquery, params, headers) {
       performanceDate,
       progression: weeklyData
     })
+  };
+}
+
+// Get week-over-week changes for all performances in one efficient query
+async function getAllWeekOverWeek(bigquery, params, headers) {
+  const query = `
+    WITH LatestSnapshots AS (
+      SELECT
+        performance_code,
+        snapshot_date,
+        single_tickets_sold,
+        total_revenue,
+        ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC) as rn
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+    ),
+    WeekAgoSnapshots AS (
+      SELECT
+        s.performance_code,
+        s.snapshot_date,
+        s.single_tickets_sold,
+        s.total_revenue,
+        l.snapshot_date as latest_date,
+        ROW_NUMBER() OVER (
+          PARTITION BY s.performance_code
+          ORDER BY ABS(DATE_DIFF(DATE_SUB(l.snapshot_date, INTERVAL 7 DAY), s.snapshot_date, DAY))
+        ) as rn
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+      INNER JOIN LatestSnapshots l ON s.performance_code = l.performance_code AND l.rn = 1
+      WHERE s.snapshot_date < l.snapshot_date
+    )
+    SELECT
+      l.performance_code,
+      l.single_tickets_sold as current_tickets,
+      w.single_tickets_sold as week_ago_tickets,
+      l.single_tickets_sold - COALESCE(w.single_tickets_sold, 0) as tickets_change,
+      l.total_revenue as current_revenue,
+      w.total_revenue as week_ago_revenue,
+      l.total_revenue - COALESCE(w.total_revenue, 0) as revenue_change,
+      DATE_DIFF(l.snapshot_date, w.snapshot_date, DAY) as days_diff
+    FROM LatestSnapshots l
+    LEFT JOIN WeekAgoSnapshots w ON l.performance_code = w.performance_code AND w.rn = 1
+    WHERE l.rn = 1
+  `;
+
+  const [rows] = await bigquery.query({
+    query,
+    location: 'US'
+  });
+
+  // Transform to object keyed by performance_code
+  const wowData = {};
+  rows.forEach(row => {
+    wowData[row.performance_code] = {
+      tickets: row.tickets_change || 0,
+      revenue: row.revenue_change || 0,
+      available: row.week_ago_tickets !== null,
+      daysAgo: row.days_diff || 0
+    };
+  });
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(wowData)
   };
 }

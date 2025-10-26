@@ -312,48 +312,38 @@ class DataTable {
     }
 
     async enrichWithSnapshotData() {
-        // Fetch snapshot history for all performances to calculate week-over-week changes
+        // Fetch week-over-week changes for ALL performances in one efficient batch query
         if (!this.data || this.data.length === 0) return;
 
-        console.log('🔍 Starting enrichWithSnapshotData for', this.data.length, 'performances');
+        console.log('🔍 Starting enrichWithSnapshotData for', this.data.length, 'performances (BATCH MODE)');
 
-        const promises = this.data.map(async (performance) => {
-            try {
-                const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
+        try {
+            // Single API call to get W/W data for all performances
+            const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-all-week-over-week`);
 
-                // Fetch snapshot history from API
-                const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`);
-
-                if (!response.ok) {
-                    performance._weekOverWeek = { tickets: 0, revenue: 0, occupancy: 0, available: false };
-                    return;
-                }
-
-                const data = await response.json();
-                const snapshots = data.snapshots || [];
-                console.log(`📊 ${performanceCode}: Got ${snapshots.length} snapshots`);
-
-                // Calculate week-over-week changes
-                const wowChanges = this.calculateWeekOverWeekChanges(snapshots);
-
-                // Attach to performance object
-                performance._weekOverWeek = wowChanges;
-
-                console.log(`✅ ${performanceCode}: W/W data:`, wowChanges);
-            } catch (error) {
-                performance._weekOverWeek = { tickets: 0, revenue: 0, occupancy: 0, available: false };
+            if (!response.ok) {
+                console.error('❌ Failed to fetch W/W data:', response.statusText);
+                return;
             }
-        });
 
-        // Wait for all snapshot data to be fetched
-        await Promise.all(promises);
+            const wowData = await response.json();
+            console.log('📊 Received W/W data for', Object.keys(wowData).length, 'performances');
 
-        console.log('✅ Completed enrichWithSnapshotData - sample data:', this.data[0]?._weekOverWeek);
+            // Attach W/W data to each performance
+            this.data.forEach(performance => {
+                const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
+                performance._weekOverWeek = wowData[performanceCode] || { tickets: 0, revenue: 0, available: false };
+            });
 
-        // Re-render table rows to show W/W data
-        if (this.container) {
-            console.log('🔄 Re-rendering table with W/W data');
-            this.renderTableRows();
+            console.log('✅ Completed enrichWithSnapshotData - sample data:', this.data[0]?._weekOverWeek);
+
+            // Re-render table rows to show W/W data
+            if (this.container) {
+                console.log('🔄 Re-rendering table with W/W data');
+                this.renderTableRows();
+            }
+        } catch (error) {
+            console.error('❌ Error fetching W/W data:', error);
         }
     }
 
