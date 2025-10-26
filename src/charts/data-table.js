@@ -12,6 +12,7 @@ class DataTable {
         this.groupByProduction = true;
         this.expandedGroups = new Set();
         this.slugToGroupKey = new Map(); // Map URL slugs back to original group keys
+        this.snapshotCache = new Map(); // Cache for BigQuery snapshot data (performance optimization)
 
         // Define columns and their properties
         this.columns = [
@@ -394,6 +395,12 @@ class DataTable {
 
         // Render the table
         this.render();
+
+        // ⚡ PERFORMANCE OPTIMIZATION: Prefetch snapshot data for top performances
+        // This happens in background and won't block the UI
+        setTimeout(() => {
+            this.prefetchSnapshotsForVisiblePerformances();
+        }, 500); // Small delay to let initial render complete
 
         return this;
     }
@@ -1455,32 +1462,44 @@ class DataTable {
         const performanceCode = performance.id;
         let historicalData = [];
 
-        try {
-            const response = await fetch(
-                `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
-            );
+        // ⚡ PERFORMANCE OPTIMIZATION: Check cache first
+        if (this.snapshotCache.has(performanceCode)) {
+            console.log(`⚡ Using cached snapshots for ${performanceCode}`);
+            historicalData = this.snapshotCache.get(performanceCode);
+        } else {
+            // Cache miss - fetch from API
+            try {
+                console.log(`🔄 Fetching snapshots for ${performanceCode}...`);
+                const response = await fetch(
+                    `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
+                );
 
-            if (response.ok) {
-                const apiResponse = await response.json();
-                // API returns {performanceCode, snapshots: [...]}
-                historicalData = apiResponse.snapshots || [];
-                console.log(`✅ Fetched ${historicalData.length} historical snapshots`);
+                if (response.ok) {
+                    const apiResponse = await response.json();
+                    // API returns {performanceCode, snapshots: [...]}
+                    historicalData = apiResponse.snapshots || [];
+                    console.log(`✅ Fetched ${historicalData.length} historical snapshots`);
 
-                // Get unique dates and keep only one snapshot per date (latest)
-                const uniqueByDate = {};
-                for (const snapshot of historicalData) {
-                    const date = snapshot.snapshot_date;
-                    if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
-                        uniqueByDate[date] = snapshot;
+                    // Get unique dates and keep only one snapshot per date (latest)
+                    const uniqueByDate = {};
+                    for (const snapshot of historicalData) {
+                        const date = snapshot.snapshot_date;
+                        if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
+                            uniqueByDate[date] = snapshot;
+                        }
                     }
+                    historicalData = Object.values(uniqueByDate);
+                    console.log(`📅 Unique dates: ${historicalData.length}`);
+
+                    // ⚡ Cache the processed data for future use
+                    this.snapshotCache.set(performanceCode, historicalData);
+                    console.log(`💾 Cached snapshots for ${performanceCode}`);
+                } else {
+                    console.warn('⚠️ No historical data available, using current data only');
                 }
-                historicalData = Object.values(uniqueByDate);
-                console.log(`📅 Unique dates: ${historicalData.length}`);
-            } else {
-                console.warn('⚠️ No historical data available, using current data only');
+            } catch (error) {
+                console.warn('⚠️ Error fetching historical data:', error.message);
             }
-        } catch (error) {
-            console.warn('⚠️ Error fetching historical data:', error.message);
         }
 
         // Always use the standard sales curve chart (weeks-out view)
@@ -1506,6 +1525,62 @@ class DataTable {
 
         console.log('✅ renderSalesChart complete');
     }
+
+    /**
+     * ⚡ PERFORMANCE OPTIMIZATION: Prefetch snapshot data for visible performances
+     * This dramatically improves perceived performance by caching data before user clicks
+     */
+    async prefetchSnapshotsForVisiblePerformances() {
+        if (!this.data || this.data.length === 0) return;
+
+        // Get first 10 performances (most likely to be clicked)
+        const visiblePerformances = this.data.slice(0, 10);
+        console.log(`⚡ Prefetching snapshots for ${visiblePerformances.length} visible performances...`);
+
+        // Prefetch in parallel (but don't block rendering)
+        const prefetchPromises = visiblePerformances.map(async (perf) => {
+            const performanceCode = perf.performanceCode || perf.performance_code || perf.id;
+
+            // Skip if already cached
+            if (this.snapshotCache.has(performanceCode)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
+                );
+
+                if (response.ok) {
+                    const apiResponse = await response.json();
+                    const historicalData = apiResponse.snapshots || [];
+
+                    // Process data same way as renderSalesChart
+                    const uniqueByDate = {};
+                    for (const snapshot of historicalData) {
+                        const date = snapshot.snapshot_date;
+                        if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
+                            uniqueByDate[date] = snapshot;
+                        }
+                    }
+                    const processedData = Object.values(uniqueByDate);
+
+                    // Cache it
+                    this.snapshotCache.set(performanceCode, processedData);
+                    console.log(`💾 Prefetched ${processedData.length} snapshots for ${performanceCode}`);
+                }
+            } catch (error) {
+                // Silently fail - prefetch is best-effort
+                console.debug(`Prefetch failed for ${performanceCode}:`, error.message);
+            }
+        });
+
+        // Don't await - let it happen in background
+        Promise.all(prefetchPromises).then(() => {
+            console.log(`✅ Prefetch complete - ${this.snapshotCache.size} performances cached`);
+        });
+    }
+
 /**
  * Historical Timeline Chart
  * Displays longitudinal sales progression from daily snapshots
