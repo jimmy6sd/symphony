@@ -753,7 +753,7 @@ class SalesCurveChart {
                 .attr("y", 14)
                 .style("font-size", "11px")
                 .style("font-weight", isTarget ? "700" : "500")
-                .text(comp.comparison_name);
+                .text(isTarget ? `Target Comp: ${comp.comparison_name}` : comp.comparison_name);
         });
     }
 }
