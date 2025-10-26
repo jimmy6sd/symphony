@@ -108,6 +108,12 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+
+                    // Skip W/W for group rows (they don't have performanceCode)
+                    if (row.isGroup) {
+                        return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
+                    }
+
                     const wow = row._weekOverWeek;
 
                     console.log(`🎫 Tickets formatter - row:`, row.performanceCode, 'wow:', wow);
@@ -166,6 +172,16 @@ class DataTable {
                 align: 'right',
                 formatter: (value, row) => {
                     const revenue = value || 0;
+
+                    // Skip W/W for group rows (they don't have performanceCode)
+                    if (row.isGroup) {
+                        return `
+                            <div class="revenue-cell">
+                                <div class="revenue-amount">$${revenue.toLocaleString()}</div>
+                            </div>
+                        `;
+                    }
+
                     const wow = row._weekOverWeek;
 
                     console.log(`💰 Revenue formatter - row:`, row.performanceCode, 'wow:', wow);
