@@ -109,21 +109,30 @@ class DataTable {
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
 
-                    // Skip W/W for group rows (they don't have performanceCode)
-                    if (row.isGroup) {
+                    // For group rows, aggregate W/W from child performances
+                    if (row.isGroup && row.performances) {
+                        const totalWowTickets = row.performances.reduce((sum, perf) => {
+                            return sum + (perf._weekOverWeek?.tickets || 0);
+                        }, 0);
+
+                        if (totalWowTickets !== 0) {
+                            const changeClass = totalWowTickets >= 0 ? 'wow-positive' : 'wow-negative';
+                            return `
+                                <div class="tickets-cell">
+                                    <div class="tickets-amount">${total.toLocaleString()}</div>
+                                    <div class="tickets-wow ${changeClass}">${totalWowTickets > 0 ? '+' : ''}${totalWowTickets.toLocaleString()} W/W</div>
+                                </div>
+                            `;
+                        }
+
                         return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
                     }
 
                     const wow = row._weekOverWeek;
 
-                    console.log(`🎫 Tickets formatter - row:`, row.performanceCode, 'wow:', wow);
-
                     if (!wow || !wow.available) {
-                        console.log(`⚠️ No W/W data for ${row.performanceCode}`);
                         return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
                     }
-
-                    console.log(`✅ Showing W/W for ${row.performanceCode}: ${wow.tickets}`);
 
                     const changeClass = wow.tickets >= 0 ? 'wow-positive' : 'wow-negative';
 
@@ -171,10 +180,26 @@ class DataTable {
                 sortable: true,
                 align: 'right',
                 formatter: (value, row) => {
-                    const revenue = value || 0;
+                    const revenue = Math.round(value || 0);
 
-                    // Skip W/W for group rows (they don't have performanceCode)
-                    if (row.isGroup) {
+                    // For group rows, aggregate W/W from child performances
+                    if (row.isGroup && row.performances) {
+                        const totalWowRevenue = row.performances.reduce((sum, perf) => {
+                            return sum + (perf._weekOverWeek?.revenue || 0);
+                        }, 0);
+
+                        const roundedWow = Math.round(totalWowRevenue);
+
+                        if (roundedWow !== 0) {
+                            const changeClass = roundedWow >= 0 ? 'wow-positive' : 'wow-negative';
+                            return `
+                                <div class="revenue-cell">
+                                    <div class="revenue-amount">$${revenue.toLocaleString()}</div>
+                                    <div class="revenue-wow ${changeClass}">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
+                                </div>
+                            `;
+                        }
+
                         return `
                             <div class="revenue-cell">
                                 <div class="revenue-amount">$${revenue.toLocaleString()}</div>
@@ -184,10 +209,7 @@ class DataTable {
 
                     const wow = row._weekOverWeek;
 
-                    console.log(`💰 Revenue formatter - row:`, row.performanceCode, 'wow:', wow);
-
                     if (!wow || !wow.available) {
-                        console.log(`⚠️ No W/W revenue data for ${row.performanceCode}`);
                         return `
                             <div class="revenue-cell">
                                 <div class="revenue-amount">$${revenue.toLocaleString()}</div>
@@ -195,14 +217,13 @@ class DataTable {
                         `;
                     }
 
-                    console.log(`✅ Showing W/W revenue for ${row.performanceCode}: $${wow.revenue}`);
-
-                    const changeClass = wow.revenue >= 0 ? 'wow-positive' : 'wow-negative';
+                    const roundedWow = Math.round(wow.revenue);
+                    const changeClass = roundedWow >= 0 ? 'wow-positive' : 'wow-negative';
 
                     return `
                         <div class="revenue-cell">
                             <div class="revenue-amount">$${revenue.toLocaleString()}</div>
-                            <div class="revenue-wow ${changeClass}">${wow.revenue > 0 ? '+' : ''}$${wow.revenue.toLocaleString()} W/W</div>
+                            <div class="revenue-wow ${changeClass}">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
                         </div>
                     `;
                 }
@@ -213,8 +234,8 @@ class DataTable {
                 sortable: true,
                 align: 'right',
                 formatter: (value, row) => {
-                    const revenue = row.totalRevenue || 0;
-                    const goal = row.budgetGoal || 0;
+                    const revenue = Math.round(row.totalRevenue || 0);
+                    const goal = Math.round(row.budgetGoal || 0);
                     if (goal === 0) return 'No Goal';
 
                     const percentage = (revenue / goal * 100);

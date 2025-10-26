@@ -763,8 +763,9 @@ body {
 }
 
 .budget-goal {
-    font-size: 0.85em;
-    color: var(--text-secondary);
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-primary);
     margin-bottom: 2px;
 }
 
