@@ -329,7 +329,8 @@ class DataTable {
                     return;
                 }
 
-                const snapshots = await response.json();
+                const data = await response.json();
+                const snapshots = data.snapshots || [];
                 console.log(`📊 ${performanceCode}: Got ${snapshots.length} snapshots`);
 
                 // Calculate week-over-week changes
