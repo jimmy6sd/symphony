@@ -506,6 +506,7 @@ class SalesCurveChart {
 
     addLegend(chartGroup, innerWidth) {
         const legend = chartGroup.append("g")
+            .attr("class", "chart-legend")
             .attr("transform", `translate(${innerWidth + 20}, 150)`);
 
         const legendItems = [
@@ -707,9 +708,14 @@ class SalesCurveChart {
 
     updateLegendWithComparisons(chartGroup, comparisons) {
         // Find existing legend and add comparison items
-        const legend = chartGroup.select("g[transform*='150']"); // The legend is at y=150
+        const legend = chartGroup.select(".chart-legend");
 
-        if (legend.empty()) return;
+        if (legend.empty()) {
+            console.warn('⚠️ Legend not found for comparisons');
+            return;
+        }
+
+        console.log('📊 Adding', comparisons.length, 'comparisons to legend');
 
         // Count existing legend items (3 default items: Actual Ticket Sales, Available Single Tickets, Total Capacity)
         const startIndex = 3;

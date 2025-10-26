@@ -379,11 +379,16 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
   // Transform to object keyed by performance_code
   const wowData = {};
   rows.forEach(row => {
+    // Only mark as available if we have a week-ago snapshot AND it's within reasonable range (5-10 days)
+    const hasWeekAgoData = row.week_ago_tickets !== null;
+    const daysAgo = row.days_diff || 0;
+    const isReasonableRange = daysAgo >= 5 && daysAgo <= 10;
+
     wowData[row.performance_code] = {
-      tickets: row.tickets_change || 0,
-      revenue: row.revenue_change || 0,
-      available: row.week_ago_tickets !== null,
-      daysAgo: row.days_diff || 0
+      tickets: hasWeekAgoData ? (row.tickets_change || 0) : 0,
+      revenue: hasWeekAgoData ? (row.revenue_change || 0) : 0,
+      available: hasWeekAgoData && isReasonableRange,
+      daysAgo: daysAgo
     };
   });
 

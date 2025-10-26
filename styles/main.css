@@ -848,13 +848,13 @@ body {
 
 /* Group row styling - different background for production groups */
 .group-row {
-    background-color: rgba(102, 126, 234, 0.05);
+    background-color: rgba(0, 0, 0, 0.02);
     font-weight: 600;
     cursor: pointer;
 }
 
 .group-row:hover {
-    background-color: rgba(102, 126, 234, 0.1);
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .child-row {
