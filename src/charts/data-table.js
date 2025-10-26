@@ -155,6 +155,14 @@ class DataTable {
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
 
+                    console.log('🏟️ Occupancy formatter:', {
+                        isGroup: row.isGroup,
+                        performanceCode: row.performanceCode,
+                        wow: row._weekOverWeek,
+                        capacity,
+                        rate: rate.toFixed(1)
+                    });
+
                     // For group rows, aggregate W/W from child performances
                     if (row.isGroup && row.performances) {
                         const totalWowTickets = row.performances.reduce((sum, perf) => {
@@ -163,9 +171,12 @@ class DataTable {
 
                         const totalCapacity = row.performances.reduce((sum, perf) => sum + (perf.capacity || 0), 0);
 
+                        console.log('🏟️ Group row W/W:', { totalWowTickets, totalCapacity });
+
                         if (totalWowTickets !== 0 && totalCapacity > 0) {
                             const wowOccupancyChange = (totalWowTickets / totalCapacity * 100);
                             const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
+                            console.log('✅ Showing group occupancy W/W:', wowOccupancyChange.toFixed(1));
                             return `
                                 <div class="occupancy-cell">
                                     <div class="occupancy-amount">${rate.toFixed(1)}%</div>
@@ -180,11 +191,14 @@ class DataTable {
                     const wow = row._weekOverWeek;
 
                     if (!wow || !wow.available || !capacity) {
+                        console.log('⚠️ No W/W occupancy data');
                         return `${rate.toFixed(1)}%`;
                     }
 
                     const wowOccupancyChange = (wow.tickets / capacity * 100);
                     const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
+
+                    console.log('✅ Showing individual occupancy W/W:', wowOccupancyChange.toFixed(1));
 
                     return `
                         <div class="occupancy-cell">
@@ -2013,7 +2027,11 @@ overlayHistoricalData(container, performance, historicalData) {
             });
 
         const allRows = newRows.merge(rows)
-            .attr('class', d => `table-row ${d.isGroup ? 'group-row' : ''} ${d.isChild ? 'child-row' : ''}`);
+            .attr('class', d => {
+                const classes = `table-row ${d.isGroup ? 'group-row' : ''} ${d.isChild ? 'child-row' : ''}`;
+                if (d.isGroup) console.log('🎨 Group row class applied:', classes, d.title);
+                return classes;
+            });
 
         // Create cells
         this.columns.forEach(column => {
