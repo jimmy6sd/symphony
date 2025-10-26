@@ -251,9 +251,6 @@ class SalesCurveChart {
 
         // REMOVED: Current sales point (red dot) - no longer needed
 
-        // Render comparison lines
-        this.renderComparisonLines(chartGroup, xScale, yScale, performance);
-
         // REMOVED: Target line data points - now using historical comp data points instead
 
         // X-axis
@@ -313,8 +310,11 @@ class SalesCurveChart {
         // Add performance tracking status
         await this.addTrackingStatus(chartGroup, performance, innerWidth);
 
-        // Add legend
+        // Add legend FIRST (before comparison lines so they can update it)
         this.addLegend(chartGroup, innerWidth);
+
+        // Render comparison lines (will update the legend)
+        this.renderComparisonLines(chartGroup, xScale, yScale, performance);
 
         // Add tooltips for the single current sales point
         this.addTooltips(currentSales, weeksToPerformance, onTrackData, performance);
