@@ -110,9 +110,14 @@ class DataTable {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
                     const wow = row._weekOverWeek;
 
+                    console.log(`🎫 Tickets formatter - row:`, row.performanceCode, 'wow:', wow);
+
                     if (!wow || !wow.available) {
+                        console.log(`⚠️ No W/W data for ${row.performanceCode}`);
                         return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
                     }
+
+                    console.log(`✅ Showing W/W for ${row.performanceCode}: ${wow.tickets}`);
 
                     const changeClass = wow.tickets >= 0 ? 'wow-positive' : 'wow-negative';
 
@@ -163,13 +168,18 @@ class DataTable {
                     const revenue = value || 0;
                     const wow = row._weekOverWeek;
 
+                    console.log(`💰 Revenue formatter - row:`, row.performanceCode, 'wow:', wow);
+
                     if (!wow || !wow.available) {
+                        console.log(`⚠️ No W/W revenue data for ${row.performanceCode}`);
                         return `
                             <div class="revenue-cell">
                                 <div class="revenue-amount">$${revenue.toLocaleString()}</div>
                             </div>
                         `;
                     }
+
+                    console.log(`✅ Showing W/W revenue for ${row.performanceCode}: $${wow.revenue}`);
 
                     const changeClass = wow.revenue >= 0 ? 'wow-positive' : 'wow-negative';
 
@@ -305,6 +315,8 @@ class DataTable {
         // Fetch snapshot history for all performances to calculate week-over-week changes
         if (!this.data || this.data.length === 0) return;
 
+        console.log('🔍 Starting enrichWithSnapshotData for', this.data.length, 'performances');
+
         const promises = this.data.map(async (performance) => {
             try {
                 const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
@@ -318,12 +330,15 @@ class DataTable {
                 }
 
                 const snapshots = await response.json();
+                console.log(`📊 ${performanceCode}: Got ${snapshots.length} snapshots`);
 
                 // Calculate week-over-week changes
                 const wowChanges = this.calculateWeekOverWeekChanges(snapshots);
 
                 // Attach to performance object
                 performance._weekOverWeek = wowChanges;
+
+                console.log(`✅ ${performanceCode}: W/W data:`, wowChanges);
             } catch (error) {
                 performance._weekOverWeek = { tickets: 0, revenue: 0, occupancy: 0, available: false };
             }
@@ -331,6 +346,8 @@ class DataTable {
 
         // Wait for all snapshot data to be fetched
         await Promise.all(promises);
+
+        console.log('✅ Completed enrichWithSnapshotData - sample data:', this.data[0]?._weekOverWeek);
     }
 
     calculateWeekOverWeekChanges(snapshots) {
