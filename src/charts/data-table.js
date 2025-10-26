@@ -108,44 +108,18 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const targetComp = row._targetComp; // Stored during init
+                    const wow = row._weekOverWeek;
 
-                    if (!targetComp || !targetComp.weeksArray) {
+                    if (!wow || !wow.available) {
                         return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
                     }
 
-                    // Get target comp final sales (last value in array)
-                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
-                    const variance = total - compFinal;
-                    const isOver = variance >= 0;
-                    const varClass = isOver ? 'over-comp' : 'under-comp';
+                    const changeClass = wow.tickets >= 0 ? 'wow-positive' : 'wow-negative';
 
                     return `
                         <div class="tickets-cell">
                             <div class="tickets-amount">${total.toLocaleString()}</div>
-                            <div class="tickets-variance ${varClass}">${isOver ? '+' : ''}${variance.toLocaleString()}</div>
-                        </div>
-                    `;
-                }
-            },
-            {
-                key: 'ticketsComp',
-                label: 'Target Comp',
-                sortable: true,
-                align: 'center',
-                formatter: (value, row) => {
-                    const targetComp = row._targetComp;
-                    if (!targetComp || !targetComp.weeksArray) return 'No Comp';
-
-                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const percentage = (total / compFinal * 100);
-                    const status = percentage >= 100 ? 'good' : percentage >= 85 ? 'warning' : 'poor';
-
-                    return `
-                        <div class="comp-cell">
-                            <div class="comp-value">${compFinal.toLocaleString()}</div>
-                            <div class="comp-performance comp-${status}">${percentage.toFixed(1)}%</div>
+                            <div class="tickets-wow ${changeClass}">${wow.tickets > 0 ? '+' : ''}${wow.tickets.toLocaleString()} W/W</div>
                         </div>
                     `;
                 }
@@ -161,49 +135,7 @@ class DataTable {
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
 
-                    const targetComp = row._targetComp;
-                    if (!targetComp || !targetComp.weeksArray || !capacity) {
-                        return `${rate.toFixed(1)}%`;
-                    }
-
-                    // Calculate target comp occupancy (comp final / this performance's capacity)
-                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
-                    const compOccupancy = (compFinal / capacity * 100);
-                    const variance = rate - compOccupancy;
-                    const isOver = variance >= 0;
-                    const varClass = isOver ? 'over-comp' : 'under-comp';
-
-                    return `
-                        <div class="occupancy-cell">
-                            <div class="occupancy-rate">${rate.toFixed(1)}%</div>
-                            <div class="occupancy-variance ${varClass}">${isOver ? '+' : ''}${variance.toFixed(1)}%</div>
-                        </div>
-                    `;
-                }
-            },
-            {
-                key: 'occupancyComp',
-                label: 'Target Comp Occ.',
-                sortable: true,
-                align: 'center',
-                formatter: (value, row) => {
-                    const targetComp = row._targetComp;
-                    const capacity = row.capacity || 0;
-                    if (!targetComp || !targetComp.weeksArray || !capacity) return 'No Comp';
-
-                    const compFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
-                    const compOccupancy = (compFinal / capacity * 100);
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
-                    const actualOccupancy = (total / capacity * 100);
-                    const percentage = (actualOccupancy / compOccupancy * 100);
-                    const status = percentage >= 100 ? 'good' : percentage >= 85 ? 'warning' : 'poor';
-
-                    return `
-                        <div class="comp-cell">
-                            <div class="comp-value">${compOccupancy.toFixed(1)}%</div>
-                            <div class="comp-performance comp-${status}">${percentage.toFixed(1)}%</div>
-                        </div>
-                    `;
+                    return `${rate.toFixed(1)}%`;
                 }
             },
             {
@@ -229,9 +161,9 @@ class DataTable {
                 align: 'right',
                 formatter: (value, row) => {
                     const revenue = value || 0;
-                    const budget = row.budgetGoal || 0;
+                    const wow = row._weekOverWeek;
 
-                    if (budget === 0) {
+                    if (!wow || !wow.available) {
                         return `
                             <div class="revenue-cell">
                                 <div class="revenue-amount">$${revenue.toLocaleString()}</div>
@@ -239,14 +171,12 @@ class DataTable {
                         `;
                     }
 
-                    const variance = revenue - budget;
-                    const isOver = variance >= 0;
-                    const varClass = isOver ? 'over-budget' : 'under-budget';
+                    const changeClass = wow.revenue >= 0 ? 'wow-positive' : 'wow-negative';
 
                     return `
                         <div class="revenue-cell">
                             <div class="revenue-amount">$${revenue.toLocaleString()}</div>
-                            <div class="revenue-variance ${varClass}">${isOver ? '+' : ''}$${variance.toLocaleString()}</div>
+                            <div class="revenue-wow ${changeClass}">${wow.revenue > 0 ? '+' : ''}$${wow.revenue.toLocaleString()} W/W</div>
                         </div>
                     `;
                 }
@@ -359,8 +289,8 @@ class DataTable {
                 this.data = await dataService.getPerformances();
             }
 
-            // Fetch target comp data for each performance
-            await this.enrichWithCompData();
+            // Fetch week-over-week snapshot data for each performance
+            await this.enrichWithSnapshotData();
         } catch (error) {
             this.data = [];
         }
@@ -371,26 +301,85 @@ class DataTable {
         return this;
     }
 
-    async enrichWithCompData() {
-        // Fetch target comp data for all performances and attach to each row
+    async enrichWithSnapshotData() {
+        // Fetch snapshot history for all performances to calculate week-over-week changes
         if (!this.data || this.data.length === 0) return;
 
-        // Fetch comps for each performance
         const promises = this.data.map(async (performance) => {
             try {
                 const performanceCode = performance.performanceCode || performance.performance_code || performance.id;
-                const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
-                const targetComp = comparisons?.find(c => c.is_target === true);
 
-                // Attach target comp to performance object
-                performance._targetComp = targetComp || null;
+                // Fetch snapshot history from API
+                const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`);
+
+                if (!response.ok) {
+                    performance._weekOverWeek = { tickets: 0, revenue: 0, occupancy: 0, available: false };
+                    return;
+                }
+
+                const snapshots = await response.json();
+
+                // Calculate week-over-week changes
+                const wowChanges = this.calculateWeekOverWeekChanges(snapshots);
+
+                // Attach to performance object
+                performance._weekOverWeek = wowChanges;
             } catch (error) {
-                performance._targetComp = null;
+                performance._weekOverWeek = { tickets: 0, revenue: 0, occupancy: 0, available: false };
             }
         });
 
-        // Wait for all comp data to be fetched
+        // Wait for all snapshot data to be fetched
         await Promise.all(promises);
+    }
+
+    calculateWeekOverWeekChanges(snapshots) {
+        // Calculate week-over-week changes from snapshot history
+        if (!snapshots || snapshots.length < 2) {
+            return { tickets: 0, revenue: 0, occupancy: 0, available: false };
+        }
+
+        // Get latest snapshot (most recent)
+        const latest = snapshots[snapshots.length - 1];
+        const latestDate = new Date(latest.snapshot_date || latest.snapshotDate);
+
+        // Find snapshot from approximately 7 days ago
+        const targetDate = new Date(latestDate);
+        targetDate.setDate(targetDate.getDate() - 7);
+
+        // Find closest snapshot to 7 days ago
+        let previousSnapshot = null;
+        let minDiff = Infinity;
+
+        for (const snapshot of snapshots) {
+            const snapDate = new Date(snapshot.snapshot_date || snapshot.snapshotDate);
+            const diff = Math.abs(snapDate - targetDate);
+
+            if (diff < minDiff && snapDate < latestDate) {
+                minDiff = diff;
+                previousSnapshot = snapshot;
+            }
+        }
+
+        if (!previousSnapshot) {
+            return { tickets: 0, revenue: 0, occupancy: 0, available: false };
+        }
+
+        // Calculate changes
+        const ticketsChange = (latest.single_tickets_sold || latest.singleTicketsSold || 0) -
+                             (previousSnapshot.single_tickets_sold || previousSnapshot.singleTicketsSold || 0);
+        const revenueChange = (latest.total_revenue || latest.totalRevenue || 0) -
+                             (previousSnapshot.total_revenue || previousSnapshot.totalRevenue || 0);
+        const occupancyChange = (latest.occupancy_percent || latest.occupancyPercent || 0) -
+                               (previousSnapshot.occupancy_percent || previousSnapshot.occupancyPercent || 0);
+
+        return {
+            tickets: ticketsChange,
+            revenue: revenueChange,
+            occupancy: occupancyChange,
+            available: true,
+            daysAgo: Math.round(minDiff / (1000 * 60 * 60 * 24))
+        };
     }
 
     updateData(data) {
