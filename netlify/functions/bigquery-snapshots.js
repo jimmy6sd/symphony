@@ -333,17 +333,25 @@ async function getSalesProgression(bigquery, params, headers) {
 // Get week-over-week changes for all performances in one efficient query
 // W/W = (This Week's Tickets) - (Last Week's Tickets)
 // Example: This week = 100 tickets, Last week = 80 tickets => W/W = +20
+// IMPORTANT: Only calculate W/W for FUTURE performances (not yet happened)
 async function getAllWeekOverWeek(bigquery, params, headers) {
   const query = `
-    WITH LatestSnapshots AS (
-      -- Get most recent snapshot for each performance (THIS WEEK's data)
+    WITH FuturePerformances AS (
+      -- Only include performances that haven't happened yet
+      SELECT performance_code, performance_date
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performances\`
+      WHERE performance_date > CURRENT_DATE()
+    ),
+    LatestSnapshots AS (
+      -- Get most recent snapshot for each FUTURE performance (THIS WEEK's data)
       SELECT
-        performance_code,
-        snapshot_date,
-        single_tickets_sold,
-        total_revenue,
-        ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC) as rn
-      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+        s.performance_code,
+        s.snapshot_date,
+        s.single_tickets_sold,
+        s.total_revenue,
+        ROW_NUMBER() OVER (PARTITION BY s.performance_code ORDER BY s.snapshot_date DESC) as rn
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+      INNER JOIN FuturePerformances fp ON s.performance_code = fp.performance_code
     ),
     WeekAgoSnapshots AS (
       -- Find snapshot from ~7 days ago (LAST WEEK's data)
