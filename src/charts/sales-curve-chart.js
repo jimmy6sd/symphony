@@ -226,41 +226,58 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4,4");
 
-        // Smart label positioning to avoid overlaps
+        // Create labels first to measure their bounding boxes
         const capacityY = yScale(capacity);
         const availableY = yScale(availableSingleCapacity);
-        const minLabelSpacing = 18; // Minimum pixels between labels
 
-        let capacityLabelY = capacityY - 5;
-        let availableLabelY = availableY - 5;
-
-        // Check if labels would overlap
-        if (Math.abs(capacityY - availableY) < minLabelSpacing) {
-            // Labels too close - adjust positioning
-            const midPoint = (capacityY + availableY) / 2;
-            capacityLabelY = midPoint - minLabelSpacing / 2 - 5;
-            availableLabelY = midPoint + minLabelSpacing / 2 - 5;
-        }
-
-        // Label for total capacity line
-        chartGroup.append("text")
+        // Create capacity label
+        const capacityLabel = chartGroup.append("text")
             .attr("x", innerWidth - 5)
-            .attr("y", capacityLabelY)
+            .attr("y", capacityY - 5)
             .attr("text-anchor", "end")
             .attr("fill", "#999")
             .attr("font-size", "12px")
             .attr("font-weight", "600")
             .text(`Total Capacity (${capacity.toLocaleString()})`);
 
-        // Label for available single tickets line
-        chartGroup.append("text")
+        // Create available tickets label
+        const availableLabel = chartGroup.append("text")
             .attr("x", innerWidth - 5)
-            .attr("y", availableLabelY)
+            .attr("y", availableY - 5)
             .attr("text-anchor", "end")
             .attr("fill", "#9b59b6")
             .attr("font-size", "12px")
             .attr("font-weight", "600")
             .text(`Available Single Tickets (${availableSingleCapacity.toLocaleString()})`);
+
+        // Use D3's getBBox() to detect actual overlaps
+        try {
+            const capacityBox = capacityLabel.node().getBBox();
+            const availableBox = availableLabel.node().getBBox();
+
+            // Check if bounding boxes overlap
+            const overlap = !(capacityBox.y + capacityBox.height < availableBox.y ||
+                            availableBox.y + availableBox.height < capacityBox.y);
+
+            if (overlap) {
+                // Calculate new positions to separate labels
+                const totalHeight = capacityBox.height + availableBox.height;
+                const gap = 4; // Minimum gap between labels
+                const midPoint = (capacityY + availableY) / 2;
+
+                // Position labels symmetrically around midpoint
+                capacityLabel.attr("y", midPoint - gap / 2 - capacityBox.height / 2);
+                availableLabel.attr("y", midPoint + gap / 2 + availableBox.height / 2);
+            }
+        } catch (e) {
+            // getBBox() can fail in some edge cases, fallback to simple spacing
+            const minSpacing = 20;
+            if (Math.abs(capacityY - availableY) < minSpacing) {
+                const midPoint = (capacityY + availableY) / 2;
+                capacityLabel.attr("y", midPoint - 10);
+                availableLabel.attr("y", midPoint + 10);
+            }
+        }
 
         // REMOVED: Green target sales line - now using historical comp lines instead
         // The target comp is marked with is_target flag and shown with thick orange line
