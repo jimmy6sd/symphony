@@ -61,58 +61,70 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Initialize BigQuery
-    let bigquery;
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
-      // Production: Use JSON credentials from environment variable
-      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
-      bigquery = new BigQuery({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-        credentials: credentials
-      });
-    } else {
-      // Local development: Use key file
-      bigquery = new BigQuery({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-      });
+    // Initialize BigQuery (matches pattern from bigquery-data.js)
+    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    if (!credentialsEnv) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
     }
 
-    // Build UPDATE query dynamically with proper escaping
-    const setClauses = [];
-    Object.entries(updates).forEach(([field, value]) => {
-      if (value === null || value === undefined) {
-        setClauses.push(`${field} = NULL`);
-      } else if (typeof value === 'string') {
-        // Escape single quotes for SQL
-        const escapedValue = value.replace(/'/g, "''");
-        setClauses.push(`${field} = '${escapedValue}'`);
-      } else if (typeof value === 'boolean') {
-        setClauses.push(`${field} = ${value ? 'TRUE' : 'FALSE'}`);
-      } else if (typeof value === 'number') {
-        setClauses.push(`${field} = ${value}`);
-      } else {
-        setClauses.push(`${field} = ${value}`);
-      }
+    let credentials;
+
+    // Check if it's a file path or JSON content
+    if (credentialsEnv.startsWith('{')) {
+      // It's JSON content (production)
+      credentials = JSON.parse(credentialsEnv);
+    } else {
+      // It's a file path (local development)
+      const fs = require('fs');
+      const path = require('path');
+      const credentialsFile = path.resolve(credentialsEnv);
+      const credentialsJson = fs.readFileSync(credentialsFile, 'utf8');
+      credentials = JSON.parse(credentialsJson);
+    }
+
+    // Fix escaped newlines in private key
+    if (credentials.private_key && credentials.private_key.includes('\\\\n')) {
+      credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
+    }
+
+    const bigquery = new BigQuery({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
+      credentials: {
+        client_email: credentials.client_email,
+        private_key: credentials.private_key,
+      },
+      location: 'US'
     });
+
+    // Build UPDATE query with parameterized queries (safe from SQL injection)
+    const setClauses = [];
+    const params = [];
+
+    Object.entries(updates).forEach(([field, value]) => {
+      setClauses.push(`${field} = ?`);
+      params.push(value);
+    });
+
+    // Add performance_code parameter at the end
+    params.push(performance_code);
 
     const updateQuery = `
       UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
       SET
         ${setClauses.join(',\n        ')},
         updated_at = CURRENT_TIMESTAMP()
-      WHERE performance_code = '${performance_code.replace(/'/g, "''")}'
+      WHERE performance_code = ?
     `;
 
-    console.log('Executing update:', updateQuery);
+    console.log('Executing update for:', performance_code, 'with fields:', Object.keys(updates));
 
-    // Execute update
-    const [job] = await bigquery.createQueryJob({
+    // Execute update using parameterized query
+    await bigquery.query({
       query: updateQuery,
+      params: params,
       location: 'US'
     });
-
-    await job.getQueryResults();
 
     console.log(`✅ Successfully updated metadata for ${performance_code}`);
 
