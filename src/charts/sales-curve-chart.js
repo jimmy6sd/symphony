@@ -214,16 +214,6 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5");
 
-        // Label for total capacity line
-        chartGroup.append("text")
-            .attr("x", innerWidth - 5)
-            .attr("y", yScale(capacity) - 5)
-            .attr("text-anchor", "end")
-            .attr("fill", "#999")
-            .attr("font-size", "12px")
-            .attr("font-weight", "600")
-            .text(`Total Capacity (${capacity.toLocaleString()})`);
-
         // Draw available single tickets line (capacity minus subscriptions)
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
@@ -236,11 +226,25 @@ class SalesCurveChart {
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4,4");
 
-        // Label for available single tickets line
+        // Position labels to naturally avoid collisions
+        const capacityY = yScale(capacity);
+        const availableY = yScale(availableSingleCapacity);
+
+        // Total Capacity label - ABOVE its line, left-aligned
         chartGroup.append("text")
-            .attr("x", innerWidth - 5)
-            .attr("y", yScale(availableSingleCapacity) - 5)
-            .attr("text-anchor", "end")
+            .attr("x", 5)
+            .attr("y", capacityY - 5)
+            .attr("text-anchor", "start")
+            .attr("fill", "#999")
+            .attr("font-size", "12px")
+            .attr("font-weight", "600")
+            .text(`Total Capacity (${capacity.toLocaleString()})`);
+
+        // Available Single Tickets label - BELOW its line, left-aligned
+        chartGroup.append("text")
+            .attr("x", 5)
+            .attr("y", availableY + 15)
+            .attr("text-anchor", "start")
             .attr("fill", "#9b59b6")
             .attr("font-size", "12px")
             .attr("font-weight", "600")
