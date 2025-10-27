@@ -116,7 +116,7 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
         total_revenue,
         capacity_percent,
         budget_percent,
-        ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC) as rn
+        ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
     )
     SELECT
