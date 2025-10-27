@@ -297,8 +297,8 @@ async function processPdfBase64(base64Data, metadata) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Check if this is a performance code (25XXXXY format, not a total row)
-          if (item.match(/^25\d{4}[A-Z]$/) && !allItems[i-1]?.includes('Total')) {
+          // Check if this is a performance code (25XXXXY or 25XXXXYY format, not a total row)
+          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
 
             // Expected sequence: [Code, DateTime, Budget%, FixedCount, FixedRev, NonFixedCount, NonFixedRev, SingleCount, SingleRev, Subtotal, Reserved, ReservedRev, Total, Avail, Capacity%]
@@ -413,8 +413,8 @@ async function processPdfUrl(url, metadata) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Check if this is a performance code (not a total row)
-          if (item.match(/^25\d{4}[A-Z]$/) && !allItems[i-1]?.includes('Total')) {
+          // Check if this is a performance code (25XXXXY or 25XXXXYY format, not a total row)
+          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
 
             let idx = i + 1;
@@ -782,7 +782,7 @@ async function parseTabularFormat(lines) {
     const parts = line.split(/\t+/);  // Split on tabs
 
     // Check if this looks like a performance row (starts with performance code pattern)
-    if (parts.length >= 10 && parts[0].match(/^25\d{4}[A-Z]$/)) {
+    if (parts.length >= 10 && parts[0].match(/^25\d{4}[A-Z]{1,2}$/)) {
       const performanceCode = parts[0];
       const dateTime = parts[1];  // e.g., "10/10/2025 8:00 PM"
       const budgetPercent = parseFloat(parts[2]) || 0;
