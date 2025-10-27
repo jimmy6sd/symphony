@@ -78,41 +78,34 @@ exports.handler = async (event, context) => {
       });
     }
 
-    // Build UPDATE query dynamically with proper escaping
+    // Build UPDATE query with parameterized queries (safe from SQL injection)
     const setClauses = [];
+    const params = [];
+
     Object.entries(updates).forEach(([field, value]) => {
-      if (value === null || value === undefined) {
-        setClauses.push(`${field} = NULL`);
-      } else if (typeof value === 'string') {
-        // Escape single quotes for SQL
-        const escapedValue = value.replace(/'/g, "''");
-        setClauses.push(`${field} = '${escapedValue}'`);
-      } else if (typeof value === 'boolean') {
-        setClauses.push(`${field} = ${value ? 'TRUE' : 'FALSE'}`);
-      } else if (typeof value === 'number') {
-        setClauses.push(`${field} = ${value}`);
-      } else {
-        setClauses.push(`${field} = ${value}`);
-      }
+      setClauses.push(`${field} = ?`);
+      params.push(value);
     });
+
+    // Add performance_code parameter at the end
+    params.push(performance_code);
 
     const updateQuery = `
       UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
       SET
         ${setClauses.join(',\n        ')},
         updated_at = CURRENT_TIMESTAMP()
-      WHERE performance_code = '${performance_code.replace(/'/g, "''")}'
+      WHERE performance_code = ?
     `;
 
-    console.log('Executing update:', updateQuery);
+    console.log('Executing update for:', performance_code, 'with fields:', Object.keys(updates));
 
-    // Execute update
-    const [job] = await bigquery.createQueryJob({
+    // Execute update using parameterized query
+    await bigquery.query({
       query: updateQuery,
+      params: params,
       location: 'US'
     });
-
-    await job.getQueryResults();
 
     console.log(`✅ Successfully updated metadata for ${performance_code}`);
 
