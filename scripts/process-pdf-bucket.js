@@ -159,11 +159,44 @@ async function parsePDF(pdfPath, filename) {
   });
 }
 
-// Insert snapshots into BigQuery
+// Insert snapshots into BigQuery (with duplicate checking for idempotency)
 async function insertSnapshots(snapshots) {
+  if (snapshots.length === 0) {
+    console.log('ℹ️  No snapshots to insert');
+    return { success: true, count: 0, skipped: 0 };
+  }
+
+  console.log(`🔍 Checking for existing snapshots...`);
+
+  // Check which snapshots already exist
+  const snapshotIds = snapshots.map(s => `'${s.snapshot_id}'`).join(',');
+  const checkQuery = `
+    SELECT snapshot_id
+    FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+    WHERE snapshot_id IN (${snapshotIds})
+  `;
+
+  const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
+  const existingIds = new Set(existingRows.map(row => row.snapshot_id));
+
+  // Filter to only NEW snapshots
+  const newSnapshots = snapshots.filter(s => !existingIds.has(s.snapshot_id));
+  const skippedCount = snapshots.length - newSnapshots.length;
+
+  if (skippedCount > 0) {
+    console.log(`⏭️  Skipping ${skippedCount} existing snapshot(s)`);
+  }
+
+  if (newSnapshots.length === 0) {
+    console.log('ℹ️  All snapshots already exist - nothing to insert');
+    return { success: true, count: 0, skipped: skippedCount };
+  }
+
+  console.log(`📝 Inserting ${newSnapshots.length} new snapshot(s)...`);
+
   const table = bigquery.dataset(DATASET_ID).table(TABLE_ID);
 
-  const rows = snapshots.map(snapshot => ({
+  const rows = newSnapshots.map(snapshot => ({
     snapshot_id: snapshot.snapshot_id,
     performance_id: 0, // Will be updated by trigger
     performance_code: snapshot.performance_code,
@@ -182,14 +215,14 @@ async function insertSnapshots(snapshots) {
   try {
     await table.insert(rows);
     console.log(`✅ Inserted ${rows.length} snapshots into BigQuery`);
-    return { success: true, count: rows.length };
+    return { success: true, count: rows.length, skipped: skippedCount };
   } catch (error) {
     if (error.name === 'PartialFailureError') {
       console.error('❌ Some rows failed to insert:');
       error.errors.forEach((err, idx) => {
         console.error(`   Row ${idx}:`, err.errors);
       });
-      return { success: false, errors: error.errors };
+      return { success: false, errors: error.errors, skipped: skippedCount };
     }
     throw error;
   }
