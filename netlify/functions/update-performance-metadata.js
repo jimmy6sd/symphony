@@ -61,22 +61,41 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Initialize BigQuery
-    let bigquery;
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
-      // Production: Use JSON credentials from environment variable
-      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
-      bigquery = new BigQuery({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-        credentials: credentials
-      });
-    } else {
-      // Local development: Use key file
-      bigquery = new BigQuery({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-      });
+    // Initialize BigQuery (matches pattern from bigquery-data.js)
+    const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    if (!credentialsEnv) {
+      throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
     }
+
+    let credentials;
+
+    // Check if it's a file path or JSON content
+    if (credentialsEnv.startsWith('{')) {
+      // It's JSON content (production)
+      credentials = JSON.parse(credentialsEnv);
+    } else {
+      // It's a file path (local development)
+      const fs = require('fs');
+      const path = require('path');
+      const credentialsFile = path.resolve(credentialsEnv);
+      const credentialsJson = fs.readFileSync(credentialsFile, 'utf8');
+      credentials = JSON.parse(credentialsJson);
+    }
+
+    // Fix escaped newlines in private key
+    if (credentials.private_key && credentials.private_key.includes('\\\\n')) {
+      credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
+    }
+
+    const bigquery = new BigQuery({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
+      credentials: {
+        client_email: credentials.client_email,
+        private_key: credentials.private_key,
+      },
+      location: 'US'
+    });
 
     // Build UPDATE query with parameterized queries (safe from SQL injection)
     const setClauses = [];
