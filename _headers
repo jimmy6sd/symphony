@@ -6,19 +6,19 @@
 
 # Protect HTML pages
 /
-  Basic-Auth: symphony:${SITE_PASSWORD}
+  Basic-Auth: symphony:test
 
 /*.html
-  Basic-Auth: symphony:${SITE_PASSWORD}
+  Basic-Auth: symphony:test
 
 # Protect assets
 /styles/*
-  Basic-Auth: symphony:${SITE_PASSWORD}
+  Basic-Auth: symphony:test
 
 /src/*
-  Basic-Auth: symphony:${SITE_PASSWORD}
+  Basic-Auth: symphony:test
 
 /data/*
-  Basic-Auth: symphony:${SITE_PASSWORD}
+  Basic-Auth: symphony:test
 
 # Functions are NOT listed here, so they remain open
