@@ -2,11 +2,70 @@
 
 ---
 
+## 🔒 **AUTHENTICATION & SECURITY**
+
+### **Basic HTTP Authentication**
+- **Method**: Netlify Basic Auth via `_headers` file
+- **Protected Routes**: All dashboard pages (`/*`)
+- **Open Routes**: Function endpoints (`/.netlify/functions/*`)
+- **Credentials**:
+  - Username: `kcsdashboard`
+  - Password: Stored in Netlify environment variable `SITE_PASSWORD`
+
+### **Why This Approach?**
+Based on research into Netlify's authentication options:
+
+**❌ Why NOT Site-Wide Password Protection:**
+- Blocks ALL routes including function endpoints
+- Breaks Tessitura API integration
+- Breaks BigQuery data fetching
+- Breaks scheduled functions
+- Cannot exclude specific routes (all-or-nothing)
+
+**✅ Why Basic Auth via _headers:**
+- Dashboard protected with real HTTP authentication
+- Functions remain accessible for API integrations
+- Scheduled tasks continue to work
+- Webhooks unaffected
+- Simple to implement and maintain
+- No code changes required
+
+### **Access Instructions**
+1. Visit production URL: https://symphony.netlify.app
+2. Browser prompts for credentials:
+   - **Username**: `kcsdashboard`
+   - **Password**: [provided separately to authorized users]
+3. Browser saves credentials for future visits
+4. Re-enter if credentials expire or browser cache cleared
+
+### **For Developers**
+- **Local dev** (`npm run dev`): No authentication (easier development)
+- **Preview deployments** (`next` branch): Basic Auth enabled
+- **Production** (`main` branch): Basic Auth enabled
+
+### **Security Considerations**
+- ✅ Real HTTP authentication (server-side, not client-side)
+- ✅ Functions remain accessible for integrations
+- ⚠️ Single shared password (all users use same credentials)
+- ⚠️ No individual user tracking
+- 🔄 Password rotation recommended quarterly
+
+### **Setting Up SITE_PASSWORD (For Admins)**
+```
+Netlify Dashboard:
+1. Site Settings → Environment Variables
+2. Add variable: SITE_PASSWORD = [secure password]
+3. Deploy contexts: Production, Deploy Previews, Branch deploys
+4. Save and trigger redeploy
+```
+
+---
+
 ## 🚀 **DEVELOPMENT WORKFLOW** (How We Work)
 
 ### **Git Branch Strategy**
 - **`main`** = Production (live site)
-- **`develop`** = Staging/testing
+- **`next`** = Preview/staging branch for testing
 - **`feature/*`** = Individual features
 
 ### **Daily Development Process**
@@ -33,22 +92,23 @@ git push origin HEAD
 
 **4. Deploy Preview (for testing):**
 ```bash
-npm run deploy:preview
-# Pushes branch to GitHub
-# Netlify automatically creates preview URL
-# Test at: https://[branch-name]--symphony.netlify.app
+# Push to next branch for preview testing
+git checkout next
+git merge feature/your-feature-name
+git push origin next
+
+# Netlify automatically deploys preview
+# Preview URL: https://next--symphony.netlify.app
 ```
 
 **5. Merge to Production:**
 ```bash
 # After preview testing succeeds:
-git checkout develop
-git merge feature/your-feature-name
-git push origin develop
+git checkout main
+git merge next
+git push origin main
 
-# When ready for production:
-npm run deploy:production
-# Merges develop → main, pushes to production
+# Netlify automatically deploys to production
 # Live at: https://symphony.netlify.app
 ```
 
