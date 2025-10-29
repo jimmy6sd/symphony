@@ -2,8 +2,9 @@
 # Protects dashboard pages while keeping function endpoints accessible for API integrations
 
 # Protect all dashboard pages and assets
+# Note: Username field will show but can be left blank or any value
 /*
-  Basic-Auth: kcsdashboard:${SITE_PASSWORD}
+  Basic-Auth: :${SITE_PASSWORD}
 
 # Keep Netlify Functions accessible (CRITICAL for Tessitura API, BigQuery, scheduled tasks)
 /.netlify/functions/*

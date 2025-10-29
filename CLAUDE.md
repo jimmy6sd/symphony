@@ -2,6 +2,13 @@
 
 ---
 
+## 🌐 **DEPLOYMENT URLS**
+- **Production**: https://kcsdashboard.netlify.app (main branch)
+- **Preview/Staging**: https://next--kcsdashboard.netlify.app (next branch)
+- **Local Development**: http://localhost:8888
+
+---
+
 ## 🔒 **AUTHENTICATION & SECURITY**
 
 ### **Basic HTTP Authentication**
@@ -31,9 +38,9 @@ Based on research into Netlify's authentication options:
 - No code changes required
 
 ### **Access Instructions**
-1. Visit production URL: https://symphony.netlify.app
+1. Visit production URL: https://kcsdashboard.netlify.app
 2. Browser prompts for credentials:
-   - **Username**: `kcsdashboard`
+   - **Username**: (leave blank or enter any value)
    - **Password**: [provided separately to authorized users]
 3. Browser saves credentials for future visits
 4. Re-enter if credentials expire or browser cache cleared
@@ -98,7 +105,7 @@ git merge feature/your-feature-name
 git push origin next
 
 # Netlify automatically deploys preview
-# Preview URL: https://next--symphony.netlify.app
+# Preview URL: https://next--kcsdashboard.netlify.app
 ```
 
 **5. Merge to Production:**
@@ -109,7 +116,7 @@ git merge next
 git push origin main
 
 # Netlify automatically deploys to production
-# Live at: https://symphony.netlify.app
+# Live at: https://kcsdashboard.netlify.app
 ```
 
 ### **Commit Message Convention**
