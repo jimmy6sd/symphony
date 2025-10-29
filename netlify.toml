@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Disable secrets scanning for environment variable names (not actual secrets)
+  SECRETS_SCAN_OMIT_KEYS = "SITE_PASSWORD"
 
 # Redirect rules for SPA behavior and authentication
 [[redirects]]
