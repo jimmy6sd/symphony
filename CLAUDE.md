@@ -70,6 +70,13 @@ Netlify Dashboard:
 
 ## 🚀 **DEVELOPMENT WORKFLOW** (How We Work)
 
+### **⚠️ CRITICAL RULES FOR AI ASSISTANTS**
+**NEVER push to git without explicit permission from the user**
+- Always ask before running `git push` (on ANY branch)
+- Show what will be pushed and ask for confirmation
+- This applies to main, next, feature/*, and all branches
+- User must explicitly approve each push operation
+
 ### **Git Branch Strategy**
 - **`main`** = Production (live site)
 - **`next`** = Preview/staging branch for testing

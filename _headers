@@ -1,10 +1,7 @@
 # Symphony Dashboard - Basic Authentication Configuration
 # Protects dashboard pages while keeping function endpoints accessible for API integrations
 
-# Protect all dashboard pages and assets
-# Temporarily using hardcoded password for testing
-/*
-  Basic-Auth: symphony:TestPass123
+# IMPORTANT: More specific rules must come FIRST!
 
 # Keep Netlify Functions accessible (CRITICAL for Tessitura API, BigQuery, scheduled tasks)
 /.netlify/functions/*
@@ -13,3 +10,8 @@
 # Health check endpoint (if implemented)
 /health
   Basic-Auth: none
+
+# Protect all dashboard pages and assets
+# Temporarily using hardcoded password for testing
+/*
+  Basic-Auth: symphony:TestPass123
