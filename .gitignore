@@ -61,3 +61,16 @@ symphony-bigquery-key.json
 # Temporary files
 temp-response.json
 test-dashboard.html
+test-*.js
+test-*.html
+diagnose-*.js
+fix-*.js
+cookies.txt
+nul
+
+# Data files (PDFs, CSVs, parsed data)
+*.pdf
+*.csv
+parsed-*.json
+data/*.pdf
+data/*.csv
