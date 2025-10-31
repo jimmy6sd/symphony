@@ -828,7 +828,7 @@ body {
 
 /* Week-over-week styling */
 .wow-positive {
-    color: var(--success-color);
+    color: var(--text-secondary);
 }
 
 .wow-negative {

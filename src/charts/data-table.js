@@ -289,13 +289,15 @@ class DataTable {
                     const goal = Math.round(row.budgetGoal || 0);
                     if (goal === 0) return 'No Goal';
 
+                    const difference = revenue - goal;
                     const percentage = (revenue / goal * 100);
                     const status = percentage >= 100 ? 'good' : percentage >= 80 ? 'warning' : 'poor';
+                    const prefix = difference >= 0 ? '+' : '';
 
                     return `
                         <div class="budget-cell">
                             <div class="budget-goal">$${goal.toLocaleString()}</div>
-                            <div class="budget-performance budget-${status}">${percentage.toFixed(1)}%</div>
+                            <div class="budget-performance budget-${status}">${prefix}$${difference.toLocaleString()}</div>
                         </div>
                     `;
                 }
@@ -1925,7 +1927,9 @@ overlayHistoricalData(container, performance, historicalData) {
                 .html(`
                     <strong>${d.snapshot_date}</strong><br/>
                     <span style="color: #999;">●</span> ${Math.round(d.daysOut)} days before performance<br/>
-                    <span style="color: #3498db;">●</span> Tickets Sold: ${d.tickets.toLocaleString()}
+                    <span style="color: #3498db;">●</span> Tickets Sold: ${d.tickets.toLocaleString()}<br/>
+                    <span style="color: #A23B72;">●</span> Revenue: $${(d.revenue || 0).toLocaleString()}<br/>
+                    <span style="color: #ccc;">●</span> Occupancy: ${(d.occupancy || 0).toFixed(1)}%
                 `);
 
             tooltip
