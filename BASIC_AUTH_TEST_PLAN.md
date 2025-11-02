@@ -21,14 +21,14 @@
 ## Testing on Preview (next branch)
 
 ### Preview URL
-After pushing to `next` branch: **https://next--symphony.netlify.app**
+After pushing to `next` branch: **https://next--kcsdashboard.netlify.app**
 
 ---
 
 ## Test Checklist
 
 ### ✅ Test 1: Dashboard Protection
-- [ ] Visit https://next--symphony.netlify.app
+- [ ] Visit https://next--kcsdashboard.netlify.app
 - [ ] **Expected**: Browser shows Basic Auth prompt
 - [ ] Enter username: `kcsdashboard`
 - [ ] Enter password: [SITE_PASSWORD value]
@@ -36,7 +36,7 @@ After pushing to `next` branch: **https://next--symphony.netlify.app**
 
 ### ✅ Test 2: Wrong Credentials
 - [ ] Clear browser auth cache (close/reopen browser or use incognito)
-- [ ] Visit https://next--symphony.netlify.app
+- [ ] Visit https://next--kcsdashboard.netlify.app
 - [ ] Enter wrong username or password
 - [ ] **Expected**: Access denied (401 Unauthorized)
 
@@ -46,7 +46,7 @@ Test that functions work WITHOUT authentication:
 #### Option A: Using curl
 ```bash
 # Test fetch-performances function (if exists)
-curl https://next--symphony.netlify.app/.netlify/functions/fetch-performances
+curl https://next--kcsdashboard.netlify.app/.netlify/functions/fetch-performances
 
 # Should return data WITHOUT asking for credentials
 ```
@@ -78,7 +78,7 @@ curl https://next--symphony.netlify.app/.netlify/functions/fetch-performances
 ## Production Testing (After merging to main)
 
 ### Production URL
-After merging to `main`: **https://symphony.netlify.app**
+After merging to `main`: **https://kcsdashboard.netlify.app**
 
 ### Repeat All Tests Above
 - [ ] Test 1: Dashboard Protection ✅

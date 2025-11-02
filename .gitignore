@@ -74,3 +74,6 @@ nul
 parsed-*.json
 data/*.pdf
 data/*.csv
+
+# Dashboard data - always pull from BigQuery, never commit local cache
+data/dashboard.json
