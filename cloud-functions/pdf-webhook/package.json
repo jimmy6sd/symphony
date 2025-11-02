@@ -1,0 +1,21 @@
+{
+  "name": "symphony-pdf-webhook",
+  "version": "1.0.0",
+  "description": "Google Cloud Function for processing Symphony PDF reports",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.0.0",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/storage": "^7.0.0",
+    "pdf2json": "^3.0.5"
+  },
+  "scripts": {
+    "start": "functions-framework --target=pdfWebhook --signature-type=http",
+    "deploy": "gcloud functions deploy symphony-pdf-webhook --gen2 --runtime=nodejs20 --region=us-central1 --source=. --entry-point=pdfWebhook --trigger-http --allow-unauthenticated --memory=2GB --timeout=540s",
+    "logs": "gcloud functions logs read symphony-pdf-webhook --region=us-central1 --gen2 --limit=50",
+    "test": "node test-local.js"
+  }
+}

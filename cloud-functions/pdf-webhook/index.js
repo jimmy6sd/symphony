@@ -890,11 +890,7 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
         85,
         ${p.budget_percent > 0 ? Math.round((p.total_revenue / p.budget_percent) * 100) : 0},
         ${p.budget_percent || 0},
-        0,
-        'Classical',
-        NULL,
         true,
-        false,
         CURRENT_TIMESTAMP(),
         CURRENT_TIMESTAMP(),
         CURRENT_TIMESTAMP()
@@ -906,8 +902,7 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
       (performance_id, performance_code, title, series, performance_date, venue, season,
        single_tickets_sold, subscription_tickets_sold, total_tickets_sold, total_revenue,
        capacity, capacity_percent, occupancy_goal, budget_goal, budget_percent,
-       single_ticket_atp, performance_type, supplemental,
-       has_sales_data, has_excel_data, created_at, updated_at, last_pdf_import_date)
+       has_sales_data, created_at, updated_at, last_pdf_import_date)
       VALUES ${newPerfValues}
     `;
 
