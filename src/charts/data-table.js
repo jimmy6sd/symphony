@@ -117,11 +117,10 @@ class DataTable {
                         }, 0);
 
                         if (totalWowTickets !== 0) {
-                            const changeClass = totalWowTickets >= 0 ? 'wow-positive' : 'wow-negative';
                             return `
                                 <div class="tickets-cell">
                                     <div class="tickets-amount">${total.toLocaleString()}</div>
-                                    <div class="tickets-wow ${changeClass}">${totalWowTickets > 0 ? '+' : ''}${totalWowTickets.toLocaleString()} W/W</div>
+                                    <div class="tickets-wow">${totalWowTickets > 0 ? '+' : ''}${totalWowTickets.toLocaleString()} W/W</div>
                                 </div>
                             `;
                         }
@@ -135,12 +134,10 @@ class DataTable {
                         return `<div class="tickets-sold">${total.toLocaleString()}</div>`;
                     }
 
-                    const changeClass = wow.tickets >= 0 ? 'wow-positive' : 'wow-negative';
-
                     return `
                         <div class="tickets-cell">
                             <div class="tickets-amount">${total.toLocaleString()}</div>
-                            <div class="tickets-wow ${changeClass}">${wow.tickets > 0 ? '+' : ''}${wow.tickets.toLocaleString()} W/W</div>
+                            <div class="tickets-wow">${wow.tickets > 0 ? '+' : ''}${wow.tickets.toLocaleString()} W/W</div>
                         </div>
                     `;
                 }
@@ -176,12 +173,11 @@ class DataTable {
 
                         if (totalWowTickets !== 0 && totalCapacity > 0) {
                             const wowOccupancyChange = (totalWowTickets / totalCapacity * 100);
-                            const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
                             console.log('✅ Showing group occupancy W/W:', wowOccupancyChange.toFixed(1));
                             return `
                                 <div class="occupancy-cell">
                                     <div class="occupancy-amount">${rate.toFixed(1)}%</div>
-                                    <div class="occupancy-wow ${changeClass}">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
+                                    <div class="occupancy-wow">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
                                 </div>
                             `;
                         }
@@ -197,14 +193,13 @@ class DataTable {
                     }
 
                     const wowOccupancyChange = (wow.tickets / capacity * 100);
-                    const changeClass = wowOccupancyChange >= 0 ? 'wow-positive' : 'wow-negative';
 
                     console.log('✅ Showing individual occupancy W/W:', wowOccupancyChange.toFixed(1));
 
                     return `
                         <div class="occupancy-cell">
                             <div class="occupancy-amount">${rate.toFixed(1)}%</div>
-                            <div class="occupancy-wow ${changeClass}">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
+                            <div class="occupancy-wow">${wowOccupancyChange > 0 ? '+' : ''}${wowOccupancyChange.toFixed(1)}% W/W</div>
                         </div>
                     `;
                 }
@@ -242,11 +237,10 @@ class DataTable {
                         const roundedWow = Math.round(totalWowRevenue);
 
                         if (roundedWow !== 0) {
-                            const changeClass = roundedWow >= 0 ? 'wow-positive' : 'wow-negative';
                             return `
                                 <div class="revenue-cell">
                                     <div class="revenue-amount">$${revenue.toLocaleString()}</div>
-                                    <div class="revenue-wow ${changeClass}">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
+                                    <div class="revenue-wow">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
                                 </div>
                             `;
                         }
@@ -269,12 +263,11 @@ class DataTable {
                     }
 
                     const roundedWow = Math.round(wow.revenue);
-                    const changeClass = roundedWow >= 0 ? 'wow-positive' : 'wow-negative';
 
                     return `
                         <div class="revenue-cell">
                             <div class="revenue-amount">$${revenue.toLocaleString()}</div>
-                            <div class="revenue-wow ${changeClass}">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
+                            <div class="revenue-wow">${roundedWow > 0 ? '+' : ''}$${Math.abs(roundedWow).toLocaleString()} W/W</div>
                         </div>
                     `;
                 }
@@ -291,13 +284,12 @@ class DataTable {
 
                     const difference = revenue - goal;
                     const percentage = (revenue / goal * 100);
-                    const status = percentage >= 100 ? 'good' : percentage >= 80 ? 'warning' : 'poor';
-                    const prefix = difference >= 0 ? '+' : '';
+                    const status = percentage >= 100 ? 'good' : percentage >= 90 ? 'warning' : 'poor';
 
                     return `
                         <div class="budget-cell">
                             <div class="budget-goal">$${goal.toLocaleString()}</div>
-                            <div class="budget-performance budget-${status}">${prefix}$${difference.toLocaleString()}</div>
+                            <div class="budget-performance budget-${status}">$${revenue.toLocaleString()}</div>
                         </div>
                     `;
                 }
