@@ -298,8 +298,9 @@ async function processPdfBase64(base64Data, metadata) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Check if this is a performance code (25XXXXY or 25XXXXYY format, not a total row)
-          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
+          // Check if this is a performance code (YYMMDDX or YYMMDDXX format, not a total row)
+          // Matches any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
+          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
 
             // Expected sequence: [Code, DateTime, Budget%, FixedCount, FixedRev, NonFixedCount, NonFixedRev, SingleCount, SingleRev, Subtotal, Reserved, ReservedRev, Total, Avail, Capacity%]
@@ -414,8 +415,9 @@ async function processPdfUrl(url, metadata) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Check if this is a performance code (25XXXXY or 25XXXXYY format, not a total row)
-          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
+          // Check if this is a performance code (YYMMDDX or YYMMDDXX format, not a total row)
+          // Matches any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
+          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
 
             let idx = i + 1;
@@ -707,7 +709,8 @@ async function parseTabularFormat(lines) {
   for (const line of lines) {
     const parts = line.split(/\t+/);
 
-    if (parts.length >= 10 && parts[0].match(/^25\d{4}[A-Z]{1,2}$/)) {
+    // Match any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
+    if (parts.length >= 10 && parts[0].match(/^\d{6}[A-Z]{1,2}$/)) {
       const performanceCode = parts[0];
       const dateTime = parts[1];
       const budgetPercent = parseFloat(parts[2]) || 0;
@@ -870,7 +873,8 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
     const newPerfValues = newPerfs.map(p => {
       const perfId = parseInt(p.performance_code.substring(2)); // Extract numeric ID from code
       // Extract series from performance code (e.g., CS04, PS1)
-      const seriesMatch = p.performance_code.match(/^25(\d{4})/);
+      // Matches any year: 25XXXX, 26XXXX, 27XXXX, etc.
+      const seriesMatch = p.performance_code.match(/^\d{2}(\d{4})/);
       const series = seriesMatch ? `Series-${seriesMatch[1].substring(0, 2)}` : 'Unknown';
 
       return `(

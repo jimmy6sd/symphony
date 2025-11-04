@@ -285,11 +285,13 @@ class DataTable {
                     const difference = revenue - goal;
                     const percentage = (revenue / goal * 100);
                     const status = percentage >= 100 ? 'good' : percentage >= 90 ? 'warning' : 'poor';
+                    const differenceSign = difference >= 0 ? '+' : '';
+                    const differenceFormatted = `${differenceSign}$${Math.abs(difference).toLocaleString()}`;
 
                     return `
                         <div class="budget-cell">
                             <div class="budget-goal">$${goal.toLocaleString()}</div>
-                            <div class="budget-performance budget-${status}">$${revenue.toLocaleString()}</div>
+                            <div class="budget-performance budget-${status}">${differenceFormatted}</div>
                         </div>
                     `;
                 }
