@@ -173,7 +173,8 @@ async function parsePdf(pdfBuffer) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
+          // Match any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
+          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
             let idx = i + 1;
 
