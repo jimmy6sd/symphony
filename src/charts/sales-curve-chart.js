@@ -464,55 +464,177 @@ class SalesCurveChart {
 
         let status = "On Track";
         let statusColor = targetComp.line_color || "#f97316";
+        let badgeColor = "rgba(255, 255, 255, 0.2)"; // Default semi-transparent white
 
         if (variance < -targetCompSales * 0.1) {
             status = "Behind";
             statusColor = "#d62728";
+            badgeColor = "#ef4444"; // Beautiful red
         } else if (variance > targetCompSales * 0.1) {
             status = "Ahead";
             statusColor = "#2ca02c";
+            badgeColor = "#10b981"; // Beautiful green
+        } else {
+            // On Track - use a nice yellow/amber
+            badgeColor = "#f59e0b"; // Beautiful amber
         }
 
-        const statusGroup = chartGroup.append("g")
-            .attr("transform", `translate(${innerWidth + 20}, 30)`);
+        // Calculate current and projected metrics
+        const capacity = performance.capacity || 0;
+        const currentOcc = capacity > 0 ? (singleTicketsSold / capacity * 100).toFixed(1) : 0;
+        const currentRevenue = performance.totalRevenue || 0;
 
+        // Calculate projected final metrics
+        const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
+        const projectedFinal = Math.min(targetCompFinal + variance, capacity); // Cap at capacity
+        const projectedOcc = capacity > 0 ? (projectedFinal / capacity * 100).toFixed(1) : 0;
+        const avgTicketPrice = singleTicketsSold > 0 ? currentRevenue / singleTicketsSold : 0;
+        const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
+
+        const statusGroup = chartGroup.append("g")
+            .attr("transform", `translate(${innerWidth + 20}, 10)`);
+
+        // Beautiful gradient background
+        const gradient = chartGroup.append("defs")
+            .append("linearGradient")
+            .attr("id", "metricsGradient")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "0%")
+            .attr("y2", "100%");
+
+        gradient.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "#667eea")
+            .attr("stop-opacity", 1);
+
+        gradient.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#764ba2")
+            .attr("stop-opacity", 1);
+
+        // Main box with gradient
         statusGroup.append("rect")
             .attr("width", 180)
-            .attr("height", 80)
-            .attr("fill", "white")
-            .attr("stroke", statusColor)
-            .attr("stroke-width", 2)
-            .attr("rx", 5);
+            .attr("height", 200)
+            .attr("fill", "url(#metricsGradient)")
+            .attr("rx", 8)
+            .attr("filter", "drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3))");
 
+        // Header
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 20)
+            .attr("y", 18)
             .attr("text-anchor", "middle")
-            .attr("font-size", "14px")
-            .attr("font-weight", "bold")
-            .text("Sales vs Target Comp");
+            .attr("font-size", "13px")
+            .attr("font-weight", "600")
+            .attr("fill", "white")
+            .text("📊 Tracking Status");
+
+        // Status badge with GYR color coding
+        statusGroup.append("rect")
+            .attr("x", 25)
+            .attr("y", 25)
+            .attr("width", 130)
+            .attr("height", 22)
+            .attr("fill", badgeColor)
+            .attr("rx", 11)
+            .attr("opacity", 0.9);
 
         statusGroup.append("text")
             .attr("x", 90)
             .attr("y", 40)
             .attr("text-anchor", "middle")
-            .attr("font-size", "18px")
+            .attr("font-size", "12px")
             .attr("font-weight", "bold")
-            .attr("fill", statusColor)
-            .text(status);
+            .attr("fill", "white")
+            .text(`${status} ${variance > 0 ? '+' : ''}${variance.toLocaleString()}`);
+
+        // Current section
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 62)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("font-weight", "600")
+            .attr("fill", "rgba(255, 255, 255, 0.7)")
+            .text("CURRENT");
 
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 60)
+            .attr("y", 80)
             .attr("text-anchor", "middle")
-            .attr("font-size", "12px")
-            .text(`${variance > 0 ? '+' : ''}${variance.toLocaleString()} tickets`);
+            .attr("font-size", "18px")
+            .attr("font-weight", "700")
+            .attr("fill", "white")
+            .text(singleTicketsSold.toLocaleString());
+
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 96)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("fill", "rgba(255, 255, 255, 0.8)")
+            .text(`${currentOcc}% • $${(currentRevenue / 1000).toFixed(0)}k`);
+
+        // Divider line
+        statusGroup.append("line")
+            .attr("x1", 30)
+            .attr("x2", 150)
+            .attr("y1", 110)
+            .attr("y2", 110)
+            .attr("stroke", "rgba(255, 255, 255, 0.3)")
+            .attr("stroke-width", 1);
+
+        // Projected section
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 126)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("font-weight", "600")
+            .attr("fill", "rgba(255, 255, 255, 0.7)")
+            .text("PROJECTED FINAL");
+
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 144)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "18px")
+            .attr("font-weight", "700")
+            .attr("fill", "white")
+            .text(projectedFinal.toLocaleString());
+
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 160)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("fill", "rgba(255, 255, 255, 0.8)")
+            .text(`${projectedOcc}% • $${(projectedRevenue / 1000).toFixed(0)}k`);
+
+        // Projection basis note
+        statusGroup.append("text")
+            .attr("x", 90)
+            .attr("y", 180)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "8px")
+            .attr("font-style", "italic")
+            .attr("fill", "rgba(255, 255, 255, 0.6)")
+            .text(`Based on ${targetComp.comparison_name}`)
+            .each(function() {
+                const text = d3.select(this);
+                const textLength = this.getComputedTextLength();
+                if (textLength > 160) {
+                    text.text(text.text().substring(0, 20) + "...");
+                }
+            });
     }
 
     addLegend(chartGroup, innerWidth) {
         const legend = chartGroup.append("g")
             .attr("class", "chart-legend")
-            .attr("transform", `translate(${innerWidth + 20}, 150)`);
+            .attr("transform", `translate(${innerWidth + 20}, 230)`);
 
         const legendItems = [
             { label: "Actual Ticket Sales", color: "#3498db", style: "solid", lineWidth: 3 },
@@ -920,7 +1042,7 @@ class SalesCurveChart {
             .attr("y", 14)
             .style("font-size", "11px")
             .style("font-weight", "500")
-            .text("Projected Sales (maintaining current pace)");
+            .text("Projected Sales");
     }
 
     getStrokeDashArray(style) {
