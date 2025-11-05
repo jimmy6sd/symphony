@@ -211,8 +211,7 @@ class SalesCurveChart {
             .attr("y1", yScale(capacity))
             .attr("y2", yScale(capacity))
             .attr("stroke", "#ccc")
-            .attr("stroke-width", 2)
-            .attr("stroke-dasharray", "5,5");
+            .attr("stroke-width", 2);
 
         // Draw available single tickets line (capacity minus subscriptions)
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
@@ -223,8 +222,7 @@ class SalesCurveChart {
             .attr("y1", yScale(availableSingleCapacity))
             .attr("y2", yScale(availableSingleCapacity))
             .attr("stroke", "#9b59b6")  // Purple
-            .attr("stroke-width", 2)
-            .attr("stroke-dasharray", "4,4");
+            .attr("stroke-width", 2);
 
         // Position labels to naturally avoid collisions
         const capacityY = yScale(capacity);
@@ -319,6 +317,9 @@ class SalesCurveChart {
 
         // Render comparison lines (will update the legend)
         this.renderComparisonLines(chartGroup, xScale, yScale, performance);
+
+        // Render projected sales line
+        await this.renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons);
 
         // Add tooltips for the single current sales point
         this.addTooltips(currentSales, weeksToPerformance, onTrackData, performance);
@@ -515,8 +516,8 @@ class SalesCurveChart {
 
         const legendItems = [
             { label: "Actual Ticket Sales", color: "#3498db", style: "solid", lineWidth: 3 },
-            { label: "Available Single Tickets", color: "#9b59b6", style: "dashed" },
-            { label: "Total Capacity", color: "#ccc", style: "dashed" }
+            { label: "Available Single Tickets", color: "#9b59b6", style: "solid" },
+            { label: "Total Capacity", color: "#ccc", style: "solid" }
         ];
 
         legendItems.forEach((item, i) => {
@@ -699,6 +700,161 @@ class SalesCurveChart {
                 const tooltip = d3.select(".sales-curve-tooltip");
                 tooltip.style("visibility", "hidden");
             });
+    }
+
+    async renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons) {
+        // Only render projection if we have a target comp and we're not at performance date
+        if (!comparisons || comparisons.length === 0 || weeksToPerformance === 0) {
+            return;
+        }
+
+        const targetComp = comparisons.find(c => c.is_target === true);
+        if (!targetComp || !targetComp.weeksArray) {
+            return; // No target comp to project from
+        }
+
+        const numWeeks = targetComp.weeksArray.length;
+        const currentWeekIndex = numWeeks - 1 - weeksToPerformance;
+
+        // Ensure current week is within target comp data range
+        if (currentWeekIndex < 0 || currentWeekIndex >= numWeeks) {
+            return;
+        }
+
+        // Calculate absolute variance at current week
+        const targetCompAtCurrentWeek = targetComp.weeksArray[currentWeekIndex];
+        const variance = currentSales - targetCompAtCurrentWeek;
+
+        console.log('📈 Projection calculation:');
+        console.log('   Current week:', weeksToPerformance);
+        console.log('   Actual sales:', currentSales);
+        console.log('   Target comp at current week:', targetCompAtCurrentWeek);
+        console.log('   Absolute variance:', variance, 'tickets');
+
+        // Generate projection data from current week to performance date
+        const projectionData = [];
+
+        // Start with current actual sales point
+        projectionData.push({
+            week: weeksToPerformance,
+            projectedSales: currentSales
+        });
+
+        // Project future weeks using absolute variance
+        for (let week = weeksToPerformance - 1; week >= 0; week--) {
+            const weekIndex = numWeeks - 1 - week;
+            if (weekIndex >= 0 && weekIndex < numWeeks) {
+                const targetCompAtWeek = targetComp.weeksArray[weekIndex];
+                const projectedSales = targetCompAtWeek + variance;
+
+                projectionData.push({
+                    week: week,
+                    projectedSales: Math.max(0, projectedSales) // Don't allow negative projections
+                });
+
+                console.log(`   Week ${week}: target=${targetCompAtWeek}, projected=${projectedSales}`);
+            }
+        }
+
+        // Draw projection line
+        const line = d3.line()
+            .x(d => xScale(d.week))
+            .y(d => yScale(d.projectedSales))
+            .curve(d3.curveMonotoneX);
+
+        chartGroup.append("path")
+            .datum(projectionData)
+            .attr("class", "projection-line")
+            .attr("d", line)
+            .attr("fill", "none")
+            .attr("stroke", "#2ecc71")  // Green
+            .attr("stroke-width", 2.5)
+            .attr("stroke-dasharray", "8,4")  // Dashed
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+            .attr("opacity", 0.8)
+            .style("filter", "drop-shadow(0 1px 2px #2ecc7140)");
+
+        // Add data points for projection line
+        chartGroup.selectAll(".projection-point")
+            .data(projectionData)
+            .enter()
+            .append("circle")
+            .attr("class", "projection-point")
+            .attr("cx", d => xScale(d.week))
+            .attr("cy", d => yScale(d.projectedSales))
+            .attr("r", 2)
+            .attr("fill", "#2ecc71")
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.5)
+            .attr("opacity", 0.7)
+            .style("cursor", "pointer")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 4.5)
+                    .attr("opacity", 1);
+
+                const tooltip = d3.select(".sales-curve-tooltip");
+                if (tooltip.empty()) return;
+
+                const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
+                tooltip.html(`
+                    <strong style="color: #2ecc71;">📈 Projected Sales</strong><br/>
+                    ${weekLabel}<br/>
+                    Projected: ${Math.round(d.projectedSales).toLocaleString()} tickets<br/>
+                    <em style="font-size: 10px;">Based on maintaining current ${variance >= 0 ? '+' : ''}${variance.toLocaleString()} ticket variance</em>
+                `);
+                tooltip.style("visibility", "visible");
+            })
+            .on("mousemove", function(event) {
+                const tooltip = d3.select(".sales-curve-tooltip");
+                tooltip
+                    .style("top", (event.pageY - 10) + "px")
+                    .style("left", (event.pageX + 10) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 2)
+                    .attr("opacity", 0.7);
+
+                const tooltip = d3.select(".sales-curve-tooltip");
+                tooltip.style("visibility", "hidden");
+            });
+
+        // Update legend to include projection
+        this.addProjectionToLegend(chartGroup, comparisons.length);
+    }
+
+    addProjectionToLegend(chartGroup, numComparisons) {
+        const legend = chartGroup.select(".chart-legend");
+        if (legend.empty()) return;
+
+        // Add projection after all other items
+        // 3 default items + comparisons + 1 for projection
+        const startIndex = 3 + numComparisons;
+
+        const legendRow = legend.append("g")
+            .attr("transform", `translate(0, ${startIndex * 20})`);
+
+        legendRow.append("line")
+            .attr("x1", 0)
+            .attr("x2", 20)
+            .attr("y1", 10)
+            .attr("y2", 10)
+            .attr("stroke", "#2ecc71")
+            .attr("stroke-width", 2.5)
+            .attr("stroke-dasharray", "8,4");
+
+        legendRow.append("text")
+            .attr("x", 25)
+            .attr("y", 14)
+            .style("font-size", "11px")
+            .style("font-weight", "500")
+            .text("Projected Sales (maintaining current pace)");
     }
 
     getStrokeDashArray(style) {
