@@ -318,8 +318,8 @@ class SalesCurveChart {
         // Render comparison lines (will update the legend)
         this.renderComparisonLines(chartGroup, xScale, yScale, performance);
 
-        // Render projected sales line
-        await this.renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons);
+        // Render projected sales line (capped at available single tickets)
+        await this.renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons, availableSingleCapacity);
 
         // Add tooltips for the single current sales point
         this.addTooltips(currentSales, weeksToPerformance, onTrackData, performance);
@@ -630,7 +630,7 @@ class SalesCurveChart {
         // Determine styling based on is_target flag
         const isTarget = comparison.is_target === true;
         console.log('🎨 Styling comp:', comparison.comparison_name, '| is_target:', comparison.is_target, '| isTarget:', isTarget);
-        const strokeWidth = isTarget ? 6 : 2.5;  // Make target even thicker
+        const strokeWidth = isTarget ? 3 : 2.5;  // Target comp stroke width (thinner)
         const strokeDasharray = isTarget ? 'none' : this.getStrokeDashArray(comparison.line_style);
         const opacity = isTarget ? 1.0 : 0.7;  // Make others more transparent
         console.log('   strokeWidth:', strokeWidth, '| dasharray:', strokeDasharray, '| opacity:', opacity);
@@ -657,7 +657,7 @@ class SalesCurveChart {
             .attr("class", `comparison-point comparison-point-${comparison.comparison_id}`)
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.sales))
-            .attr("r", 2)
+            .attr("r", 3.5)  // Larger points
             .attr("fill", comparison.line_color)
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
@@ -667,7 +667,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 4.5)
+                    .attr("r", 5.5)  // Larger hover
                     .attr("opacity", 1);
 
                 // Show tooltip
@@ -694,7 +694,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 2)
+                    .attr("r", 3.5)  // Match default size
                     .attr("opacity", 0.7);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
@@ -702,7 +702,7 @@ class SalesCurveChart {
             });
     }
 
-    async renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons) {
+    async renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons, availableSingleCapacity) {
         // Only render projection if we have a target comp and we're not at performance date
         if (!comparisons || comparisons.length === 0 || weeksToPerformance === 0) {
             return;
@@ -730,6 +730,7 @@ class SalesCurveChart {
         console.log('   Actual sales:', currentSales);
         console.log('   Target comp at current week:', targetCompAtCurrentWeek);
         console.log('   Absolute variance:', variance, 'tickets');
+        console.log('   Available single capacity cap:', availableSingleCapacity);
 
         // Generate projection data from current week to performance date
         const projectionData = [];
@@ -740,19 +741,25 @@ class SalesCurveChart {
             projectedSales: currentSales
         });
 
-        // Project future weeks using absolute variance
+        // Project future weeks using absolute variance, capped at available single tickets
         for (let week = weeksToPerformance - 1; week >= 0; week--) {
             const weekIndex = numWeeks - 1 - week;
             if (weekIndex >= 0 && weekIndex < numWeeks) {
                 const targetCompAtWeek = targetComp.weeksArray[weekIndex];
                 const projectedSales = targetCompAtWeek + variance;
 
+                // Cap between 0 and available single tickets capacity
+                const cappedProjection = Math.min(
+                    Math.max(0, projectedSales),
+                    availableSingleCapacity
+                );
+
                 projectionData.push({
                     week: week,
-                    projectedSales: Math.max(0, projectedSales) // Don't allow negative projections
+                    projectedSales: cappedProjection
                 });
 
-                console.log(`   Week ${week}: target=${targetCompAtWeek}, projected=${projectedSales}`);
+                console.log(`   Week ${week}: target=${targetCompAtWeek}, projected=${projectedSales}, capped=${cappedProjection}`);
             }
         }
 
@@ -783,29 +790,88 @@ class SalesCurveChart {
             .attr("class", "projection-point")
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.projectedSales))
-            .attr("r", 2)
+            .attr("r", 4)  // Larger points
             .attr("fill", "#2ecc71")
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
             .attr("opacity", 0.7)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
+                console.log('🎯 Projection point mouseover:', d.week, 'weeks before');
+
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 4.5)
+                    .attr("r", 6)  // Larger hover
                     .attr("opacity", 1);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
                 if (tooltip.empty()) return;
 
                 const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
-                tooltip.html(`
-                    <strong style="color: #2ecc71;">📈 Projected Sales</strong><br/>
-                    ${weekLabel}<br/>
-                    Projected: ${Math.round(d.projectedSales).toLocaleString()} tickets<br/>
-                    <em style="font-size: 10px;">Based on maintaining current ${variance >= 0 ? '+' : ''}${variance.toLocaleString()} ticket variance</em>
-                `);
+
+                // Check if this is the current sales point (first point in projection)
+                const isCurrentPoint = d.week === weeksToPerformance;
+                console.log('   isCurrentPoint?', isCurrentPoint, '(d.week:', d.week, 'weeksToPerformance:', weeksToPerformance, ')');
+
+                if (isCurrentPoint) {
+                    // Show actual sales data for current point
+                    const totalTickets = currentSales;
+
+                    // Ensure we handle both string and number types properly
+                    const capacityValue = typeof performance.capacity === 'string'
+                        ? parseFloat(performance.capacity)
+                        : (performance.capacity || 0);
+                    const capacity = capacityValue > 0 ? capacityValue : 0;
+
+                    const revenueValue = typeof performance.totalRevenue === 'string'
+                        ? parseFloat(performance.totalRevenue)
+                        : (performance.totalRevenue || 0);
+                    const revenue = revenueValue > 0 ? revenueValue : 0;
+
+                    const occupancyPercent = capacity > 0 ? ((totalTickets / capacity) * 100).toFixed(1) : '0.0';
+
+                    // Debug logging
+                    console.log('🔍 Tooltip debug:', {
+                        totalTickets,
+                        capacityRaw: performance.capacity,
+                        capacityType: typeof performance.capacity,
+                        capacityParsed: capacity,
+                        revenueRaw: performance.totalRevenue,
+                        revenueType: typeof performance.totalRevenue,
+                        revenueParsed: revenue,
+                        occupancyPercent,
+                        performanceObject: performance
+                    });
+
+                    tooltip.html(`
+                        <strong style="color: #3498db;">🎫 Current Sales</strong><br/>
+                        ${weekLabel}<br/>
+                        Tickets Sold: ${totalTickets.toLocaleString()}<br/>
+                        Occupancy: ${occupancyPercent}%<br/>
+                        Revenue: $${revenue.toLocaleString()}<br/>
+                        <em style="font-size: 10px;">Tracking ${variance >= 0 ? 'ahead' : 'behind'} target by ${Math.abs(variance).toLocaleString()} tickets</em>
+                    `);
+                } else {
+                    // Show projected data for future points with occupancy and estimated revenue
+                    const projectedTickets = Math.round(d.projectedSales);
+                    const capacity = parseFloat(performance.capacity) || 0;
+                    const projectedOccupancy = capacity > 0 ? ((projectedTickets / capacity) * 100).toFixed(1) : '0.0';
+
+                    // Estimate revenue based on current average ticket price
+                    const currentRevenue = parseFloat(performance.totalRevenue) || 0;
+                    const avgTicketPrice = currentSales > 0 ? currentRevenue / currentSales : 0;
+                    const projectedRevenue = Math.round(projectedTickets * avgTicketPrice);
+
+                    tooltip.html(`
+                        <strong style="color: #2ecc71;">📈 Projected Sales</strong><br/>
+                        ${weekLabel}<br/>
+                        Projected: ${projectedTickets.toLocaleString()} tickets<br/>
+                        Occupancy: ${projectedOccupancy}%<br/>
+                        Est. Revenue: $${projectedRevenue.toLocaleString()}<br/>
+                        <em style="font-size: 10px;">Based on maintaining current ${variance >= 0 ? '+' : ''}${variance.toLocaleString()} ticket variance</em>
+                    `);
+                }
                 tooltip.style("visibility", "visible");
             })
             .on("mousemove", function(event) {
@@ -818,7 +884,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 2)
+                    .attr("r", 4)  // Match default size
                     .attr("opacity", 0.7);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
@@ -905,7 +971,7 @@ class SalesCurveChart {
                 .attr("y1", 10)
                 .attr("y2", 10)
                 .attr("stroke", comp.line_color)
-                .attr("stroke-width", isTarget ? 6 : 2.5)
+                .attr("stroke-width", isTarget ? 3 : 2.5)  // Thinner target line in legend
                 .attr("stroke-dasharray", isTarget ? 'none' : this.getStrokeDashArray(comp.line_style));
 
             legendRow.append("text")

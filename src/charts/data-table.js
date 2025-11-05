@@ -1841,6 +1841,8 @@ overlayHistoricalData(container, performance, historicalData) {
             weeksRounded: Math.max(0, Math.ceil(exactWeeksOut)),
             daysOut: Math.max(0, daysOut),
             tickets: snapshot.single_tickets_sold || 0,  // Only single tickets (includes non-fixed packages, excludes fixed subscriptions)
+            revenue: snapshot.total_revenue || 0,        // Total revenue
+            occupancy: snapshot.capacity_percent || 0,   // Occupancy percentage
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date
         };
