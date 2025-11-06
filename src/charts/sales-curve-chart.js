@@ -9,6 +9,7 @@ class SalesCurveChart {
         this.margin = { top: 50, right: 220, bottom: 75, left: 70 }; // Proper spacing for labels and legend
         this.selectedPerformance = null;
         this.showSelector = options.showSelector !== false; // Default to true unless explicitly false
+        this.historicalData = options.historicalData || []; // Store historical snapshots for projection alignment
     }
 
     async init() {
@@ -168,6 +169,12 @@ class SalesCurveChart {
         const yScale = d3.scaleLinear()
             .domain([0, maxSales])
             .range([innerHeight, 0]);
+
+        // Store scales for use by overlayHistoricalData
+        this.xScale = xScale;
+        this.yScale = yScale;
+        this.maxWeeks = maxWeeks;
+        this.maxSales = maxSales;
 
         // Generate on-track line data based on historic progression
         const onTrackData = this.generateOnTrackLine(performance, maxWeeks, capacity);
@@ -857,7 +864,53 @@ class SalesCurveChart {
         }
 
         const numWeeks = targetComp.weeksArray.length;
-        const currentWeekIndex = numWeeks - 1 - weeksToPerformance;
+
+        // Use last historical point if available, otherwise use current calculated values
+        let actualWeek, actualSales;
+
+        if (this.historicalData && this.historicalData.length > 0) {
+            // Transform historical data EXACTLY the same way as overlayHistoricalData
+            const performanceDate = new Date(performance.date);
+            const parseDate = d3.timeParse('%Y-%m-%d');
+
+            const historicalPoints = this.historicalData.map(snapshot => {
+                const snapshotDate = parseDate(snapshot.snapshot_date);
+                const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
+                const exactWeeksOut = daysOut / 7;
+                return {
+                    week: Math.max(0, exactWeeksOut),
+                    tickets: snapshot.single_tickets_sold || 0,
+                    snapshot_date: snapshot.snapshot_date
+                };
+            }).filter(d => d.week >= 0 && d.week <= 10)
+              .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
+
+            if (historicalPoints.length > 0) {
+                // Get the LAST element (most recent snapshot = smallest week number)
+                const lastPoint = historicalPoints[historicalPoints.length - 1];
+                actualWeek = lastPoint.week;
+                actualSales = lastPoint.tickets;
+
+                console.log('📈 Using historical endpoint for projection:');
+                console.log('   Last snapshot date:', lastPoint.snapshot_date);
+                console.log('   Exact weeks out:', actualWeek.toFixed(2));
+                console.log('   Actual sales from snapshot:', actualSales);
+            } else {
+                // No valid historical points
+                actualWeek = weeksToPerformance;
+                actualSales = currentSales;
+                console.log('📈 No valid historical points, using calculated values');
+            }
+        } else {
+            // Fallback to calculated values
+            actualWeek = weeksToPerformance;
+            actualSales = currentSales;
+            console.log('📈 No historical data, using calculated values:');
+            console.log('   Calculated weeks out:', actualWeek);
+            console.log('   Current sales:', actualSales);
+        }
+
+        const currentWeekIndex = numWeeks - 1 - Math.ceil(actualWeek);
 
         // Ensure current week is within target comp data range
         if (currentWeekIndex < 0 || currentWeekIndex >= numWeeks) {
@@ -866,11 +919,8 @@ class SalesCurveChart {
 
         // Calculate absolute variance at current week
         const targetCompAtCurrentWeek = targetComp.weeksArray[currentWeekIndex];
-        const variance = currentSales - targetCompAtCurrentWeek;
+        const variance = actualSales - targetCompAtCurrentWeek;
 
-        console.log('📈 Projection calculation:');
-        console.log('   Current week:', weeksToPerformance);
-        console.log('   Actual sales:', currentSales);
         console.log('   Target comp at current week:', targetCompAtCurrentWeek);
         console.log('   Absolute variance:', variance, 'tickets');
         console.log('   Available single capacity cap:', availableSingleCapacity);
@@ -878,14 +928,15 @@ class SalesCurveChart {
         // Generate projection data from current week to performance date
         const projectionData = [];
 
-        // Start with current actual sales point
+        // Start with actual sales point (from historical data or current)
         projectionData.push({
-            week: weeksToPerformance,
-            projectedSales: currentSales
+            week: actualWeek,
+            projectedSales: actualSales
         });
 
         // Project future weeks using absolute variance, capped at available single tickets
-        for (let week = weeksToPerformance - 1; week >= 0; week--) {
+        // Start from actualWeek (where historical ends or current week) and project to performance date
+        for (let week = Math.floor(actualWeek) - 1; week >= 0; week--) {
             const weekIndex = numWeeks - 1 - week;
             if (weekIndex >= 0 && weekIndex < numWeeks) {
                 const targetCompAtWeek = targetComp.weeksArray[weekIndex];
@@ -954,12 +1005,13 @@ class SalesCurveChart {
                 const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
 
                 // Check if this is the current sales point (first point in projection)
-                const isCurrentPoint = d.week === weeksToPerformance;
-                console.log('   isCurrentPoint?', isCurrentPoint, '(d.week:', d.week, 'weeksToPerformance:', weeksToPerformance, ')');
+                // Use actualWeek which may be decimal (from historical data)
+                const isCurrentPoint = Math.abs(d.week - actualWeek) < 0.01;
+                console.log('   isCurrentPoint?', isCurrentPoint, '(d.week:', d.week, 'actualWeek:', actualWeek, ')');
 
                 if (isCurrentPoint) {
-                    // Show actual sales data for current point
-                    const totalTickets = currentSales;
+                    // Show actual sales data for current point (from historical snapshot or current)
+                    const totalTickets = actualSales;
 
                     // Ensure we handle both string and number types properly
                     const capacityValue = typeof performance.capacity === 'string'
@@ -1003,7 +1055,7 @@ class SalesCurveChart {
 
                     // Estimate revenue based on current average ticket price
                     const currentRevenue = parseFloat(performance.totalRevenue) || 0;
-                    const avgTicketPrice = currentSales > 0 ? currentRevenue / currentSales : 0;
+                    const avgTicketPrice = actualSales > 0 ? currentRevenue / actualSales : 0;
                     const projectedRevenue = Math.round(projectedTickets * avgTicketPrice);
 
                     tooltip.html(`

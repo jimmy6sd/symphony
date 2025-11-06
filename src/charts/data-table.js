@@ -1500,7 +1500,10 @@ class DataTable {
 
         // Always use the standard sales curve chart (weeks-out view)
         const chartId = container.attr('id') || 'modal-sales-chart';
-        const salesChart = new SalesCurveChart(chartId, { showSelector: false });
+        const salesChart = new SalesCurveChart(chartId, {
+            showSelector: false,
+            historicalData: historicalData // Pass historical snapshots for projection alignment
+        });
 
         // Ensure performanceCode is available (use performance_code from BigQuery or performanceCode field)
         const enrichedPerformance = {
@@ -1516,7 +1519,7 @@ class DataTable {
         // If we have historical data, overlay it on top of the weeks-out chart
         if (historicalData && historicalData.length > 1) {
             console.log(`📈 Overlaying ${historicalData.length} historical snapshots on weeks-out chart`);
-            this.overlayHistoricalData(container, performance, historicalData);
+            this.overlayHistoricalData(container, performance, historicalData, salesChart);
         }
 
         console.log('✅ renderSalesChart complete');
@@ -1810,7 +1813,7 @@ class DataTable {
  * Overlay Historical Data on Weeks-Out Chart
  * Adds historical sales progression as a line overlay on the existing SalesCurveChart
  */
-overlayHistoricalData(container, performance, historicalData) {
+overlayHistoricalData(container, performance, historicalData, salesChart) {
     console.log('📈 Overlaying historical data on weeks-out chart');
 
     // Find the SVG element in the container
@@ -1826,6 +1829,18 @@ overlayHistoricalData(container, performance, historicalData) {
         console.warn('⚠️ No chart group found, cannot overlay historical data');
         return;
     }
+
+    // Use the actual scales from the chart (not reconstructed)
+    if (!salesChart.xScale || !salesChart.yScale) {
+        console.warn('⚠️ Chart scales not available, cannot overlay historical data');
+        return;
+    }
+
+    const xScale = salesChart.xScale;
+    const yScale = salesChart.yScale;
+    const maxWeeks = salesChart.maxWeeks || 10;
+
+    console.log('📊 Using chart scales - maxWeeks:', maxWeeks, 'xScale domain:', xScale.domain());
 
     // Parse performance date to calculate weeks
     const performanceDate = new Date(performance.date);
@@ -1846,7 +1861,7 @@ overlayHistoricalData(container, performance, historicalData) {
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date
         };
-    }).filter(d => d.week >= 0 && d.week <= 10) // Only show last 10 weeks
+    }).filter(d => d.week >= 0 && d.week <= maxWeeks) // Use actual maxWeeks from chart
       .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
 
     console.log('📊 Historical points to overlay:', historicalPoints);
@@ -1855,25 +1870,6 @@ overlayHistoricalData(container, performance, historicalData) {
         console.warn('⚠️ No valid historical points to overlay');
         return;
     }
-
-    // Get scales from the existing chart (reconstruct them)
-    const svgNode = svg.node();
-    const bounds = svgNode.getBoundingClientRect();
-    const margin = { top: 50, right: 220, bottom: 75, left: 70 };
-    const innerWidth = bounds.width - margin.left - margin.right;
-    const innerHeight = bounds.height - margin.top - margin.bottom;
-
-    // Reconstruct scales to match the SalesCurveChart
-    const capacity = performance.capacity && performance.capacity > 0 ? performance.capacity : 2000;
-    const maxSales = Math.max(capacity, d3.max(historicalPoints, d => d.tickets), 100);
-
-    const xScale = d3.scaleLinear()
-        .domain([10, 0])
-        .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-        .domain([0, maxSales])
-        .range([innerHeight, 0]);
 
     // Create line generator for historical data
     const historicalLine = d3.line()
