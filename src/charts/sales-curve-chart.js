@@ -798,11 +798,32 @@ class SalesCurveChart {
 
                 const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
                 const targetBadge = comparison.is_target ? '<span style="color: gold; font-weight: bold;">★ TARGET COMP</span><br/>' : '';
+
+                // Calculate occupancy % if capacity is available
+                let occupancyLine = '';
+                if (comparison.capacity && comparison.capacity > 0) {
+                    const occupancy = ((d.sales / comparison.capacity) * 100).toFixed(1);
+                    occupancyLine = `Occupancy: ${occupancy}%<br/>`;
+                }
+
+                // Calculate revenue if ATP is available
+                let revenueLine = '';
+                if (comparison.atp && comparison.atp > 0) {
+                    const revenue = d.sales * comparison.atp;
+                    revenueLine = `Revenue: $${revenue.toLocaleString()}<br/>`;
+                }
+
+                // Build tooltip with metadata
+                let metadataSection = '';
+                if (occupancyLine || revenueLine) {
+                    metadataSection = `<br/><em style="font-size: 10px; color: #ccc;">Comp Metadata:</em><br/>${occupancyLine}${revenueLine}`;
+                }
+
                 tooltip.html(`
                     ${targetBadge}
                     <strong>${comparison.comparison_name}</strong><br/>
                     ${weekLabel}<br/>
-                    Target: ${d.sales.toLocaleString()} tickets
+                    Target: ${d.sales.toLocaleString()} tickets${metadataSection}
                 `);
                 tooltip.style("visibility", "visible");
             })

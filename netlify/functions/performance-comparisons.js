@@ -139,6 +139,11 @@ async function getComparisons(bigquery, params, headers) {
       line_color,
       line_style,
       is_target,
+      comp_date,
+      atp,
+      subs,
+      capacity,
+      occupancy_percent,
       created_at,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
