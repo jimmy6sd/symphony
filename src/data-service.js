@@ -4,6 +4,9 @@ class DataService {
 
         // ⚡ CACHE: In-memory cache for API responses
         this.comparisonCache = new Map();  // performanceId -> comparisons array
+
+        // ⚡ IN-FLIGHT REQUESTS: Track promises to deduplicate simultaneous requests
+        this.comparisonInFlight = new Map();  // performanceId -> promise
     }
 
     // REMOVED: loadRealData() - no longer needed, using BigQuery only
@@ -354,21 +357,44 @@ class DataService {
                 return this.comparisonCache.get(performanceId);
             }
 
-            // Cache miss - fetch from API
-            console.log(`🔄 Fetching comparisons for ${performanceId}...`);
-            const response = await fetch(`/.netlify/functions/performance-comparisons?performanceId=${performanceId}`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch comparisons: ${response.status} ${response.statusText}`);
+            // ⚡ IN-FLIGHT CHECK: If request is already in progress, wait for it
+            if (this.comparisonInFlight.has(performanceId)) {
+                console.log(`⏳ Waiting for in-flight request for ${performanceId}`);
+                return await this.comparisonInFlight.get(performanceId);
             }
-            const data = await response.json();
 
-            // ⚡ CACHE STORE: Save for future calls
-            this.comparisonCache.set(performanceId, data);
-            console.log(`💾 Cached comparisons for ${performanceId}`);
+            // Cache miss AND not in-flight - make the API call
+            console.log(`🔄 Fetching comparisons for ${performanceId}...`);
+
+            // Create the promise and store it before fetching
+            const fetchPromise = (async () => {
+                const response = await fetch(`/.netlify/functions/performance-comparisons?performanceId=${performanceId}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch comparisons: ${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+
+                // ⚡ CACHE STORE: Save for future calls
+                this.comparisonCache.set(performanceId, data);
+                console.log(`💾 Cached comparisons for ${performanceId}`);
+
+                return data;
+            })();
+
+            // Store the in-flight promise
+            this.comparisonInFlight.set(performanceId, fetchPromise);
+
+            // Await and return the result
+            const data = await fetchPromise;
+
+            // Clean up in-flight tracking
+            this.comparisonInFlight.delete(performanceId);
 
             return data;
         } catch (error) {
             console.error('Error fetching comparisons:', error);
+            // Clean up in-flight tracking on error
+            this.comparisonInFlight.delete(performanceId);
             return [];
         }
     }
@@ -392,6 +418,7 @@ class DataService {
 
             // ⚡ CACHE INVALIDATION: Clear cache since data changed
             this.comparisonCache.delete(performanceId);
+            this.comparisonInFlight.delete(performanceId);
             console.log(`🗑️ Cleared comparison cache for ${performanceId}`);
 
             return result;
@@ -434,6 +461,7 @@ class DataService {
 
             // ⚡ CACHE INVALIDATION: Clear all caches since we don't know which performance this belongs to
             this.comparisonCache.clear();
+            this.comparisonInFlight.clear();
             console.log(`🗑️ Cleared all comparison caches (comparison deleted)`);
 
             return result;
