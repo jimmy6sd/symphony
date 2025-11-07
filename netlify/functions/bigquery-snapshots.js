@@ -106,20 +106,8 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
 
   // Get performances with latest snapshot data only (for table display)
   // Historical snapshots are lazy-loaded on-demand when modal opens
+  // ⚡ OPTIMIZATION: Use QUALIFY for efficient window function filtering
   let query = `
-    WITH latest_snapshots AS (
-      SELECT
-        performance_code,
-        snapshot_date,
-        single_tickets_sold,
-        subscription_tickets_sold,
-        total_tickets_sold,
-        total_revenue,
-        capacity_percent,
-        budget_percent,
-        ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) as rn
-      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
-    )
     SELECT
       p.performance_id,
       p.performance_code,
@@ -140,8 +128,20 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       s.snapshot_date as last_updated,
       p.updated_at as metadata_updated_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
-    LEFT JOIN latest_snapshots s
-      ON p.performance_code = s.performance_code AND s.rn = 1
+    LEFT JOIN (
+      SELECT
+        performance_code,
+        snapshot_date,
+        single_tickets_sold,
+        subscription_tickets_sold,
+        total_tickets_sold,
+        total_revenue,
+        capacity_percent,
+        budget_percent
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+      QUALIFY ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) = 1
+    ) s
+      ON p.performance_code = s.performance_code
     WHERE (p.cancelled = FALSE OR p.cancelled IS NULL)
   `;
 
