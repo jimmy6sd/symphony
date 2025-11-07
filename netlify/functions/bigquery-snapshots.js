@@ -355,7 +355,8 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
       INNER JOIN FuturePerformances fp ON s.performance_code = fp.performance_code
     ),
     WeekAgoSnapshots AS (
-      -- Find snapshot from ~7 days ago (LAST WEEK's data)
+      -- Find most recent snapshot from 5-10 days ago (LAST WEEK's data)
+      -- ⚡ OPTIMIZATION: Simpler date range instead of complex DATE_DIFF calculation
       SELECT
         s.performance_code,
         s.snapshot_date,
@@ -364,11 +365,12 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
         l.snapshot_date as latest_date,
         ROW_NUMBER() OVER (
           PARTITION BY s.performance_code
-          ORDER BY ABS(DATE_DIFF(DATE_SUB(l.snapshot_date, INTERVAL 7 DAY), s.snapshot_date, DAY))
+          ORDER BY s.snapshot_date DESC
         ) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
       INNER JOIN LatestSnapshots l ON s.performance_code = l.performance_code AND l.rn = 1
-      WHERE s.snapshot_date < l.snapshot_date
+      WHERE s.snapshot_date BETWEEN DATE_SUB(l.snapshot_date, INTERVAL 10 DAY)
+                                AND DATE_SUB(l.snapshot_date, INTERVAL 5 DAY)
     )
     SELECT
       l.performance_code,
