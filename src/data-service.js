@@ -1,6 +1,9 @@
 class DataService {
     constructor() {
         // BigQuery-only data service
+
+        // ⚡ CACHE: In-memory cache for API responses
+        this.comparisonCache = new Map();  // performanceId -> comparisons array
     }
 
     // REMOVED: loadRealData() - no longer needed, using BigQuery only
@@ -345,11 +348,25 @@ class DataService {
     // Get all comparisons for a performance
     async getPerformanceComparisons(performanceId) {
         try {
+            // ⚡ CACHE CHECK: Return cached data if available
+            if (this.comparisonCache.has(performanceId)) {
+                console.log(`⚡ Using cached comparisons for ${performanceId}`);
+                return this.comparisonCache.get(performanceId);
+            }
+
+            // Cache miss - fetch from API
+            console.log(`🔄 Fetching comparisons for ${performanceId}...`);
             const response = await fetch(`/.netlify/functions/performance-comparisons?performanceId=${performanceId}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch comparisons: ${response.status} ${response.statusText}`);
             }
-            return await response.json();
+            const data = await response.json();
+
+            // ⚡ CACHE STORE: Save for future calls
+            this.comparisonCache.set(performanceId, data);
+            console.log(`💾 Cached comparisons for ${performanceId}`);
+
+            return data;
         } catch (error) {
             console.error('Error fetching comparisons:', error);
             return [];
@@ -371,7 +388,13 @@ class DataService {
                 const error = await response.json();
                 throw new Error(error.error || 'Failed to create comparison');
             }
-            return await response.json();
+            const result = await response.json();
+
+            // ⚡ CACHE INVALIDATION: Clear cache since data changed
+            this.comparisonCache.delete(performanceId);
+            console.log(`🗑️ Cleared comparison cache for ${performanceId}`);
+
+            return result;
         } catch (error) {
             console.error('Error creating comparison:', error);
             throw error;
@@ -407,7 +430,13 @@ class DataService {
                 const error = await response.json();
                 throw new Error(error.error || 'Failed to delete comparison');
             }
-            return await response.json();
+            const result = await response.json();
+
+            // ⚡ CACHE INVALIDATION: Clear all caches since we don't know which performance this belongs to
+            this.comparisonCache.clear();
+            console.log(`🗑️ Cleared all comparison caches (comparison deleted)`);
+
+            return result;
         } catch (error) {
             console.error('Error deleting comparison:', error);
             throw error;
