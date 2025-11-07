@@ -860,9 +860,23 @@ class DataTable {
             .attr('id', 'modal-sales-chart')
             .style('width', '100%')
             .style('height', '450px')
-            .style('margin-bottom', '25px');
+            .style('margin-bottom', '25px')
+            .style('position', 'relative');
 
-        await this.renderSalesChart(chartContainer, performance);
+        // ⚡ STRATEGY 3: Load chart in background - show modal immediately
+        // Add loading indicator
+        chartContainer.append('div')
+            .attr('class', 'chart-loading')
+            .style('position', 'absolute')
+            .style('top', '50%')
+            .style('left', '50%')
+            .style('transform', 'translate(-50%, -50%)')
+            .style('color', '#999')
+            .style('font-size', '14px')
+            .text('Loading chart...');
+
+        // Render chart in background (don't await)
+        this.renderSalesChart(chartContainer, performance);
 
         // Performance details - now below the chart
         const detailsGrid = modal.append('div')
@@ -1453,17 +1467,34 @@ class DataTable {
 // Patch for data-table.js - add after line 1211
 
     async renderSalesChart(container, performance) {
-        // Fetch historical snapshots for this performance
+        // Get historical snapshots for this performance
         // Note: performance.id contains the performance_code from BigQuery
         const performanceCode = performance.id;
         let historicalData = [];
 
-        // ⚡ PERFORMANCE OPTIMIZATION: Check cache first
-        if (this.snapshotCache.has(performanceCode)) {
+        // ⚡ STRATEGY 2 OPTIMIZATION: Check if snapshots are already included in performance data
+        if (performance.snapshots && Array.isArray(performance.snapshots) && performance.snapshots.length > 0) {
+            console.log(`⚡ Using snapshots from initial fetch for ${performanceCode}`);
+            historicalData = performance.snapshots;
+
+            // Get unique dates and keep only one snapshot per date (latest)
+            const uniqueByDate = {};
+            for (const snapshot of historicalData) {
+                const date = snapshot.snapshot_date;
+                if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
+                    uniqueByDate[date] = snapshot;
+                }
+            }
+            historicalData = Object.values(uniqueByDate);
+            console.log(`📅 Using ${historicalData.length} unique snapshot dates from initial fetch`);
+        }
+        // Fallback: Check in-memory cache (for backward compatibility)
+        else if (this.snapshotCache.has(performanceCode)) {
             console.log(`⚡ Using cached snapshots for ${performanceCode}`);
             historicalData = this.snapshotCache.get(performanceCode);
-        } else {
-            // Cache miss - fetch from API
+        }
+        // Final fallback: Fetch from API (for data without snapshots)
+        else {
             try {
                 console.log(`🔄 Fetching snapshots for ${performanceCode}...`);
                 const response = await fetch(
@@ -1516,6 +1547,12 @@ class DataTable {
         salesChart.selectedPerformance = enrichedPerformance.id;
         await salesChart.render();
 
+        // ⚡ STRATEGY 3: Remove loading indicator when chart is ready
+        const loadingIndicator = document.querySelector('.chart-loading');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+
         // If we have historical data, overlay it on top of the weeks-out chart
         if (historicalData && historicalData.length > 1) {
             console.log(`📈 Overlaying ${historicalData.length} historical snapshots on weeks-out chart`);
@@ -1526,14 +1563,14 @@ class DataTable {
     }
 
     /**
-     * ⚡ PERFORMANCE OPTIMIZATION: Prefetch snapshot data for visible performances
+     * ⚡ PERFORMANCE OPTIMIZATION: Prefetch snapshot data for ALL visible performances
      * This dramatically improves perceived performance by caching data before user clicks
      */
     async prefetchSnapshotsForVisiblePerformances() {
         if (!this.data || this.data.length === 0) return;
 
-        // Get first 10 performances (most likely to be clicked)
-        const visiblePerformances = this.data.slice(0, 10);
+        // Prefetch ALL performances for instant modal loading
+        const visiblePerformances = this.data;
         console.log(`⚡ Prefetching snapshots for ${visiblePerformances.length} visible performances...`);
 
         // Prefetch in parallel (but don't block rendering)
