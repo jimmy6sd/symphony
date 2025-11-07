@@ -910,18 +910,35 @@ class SalesCurveChart {
             console.log('   Current sales:', actualSales);
         }
 
-        const currentWeekIndex = numWeeks - 1 - Math.ceil(actualWeek);
+        // Calculate target comp value at actualWeek using interpolation for accurate variance
+        // This ensures the projection starts exactly on the shifted target comp curve
+        const lowerWeek = Math.floor(actualWeek);
+        const upperWeek = Math.ceil(actualWeek);
+        const lowerWeekIndex = numWeeks - 1 - lowerWeek;
+        const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        // Ensure current week is within target comp data range
-        if (currentWeekIndex < 0 || currentWeekIndex >= numWeeks) {
+        // Ensure weeks are within target comp data range
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
             return;
         }
 
-        // Calculate absolute variance at current week
-        const targetCompAtCurrentWeek = targetComp.weeksArray[currentWeekIndex];
-        const variance = actualSales - targetCompAtCurrentWeek;
+        let targetCompAtActualWeek;
+        if (lowerWeek === upperWeek) {
+            // actualWeek is an integer, use direct value
+            targetCompAtActualWeek = targetComp.weeksArray[lowerWeekIndex];
+        } else {
+            // Interpolate between the two surrounding weeks
+            const lowerValue = targetComp.weeksArray[lowerWeekIndex];
+            const upperValue = targetComp.weeksArray[upperWeekIndex];
+            const fraction = actualWeek - lowerWeek;
+            targetCompAtActualWeek = lowerValue + (upperValue - lowerValue) * fraction;
+        }
 
-        console.log('   Target comp at current week:', targetCompAtCurrentWeek);
+        // Calculate absolute variance at actual week (using interpolated target comp value)
+        const variance = actualSales - targetCompAtActualWeek;
+
+        console.log('   Actual week (interpolated):', actualWeek.toFixed(2));
+        console.log('   Target comp at actual week (interpolated):', targetCompAtActualWeek.toFixed(1));
         console.log('   Absolute variance:', variance, 'tickets');
         console.log('   Available single capacity cap:', availableSingleCapacity);
 
@@ -935,8 +952,9 @@ class SalesCurveChart {
         });
 
         // Project future weeks using absolute variance, capped at available single tickets
-        // Start from actualWeek (where historical ends or current week) and project to performance date
-        for (let week = Math.floor(actualWeek) - 1; week >= 0; week--) {
+        // Generate points for ALL integer weeks from current down to 0 to ensure
+        // the projection follows the exact same curve shape as the target comp
+        for (let week = Math.floor(actualWeek); week >= 0; week--) {
             const weekIndex = numWeeks - 1 - week;
             if (weekIndex >= 0 && weekIndex < numWeeks) {
                 const targetCompAtWeek = targetComp.weeksArray[weekIndex];
