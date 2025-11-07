@@ -2243,6 +2243,13 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         // Note: Parking performances are already filtered out in the data source
 
+        // Filter out cancelled performances
+        filtered = filtered.filter(row => {
+            const status = (row.status || '').toLowerCase();
+            const isCancelled = status === 'cancelled' || status.includes('cancel');
+            return !isCancelled;
+        });
+
         // Apply text filter
         if (this.filterText) {
             filtered = filtered.filter(row => {
