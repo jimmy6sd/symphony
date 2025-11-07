@@ -2245,8 +2245,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         // Filter out cancelled performances
         filtered = filtered.filter(row => {
-            const status = (row.status || '').toLowerCase();
-            const isCancelled = status === 'cancelled' || status.includes('cancel');
+            // cancelled is a boolean field (true/false) or string ("true"/"false")
+            const isCancelled = row.cancelled === true || row.cancelled === 'true';
             return !isCancelled;
         });
 
