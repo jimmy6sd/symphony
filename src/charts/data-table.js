@@ -392,11 +392,8 @@ class DataTable {
         // Render the table
         this.render();
 
-        // ⚡ PERFORMANCE OPTIMIZATION: Prefetch snapshot data for top performances
-        // This happens in background and won't block the UI
-        setTimeout(() => {
-            this.prefetchSnapshotsForVisiblePerformances();
-        }, 500); // Small delay to let initial render complete
+        // ⚡ LAZY LOADING: Snapshots are fetched on-demand when modal opens
+        // No prefetch needed - reduces initial page load overhead
 
         return this;
     }
@@ -1467,34 +1464,16 @@ class DataTable {
 // Patch for data-table.js - add after line 1211
 
     async renderSalesChart(container, performance) {
-        // Get historical snapshots for this performance
+        // Get historical snapshots for this performance (lazy-loaded on demand)
         // Note: performance.id contains the performance_code from BigQuery
         const performanceCode = performance.id;
         let historicalData = [];
 
-        // ⚡ STRATEGY 2 OPTIMIZATION: Check if snapshots are already included in performance data
-        if (performance.snapshots && Array.isArray(performance.snapshots) && performance.snapshots.length > 0) {
-            console.log(`⚡ Using snapshots from initial fetch for ${performanceCode}`);
-            historicalData = performance.snapshots;
-
-            // Get unique dates and keep only one snapshot per date (latest)
-            const uniqueByDate = {};
-            for (const snapshot of historicalData) {
-                const date = snapshot.snapshot_date;
-                if (!uniqueByDate[date] || new Date(snapshot.created_at) > new Date(uniqueByDate[date].created_at)) {
-                    uniqueByDate[date] = snapshot;
-                }
-            }
-            historicalData = Object.values(uniqueByDate);
-            console.log(`📅 Using ${historicalData.length} unique snapshot dates from initial fetch`);
-        }
-        // Fallback: Check in-memory cache (for backward compatibility)
-        else if (this.snapshotCache.has(performanceCode)) {
+        // ⚡ LAZY LOAD: Check cache first, then fetch from API
+        if (this.snapshotCache.has(performanceCode)) {
             console.log(`⚡ Using cached snapshots for ${performanceCode}`);
             historicalData = this.snapshotCache.get(performanceCode);
-        }
-        // Final fallback: Fetch from API (for data without snapshots)
-        else {
+        } else {
             try {
                 console.log(`🔄 Fetching snapshots for ${performanceCode}...`);
                 const response = await fetch(

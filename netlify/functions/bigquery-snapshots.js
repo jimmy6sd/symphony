@@ -104,8 +104,8 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
     offset = '0'
   } = params;
 
-  // Get performances with BOTH latest snapshot (for display) AND full history (for modal charts)
-  // This eliminates the need for separate API calls per performance
+  // Get performances with latest snapshot data only (for table display)
+  // Historical snapshots are lazy-loaded on-demand when modal opens
   let query = `
     WITH latest_snapshots AS (
       SELECT
@@ -119,27 +119,6 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
         budget_percent,
         ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
-    ),
-    all_snapshots AS (
-      SELECT
-        performance_code,
-        ARRAY_AGG(
-          STRUCT(
-            snapshot_id,
-            snapshot_date,
-            single_tickets_sold,
-            subscription_tickets_sold,
-            total_tickets_sold,
-            total_revenue,
-            capacity_percent,
-            budget_percent,
-            source,
-            created_at
-          )
-          ORDER BY snapshot_date ASC
-        ) as snapshots
-      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
-      GROUP BY performance_code
     )
     SELECT
       p.performance_id,
@@ -159,13 +138,10 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       COALESCE(s.capacity_percent, 0) as capacity_percent,
       COALESCE(s.budget_percent, 0) as budget_percent,
       s.snapshot_date as last_updated,
-      p.updated_at as metadata_updated_at,
-      COALESCE(h.snapshots, []) as snapshots
+      p.updated_at as metadata_updated_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
     LEFT JOIN latest_snapshots s
       ON p.performance_code = s.performance_code AND s.rn = 1
-    LEFT JOIN all_snapshots h
-      ON p.performance_code = h.performance_code
     WHERE (p.cancelled = FALSE OR p.cancelled IS NULL)
   `;
 
@@ -206,31 +182,21 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
   const [rows] = await bigquery.query(options);
 
   // Transform for frontend compatibility
-  const performances = rows.map(row => {
-    // Transform snapshots array with proper date handling
-    const snapshots = (row.snapshots || []).map(snapshot => ({
-      ...snapshot,
-      snapshot_date: typeof snapshot.snapshot_date === 'object' ? snapshot.snapshot_date.value : snapshot.snapshot_date,
-      created_at: typeof snapshot.created_at === 'object' ? snapshot.created_at.value : snapshot.created_at
-    }));
-
-    return {
-      ...row,
-      date: typeof row.performance_date === 'object' ? row.performance_date.value : row.performance_date,
-      id: row.performance_code,
-      performanceId: row.performance_id,
-      singleTicketsSold: row.single_tickets_sold || 0,
-      subscriptionTicketsSold: row.subscription_tickets_sold || 0,
-      totalRevenue: row.total_revenue || 0,
-      occupancyGoal: row.occupancy_goal || 85,
-      budgetGoal: row.budget_goal || 0,
-      capacityPercent: row.capacity_percent || 0,
-      budgetPercent: row.budget_percent || 0,
-      lastUpdated: row.last_updated ? (typeof row.last_updated === 'object' ? row.last_updated.value : row.last_updated) : null,
-      weeklySales: [],  // Placeholder for compatibility
-      snapshots: snapshots  // Include full history in response
-    };
-  });
+  const performances = rows.map(row => ({
+    ...row,
+    date: typeof row.performance_date === 'object' ? row.performance_date.value : row.performance_date,
+    id: row.performance_code,
+    performanceId: row.performance_id,
+    singleTicketsSold: row.single_tickets_sold || 0,
+    subscriptionTicketsSold: row.subscription_tickets_sold || 0,
+    totalRevenue: row.total_revenue || 0,
+    occupancyGoal: row.occupancy_goal || 85,
+    budgetGoal: row.budget_goal || 0,
+    capacityPercent: row.capacity_percent || 0,
+    budgetPercent: row.budget_percent || 0,
+    lastUpdated: row.last_updated ? (typeof row.last_updated === 'object' ? row.last_updated.value : row.last_updated) : null,
+    weeklySales: []  // Placeholder for compatibility
+  }));
 
   return {
     statusCode: 200,
