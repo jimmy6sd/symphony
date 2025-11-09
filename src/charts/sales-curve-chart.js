@@ -457,16 +457,56 @@ class SalesCurveChart {
 
         if (!targetComp || !targetComp.weeksArray) return; // No target comp set
 
-        // Find target comp value at current week
         const numWeeks = targetComp.weeksArray.length;
-        const weekIndex = numWeeks - 1 - weeksToPerformance; // Map week to array index
 
-        if (weekIndex < 0 || weekIndex >= numWeeks) return; // Week out of range
+        // Use historical snapshot data if available (same as renderProjectionLine)
+        let actualWeek, actualSales;
+        if (this.historicalData && this.historicalData.length > 0) {
+            const parseDate = d3.timeParse('%Y-%m-%d');
+            const historicalPoints = this.historicalData.map(snapshot => {
+                const snapshotDate = parseDate(snapshot.snapshot_date);
+                const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
+                const exactWeeksOut = daysOut / 7;
+                return {
+                    week: Math.max(0, exactWeeksOut),
+                    tickets: snapshot.single_tickets_sold || 0
+                };
+            }).filter(d => d.week >= 0 && d.week <= 10)
+              .sort((a, b) => b.week - a.week);
 
-        const targetCompSales = targetComp.weeksArray[weekIndex];
+            if (historicalPoints.length > 0) {
+                const lastPoint = historicalPoints[historicalPoints.length - 1];
+                actualWeek = lastPoint.week;
+                actualSales = lastPoint.tickets;
+            } else {
+                actualWeek = weeksToPerformance;
+                actualSales = singleTicketsSold;
+            }
+        } else {
+            actualWeek = weeksToPerformance;
+            actualSales = singleTicketsSold;
+        }
 
-        // Calculate variance based on SINGLE TICKET sales vs target comp
-        const variance = singleTicketsSold - targetCompSales;
+        // Calculate target comp value at actual week using interpolation
+        const lowerWeek = Math.floor(actualWeek);
+        const upperWeek = Math.ceil(actualWeek);
+        const lowerWeekIndex = numWeeks - 1 - lowerWeek;
+        const upperWeekIndex = numWeeks - 1 - upperWeek;
+
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return; // Week out of range
+
+        let targetCompSales;
+        if (lowerWeek === upperWeek) {
+            targetCompSales = targetComp.weeksArray[lowerWeekIndex];
+        } else {
+            const lowerValue = targetComp.weeksArray[lowerWeekIndex];
+            const upperValue = targetComp.weeksArray[upperWeekIndex];
+            const fraction = actualWeek - lowerWeek;
+            targetCompSales = lowerValue + (upperValue - lowerValue) * fraction;
+        }
+
+        // Calculate variance based on actual sales from snapshot vs target comp
+        const variance = actualSales - targetCompSales;
         const variancePercentage = ((variance / targetCompSales) * 100).toFixed(1);
 
         let status = "On Track";
@@ -493,7 +533,9 @@ class SalesCurveChart {
 
         // Calculate projected final metrics
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
-        const projectedFinal = Math.min(targetCompFinal + variance, capacity); // Cap at capacity
+        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
+        const availableSingleCapacity = capacity - subscriptionSeats;
+        const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity)); // Cap at available singles and round to whole tickets
         const projectedOcc = capacity > 0 ? (projectedFinal / capacity * 100).toFixed(1) : 0;
         const avgTicketPrice = singleTicketsSold > 0 ? currentRevenue / singleTicketsSold : 0;
         const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
@@ -555,7 +597,7 @@ class SalesCurveChart {
             .attr("font-size", "12px")
             .attr("font-weight", "bold")
             .attr("fill", "white")
-            .text(`${status} ${variance > 0 ? '+' : ''}${variance.toLocaleString()}`);
+            .text(`${status} ${variance > 0 ? '+' : ''}${Math.round(variance).toLocaleString()}`);
 
         // Current section
         statusGroup.append("text")
@@ -960,11 +1002,11 @@ class SalesCurveChart {
                 const targetCompAtWeek = targetComp.weeksArray[weekIndex];
                 const projectedSales = targetCompAtWeek + variance;
 
-                // Cap between 0 and available single tickets capacity
-                const cappedProjection = Math.min(
+                // Cap between 0 and available single tickets capacity, round to whole tickets
+                const cappedProjection = Math.round(Math.min(
                     Math.max(0, projectedSales),
                     availableSingleCapacity
-                );
+                ));
 
                 projectionData.push({
                     week: week,

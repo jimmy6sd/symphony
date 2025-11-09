@@ -983,7 +983,7 @@ class DataTable {
         const singleTicketsSold = performance.singleTicketsSold || 0;
 
         // Calculate sales projections using comp-based method
-        const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp);
+        const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp, availableSingleTickets);
 
         const rightInfoItems = [
             { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },

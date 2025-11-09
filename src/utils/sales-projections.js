@@ -150,7 +150,7 @@ function formatProjectionText(projection) {
  * @param {Object} targetComp - Target comparison object from API (with weeksArray)
  * @returns {Object} Projection data with comp-based logic
  */
-function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp) {
+function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp, availableSingleCapacity = null) {
     const weeksUntil = calculateWeeksUntilPerformance(performanceDate);
 
     // Can't project if no target comp or no sales
@@ -190,7 +190,12 @@ function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate,
     const variance = currentSingleTicketsSold - targetCompCurrent;
 
     // Project final sales: target comp final + our current variance
-    const projected = targetCompFinal + variance;
+    let projected = targetCompFinal + variance;
+
+    // Cap at available single capacity if provided (can't sell more than available)
+    if (availableSingleCapacity !== null && availableSingleCapacity > 0) {
+        projected = Math.min(projected, availableSingleCapacity);
+    }
 
     return {
         projected: Math.max(0, projected), // Don't allow negative projections
