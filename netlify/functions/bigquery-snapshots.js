@@ -46,6 +46,17 @@ const initializeBigQuery = () => {
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
 const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID || 'kcsymphony';
 
+// ⚡ OPTIMIZATION: Singleton BigQuery client (initialized once, reused across requests)
+let bigqueryClient = null;
+
+const getBigQueryClient = () => {
+  if (!bigqueryClient) {
+    console.log('🔧 Initializing BigQuery client (one-time setup)');
+    bigqueryClient = initializeBigQuery();
+  }
+  return bigqueryClient;
+};
+
 // Main handler function
 exports.handler = async (event, context) => {
   const headers = {
@@ -61,10 +72,15 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const bigquery = initializeBigQuery();
+    // ⚡ OPTIMIZATION: Reuse BigQuery client instead of initializing every time
+    const bigquery = getBigQueryClient();
     const { action, ...params } = event.queryStringParameters || {};
 
     switch (action) {
+      case 'get-initial-load':
+        // ⚡ OPTIMIZATION: Run both queries in parallel for initial dashboard load
+        return await getInitialLoad(bigquery, params, headers);
+
       case 'get-performances':
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
 
@@ -92,6 +108,43 @@ exports.handler = async (event, context) => {
     };
   }
 };
+
+// ⚡ OPTIMIZATION: Get initial dashboard data (performances + W/W) in one parallel request
+// Instead of 2 sequential requests (2.2s), runs both queries in parallel (~1.2s)
+async function getInitialLoad(bigquery, params, headers) {
+  try {
+    console.time('get-initial-load');
+
+    // Run both queries in parallel
+    const [performancesResult, wowResult] = await Promise.all([
+      getPerformancesWithLatestSnapshots(bigquery, params, headers),
+      getAllWeekOverWeek(bigquery, params, headers)
+    ]);
+
+    console.timeEnd('get-initial-load');
+
+    // Parse the response bodies (they're JSON strings)
+    const performances = JSON.parse(performancesResult.body);
+    const weekOverWeek = JSON.parse(wowResult.body);
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        performances,
+        weekOverWeek,
+        _meta: {
+          timestamp: new Date().toISOString(),
+          performanceCount: performances.length,
+          wowCount: Object.keys(weekOverWeek).length
+        }
+      })
+    };
+  } catch (error) {
+    console.error('Error in getInitialLoad:', error);
+    throw error;
+  }
+}
 
 // Get performances with latest snapshot data (replaces old get-performances)
 async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
