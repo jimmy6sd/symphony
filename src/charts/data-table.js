@@ -222,9 +222,9 @@ class DataTable {
             },
             {
                 key: 'totalRevenue',
-                label: 'Actual Revenue',
+                label: '<div style="text-align: center;">Actual Revenue</div>',
                 sortable: true,
-                align: 'right',
+                align: 'center',
                 formatter: (value, row) => {
                     const revenue = Math.round(value || 0);
 
@@ -274,9 +274,9 @@ class DataTable {
             },
             {
                 key: 'budgetPerformance',
-                label: 'Budget Goal',
+                label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
                 sortable: true,
-                align: 'right',
+                align: 'center',
                 formatter: (value, row) => {
                     const revenue = Math.round(row.totalRevenue || 0);
                     const goal = Math.round(row.budgetGoal || 0);
@@ -285,7 +285,7 @@ class DataTable {
                     const difference = revenue - goal;
                     const percentage = (revenue / goal * 100);
                     const status = percentage >= 100 ? 'good' : percentage >= 90 ? 'warning' : 'poor';
-                    const differenceSign = difference >= 0 ? '+' : '';
+                    const differenceSign = difference >= 0 ? '+' : '-';
                     const differenceFormatted = `${differenceSign}$${Math.abs(difference).toLocaleString()}`;
 
                     return `
@@ -2265,6 +2265,15 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             const capacity = row.capacity || 0;
             return capacity > 0 ? (total / capacity * 100) : 0;
         }
+        if (key === 'totalRevenue') {
+            return row.totalRevenue || 0;
+        }
+        if (key === 'budgetPerformance') {
+            // Sort by the variance (difference between actual and goal)
+            const revenue = row.totalRevenue || 0;
+            const goal = row.budgetGoal || 0;
+            return revenue - goal;
+        }
         return row[key] || '';
     }
 
@@ -2420,7 +2429,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
     updateSortHeaders() {
         this.container.selectAll('th.sortable')
             .html((d, i) => {
-                const column = this.columns.filter(c => c.sortable)[i];
+                const column = this.columns.filter(c => c.sortable && !c.hidden)[i];
                 if (!column) return '';
 
                 const sortIndicator = this.sortColumn === column.key ?

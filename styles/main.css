@@ -759,7 +759,7 @@ body {
 }
 
 .budget-cell {
-    text-align: right;
+    text-align: center;
 }
 
 .budget-goal {
@@ -780,7 +780,7 @@ body {
 
 /* Revenue cell with W/W */
 .revenue-cell {
-    text-align: right;
+    text-align: center;
 }
 
 .revenue-amount {
