@@ -115,11 +115,11 @@ if (typeof process !== 'undefined' && process.env) {
     logger.setLevel('DEBUG');
 }
 
-// Export for use throughout the application
+// Backward compatibility - keep window assignment for non-module scripts
 if (typeof window !== 'undefined') {
     window.logger = logger;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = logger;
-}
+// ES6 module exports
+export { Logger, logger };
+export default logger;

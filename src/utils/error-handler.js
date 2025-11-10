@@ -2,6 +2,8 @@
  * Centralized error handling utility for Symphony Dashboard
  * Provides consistent error handling across the application
  */
+import logger from './logger.js';
+
 class ErrorHandler {
     constructor() {
         this.errorQueue = [];
@@ -273,11 +275,11 @@ class ErrorHandler {
 // Create global error handler instance
 const errorHandler = new ErrorHandler();
 
-// Export for use throughout the application
+// Backward compatibility - keep window assignment for non-module scripts
 if (typeof window !== 'undefined') {
     window.errorHandler = errorHandler;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = errorHandler;
-}
+// ES6 module exports
+export { ErrorHandler, errorHandler };
+export default errorHandler;

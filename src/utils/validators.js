@@ -260,11 +260,11 @@ class Validators {
     }
 }
 
-// Export for use throughout the application
+// Backward compatibility - keep window assignment for non-module scripts
 if (typeof window !== 'undefined') {
     window.Validators = Validators;
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Validators;
-}
+// ES6 module export
+export { Validators };
+export default Validators;
