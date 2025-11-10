@@ -126,6 +126,17 @@ exports.handler = async (event, context) => {
       location: 'US'
     });
 
+    // ⚡ CACHE INVALIDATION: Clear cached dashboard data since metadata was updated
+    try {
+      const cacheInvalidateUrl = `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/bigquery-snapshots?action=invalidate-cache`;
+      const cacheResponse = await fetch(cacheInvalidateUrl);
+      if (cacheResponse.ok) {
+        console.log('🗑️ Dashboard cache invalidated after metadata update');
+      }
+    } catch (error) {
+      console.warn('⚠️ Cache invalidation failed (non-critical):', error.message);
+    }
+
     console.log(`✅ Successfully updated metadata for ${performance_code}`);
 
     return {

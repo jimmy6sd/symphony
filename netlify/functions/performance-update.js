@@ -50,6 +50,17 @@ exports.handler = async (event, context) => {
     // Process updates
     const result = await updatePerformances(bigquery, requestData.performances);
 
+    // ⚡ CACHE INVALIDATION: Clear cached dashboard data since performances were updated
+    try {
+      const cacheInvalidateUrl = `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/bigquery-snapshots?action=invalidate-cache`;
+      const cacheResponse = await fetch(cacheInvalidateUrl);
+      if (cacheResponse.ok) {
+        console.log('🗑️ Dashboard cache invalidated after performance update');
+      }
+    } catch (error) {
+      console.warn('⚠️ Cache invalidation failed (non-critical):', error.message);
+    }
+
     console.log('✅ Update complete:', result);
 
     return {

@@ -57,6 +57,26 @@ const getBigQueryClient = () => {
   return bigqueryClient;
 };
 
+// ⚡ OPTIMIZATION: Serverless function cache (since data updates once daily)
+// Cache TTL: 2 hours (data updates daily in morning, so 2hr cache is safe)
+// Cache can be bypassed with ?nocache=1 parameter
+const cache = {
+  initialLoad: null,
+  timestamp: null,
+  TTL: 2 * 60 * 60 * 1000  // 2 hours in milliseconds
+};
+
+const isCacheValid = () => {
+  if (!cache.timestamp || !cache.initialLoad) return false;
+  const age = Date.now() - cache.timestamp;
+  return age < cache.TTL;
+};
+
+const getCacheAge = () => {
+  if (!cache.timestamp) return null;
+  return Math.floor((Date.now() - cache.timestamp) / 1000); // age in seconds
+};
+
 // Main handler function
 exports.handler = async (event, context) => {
   const headers = {
@@ -80,6 +100,21 @@ exports.handler = async (event, context) => {
       case 'get-initial-load':
         // ⚡ OPTIMIZATION: Run both queries in parallel for initial dashboard load
         return await getInitialLoad(bigquery, params, headers);
+
+      case 'invalidate-cache':
+        // 🔄 Cache invalidation endpoint (call after PDF import or admin edits)
+        cache.initialLoad = null;
+        cache.timestamp = null;
+        console.log('🗑️ Cache invalidated');
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Cache invalidated successfully',
+            timestamp: new Date().toISOString()
+          })
+        };
 
       case 'get-performances':
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
@@ -111,8 +146,35 @@ exports.handler = async (event, context) => {
 
 // ⚡ OPTIMIZATION: Get initial dashboard data (performances + W/W) in one parallel request
 // Instead of 2 sequential requests (2.2s), runs both queries in parallel (~1.2s)
+// ⚡ CACHING: Since data updates once daily, cache for 2 hours (typical request: <50ms)
 async function getInitialLoad(bigquery, params, headers) {
   try {
+    // Check for cache bypass parameter (?nocache=1 or ?nocache=true)
+    const bypassCache = params.nocache === '1' || params.nocache === 'true';
+
+    // Return cached data if valid (unless bypassed)
+    if (!bypassCache && isCacheValid()) {
+      const cacheAgeSeconds = getCacheAge();
+      console.log(`✅ Serving from cache (age: ${cacheAgeSeconds}s, TTL: ${cache.TTL/1000}s)`);
+
+      // Add cache metadata to response
+      const cachedData = JSON.parse(cache.initialLoad);
+      cachedData._meta.cached = true;
+      cachedData._meta.cacheAge = cacheAgeSeconds;
+
+      return {
+        statusCode: 200,
+        headers: {
+          ...headers,
+          'X-Cache': 'HIT',
+          'X-Cache-Age': cacheAgeSeconds.toString()
+        },
+        body: JSON.stringify(cachedData)
+      };
+    }
+
+    // Cache miss or bypassed - fetch fresh data
+    console.log(`🔄 Fetching fresh data (cache ${bypassCache ? 'bypassed' : 'miss'})`);
     console.time('get-initial-load');
 
     // Run both queries in parallel
@@ -127,18 +189,30 @@ async function getInitialLoad(bigquery, params, headers) {
     const performances = JSON.parse(performancesResult.body);
     const weekOverWeek = JSON.parse(wowResult.body);
 
+    const responseData = {
+      performances,
+      weekOverWeek,
+      _meta: {
+        timestamp: new Date().toISOString(),
+        performanceCount: performances.length,
+        wowCount: Object.keys(weekOverWeek).length,
+        cached: false,
+        cacheTTL: cache.TTL / 1000 // TTL in seconds
+      }
+    };
+
+    // Update cache
+    cache.initialLoad = JSON.stringify(responseData);
+    cache.timestamp = Date.now();
+    console.log(`💾 Cached data (TTL: ${cache.TTL/1000}s)`);
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        performances,
-        weekOverWeek,
-        _meta: {
-          timestamp: new Date().toISOString(),
-          performanceCount: performances.length,
-          wowCount: Object.keys(weekOverWeek).length
-        }
-      })
+      headers: {
+        ...headers,
+        'X-Cache': 'MISS'
+      },
+      body: cache.initialLoad
     };
   } catch (error) {
     console.error('Error in getInitialLoad:', error);

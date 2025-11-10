@@ -217,6 +217,19 @@ exports.handler = async (event, context) => {
       records_updated: processedData.updated || 0
     });
 
+    // ⚡ CACHE INVALIDATION: Clear cached dashboard data since new data was imported
+    try {
+      const cacheInvalidateUrl = `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/bigquery-snapshots?action=invalidate-cache`;
+      const cacheResponse = await fetch(cacheInvalidateUrl);
+      if (cacheResponse.ok) {
+        console.log('🗑️ Dashboard cache invalidated successfully');
+      } else {
+        console.warn('⚠️ Failed to invalidate cache:', cacheResponse.statusText);
+      }
+    } catch (error) {
+      console.warn('⚠️ Cache invalidation failed (non-critical):', error.message);
+    }
+
     console.log(`✅ PDF webhook processing completed - Execution ID: ${executionId}`);
 
     return {
