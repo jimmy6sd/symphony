@@ -2053,15 +2053,20 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         // Apply grouping if enabled
         if (this.groupByProduction) {
-            const groups = this.groupDataByProduction(filteredData);
+            let groups = this.groupDataByProduction(filteredData);
+
+            // Sort the groups based on current sort column and direction
+            groups = this.sortGroups(groups);
 
             // Build display data with groups and optionally their children
             groups.forEach(group => {
                 displayData.push(group);
 
-                // If group is expanded, add child performances
+                // If group is expanded, add child performances (also sorted)
                 if (this.expandedGroups.has(group.groupKey)) {
-                    group.performances.forEach(perf => {
+                    // Sort child performances based on current sort
+                    const sortedChildren = this.sortPerformances(group.performances);
+                    sortedChildren.forEach(perf => {
                         displayData.push({
                             ...perf,
                             isChild: true,
@@ -2412,6 +2417,58 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
         });
 
         return groupedData;
+    }
+
+    // Sort groups based on current sort column and direction
+    sortGroups(groups) {
+        return groups.sort((a, b) => {
+            const aVal = this.getGroupValue(a, this.sortColumn);
+            const bVal = this.getGroupValue(b, this.sortColumn);
+
+            let comparison = 0;
+            if (aVal < bVal) comparison = -1;
+            else if (aVal > bVal) comparison = 1;
+
+            return this.sortDirection === 'asc' ? comparison : -comparison;
+        });
+    }
+
+    // Sort individual performances (for expanded children)
+    sortPerformances(performances) {
+        return [...performances].sort((a, b) => {
+            const aVal = this.getCellValue(a, this.sortColumn);
+            const bVal = this.getCellValue(b, this.sortColumn);
+
+            let comparison = 0;
+            if (aVal < bVal) comparison = -1;
+            else if (aVal > bVal) comparison = 1;
+
+            return this.sortDirection === 'asc' ? comparison : -comparison;
+        });
+    }
+
+    // Get value for sorting groups (uses aggregated values)
+    getGroupValue(group, key) {
+        // For groups, use the aggregated values that were calculated
+        if (key === 'title') return group.title || '';
+        if (key === 'date') return group.date || '';
+        if (key === 'venue') return group.venue || '';
+        if (key === 'series') return group.series || '';
+        if (key === 'season') return group.season || '';
+        if (key === 'capacity') return group.capacity || 0;
+        if (key === 'totalSold') return (group.singleTicketsSold || 0) + (group.subscriptionTicketsSold || 0);
+        if (key === 'occupancyRate') {
+            const total = (group.singleTicketsSold || 0) + (group.subscriptionTicketsSold || 0);
+            const capacity = group.capacity || 0;
+            return capacity > 0 ? (total / capacity * 100) : 0;
+        }
+        if (key === 'totalRevenue') return group.totalRevenue || 0;
+        if (key === 'budgetPerformance') {
+            const revenue = group.totalRevenue || 0;
+            const goal = group.budgetGoal || 0;
+            return revenue - goal; // Sort by variance
+        }
+        return group[key] || '';
     }
 
     sortBy(column) {
