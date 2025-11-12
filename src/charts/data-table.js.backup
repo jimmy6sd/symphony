@@ -20,7 +20,6 @@ class DataTable {
                 key: 'title',
                 label: 'Performance',
                 sortable: true,
-                type: 'string',
                 formatter: (value, row) => {
                     const isExpanded = this.expandedGroups.has(row.groupKey);
                     const chevron = row.isGroup ?
@@ -47,7 +46,6 @@ class DataTable {
                 key: 'date',
                 label: 'Date',
                 sortable: true,
-                type: 'date',
                 formatter: (value) => {
                     // Parse date without timezone shift (value is YYYY-MM-DD)
                     const [year, month, day] = value.split('-');
@@ -59,7 +57,6 @@ class DataTable {
                 key: 'venue',
                 label: 'Venue',
                 sortable: true,
-                type: 'string',
                 hidden: true,
                 formatter: (value) => `<span class="venue-cell">${value}</span>`
             },
@@ -67,7 +64,6 @@ class DataTable {
                 key: 'series',
                 label: 'Production',
                 sortable: true,
-                type: 'string',
                 formatter: (value) => {
                     if (!value || value === 'N/A') return '<span class="series-cell series-other">N/A</span>';
 
@@ -92,7 +88,6 @@ class DataTable {
                 key: 'season',
                 label: 'Season',
                 sortable: true,
-                type: 'string',
                 formatter: (value) => {
                     if (!value) return '<span class="season-cell">N/A</span>';
                     // Remove leading "25-26 " or similar year prefix
@@ -104,7 +99,6 @@ class DataTable {
                 key: 'capacity',
                 label: 'Capacity',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 formatter: (value) => value ? value.toLocaleString() : 'N/A'
             },
@@ -112,7 +106,6 @@ class DataTable {
                 key: 'totalSold',
                 label: 'Tickets Sold',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
@@ -153,7 +146,6 @@ class DataTable {
                 key: 'occupancyRate',
                 label: 'Occupancy',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
@@ -216,7 +208,6 @@ class DataTable {
                 key: 'singleTicketsSold',
                 label: 'Single',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 hidden: true,
                 formatter: (value) => (value || 0).toLocaleString()
@@ -225,7 +216,6 @@ class DataTable {
                 key: 'subscriptionTicketsSold',
                 label: 'Subscription',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 hidden: true,
                 formatter: (value) => (value || 0).toLocaleString()
@@ -234,7 +224,6 @@ class DataTable {
                 key: 'totalRevenue',
                 label: '<div style="text-align: center;">Actual Revenue</div>',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
                     const revenue = Math.round(value || 0);
@@ -287,7 +276,6 @@ class DataTable {
                 key: 'budgetPerformance',
                 label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
                 sortable: true,
-                type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
                     const revenue = Math.round(row.totalRevenue || 0);
@@ -312,7 +300,6 @@ class DataTable {
                 key: 'salesTarget',
                 label: 'Status',
                 sortable: true,
-                type: 'string',
                 align: 'center',
                 hidden: true,
                 formatter: (value, row) => {
@@ -724,32 +711,29 @@ class DataTable {
             .style('align-items', 'center')
             .style('justify-content', 'center');
 
-        // Create modal content - flex column for header + scrollable body
+        // Create modal content
         const modal = modalOverlay
             .append('div')
             .attr('class', 'performance-modal')
             .style('background', 'white')
             .style('border-radius', '8px')
-            .style('width', '1000px')
             .style('max-width', '90vw')
             .style('max-height', '90vh')
-            .style('overflow', 'hidden')
-            .style('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.3)')
-            .style('display', 'flex')
-            .style('flex-direction', 'column')
-            .style('position', 'relative');
+            .style('overflow-y', 'auto')
+            .style('overflow-x', 'hidden')
+            .style('padding', '25px')
+            .style('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.3)');
 
-        // Beautiful gradient header - full width, non-scrolling
+        // Modal header with navigation
         const header = modal.append('div')
             .attr('class', 'modal-header')
-            .style('flex', '0 0 auto')
-            .style('width', '100%')
-            .style('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)')
-            .style('border-radius', '8px 8px 0 0')
-            .style('box-shadow', '0 4px 12px rgba(102, 126, 234, 0.4)')
-            .style('position', 'sticky')
-            .style('top', '0')
-            .style('z-index', '1');
+            .style('display', 'flex')
+            .style('justify-content', 'space-between')
+            .style('align-items', 'center')
+            .style('margin', '-25px -25px 20px -25px')
+            .style('padding', '20px 25px')
+            .style('background', '#2c3e50')
+            .style('border-radius', '8px 8px 0 0');
 
         // Get all performances for navigation
         const allPerformances = this.filteredData || this.data || [];
@@ -759,62 +743,25 @@ class DataTable {
         const hasPrevious = currentIndex > 0;
         const hasNext = currentIndex < allPerformances.length - 1;
 
-        // Parse date for formatted display
-        const [year, month, day] = performance.date.split('-');
-        const perfDate = new Date(year, month - 1, day);
-        const formattedDate = perfDate.toLocaleDateString('en-US', {
-            weekday: 'short',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-
-        // Calculate status for status badge
-        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
-        const today = new Date();
-        const performanceDate = new Date(year, month - 1, day);
-        const weeksToPerformance = Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000));
-        let status = 'On Sale';
-        let statusColor = '#27ae60';
-        if (performanceDate < today) {
-            status = 'Past Event';
-            statusColor = '#95a5a6';
-        } else if (weeksToPerformance <= 1) {
-            status = 'Final Week';
-            statusColor = '#f39c12';
-        } else if (totalSold === 0) {
-            status = 'Not Yet On Sale';
-            statusColor = '#e74c3c';
-        }
-
-        // Compact single-row layout
-        const topBar = header.append('div')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box')
-            .style('padding', '12px 15px')
+        // Left side: Previous button
+        const leftSection = header.append('div')
             .style('display', 'flex')
-            .style('justify-content', 'space-between')
-            .style('align-items', 'center');
-
-        // Left: Previous button
-        const leftNav = topBar.append('div')
-            .style('min-width', '70px')
-            .style('display', 'flex')
-            .style('justify-content', 'flex-start');
+            .style('align-items', 'center')
+            .style('gap', '15px');
 
         if (hasPrevious) {
-            leftNav.append('button')
+            leftSection.append('button')
                 .attr('class', 'nav-prev')
                 .style('background', 'rgba(255, 255, 255, 0.2)')
                 .style('border', 'none')
                 .style('color', 'white')
-                .style('padding', '6px 12px')
-                .style('border-radius', '20px')
+                .style('padding', '8px 16px')
+                .style('border-radius', '4px')
                 .style('cursor', 'pointer')
-                .style('font-size', '12px')
+                .style('font-size', '14px')
                 .style('font-weight', '600')
-                .style('transition', 'all 0.2s')
-                .text('← Prev')
+                .style('transition', 'background 0.2s')
+                .text('← Previous')
                 .on('mouseover', function() {
                     d3.select(this).style('background', 'rgba(255, 255, 255, 0.3)');
                 })
@@ -828,73 +775,39 @@ class DataTable {
                 });
         }
 
-        // Center: Title, status, and info
-        const centerContent = topBar.append('div')
-            .style('flex', '1')
+        // Center: Title and counter
+        const centerSection = header.append('div')
             .style('text-align', 'center')
-            .style('padding', '0');
+            .style('flex', '1');
 
-        // Title
-        centerContent.append('h2')
-            .style('margin', '0 0 6px 0')
+        centerSection.append('h2')
+            .style('margin', '0 0 5px 0')
             .style('color', 'white')
-            .style('font-size', '20px')
-            .style('font-weight', '700')
-            .style('line-height', '1.2')
             .text(performance.title);
 
-        // Compact info line
-        const infoLine = centerContent.append('div')
-            .style('display', 'flex')
-            .style('justify-content', 'center')
-            .style('gap', '15px')
-            .style('margin-bottom', '6px')
+        centerSection.append('div')
             .style('font-size', '12px')
-            .style('color', 'rgba(255, 255, 255, 0.9)')
-            .style('flex-wrap', 'wrap');
+            .style('color', 'rgba(255, 255, 255, 0.7)')
+            .text(`Performance ${currentIndex + 1} of ${allPerformances.length}`);
 
-        [
-            { icon: '🎫', value: performance.code || performance.id || 'N/A' },
-            { icon: '📅', value: formattedDate },
-            { icon: '📍', value: performance.venue || 'N/A' },
-            { icon: '🎵', value: performance.series || 'N/A' }
-        ].forEach(item => {
-            infoLine.append('span')
-                .style('font-weight', '500')
-                .text(`${item.icon} ${item.value}`);
-        });
-
-        // Status badge
-        centerContent.append('div')
-            .style('background', statusColor)
-            .style('color', 'white')
-            .style('padding', '4px 14px')
-            .style('border-radius', '12px')
-            .style('font-size', '11px')
-            .style('font-weight', '700')
-            .style('display', 'inline-block')
-            .text(status);
-
-        // Right: Next button and close
-        const rightNav = topBar.append('div')
+        // Right side: Next button and close
+        const rightSection = header.append('div')
             .style('display', 'flex')
             .style('align-items', 'center')
-            .style('gap', '8px')
-            .style('min-width', '70px')
-            .style('justify-content', 'flex-end');
+            .style('gap', '15px');
 
         if (hasNext) {
-            rightNav.append('button')
+            rightSection.append('button')
                 .attr('class', 'nav-next')
                 .style('background', 'rgba(255, 255, 255, 0.2)')
                 .style('border', 'none')
                 .style('color', 'white')
-                .style('padding', '6px 12px')
-                .style('border-radius', '20px')
+                .style('padding', '8px 16px')
+                .style('border-radius', '4px')
                 .style('cursor', 'pointer')
-                .style('font-size', '12px')
+                .style('font-size', '14px')
                 .style('font-weight', '600')
-                .style('transition', 'all 0.2s')
+                .style('transition', 'background 0.2s')
                 .text('Next →')
                 .on('mouseover', function() {
                     d3.select(this).style('background', 'rgba(255, 255, 255, 0.3)');
@@ -909,28 +822,15 @@ class DataTable {
                 });
         }
 
-        rightNav.append('button')
+        rightSection.append('button')
             .attr('class', 'close-modal')
-            .style('background', 'rgba(255, 255, 255, 0.2)')
+            .style('background', 'none')
             .style('border', 'none')
-            .style('font-size', '18px')
+            .style('font-size', '28px')
             .style('cursor', 'pointer')
             .style('color', 'white')
-            .style('width', '28px')
-            .style('height', '28px')
-            .style('border-radius', '50%')
-            .style('display', 'flex')
-            .style('align-items', 'center')
-            .style('justify-content', 'center')
-            .style('transition', 'all 0.2s')
             .style('line-height', '1')
             .text('×')
-            .on('mouseover', function() {
-                d3.select(this).style('background', 'rgba(231, 76, 60, 0.9)');
-            })
-            .on('mouseout', function() {
-                d3.select(this).style('background', 'rgba(255, 255, 255, 0.2)');
-            })
             .on('click', () => modalOverlay.remove());
 
         // Add keyboard navigation for arrow keys
@@ -960,32 +860,14 @@ class DataTable {
             }
         });
 
-        // Modal body - scrollable content area with padding
-        const modalBody = modal.append('div')
-            .attr('class', 'modal-body')
-            .style('flex', '1 1 auto')
-            .style('overflow-y', 'auto')
-            .style('overflow-x', 'hidden')
-            .style('padding', '0 25px 25px')
-            .style('box-sizing', 'border-box');
-
-        // Chart section - no padding (modalBody handles it)
-        const chartSection = modalBody.append('div')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box');
-
         // Sales curve chart section - now the main content
-        chartSection.append('h3')
-            .style('font-size', '1.2em')
-            .style('margin-top', '25px')
-            .style('margin-bottom', '20px')
-            .style('color', '#2c3e50')
-            .style('border-bottom', '3px solid #3498db')
-            .style('padding-bottom', '10px')
-            .style('display', 'inline-block')
+        modal.append('h3')
+            .style('margin-bottom', '15px')
+            .style('font-size', '1.1em')
+            .style('color', '#333')
             .text('Sales Progression Analysis');
 
-        const chartContainer = chartSection.append('div')
+        const chartContainer = modal.append('div')
             .attr('id', 'modal-sales-chart')
             .style('width', '100%')
             .style('height', '450px')
@@ -1007,35 +889,86 @@ class DataTable {
         // Render chart in background (don't await)
         this.renderSalesChart(chartContainer, performance);
 
-        // Sales Information wrapper - no padding (modalBody handles it)
-        const salesWrapper = modalBody.append('div')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box');
-
-        // Sales Information - full width section below chart
-        const detailsContainer = salesWrapper.append('div')
+        // Performance details - now below the chart
+        const detailsGrid = modal.append('div')
             .attr('class', 'performance-details')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box')
+            .style('display', 'grid')
+            .style('grid-template-columns', '1fr 1fr')
+            .style('gap', '30px')
             .style('margin-top', '30px')
             .style('padding', '20px')
             .style('background', '#f8f9fa')
             .style('border-radius', '8px');
 
-        // Sales Information section
-        const salesDetails = detailsContainer.append('div')
-            .style('width', '100%');
+        // Left column
+        const leftDetails = detailsGrid.append('div');
 
-        // Use totalSold already calculated in header section
+        leftDetails.append('h3')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #3498db')
+            .style('padding-bottom', '8px')
+            .text('Performance Information');
+
+        // Parse date without timezone shift
+        const [year, month, day] = performance.date.split('-');
+        const perfDate = new Date(year, month - 1, day);
+
+        const leftInfoItems = [
+            { label: 'Code', value: performance.code || performance.id || 'N/A' },
+            { label: 'Date', value: perfDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
+            { label: 'Venue', value: performance.venue },
+            { label: 'Series', value: performance.series },
+            { label: 'Season', value: performance.season }
+        ];
+
+        leftInfoItems.forEach(item => {
+            const row = leftDetails.append('div')
+                .style('display', 'flex')
+                .style('justify-content', 'space-between')
+                .style('padding', '8px 0')
+                .style('border-bottom', '1px solid #dee2e6');
+
+            row.append('span')
+                .style('font-weight', '600')
+                .style('color', '#495057')
+                .text(item.label + ':');
+
+            row.append('span')
+                .style('color', '#212529')
+                .text(item.value);
+        });
+
+        // Right column - Calculate derived values
+        const rightDetails = detailsGrid.append('div');
+
+        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
         const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
 
-        salesDetails.append('h3')
-            .style('font-size', '1.2em')
-            .style('margin-bottom', '20px')
+        // Determine status based on sales progress
+        const today = new Date();
+        const performanceDate = new Date(year, month - 1, day);
+        const weeksToPerformance = Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000));
+        let status = 'On Sale';
+        let statusColor = '#28a745';
+        if (performanceDate < today) {
+            status = 'Past Event';
+            statusColor = '#6c757d';
+        } else if (weeksToPerformance <= 1) {
+            status = 'Final Week';
+            statusColor = '#ffc107';
+        } else if (totalSold === 0) {
+            status = 'Not Yet On Sale';
+            statusColor = '#dc3545';
+        }
+
+        rightDetails.append('h3')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
             .style('color', '#2c3e50')
-            .style('border-bottom', '3px solid #27ae60')
-            .style('padding-bottom', '10px')
-            .style('display', 'inline-block')
+            .style('border-bottom', '2px solid #27ae60')
+            .style('padding-bottom', '8px')
             .text('Sales Information');
 
         // Get target comp data for comp-based projection
@@ -1051,110 +984,49 @@ class DataTable {
         // Calculate sales projections using comp-based method
         const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp, availableSingleTickets);
 
-        // Helper function to create a section
-        const createSection = (container, title, items, options = {}) => {
-            const section = container.append('div')
-                .style('width', '100%')
-                .style('margin-bottom', '20px');
-
-            // Section header
-            section.append('h4')
-                .style('font-size', '14px')
-                .style('font-weight', '700')
-                .style('color', '#667eea')
-                .style('text-transform', 'uppercase')
-                .style('letter-spacing', '0.5px')
-                .style('margin-bottom', '10px')
-                .text(title);
-
-            // Section content
-            const content = section.append('div')
-                .style('width', '100%')
-                .style('box-sizing', 'border-box')
-                .style('background', 'white')
-                .style('border-radius', '8px')
-                .style('border', '1px solid #e0e0e0')
-                .style('overflow', 'hidden');
-
-            items.forEach((item, index) => {
-                const row = content.append('div')
-                    .style('display', 'flex')
-                    .style('justify-content', 'space-between')
-                    .style('align-items', 'center')
-                    .style('padding', item.isHighlight ? '14px 16px' : '12px 16px')
-                    .style('border-bottom', index < items.length - 1 ? '1px solid #f0f0f0' : 'none')
-                    .style('background', item.isHighlight ? '#f8f9ff' : 'white');
-
-                row.append('span')
-                    .style('font-weight', '600')
-                    .style('color', '#495057')
-                    .style('font-size', item.isHighlight ? '16px' : '14px')
-                    .text(item.label);
-
-                row.append('span')
-                    .style('color', item.color || '#212529')
-                    .style('font-weight', item.isHighlight || item.color ? '700' : '600')
-                    .style('font-size', item.isHighlight ? '18px' : '14px')
-                    .text(item.value);
-            });
-
-            // Add note if provided
-            if (options.note) {
-                content.append('div')
-                    .style('padding', '10px 16px')
-                    .style('background', '#f8f9fa')
-                    .style('border-top', '1px solid #e0e0e0')
-                    .style('font-size', '12px')
-                    .style('color', '#6c757d')
-                    .style('font-style', 'italic')
-                    .text(options.note);
-            }
-        };
-
-        // === SECTION 1: CAPACITY OVERVIEW ===
-        createSection(salesDetails, 'Capacity Overview', [
+        const rightInfoItems = [
             { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
             { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
-            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isHighlight: true }
-        ]);
-
-        // === SECTION 2: SINGLE TICKET SALES ===
-        createSection(salesDetails, 'Single Ticket Sales', [
-            { label: 'Tickets Sold', value: singleTicketsSold.toLocaleString(), isHighlight: true },
-            { label: 'Average Ticket Price', value: performance.single_atp > 0 ? '$' + performance.single_atp.toFixed(2) : 'N/A' }
-        ]);
-
-        // === SECTION 3: PROJECTIONS ===
-        if (projection.canProject) {
-            createSection(salesDetails, 'Sales Projections', [
-                { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isHighlight: true },
-                { label: 'Current vs Target', value: `${projection.variance > 0 ? '+' : ''}${projection.variance.toLocaleString()}`,
-                  color: projection.variance >= 0 ? '#27ae60' : '#e74c3c' },
-                { label: 'Target Comp (Current)', value: projection.targetCompCurrent.toLocaleString() },
-                { label: 'Target Comp (Final)', value: projection.targetCompFinal.toLocaleString() },
-                { label: 'Target Comp ATP', value: targetComp?.atp > 0 ? '$' + targetComp.atp.toFixed(2) : 'N/A' }
-            ], { note: formatCompProjectionText(projection) });
-        } else {
-            // Show why projection isn't available
-            salesDetails.append('div')
-                .style('margin-bottom', '20px')
-                .style('padding', '12px 16px')
-                .style('background', '#fff3cd')
-                .style('border', '1px solid #ffc107')
-                .style('border-radius', '8px')
-                .style('font-size', '13px')
-                .style('color', '#856404')
-                .html(`<strong>Projections:</strong> ${formatCompProjectionText(projection)}`);
-        }
-
-        // === SECTION 4: OVERALL PERFORMANCE ===
-        createSection(salesDetails, 'Overall Performance', [
-            { label: 'Total Tickets Sold', value: totalSold.toLocaleString(), isHighlight: true },
+            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isBold: true, spacing: 'bottom' },
+            { label: 'Single Tickets Sold', value: singleTicketsSold.toLocaleString() },
+            // Add comp-based projection data if available
+            ...(projection.canProject ? [
+                { label: 'Current vs Target Comp', value: `${projection.variance > 0 ? '+' : ''}${projection.variance.toLocaleString()} tickets`,
+                  color: projection.variance >= 0 ? '#27ae60' : '#e74c3c', isBold: true },
+                { label: 'Target Comp Current', value: projection.targetCompCurrent.toLocaleString() },
+                { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isBold: true },
+                { label: 'Target Comp Final', value: projection.targetCompFinal.toLocaleString() },
+                { label: 'Projection Basis', value: formatCompProjectionText(projection), isSmall: true, spacing: 'bottom' }
+            ] : [
+                { label: 'Projection Status', value: formatCompProjectionText(projection), isSmall: true, spacing: 'bottom' }
+            ]),
+            { label: 'Total Sold', value: totalSold.toLocaleString() },
             { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
-            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
-            { label: 'Blended ATP', value: performance.overall_atp > 0 ? '$' + performance.overall_atp.toFixed(2) : 'N/A' },
+            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), spacing: 'bottom' },
             { label: 'Status', value: status, color: statusColor }
-        ]);
+        ];
+
+        rightInfoItems.forEach(item => {
+            const row = rightDetails.append('div')
+                .style('display', 'flex')
+                .style('justify-content', 'space-between')
+                .style('padding', '8px 0')
+                .style('margin-bottom', item.spacing === 'bottom' ? '12px' : '0')
+                .style('border-bottom', '1px solid #dee2e6');
+
+            row.append('span')
+                .style('font-weight', item.isBold ? '700' : '600')
+                .style('color', '#495057')
+                .style('font-size', item.isSmall ? '12px' : '14px')
+                .text(item.label + ':');
+
+            row.append('span')
+                .style('color', item.color || '#212529')
+                .style('font-weight', item.color || item.isBold ? '600' : 'normal')
+                .style('font-size', item.isSmall ? '12px' : '14px')
+                .style('font-style', item.isSmall ? 'italic' : 'normal')
+                .text(item.value);
+        });
 
         // Add Comparisons Management section
         // Ensure performanceCode is available for comparisons
@@ -1162,7 +1034,7 @@ class DataTable {
             ...performance,
             performanceCode: performance.performanceCode || performance.performance_code || performance.id
         };
-        await this.renderComparisonsSection(modalBody, enrichedPerfForComps);
+        await this.renderComparisonsSection(modal, enrichedPerfForComps);
 
         // Close modal on overlay click
         modalOverlay.on('click', (event) => {
@@ -1172,21 +1044,16 @@ class DataTable {
         });
     }
 
-    async renderComparisonsSection(modalBody, performance) {
-        // Comparisons section wrapper - no padding (modalBody handles it)
-        const comparisonsSection = modalBody.append('div')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box');
-
+    async renderComparisonsSection(modal, performance) {
         // Add comparisons section header
-        comparisonsSection.append('h3')
+        modal.append('h3')
             .style('margin-top', '30px')
             .style('margin-bottom', '15px')
             .style('font-size', '1.1em')
             .style('color', '#333')
             .text('Sales Progression Comparisons');
 
-        const comparisonsContainer = comparisonsSection.append('div')
+        const comparisonsContainer = modal.append('div')
             .attr('class', 'comparisons-container')
             .style('background', '#f8f9fa')
             .style('padding', '20px')
@@ -1555,9 +1422,9 @@ class DataTable {
 
                     // Then reload the comparisons section
                     form.remove();
-                    const modalBodyElement = d3.select('.modal-body');
-                    modalBodyElement.selectAll('.comparisons-container').remove();
-                    await self.renderComparisonsSection(modalBodyElement, performance);
+                    const modalElement = d3.select('.performance-modal');
+                    modalElement.selectAll('.comparisons-container').remove();
+                    await self.renderComparisonsSection(modalElement, performance);
                 } catch (error) {
                     // Show error state
                     button
@@ -2019,9 +1886,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             weeksRounded: Math.max(0, Math.ceil(exactWeeksOut)),
             daysOut: Math.max(0, daysOut),
             tickets: snapshot.single_tickets_sold || 0,  // Only single tickets (includes non-fixed packages, excludes fixed subscriptions)
-            revenue: snapshot.single_revenue || 0,       // Single ticket revenue (NOT total revenue)
+            revenue: snapshot.total_revenue || 0,        // Total revenue
             occupancy: snapshot.capacity_percent || 0,   // Occupancy percentage
-            single_atp: snapshot.single_atp || 0,        // Single ticket ATP from BigQuery
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date
         };
@@ -2068,14 +1934,6 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
         .attr('stroke-width', 1.5)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
-            // Use single ticket ATP from BigQuery (should always be present)
-            const atp = d.single_atp || 0;
-
-            // Log warning if ATP is missing (this should never happen)
-            if (atp === 0 && d.tickets > 0) {
-                console.error('⚠️ Missing single_atp for snapshot:', d.snapshot_date, 'tickets:', d.tickets);
-            }
-
             // Create tooltip
             const tooltip = d3.select('body')
                 .append('div')
@@ -2092,7 +1950,6 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                     <strong>${d.snapshot_date}</strong><br/>
                     <span style="color: #999;">●</span> ${Math.round(d.daysOut)} days before performance<br/>
                     <span style="color: #3498db;">●</span> Tickets Sold: ${d.tickets.toLocaleString()}<br/>
-                    <span style="color: #27ae60;">●</span> Single Ticket ATP: $${atp.toFixed(2)}<br/>
                     <span style="color: #A23B72;">●</span> Revenue: $${(d.revenue || 0).toLocaleString()}<br/>
                     <span style="color: #ccc;">●</span> Occupancy: ${(d.occupancy || 0).toFixed(1)}%
                 `);
@@ -2417,43 +2274,12 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             return row.totalRevenue || 0;
         }
         if (key === 'budgetPerformance') {
+            // Sort by the variance (difference between actual and goal)
             const revenue = row.totalRevenue || 0;
             const goal = row.budgetGoal || 0;
             return revenue - goal;
         }
         return row[key] || '';
-    }
-
-    // Type-aware comparison function for sorting
-    compareValues(aVal, bVal, columnKey) {
-        // Get column metadata
-        const column = this.columns.find(col => col.key === columnKey);
-        const type = column?.type || 'string';
-
-        // Handle null/empty values consistently
-        if (aVal === null || aVal === undefined || aVal === '') {
-            return bVal === null || bVal === undefined || bVal === '' ? 0 : 1;  // Nulls sort last
-        }
-        if (bVal === null || bVal === undefined || bVal === '') {
-            return -1;  // Non-null sorts before null
-        }
-
-        // Type-specific comparisons
-        if (type === 'number') {
-            const numA = parseFloat(aVal) || 0;
-            const numB = parseFloat(bVal) || 0;
-            return numA - numB;
-        }
-
-        if (type === 'date') {
-            // YYYY-MM-DD strings compare correctly, but be explicit
-            return aVal.localeCompare(bVal);
-        }
-
-        // String comparison (case-insensitive)
-        const strA = String(aVal).toLowerCase();
-        const strB = String(bVal).toLowerCase();
-        return strA.localeCompare(strB);
     }
 
     getFilteredData() {

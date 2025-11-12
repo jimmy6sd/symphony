@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Excel View - Kansas City Symphony Dashboard</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/excel-view.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="excel-view-page">
+        <header class="excel-view-page-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Kansas City Symphony - Excel Export View</h1>
+                    <p>Complete performance data in Excel template format</p>
+                </div>
+                <div class="header-right">
+                    <a href="/" class="back-button">← Back to Dashboard</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="excel-view-page-content">
+            <div id="loading-indicator" class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <p>Loading performance data...</p>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;">
+                <p class="error-text"></p>
+                <button class="retry-button">Retry</button>
+            </div>
+
+            <div id="excel-view-container" class="excel-view-wrapper" style="display: none;">
+                <!-- Excel view will be rendered here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Load data service and utilities first (non-module) -->
+    <script src="/src/data-service.js"></script>
+    <script src="/src/utils/sales-projections.js"></script>
+
+    <script type="module">
+        import ExcelView from './src/charts/excel-view.js';
+
+        // Initialize Excel view
+        let excelView = null;
+
+        async function loadExcelView() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const errorMessage = document.getElementById('error-message');
+            const container = document.getElementById('excel-view-container');
+
+            try {
+                loadingIndicator.style.display = 'flex';
+                errorMessage.style.display = 'none';
+                container.style.display = 'none';
+
+                // Wait for dataService to be available
+                if (!window.dataService) {
+                    throw new Error('Data service not loaded');
+                }
+
+                // Fetch data from data service (includes weekOverWeek data!)
+                const result = await window.dataService.getPerformances();
+
+                if (!result || !result.performances || result.performances.length === 0) {
+                    throw new Error('No performance data available');
+                }
+
+                const data = result.performances;
+                const weekOverWeek = result.weekOverWeek || {};
+
+                // Debug: Check what fields the first performance has
+                if (data && data.length > 0) {
+                    console.log('First performance object:', data[0]);
+                    console.log('Available fields:', Object.keys(data[0]));
+                    console.log('performanceCode field:', data[0].performanceCode);
+                    console.log('performanceId field:', data[0].performanceId);
+                    console.log('id field:', data[0].id);
+                }
+
+                // Fetch comparison data for ALL performances (for projections) - IN PARALLEL
+                console.log('Fetching comparison data for all performances in parallel...');
+                const comparisonsMap = new Map();
+
+                // Create array of fetch promises for all performances with codes
+                // Use performance CODE as map key (not ID) since we fetch by code
+                const fetchPromises = data
+                    .filter(perf => perf.performance_code || perf.id)
+                    .map(async (perf) => {
+                        const perfCode = perf.performance_code || perf.id;
+
+                        try {
+                            const comps = await window.dataService.getPerformanceComparisons(perfCode);
+                            return { perfCode, comps, success: true };
+                        } catch (error) {
+                            console.error(`Failed to fetch comparisons for ${perfCode}:`, error);
+                            return { perfCode, comps: null, success: false, error };
+                        }
+                    });
+
+                // Execute all fetches in parallel
+                const results = await Promise.all(fetchPromises);
+
+                // Process results and build comparisons map
+                let successCount = 0;
+                let failCount = 0;
+
+                results.forEach((result, idx) => {
+                    if (result.success && result.comps && result.comps.length > 0) {
+                        // Store using performance CODE as key
+                        comparisonsMap.set(result.perfCode, result.comps);
+                        if (idx < 3) {
+                            console.log(`[Map Debug] Stored comparisons for code=${result.perfCode}, comps count=${result.comps.length}`);
+                        }
+                        successCount++;
+                    } else if (!result.success) {
+                        failCount++;
+                    }
+                });
+
+                const noCodeCount = data.length - fetchPromises.length;
+
+                console.log(`Fetched comparisons for ${comparisonsMap.size} of ${data.length} performances (parallel)`);
+                console.log(`  Success: ${successCount}, Failed: ${failCount}, No code: ${noCodeCount}`);
+                console.log(`[Map Debug] First 3 map keys (codes):`, Array.from(comparisonsMap.keys()).slice(0, 3));
+
+                // Create Excel view instance
+                excelView = new ExcelView();
+
+                // Render Excel view with comparisons data AND weekOverWeek data
+                excelView.render(container, data, comparisonsMap, weekOverWeek);
+
+                // Show container
+                loadingIndicator.style.display = 'none';
+                container.style.display = 'block';
+
+                console.log(`Excel view loaded successfully with ${data.length} performances`);
+            } catch (error) {
+                console.error('Error loading Excel view:', error);
+
+                loadingIndicator.style.display = 'none';
+                errorMessage.style.display = 'flex';
+                errorMessage.querySelector('.error-text').textContent =
+                    `Failed to load data: ${error.message}`;
+            }
+        }
+
+        // Retry button handler
+        document.querySelector('.retry-button')?.addEventListener('click', () => {
+            loadExcelView();
+        });
+
+        // Load view on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadExcelView);
+        } else {
+            loadExcelView();
+        }
+    </script>
+</body>
+</html>

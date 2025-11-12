@@ -80,12 +80,53 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: var(--spacing-xl);
-    text-align: center;
     box-shadow: var(--shadow-md);
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-height: 100px;
+}
+
+.dashboard-header .header-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-header .header-left {
+    flex: 1;
+    text-align: center;
+}
+
+.dashboard-header .header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.excel-view-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+}
+
+.excel-view-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive header for mobile */

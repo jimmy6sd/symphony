@@ -731,11 +731,23 @@ class SalesCurveChart {
             .on("mouseover", function(event) {
                 const capacityPercent = performance.capacity ? ((currentSales / performance.capacity) * 100).toFixed(1) : 'N/A';
 
+                // Calculate ATP and revenue
+                const totalRevenue = performance.totalRevenue || performance.total_revenue || 0;
+                const totalTickets = (performance.singleTicketsSold || performance.single_tickets_sold || 0) +
+                                    (performance.subscriptionTicketsSold || performance.subscription_tickets_sold || 0);
+                const atp = totalTickets > 0 ? totalRevenue / totalTickets : 0;
+                const currentRevenue = currentSales * atp;
+
+                let atpLine = '';
+                if (atp > 0) {
+                    atpLine = `ATP: $${atp.toFixed(2)}<br/>Revenue: $${currentRevenue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}<br/>`;
+                }
+
                 tooltip.html(`
                     <strong>Current Sales (${weeksToPerformance} weeks before)</strong><br/>
                     Actual: ${currentSales.toLocaleString()} tickets<br/>
                     Capacity: ${capacityPercent}%<br/>
-                    <em>Compare to historical comp lines below</em>
+                    ${atpLine}<em>Compare to historical comp lines below</em>
                 `);
                 return tooltip.style("visibility", "visible");
             })
@@ -855,17 +867,19 @@ class SalesCurveChart {
                     occupancyLine = `Occupancy: ${occupancy}%<br/>`;
                 }
 
-                // Calculate revenue if ATP is available
+                // Calculate revenue and show ATP if available
+                let atpLine = '';
                 let revenueLine = '';
                 if (comparison.atp && comparison.atp > 0) {
+                    atpLine = `Blended ATP: $${comparison.atp.toFixed(2)}<br/>`;
                     const revenue = d.sales * comparison.atp;
                     revenueLine = `Revenue: $${revenue.toLocaleString()}<br/>`;
                 }
 
                 // Build tooltip with metadata
                 let metadataSection = '';
-                if (occupancyLine || revenueLine) {
-                    metadataSection = `<br/><em style="font-size: 10px; color: #ccc;">Comp Metadata:</em><br/>${occupancyLine}${revenueLine}`;
+                if (occupancyLine || atpLine || revenueLine) {
+                    metadataSection = `<br/><em style="font-size: 10px; color: #ccc;">Comp Metadata:</em><br/>${occupancyLine}${atpLine}${revenueLine}`;
                 }
 
                 tooltip.html(`
@@ -1086,6 +1100,14 @@ class SalesCurveChart {
 
                     const occupancyPercent = capacity > 0 ? ((totalTickets / capacity) * 100).toFixed(1) : '0.0';
 
+                    // Use single ticket ATP from BigQuery (should always be present)
+                    const atp = performance.single_atp || 0;
+
+                    // Log warning if ATP is missing (this should never happen)
+                    if (atp === 0 && totalTickets > 0) {
+                        console.error('⚠️ Missing single_atp for performance:', performance.performanceCode);
+                    }
+
                     // Debug logging
                     console.log('🔍 Tooltip debug:', {
                         totalTickets,
@@ -1096,6 +1118,7 @@ class SalesCurveChart {
                         revenueType: typeof performance.totalRevenue,
                         revenueParsed: revenue,
                         occupancyPercent,
+                        atp,
                         performanceObject: performance
                     });
 
@@ -1104,6 +1127,7 @@ class SalesCurveChart {
                         ${weekLabel}<br/>
                         Tickets Sold: ${totalTickets.toLocaleString()}<br/>
                         Occupancy: ${occupancyPercent}%<br/>
+                        Single Ticket ATP: $${atp.toFixed(2)}<br/>
                         Revenue: $${revenue.toLocaleString()}<br/>
                         <em style="font-size: 10px;">Tracking ${variance >= 0 ? 'ahead' : 'behind'} target by ${Math.abs(variance).toLocaleString()} tickets</em>
                     `);

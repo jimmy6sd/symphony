@@ -338,29 +338,58 @@ async function processPdfBase64(base64Data, metadata) {
             const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
             const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
             const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+            const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
+            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
+            const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
             const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
-            // Fixed packages = subscriptions
-            const subscriptionTickets = fixedCount;
-            // Single tickets + Non-Fixed packages = single tickets
-            const singleTicketsTotal = singleCount + nonFixedCount;
-            const totalSold = subscriptionTickets + singleTicketsTotal;
+            // Calculate total sold tickets
+            const totalSold = fixedCount + nonFixedCount + singleCount;
 
-            // NOTE: Only sales data is included here (goes to snapshots table)
-            // Metadata (capacity, budget_goal, etc.) comes from performances table
+            // Calculate ATP for each ticket type
+            const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
+            const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
+            const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
+            const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
+
+            // NOTE: Granular sales data is now captured for detailed analytics
             const performance = {
               performance_code: performanceCode,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              single_tickets_sold: singleTicketsTotal,
-              subscription_tickets_sold: subscriptionTickets,
+              performance_time: parseTime(dateTime) || null,
+
+              // Granular ticket counts
+              fixed_tickets_sold: fixedCount,
+              non_fixed_tickets_sold: nonFixedCount,
+              single_tickets_sold: singleCount,
+              reserved_tickets: reservedCount,
+              total_tickets_sold: totalSold,
+
+              // Granular revenue breakdown
+              fixed_revenue: fixedRevenue,
+              non_fixed_revenue: nonFixedRevenue,
+              single_revenue: singleRevenue,
+              reserved_revenue: reservedRevenue,
+              subtotal_revenue: subtotalRevenue,
               total_revenue: totalRevenue,
-              capacity_percent: capacityPercent,  // From report (can validate)
-              budget_percent: budgetPercent       // From report
+
+              // Inventory
+              available_seats: availSeats,
+
+              // Analytics
+              capacity_percent: capacityPercent,
+              budget_percent: budgetPercent,
+
+              // Calculated ATP by ticket type
+              fixed_atp: fixedAtp,
+              non_fixed_atp: nonFixedAtp,
+              single_atp: singleAtp,
+              overall_atp: overallAtp
             };
 
-            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleTicketsTotal} single (incl. non-fixed), ${subscriptionTickets} sub (fixed only), $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - Fixed: ${fixedCount}, Non-Fixed: ${nonFixedCount}, Single: ${singleCount}, Reserved: ${reservedCount}, Total: $${Math.round(totalRevenue)} (${capacityPercent}% capacity)`);
             performances.push(performance);
           }
         }
@@ -451,25 +480,57 @@ async function processPdfUrl(url, metadata) {
             const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
             const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
             const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+            const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
+            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
+            const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
             const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
-            const subscriptionTickets = fixedCount;
-            const singleTicketsTotal = singleCount + nonFixedCount;
-            const totalSold = subscriptionTickets + singleTicketsTotal;
+            // Calculate total sold tickets
+            const totalSold = fixedCount + nonFixedCount + singleCount;
+
+            // Calculate ATP for each ticket type
+            const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
+            const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
+            const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
+            const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
 
             performances.push({
               performance_code: performanceCode,
               performance_date: parseDate(dateTime) || '2025-01-01',
-              single_tickets_sold: singleTicketsTotal,
-              subscription_tickets_sold: subscriptionTickets,
+              performance_time: parseTime(dateTime) || null,
+
+              // Granular ticket counts
+              fixed_tickets_sold: fixedCount,
+              non_fixed_tickets_sold: nonFixedCount,
+              single_tickets_sold: singleCount,
+              reserved_tickets: reservedCount,
+              total_tickets_sold: totalSold,
+
+              // Granular revenue breakdown
+              fixed_revenue: fixedRevenue,
+              non_fixed_revenue: nonFixedRevenue,
+              single_revenue: singleRevenue,
+              reserved_revenue: reservedRevenue,
+              subtotal_revenue: subtotalRevenue,
               total_revenue: totalRevenue,
+
+              // Inventory
+              available_seats: availSeats,
+
+              // Analytics
               capacity_percent: capacityPercent,
-              budget_percent: budgetPercent
+              budget_percent: budgetPercent,
+
+              // Calculated ATP by ticket type
+              fixed_atp: fixedAtp,
+              non_fixed_atp: nonFixedAtp,
+              single_atp: singleAtp,
+              overall_atp: overallAtp
             });
 
-            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - ${singleCount} single, ${subscriptionTickets} sub, $${Math.round(totalRevenue)} revenue, ${capacityPercent}% capacity`);
+            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - Fixed: ${fixedCount}, Non-Fixed: ${nonFixedCount}, Single: ${singleCount}, Reserved: ${reservedCount}, Total: $${Math.round(totalRevenue)} (${capacityPercent}% capacity)`);
           }
         }
       }
@@ -791,6 +852,19 @@ function parseDate(dateStr) {
   return '2025-01-01';
 }
 
+// Utility function to parse time from datetime string
+function parseTime(dateTimeStr) {
+  if (!dateTimeStr) return null;
+
+  // Match time patterns: "7:30 PM", "2:00 PM", "19:30", etc.
+  const timeMatch = dateTimeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  if (timeMatch) {
+    return timeMatch[0]; // Return the matched time string
+  }
+
+  return null;
+}
+
 // BigQuery functions
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
 
@@ -939,12 +1013,25 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
       ${perfId},
       '${p.performance_code}',
       CURRENT_DATE(),
+      ${p.performance_time ? `'${p.performance_time}'` : 'NULL'},
+      ${p.fixed_tickets_sold || 0},
+      ${p.non_fixed_tickets_sold || 0},
       ${p.single_tickets_sold || 0},
-      ${p.subscription_tickets_sold || 0},
-      ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)},
+      ${p.reserved_tickets || 0},
+      ${p.total_tickets_sold || 0},
+      ${p.fixed_revenue || 0},
+      ${p.non_fixed_revenue || 0},
+      ${p.single_revenue || 0},
+      ${p.reserved_revenue || 0},
+      ${p.subtotal_revenue || 0},
       ${p.total_revenue || 0},
+      ${p.available_seats || 0},
       ${p.capacity_percent || 0},
       ${p.budget_percent || 0},
+      ${p.fixed_atp || 0},
+      ${p.non_fixed_atp || 0},
+      ${p.single_atp || 0},
+      ${p.overall_atp || 0},
       'pdf_webhook',
       CURRENT_TIMESTAMP()
     )`;
@@ -952,9 +1039,12 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
 
   const insertSnapshots = `
     INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
-    (snapshot_id, performance_id, performance_code, snapshot_date,
-     single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
-     total_revenue, capacity_percent, budget_percent, source, created_at)
+    (snapshot_id, performance_id, performance_code, snapshot_date, performance_time,
+     fixed_tickets_sold, non_fixed_tickets_sold, single_tickets_sold, reserved_tickets, total_tickets_sold,
+     fixed_revenue, non_fixed_revenue, single_revenue, reserved_revenue, subtotal_revenue, total_revenue,
+     available_seats, capacity_percent, budget_percent,
+     fixed_atp, non_fixed_atp, single_atp, overall_atp,
+     source, created_at)
     VALUES ${snapshotValues}
   `;
 

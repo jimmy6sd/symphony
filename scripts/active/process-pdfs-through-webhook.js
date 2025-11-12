@@ -16,7 +16,8 @@ const pdf = require('pdf-parse');
 // Configuration
 const CONFIG = {
   pdfDirectory: '.',  // Root directory
-  webhookUrl: 'http://localhost:8888/.netlify/functions/pdf-webhook',
+  // Google Cloud Function endpoint (deployed via cloud-functions/pdf-webhook/)
+  webhookUrl: 'https://us-central1-kcsymphony-dashboard.cloudfunctions.net/symphony-pdf-webhook',
   pdfFiles: [
     'FY26 Performance Sales Summary_1124675.pdf',
     'FY26 Performance Sales Summary_1126300.pdf'

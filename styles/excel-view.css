@@ -1,0 +1,544 @@
+/**
+ * Excel View Styling
+ * Replicates Excel spreadsheet appearance
+ */
+
+/* Page Layout */
+.excel-view-page {
+    min-height: 100vh;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+}
+
+.excel-view-page-header {
+    background: linear-gradient(135deg, #2d5a8c 0%, #1a3a5c 100%);
+    color: white;
+    padding: 20px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+    max-width: 1800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.header-left p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-2px);
+}
+
+/* Main Content */
+.excel-view-page-content {
+    flex: 1;
+    padding: 20px;
+    max-width: 1900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2d5a8c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Error Message */
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #fff5f5;
+    border: 2px solid #fee;
+    border-radius: 8px;
+}
+
+.error-text {
+    color: #c53030;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.retry-button {
+    padding: 10px 24px;
+    background: #2d5a8c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.retry-button:hover {
+    background: #1a3a5c;
+}
+
+/* Excel View Container */
+.excel-view-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Excel View Header */
+.excel-view-header {
+    padding: 25px 30px;
+    border-bottom: 2px solid #e0e0e0;
+    background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
+}
+
+.excel-view-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #333;
+    font-weight: 600;
+}
+
+.excel-view-description {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.excel-view-description .estimated {
+    color: #d97706;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.excel-view-description .na-value {
+    color: #999;
+    font-weight: 500;
+}
+
+.excel-view-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.export-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #2d5a8c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.export-button:hover {
+    background: #1a3a5c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 90, 140, 0.3);
+}
+
+/* Excel Table Container */
+.excel-view-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 280px);
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Excel Table */
+.excel-view-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    background: white;
+}
+
+/* Table Header */
+.excel-view-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f8f9fa;
+}
+
+.excel-view-table th {
+    padding: 6px 8px;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+    border-right: 1px solid #dee2e6;
+    border-bottom: 2px solid #adb5bd;
+    font-weight: 600;
+    text-align: left;
+    color: #495057;
+    white-space: normal;
+    position: relative;
+    font-size: 11px;
+    line-height: 1.3;
+    vertical-align: top;
+    max-width: 120px;
+}
+
+.excel-view-table th:first-child {
+    border-left: 1px solid #dee2e6;
+}
+
+.excel-header-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.excel-header-label {
+    flex: 1;
+    line-height: 1.3;
+}
+
+.excel-header-tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    background: #2d5a8c;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    cursor: help;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    position: relative;
+    margin-top: 1px;
+}
+
+.excel-header-tooltip:hover {
+    background: #1a3a5c;
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(45, 90, 140, 0.4);
+}
+
+/* Custom tooltip styling for better readability */
+.excel-header-tooltip[title] {
+    position: relative;
+}
+
+/* Improve native tooltip appearance (browser-dependent) */
+.excel-view-table th[title]:hover::after {
+    white-space: pre-wrap;
+}
+
+.sort-indicator {
+    color: #2d5a8c;
+    font-size: 10px;
+}
+
+.excel-view-table th[style*="cursor: pointer"]:hover {
+    background: linear-gradient(to bottom, #e9ecef 0%, #dee2e6 100%);
+}
+
+/* Table Body */
+.excel-view-table tbody tr {
+    transition: background 0.1s ease;
+}
+
+.excel-view-table tbody tr.even {
+    background: #ffffff;
+}
+
+.excel-view-table tbody tr.odd {
+    background: #f9fafb;
+}
+
+.excel-view-table tbody tr:hover {
+    background: #f0f7ff !important;
+}
+
+.excel-view-table td {
+    padding: 6px 8px;
+    border-right: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.excel-view-table td:first-child {
+    border-left: 1px solid #e9ecef;
+}
+
+/* Performance Title Cell */
+.performance-title-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.performance-title-cell .title {
+    font-weight: 500;
+    color: #2d5a8c;
+}
+
+.performance-title-cell .code {
+    font-size: 11px;
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+}
+
+/* Series Badges */
+.series-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.series-classical {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.series-pops {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.series-family {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.series-special {
+    background: #e9d5ff;
+    color: #6b21a8;
+}
+
+.series-holiday {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.series-other,
+.series-na {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Budget Column Styling */
+.budget-column {
+    background: #fffbeb !important;
+}
+
+.excel-view-table tbody tr.even .budget-column {
+    background: #fef3c7 !important;
+}
+
+.excel-view-table tbody tr:hover .budget-column {
+    background: #fde68a !important;
+}
+
+/* Target Column Styling */
+.target-column {
+    background: #f0fdf4 !important;
+}
+
+.excel-view-table tbody tr.even .target-column {
+    background: #dcfce7 !important;
+}
+
+.excel-view-table tbody tr:hover .target-column {
+    background: #bbf7d0 !important;
+}
+
+/* Projection Column Styling */
+.projection-column {
+    background: #eff6ff !important;
+}
+
+.excel-view-table tbody tr.even .projection-column {
+    background: #dbeafe !important;
+}
+
+.excel-view-table tbody tr:hover .projection-column {
+    background: #bfdbfe !important;
+}
+
+.projected-value {
+    color: #1e40af;
+    font-weight: 500;
+}
+
+/* Variance styling */
+.positive-variance {
+    color: #059669;
+    font-weight: 600;
+}
+
+.negative-variance {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* Estimated Values */
+.estimated-column {
+    background: #fef5e7 !important;
+}
+
+.excel-view-table tbody tr.even .estimated-column {
+    background: #fef3e2 !important;
+}
+
+.excel-view-table tbody tr:hover .estimated-column {
+    background: #fde4c4 !important;
+}
+
+.estimated {
+    color: #d97706;
+    font-style: italic;
+}
+
+/* Unavailable Values */
+.unavailable {
+    background: #f9fafb !important;
+    opacity: 0.5;
+}
+
+.na-value {
+    color: #9ca3af;
+    font-size: 12px;
+    font-style: italic;
+}
+
+/* Status Indicators */
+.over-budget {
+    color: #059669;
+    font-weight: 600;
+}
+
+.on-track {
+    color: #2563eb;
+    font-weight: 500;
+}
+
+.under-budget {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.high-occ {
+    color: #059669;
+    font-weight: 600;
+}
+
+.medium-occ {
+    color: #d97706;
+    font-weight: 500;
+}
+
+.low-occ {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .excel-view-table {
+        font-size: 12px;
+    }
+
+    .excel-view-table th,
+    .excel-view-table td {
+        padding: 8px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .excel-view-page-header,
+    .excel-view-toolbar {
+        display: none;
+    }
+
+    .excel-view-table-container {
+        overflow: visible;
+        max-height: none;
+    }
+
+    .excel-view-table thead {
+        position: static;
+    }
+
+    .excel-view-table tbody tr {
+        page-break-inside: avoid;
+    }
+}

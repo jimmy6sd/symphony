@@ -250,8 +250,15 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       COALESCE(s.subscription_tickets_sold, 0) as subscription_tickets_sold,
       COALESCE(s.total_tickets_sold, 0) as total_tickets_sold,
       COALESCE(s.total_revenue, 0) as total_revenue,
+      COALESCE(s.single_revenue, 0) as single_revenue,
+      COALESCE(s.fixed_revenue, 0) as fixed_revenue,
+      COALESCE(s.non_fixed_revenue, 0) as non_fixed_revenue,
       COALESCE(s.capacity_percent, 0) as capacity_percent,
       COALESCE(s.budget_percent, 0) as budget_percent,
+      COALESCE(s.single_atp, 0) as single_atp,
+      COALESCE(s.overall_atp, 0) as overall_atp,
+      COALESCE(s.fixed_atp, 0) as fixed_atp,
+      COALESCE(s.non_fixed_atp, 0) as non_fixed_atp,
       s.snapshot_date as last_updated,
       p.updated_at as metadata_updated_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
@@ -263,8 +270,15 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
         subscription_tickets_sold,
         total_tickets_sold,
         total_revenue,
+        single_revenue,
+        fixed_revenue,
+        non_fixed_revenue,
         capacity_percent,
-        budget_percent
+        budget_percent,
+        single_atp,
+        overall_atp,
+        fixed_atp,
+        non_fixed_atp
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
       QUALIFY ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) = 1
     ) s
@@ -353,8 +367,15 @@ async function getPerformanceHistory(bigquery, params, headers) {
       subscription_tickets_sold,
       total_tickets_sold,
       total_revenue,
+      single_revenue,
+      fixed_revenue,
+      non_fixed_revenue,
       capacity_percent,
       budget_percent,
+      single_atp,
+      overall_atp,
+      fixed_atp,
+      non_fixed_atp,
       source,
       created_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`

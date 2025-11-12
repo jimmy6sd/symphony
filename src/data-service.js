@@ -523,8 +523,3 @@ const dataService = new DataService();
 if (typeof window !== 'undefined') {
     window.dataService = dataService;
 }
-
-// Export for module use if needed
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = dataService;
-}

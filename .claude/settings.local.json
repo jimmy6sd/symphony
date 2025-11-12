@@ -29,7 +29,9 @@
       "Bash(dir:*)",
       "Bash(git push:*)",
       "Bash(tasklist:*)",
-      "Bash(bq query:*)"
+      "Bash(bq query:*)",
+      "mcp__puppeteer-real-browser__click",
+      "mcp__puppeteer-real-browser__wait"
     ],
     "deny": [],
     "ask": []

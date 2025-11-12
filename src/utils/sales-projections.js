@@ -240,3 +240,16 @@ function formatCompProjectionText(projection) {
 
     return `${varianceText} ${projection.comparisonName} (${weeksText})`;
 }
+
+// Export functions
+if (typeof window !== 'undefined') {
+    window.SalesProjections = {
+        calculateProjectedSales,
+        calculateCompBasedProjection,
+        calculateProjectionPerformance,
+        formatProjectionText,
+        formatCompProjectionText,
+        calculateWeeksUntilPerformance,
+        getPacingPercentage
+    };
+}

@@ -203,21 +203,61 @@ async function parsePdf(pdfBuffer) {
 
             const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
             const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
+            const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
             const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
+            const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
             const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
+            const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+            const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
+            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
+            const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
+            const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
 
-            const subscriptionTickets = fixedCount;
-            const singleTicketsTotal = singleCount + nonFixedCount;
+            // Calculate total sold tickets
+            const totalSold = fixedCount + nonFixedCount + singleCount;
+
+            // Calculate ATP for each ticket type
+            const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
+            const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
+            const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
+            const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
+
+            // Extract time from datetime
+            const performanceTime = dateTime.match(/(\d{1,2}:\d{2}\s*[AP]M)/i)?.[0] || null;
 
             performances.push({
               performance_code: performanceCode,
-              single_tickets_sold: singleTicketsTotal,
-              subscription_tickets_sold: subscriptionTickets,
+              performance_time: performanceTime,
+
+              // Granular ticket counts
+              fixed_tickets_sold: fixedCount,
+              non_fixed_tickets_sold: nonFixedCount,
+              single_tickets_sold: singleCount,
+              reserved_tickets: reservedCount,
+              total_tickets_sold: totalSold,
+
+              // Granular revenue breakdown
+              fixed_revenue: fixedRevenue,
+              non_fixed_revenue: nonFixedRevenue,
+              single_revenue: singleRevenue,
+              reserved_revenue: reservedRevenue,
+              subtotal_revenue: subtotalRevenue,
               total_revenue: totalRevenue,
+
+              // Inventory
+              available_seats: availSeats,
+
+              // Analytics
               capacity_percent: capacityPercent,
-              budget_percent: budgetPercent
+              budget_percent: budgetPercent,
+
+              // Calculated ATP by ticket type
+              fixed_atp: fixedAtp,
+              non_fixed_atp: nonFixedAtp,
+              single_atp: singleAtp,
+              overall_atp: overallAtp
             });
           }
         }
@@ -241,12 +281,25 @@ async function upsertSnapshots(bigquery, snapshots, snapshotDate) {
       ${s.performance_id} as performance_id,
       '${s.performance_code}' as performance_code,
       DATE('${snapshotDate}') as snapshot_date,
+      ${s.performance_time ? `'${s.performance_time}'` : 'NULL'} as performance_time,
+      ${s.fixed_tickets_sold} as fixed_tickets_sold,
+      ${s.non_fixed_tickets_sold} as non_fixed_tickets_sold,
       ${s.single_tickets_sold} as single_tickets_sold,
-      ${s.subscription_tickets_sold} as subscription_tickets_sold,
-      ${s.single_tickets_sold + s.subscription_tickets_sold} as total_tickets_sold,
+      ${s.reserved_tickets} as reserved_tickets,
+      ${s.total_tickets_sold} as total_tickets_sold,
+      ${s.fixed_revenue} as fixed_revenue,
+      ${s.non_fixed_revenue} as non_fixed_revenue,
+      ${s.single_revenue} as single_revenue,
+      ${s.reserved_revenue} as reserved_revenue,
+      ${s.subtotal_revenue} as subtotal_revenue,
       ${s.total_revenue} as total_revenue,
+      ${s.available_seats} as available_seats,
       ${s.capacity_percent} as capacity_percent,
       ${s.budget_percent} as budget_percent,
+      ${s.fixed_atp} as fixed_atp,
+      ${s.non_fixed_atp} as non_fixed_atp,
+      ${s.single_atp} as single_atp,
+      ${s.overall_atp} as overall_atp,
       'pdf_reprocess' as source,
       CURRENT_TIMESTAMP() as created_at
   `).join(' UNION ALL ');
@@ -259,20 +312,39 @@ async function upsertSnapshots(bigquery, snapshots, snapshotDate) {
        AND target.snapshot_date = source.snapshot_date
     WHEN MATCHED THEN
       UPDATE SET
+        performance_time = source.performance_time,
+        fixed_tickets_sold = source.fixed_tickets_sold,
+        non_fixed_tickets_sold = source.non_fixed_tickets_sold,
         single_tickets_sold = source.single_tickets_sold,
-        subscription_tickets_sold = source.subscription_tickets_sold,
+        reserved_tickets = source.reserved_tickets,
         total_tickets_sold = source.total_tickets_sold,
+        fixed_revenue = source.fixed_revenue,
+        non_fixed_revenue = source.non_fixed_revenue,
+        single_revenue = source.single_revenue,
+        reserved_revenue = source.reserved_revenue,
+        subtotal_revenue = source.subtotal_revenue,
         total_revenue = source.total_revenue,
+        available_seats = source.available_seats,
         capacity_percent = source.capacity_percent,
-        budget_percent = source.budget_percent
+        budget_percent = source.budget_percent,
+        fixed_atp = source.fixed_atp,
+        non_fixed_atp = source.non_fixed_atp,
+        single_atp = source.single_atp,
+        overall_atp = source.overall_atp
     WHEN NOT MATCHED THEN
-      INSERT (snapshot_id, performance_id, performance_code, snapshot_date,
-              single_tickets_sold, subscription_tickets_sold, total_tickets_sold,
-              total_revenue, capacity_percent, budget_percent, source, created_at)
+      INSERT (snapshot_id, performance_id, performance_code, snapshot_date, performance_time,
+              fixed_tickets_sold, non_fixed_tickets_sold, single_tickets_sold, reserved_tickets, total_tickets_sold,
+              fixed_revenue, non_fixed_revenue, single_revenue, reserved_revenue, subtotal_revenue, total_revenue,
+              available_seats, capacity_percent, budget_percent,
+              fixed_atp, non_fixed_atp, single_atp, overall_atp,
+              source, created_at)
       VALUES (source.snapshot_id, source.performance_id, source.performance_code,
-              source.snapshot_date, source.single_tickets_sold, source.subscription_tickets_sold,
-              source.total_tickets_sold, source.total_revenue, source.capacity_percent,
-              source.budget_percent, source.source, source.created_at)
+              source.snapshot_date, source.performance_time,
+              source.fixed_tickets_sold, source.non_fixed_tickets_sold, source.single_tickets_sold, source.reserved_tickets, source.total_tickets_sold,
+              source.fixed_revenue, source.non_fixed_revenue, source.single_revenue, source.reserved_revenue, source.subtotal_revenue, source.total_revenue,
+              source.available_seats, source.capacity_percent, source.budget_percent,
+              source.fixed_atp, source.non_fixed_atp, source.single_atp, source.overall_atp,
+              source.source, source.created_at)
   `;
 
   const result = await bigquery.query({ query: mergeQuery, location: 'US' });
