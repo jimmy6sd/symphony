@@ -1014,22 +1014,23 @@ class DataTable {
 
         // Sales Information - full width section below chart
         const detailsContainer = salesWrapper.append('div')
-            .attr('class', 'performance-details')
+            .attr('class', 'performance-details sales-details-paired-grid')
             .style('width', '100%')
             .style('box-sizing', 'border-box')
             .style('margin-top', '30px')
-            .style('padding', '20px')
-            .style('background', '#f8f9fa')
-            .style('border-radius', '8px');
+            .style('padding', '0')
+            .style('display', 'grid')
+            .style('grid-template-columns', 'repeat(2, 1fr)')
+            .style('gap', '20px');
 
-        // Sales Information section
-        const salesDetails = detailsContainer.append('div')
-            .style('width', '100%');
+        // Sales Information section - sections will be grid items
+        const salesDetails = detailsContainer;
 
         // Use totalSold already calculated in header section
         const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
 
         salesDetails.append('h3')
+            .style('grid-column', '1 / -1')  // Span both columns
             .style('font-size', '1.2em')
             .style('margin-bottom', '20px')
             .style('color', '#2c3e50')
