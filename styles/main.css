@@ -932,3 +932,18 @@ body {
     color: var(--text-secondary);
     font-weight: var(--font-weight-medium);
 }
+
+/* Paired two-column layout for sales information sections */
+.sales-details-paired-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+}
+
+/* Stack to single column on mobile/tablet */
+@media (max-width: 968px) {
+    .sales-details-paired-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+}

@@ -1069,7 +1069,9 @@ class SalesCurveChart {
 
                 if (isCurrentPoint) {
                     // Show actual sales data for current point (from historical snapshot or current)
-                    const totalTickets = actualSales;
+                    const singleTickets = actualSales;
+                    const subscriptionTickets = performance.subscriptionTicketsSold || 0;
+                    const totalSeats = singleTickets + subscriptionTickets;
 
                     // Ensure we handle both string and number types properly
                     const capacityValue = typeof performance.capacity === 'string'
@@ -1082,44 +1084,36 @@ class SalesCurveChart {
                         : (performance.totalRevenue || 0);
                     const revenue = revenueValue > 0 ? revenueValue : 0;
 
-                    const occupancyPercent = capacity > 0 ? ((totalTickets / capacity) * 100).toFixed(1) : '0.0';
-
-                    // Debug logging
-                    console.log('🔍 Tooltip debug:', {
-                        totalTickets,
-                        capacityRaw: performance.capacity,
-                        capacityType: typeof performance.capacity,
-                        capacityParsed: capacity,
-                        revenueRaw: performance.totalRevenue,
-                        revenueType: typeof performance.totalRevenue,
-                        revenueParsed: revenue,
-                        occupancyPercent,
-                        performanceObject: performance
-                    });
+                    // Occupancy = (single + subscription) / total capacity
+                    const occupancyPercent = capacity > 0 ? ((totalSeats / capacity) * 100).toFixed(1) : '0.0';
 
                     tooltip.html(`
                         <strong style="color: #3498db;">🎫 Current Sales</strong><br/>
                         ${weekLabel}<br/>
-                        Tickets Sold: ${totalTickets.toLocaleString()}<br/>
+                        Single Tickets: ${singleTickets.toLocaleString()}<br/>
                         Occupancy: ${occupancyPercent}%<br/>
                         Revenue: $${revenue.toLocaleString()}<br/>
                         <em style="font-size: 10px;">Tracking ${variance >= 0 ? 'ahead' : 'behind'} target by ${Math.abs(variance).toLocaleString()} tickets</em>
                     `);
                 } else {
                     // Show projected data for future points with occupancy and estimated revenue
-                    const projectedTickets = Math.round(d.projectedSales);
+                    const projectedSingleTickets = Math.round(d.projectedSales);
+                    const subscriptionTickets = performance.subscriptionTicketsSold || 0;
+                    const projectedTotalSeats = projectedSingleTickets + subscriptionTickets;
                     const capacity = parseFloat(performance.capacity) || 0;
-                    const projectedOccupancy = capacity > 0 ? ((projectedTickets / capacity) * 100).toFixed(1) : '0.0';
+
+                    // Occupancy = (projected single + subscription) / total capacity
+                    const projectedOccupancy = capacity > 0 ? ((projectedTotalSeats / capacity) * 100).toFixed(1) : '0.0';
 
                     // Estimate revenue based on current average ticket price
                     const currentRevenue = parseFloat(performance.totalRevenue) || 0;
                     const avgTicketPrice = actualSales > 0 ? currentRevenue / actualSales : 0;
-                    const projectedRevenue = Math.round(projectedTickets * avgTicketPrice);
+                    const projectedRevenue = Math.round(projectedSingleTickets * avgTicketPrice);
 
                     tooltip.html(`
                         <strong style="color: #2ecc71;">📈 Projected Sales</strong><br/>
                         ${weekLabel}<br/>
-                        Projected: ${projectedTickets.toLocaleString()} tickets<br/>
+                        Projected Singles: ${projectedSingleTickets.toLocaleString()}<br/>
                         Occupancy: ${projectedOccupancy}%<br/>
                         Est. Revenue: $${projectedRevenue.toLocaleString()}<br/>
                         <em style="font-size: 10px;">Based on maintaining current ${variance >= 0 ? '+' : ''}${variance.toLocaleString()} ticket variance</em>

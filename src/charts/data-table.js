@@ -883,17 +883,30 @@ class DataTable {
 
         // Performance details - now below the chart
         const detailsGrid = modal.append('div')
-            .attr('class', 'performance-details')
-            .style('display', 'grid')
-            .style('grid-template-columns', '1fr 1fr')
-            .style('gap', '30px')
+            .attr('class', 'performance-details sales-details-paired-grid')
+            .style('width', '100%')
+            .style('box-sizing', 'border-box')
             .style('margin-top', '30px')
-            .style('padding', '20px')
-            .style('background', '#f8f9fa')
-            .style('border-radius', '8px');
+            .style('padding', '0')
+            .style('display', 'grid')
+            .style('grid-template-columns', 'repeat(2, 1fr)')
+            .style('gap', '20px');
+
+        // Sales Information header - spans both columns
+        detailsGrid.append('h3')
+            .style('grid-column', '1 / -1')
+            .style('font-size', '1.2em')
+            .style('margin-bottom', '20px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #3498db')
+            .style('padding-bottom', '10px')
+            .text('Sales Progression Comparisons');
 
         // Left column
-        const leftDetails = detailsGrid.append('div');
+        const leftDetails = detailsGrid.append('div')
+            .style('background', '#f8f9fa')
+            .style('padding', '20px')
+            .style('border-radius', '8px');
 
         leftDetails.append('h3')
             .style('font-size', '1.1em')
@@ -933,7 +946,10 @@ class DataTable {
         });
 
         // Right column - Calculate derived values
-        const rightDetails = detailsGrid.append('div');
+        const rightDetails = detailsGrid.append('div')
+            .style('background', '#f8f9fa')
+            .style('padding', '20px')
+            .style('border-radius', '8px');
 
         const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
         const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
