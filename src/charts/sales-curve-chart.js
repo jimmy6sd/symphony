@@ -528,16 +528,14 @@ class SalesCurveChart {
 
         // Calculate current and projected metrics
         const capacity = performance.capacity || 0;
-        const currentOcc = capacity > 0 ? (singleTicketsSold / capacity * 100).toFixed(1) : 0;
-        const currentRevenue = performance.totalRevenue || 0;
+        const currentSingleRevenue = performance.singleTicketRevenue || 0;
 
         // Calculate projected final metrics
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
         const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity)); // Cap at available singles and round to whole tickets
-        const projectedOcc = capacity > 0 ? (projectedFinal / capacity * 100).toFixed(1) : 0;
-        const avgTicketPrice = singleTicketsSold > 0 ? currentRevenue / singleTicketsSold : 0;
+        const avgTicketPrice = singleTicketsSold > 0 ? currentSingleRevenue / singleTicketsSold : 0;
         const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
 
         const statusGroup = chartGroup.append("g")
@@ -624,7 +622,7 @@ class SalesCurveChart {
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`${currentOcc}% • $${(currentRevenue / 1000).toFixed(0)}k`);
+            .text(`$${(currentSingleRevenue / 1000).toFixed(0)}k`);
 
         // Divider line
         statusGroup.append("line")
@@ -660,7 +658,7 @@ class SalesCurveChart {
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`${projectedOcc}% • $${(projectedRevenue / 1000).toFixed(0)}k`);
+            .text(`$${(projectedRevenue / 1000).toFixed(0)}k`);
 
         // Projection basis note
         statusGroup.append("text")

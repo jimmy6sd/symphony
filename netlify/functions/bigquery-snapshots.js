@@ -247,8 +247,11 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       p.occupancy_goal,
       p.budget_goal,
       COALESCE(s.single_tickets_sold, 0) as single_tickets_sold,
-      COALESCE(s.subscription_tickets_sold, 0) as subscription_tickets_sold,
+      COALESCE(s.fixed_tickets_sold, 0) as subscription_tickets_sold,
+      COALESCE(s.non_fixed_tickets_sold, 0) as non_fixed_tickets_sold,
       COALESCE(s.total_tickets_sold, 0) as total_tickets_sold,
+      COALESCE(s.single_revenue, 0) as single_revenue,
+      COALESCE(s.fixed_revenue, 0) as fixed_revenue,
       COALESCE(s.total_revenue, 0) as total_revenue,
       COALESCE(s.capacity_percent, 0) as capacity_percent,
       COALESCE(s.budget_percent, 0) as budget_percent,
@@ -260,8 +263,11 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
         performance_code,
         snapshot_date,
         single_tickets_sold,
-        subscription_tickets_sold,
+        fixed_tickets_sold,
+        non_fixed_tickets_sold,
         total_tickets_sold,
+        single_revenue,
+        fixed_revenue,
         total_revenue,
         capacity_percent,
         budget_percent
@@ -316,6 +322,9 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
     performanceId: row.performance_id,
     singleTicketsSold: row.single_tickets_sold || 0,
     subscriptionTicketsSold: row.subscription_tickets_sold || 0,
+    nonFixedTicketsSold: row.non_fixed_tickets_sold || 0,
+    singleTicketRevenue: row.single_revenue || 0,
+    subscriptionRevenue: row.fixed_revenue || 0,
     totalRevenue: row.total_revenue || 0,
     occupancyGoal: row.occupancy_goal || 85,
     budgetGoal: row.budget_goal || 0,
@@ -475,7 +484,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
       SELECT
         s.performance_code,
         s.snapshot_date,
-        s.single_tickets_sold,
+        s.total_tickets_sold,
         s.total_revenue,
         ROW_NUMBER() OVER (PARTITION BY s.performance_code ORDER BY s.snapshot_date DESC) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
@@ -487,7 +496,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
       SELECT
         s.performance_code,
         s.snapshot_date,
-        s.single_tickets_sold,
+        s.total_tickets_sold,
         s.total_revenue,
         l.snapshot_date as latest_date,
         ROW_NUMBER() OVER (
@@ -502,10 +511,10 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
     SELECT
       l.performance_code,
       l.snapshot_date as this_week_date,
-      l.single_tickets_sold as current_tickets,
+      l.total_tickets_sold as current_tickets,
       w.snapshot_date as last_week_date,
-      w.single_tickets_sold as week_ago_tickets,
-      l.single_tickets_sold - COALESCE(w.single_tickets_sold, 0) as tickets_change,
+      w.total_tickets_sold as week_ago_tickets,
+      l.total_tickets_sold - COALESCE(w.total_tickets_sold, 0) as tickets_change,
       l.total_revenue as current_revenue,
       w.total_revenue as week_ago_revenue,
       l.total_revenue - COALESCE(w.total_revenue, 0) as revenue_change,

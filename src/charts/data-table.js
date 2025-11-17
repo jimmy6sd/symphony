@@ -108,7 +108,7 @@ class DataTable {
                 sortable: true,
                 align: 'center',
                 formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
 
                     // For group rows, aggregate W/W from child performances
                     if (row.isGroup && row.performances) {
@@ -148,18 +148,10 @@ class DataTable {
                 sortable: true,
                 align: 'center',
                 formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
                     const capacity = row.capacity || 0;
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
-
-                    console.log('🏟️ Occupancy formatter:', {
-                        isGroup: row.isGroup,
-                        performanceCode: row.performanceCode,
-                        wow: row._weekOverWeek,
-                        capacity,
-                        rate: rate.toFixed(1)
-                    });
 
                     // For group rows, aggregate W/W from child performances
                     if (row.isGroup && row.performances) {
@@ -303,7 +295,7 @@ class DataTable {
                 align: 'center',
                 hidden: true,
                 formatter: (value, row) => {
-                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
                     const capacity = row.capacity || 2000;
                     const occupancyGoal = row.occupancyGoal || 85; // Use actual occupancy goal from data
                     const targetSales = Math.floor(capacity * (occupancyGoal / 100));
@@ -865,7 +857,7 @@ class DataTable {
             .style('margin-bottom', '15px')
             .style('font-size', '1.1em')
             .style('color', '#333')
-            .text('Sales Progression Analysis');
+            .text('Single Ticket Sales Progression');
 
         const chartContainer = modal.append('div')
             .attr('id', 'modal-sales-chart')
@@ -943,7 +935,7 @@ class DataTable {
         // Right column - Calculate derived values
         const rightDetails = detailsGrid.append('div');
 
-        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
         const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
 
         // Determine status based on sales progress
@@ -2190,7 +2182,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
     generateSparklineData(performance) {
         // Create a simplified version of the sales progression
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
         const capacity = performance.capacity || 2000;
         const targetSales = capacity * 0.85; // 85% occupancy goal
 
@@ -2258,10 +2250,10 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
     getCellValue(row, key) {
         if (key === 'totalSold') {
-            return (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+            return (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
         }
         if (key === 'occupancyRate') {
-            const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+            const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
             const capacity = row.capacity || 0;
             return capacity > 0 ? (total / capacity * 100) : 0;
         }

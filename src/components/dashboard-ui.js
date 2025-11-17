@@ -458,7 +458,7 @@ class DashboardUI extends BaseComponent {
         // Update modal title
         const titles = {
             'performance': 'Performance Overview - Detailed View',
-            'sales-curve': 'Sales Progression Analysis',
+            'sales-curve': 'Single Ticket Sales Progression',
             'ticket-type': 'Ticket Distribution Analysis',
             'details': 'Performance Details'
         };
