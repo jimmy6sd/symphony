@@ -156,11 +156,14 @@ function formatProjectionText(projection) {
  * @param {number} currentSingleTicketsSold - Current single tickets sold
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
  * @param {Object} targetComp - Target comparison object from API (with weeksArray)
+ * @param {number} availableSingleCapacity - Available single ticket capacity (optional)
+ * @param {number} overrideWeek - Override the weeks calculation with this value (optional, for projection alignment)
  * @returns {Object} Projection data with comp-based logic
  */
-function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp, availableSingleCapacity = null) {
+function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp, availableSingleCapacity = null, overrideWeek = null) {
     // Use exact decimal weeks for interpolation (matches tracking status box logic)
-    const exactWeeksUntil = calculateWeeksUntilPerformance(performanceDate, true);
+    // Allow override with snapshot-based week for consistency across chart/table
+    const exactWeeksUntil = overrideWeek !== null ? overrideWeek : calculateWeeksUntilPerformance(performanceDate, true);
 
     // Can't project if no target comp or no sales
     if (!targetComp || !targetComp.weeksArray || currentSingleTicketsSold === 0) {
