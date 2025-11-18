@@ -215,12 +215,12 @@ function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate,
     const variance = currentSingleTicketsSold - targetCompCurrent;
 
     // Project final sales: target comp final + our current variance
-    let projected = Math.round(targetCompFinal + variance);
-
-    // Cap at available single capacity if provided (can't sell more than available)
+    // Cap at available single capacity, then round (matches sales-curve-chart.js logic)
+    let projectionValue = targetCompFinal + variance;
     if (availableSingleCapacity !== null && availableSingleCapacity > 0) {
-        projected = Math.min(projected, availableSingleCapacity);
+        projectionValue = Math.min(projectionValue, availableSingleCapacity);
     }
+    const projected = Math.round(projectionValue);
 
     return {
         projected: Math.max(0, projected), // Don't allow negative projections
