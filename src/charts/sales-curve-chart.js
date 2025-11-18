@@ -125,7 +125,8 @@ class SalesCurveChart {
 
         // Calculate weeks from today to performance
         const today = new Date();
-        const performanceDate = new Date(performance.date);
+        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
         console.log('📊 Single ticket sales:', currentSales, 'Subscription sales:', subscriptionSales, 'Weeks to performance:', weeksToPerformance);
@@ -447,7 +448,8 @@ class SalesCurveChart {
         const singleTicketsSold = performance.singleTicketsSold || 0;
 
         const today = new Date();
-        const performanceDate = new Date(performance.date);
+        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
 
         // Get target comp data
@@ -924,7 +926,8 @@ class SalesCurveChart {
 
         if (this.historicalData && this.historicalData.length > 0) {
             // Transform historical data EXACTLY the same way as overlayHistoricalData
-            const performanceDate = new Date(performance.date);
+            const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+            const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
             const parseDate = d3.timeParse('%Y-%m-%d');
 
             const historicalPoints = this.historicalData.map(snapshot => {
