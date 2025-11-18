@@ -1031,12 +1031,12 @@ class DataTable {
             .text('Performance Information');
 
         // Parse date without timezone shift
-        const [year, month, day] = performance.date.split('-');
-        const perfDate = new Date(year, month - 1, day);
+        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+        const perfDateForModal = new Date(perfYear, perfMonth - 1, perfDay);
 
         const leftInfoItems = [
             { label: 'Code', value: performance.code || performance.id || 'N/A' },
-            { label: 'Date', value: perfDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
+            { label: 'Date', value: perfDateForModal.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
             { label: 'Venue', value: performance.venue },
             { label: 'Series', value: performance.series },
             { label: 'Season', value: performance.season }
