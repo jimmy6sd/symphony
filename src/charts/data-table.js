@@ -967,16 +967,20 @@ class DataTable {
             .style('box-sizing', 'border-box');
 
         // Sales curve chart section - now the main content
-        modal.append('h3')
-            .style('margin-bottom', '15px')
-            .style('font-size', '1.1em')
-            .style('color', '#333')
+        chartSection.append('h3')
+            .style('grid-column', '1 / -1')
+            .style('font-size', '1.2em')
+            .style('margin-top', '20px')
+            .style('margin-bottom', '20px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #3498db')
+            .style('padding-bottom', '10px')
             .text('Single Ticket Sales Progression');
 
         const chartContainer = chartSection.append('div')
             .attr('id', 'modal-sales-chart')
             .style('width', '100%')
-            .style('height', '450px')
+            .style('height', '550px')
             .style('margin-bottom', '25px')
             .style('position', 'relative');
 
@@ -995,8 +999,8 @@ class DataTable {
         // Render chart in background (don't await)
         this.renderSalesChart(chartContainer, performance);
 
-        // Performance details - now below the chart
-        const detailsGrid = modal.append('div')
+        // Performance details - now below the chart (inside modalBody so it scrolls)
+        const detailsGrid = modalBody.append('div')
             .attr('class', 'performance-details sales-details-paired-grid')
             .style('width', '100%')
             .style('box-sizing', 'border-box')
@@ -1006,67 +1010,19 @@ class DataTable {
             .style('grid-template-columns', 'repeat(2, 1fr)')
             .style('gap', '20px');
 
-        // Sales Information header - spans both columns
-        detailsGrid.append('h3')
-            .style('grid-column', '1 / -1')
-            .style('font-size', '1.2em')
-            .style('margin-bottom', '20px')
-            .style('color', '#2c3e50')
-            .style('border-bottom', '2px solid #3498db')
-            .style('padding-bottom', '10px')
-            .text('Sales Progression Comparisons');
 
-        // Left column
-        const leftDetails = detailsGrid.append('div')
-            .style('background', '#f8f9fa')
-            .style('padding', '20px')
-            .style('border-radius', '8px');
-
-        leftDetails.append('h3')
-            .style('font-size', '1.1em')
-            .style('margin-bottom', '15px')
-            .style('color', '#2c3e50')
-            .style('border-bottom', '2px solid #3498db')
-            .style('padding-bottom', '8px')
-            .text('Performance Information');
-
-        // Parse date without timezone shift
-        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
-        const perfDateForModal = new Date(perfYear, perfMonth - 1, perfDay);
-
-        const leftInfoItems = [
-            { label: 'Code', value: performance.code || performance.id || 'N/A' },
-            { label: 'Date', value: perfDateForModal.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
-            { label: 'Venue', value: performance.venue },
-            { label: 'Series', value: performance.series },
-            { label: 'Season', value: performance.season }
-        ];
-
-        leftInfoItems.forEach(item => {
-            const row = leftDetails.append('div')
-                .style('display', 'flex')
-                .style('justify-content', 'space-between')
-                .style('padding', '8px 0')
-                .style('border-bottom', '1px solid #dee2e6');
-
-            row.append('span')
-                .style('font-weight', '600')
-                .style('color', '#495057')
-                .text(item.label + ':');
-
-            row.append('span')
-                .style('color', '#212529')
-                .text(item.value);
-        });
-
-        // Right column - Calculate derived values
+        // Single full-width column for sales information
         const rightDetails = detailsGrid.append('div')
+            .style('grid-column', '1 / -1')
             .style('background', '#f8f9fa')
             .style('padding', '20px')
             .style('border-radius', '8px');
 
         const totalTickets = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
         const occupancyRate = performance.capacity ? (totalTickets / performance.capacity * 100) : 0;
+
+        // Alias for backward compatibility with section creation code
+        const salesDetails = detailsGrid;
 
         rightDetails.append('h3')
             .style('font-size', '1.1em')

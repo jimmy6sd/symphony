@@ -1101,6 +1101,9 @@ class SalesCurveChart {
                     // Occupancy = (single + subscription) / total capacity
                     const occupancyPercent = capacity > 0 ? ((totalSeats / capacity) * 100).toFixed(1) : '0.0';
 
+                    // Get ATP for single tickets
+                    const atp = performance.single_atp || 0;
+
                     tooltip.html(`
                         <strong style="color: #3498db;">🎫 Current Sales</strong><br/>
                         ${weekLabel}<br/>
