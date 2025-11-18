@@ -1065,8 +1065,8 @@ class DataTable {
             .style('padding', '20px')
             .style('border-radius', '8px');
 
-        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
-        const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
+        const totalTickets = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
+        const occupancyRate = performance.capacity ? (totalTickets / performance.capacity * 100) : 0;
 
         rightDetails.append('h3')
             .style('font-size', '1.1em')
@@ -1187,7 +1187,7 @@ class DataTable {
 
         // === SECTION 4: OVERALL PERFORMANCE ===
         createSection(salesDetails, 'Overall Performance', [
-            { label: 'Total Tickets Sold', value: totalSold.toLocaleString(), isHighlight: true },
+            { label: 'Total Tickets Sold', value: totalTickets.toLocaleString(), isHighlight: true },
             { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
             { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
             { label: 'Blended ATP', value: performance.overall_atp > 0 ? '$' + performance.overall_atp.toFixed(2) : 'N/A' },
