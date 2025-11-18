@@ -1042,83 +1042,8 @@ class DataTable {
         const availableSingleTickets = performance.capacity - subscriptionSeats;
         const singleTicketsSold = performance.singleTicketsSold || 0;
 
-        // Fetch historical snapshots and calculate projection using the same logic as the chart
-        let projection = null;
-        try {
-            const snapshotResponse = await fetch(
-                `${window.location.origin}/.netlify/functions/bigquery-snapshots?action=get-performance-history&performanceCode=${performanceCode}`
-            );
-
-            if (snapshotResponse.ok) {
-                const apiResponse = await snapshotResponse.json();
-                const historicalData = apiResponse.snapshots || [];
-
-                if (historicalData.length > 0 && targetComp) {
-                    // Use exact same calculation as chart (lines 463-537 in sales-curve-chart.js)
-                    const parseDate = d3.timeParse('%Y-%m-%d');
-                    const performanceDate = parseDate(performance.date);
-
-                    const historicalPoints = historicalData.map(snapshot => {
-                        const snapshotDate = parseDate(snapshot.snapshot_date);
-                        const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
-                        const exactWeeksOut = daysOut / 7;
-                        return {
-                            week: Math.max(0, exactWeeksOut),
-                            tickets: snapshot.single_tickets_sold || 0
-                        };
-                    }).filter(d => d.week >= 0 && d.week <= 10)
-                      .sort((a, b) => b.week - a.week);
-
-                    if (historicalPoints.length > 0) {
-                        const lastPoint = historicalPoints[historicalPoints.length - 1];
-                        const actualWeek = lastPoint.week;
-                        const actualSales = lastPoint.tickets;
-
-                        // Calculate target comp value at actual week using interpolation (same as chart)
-                        const numWeeks = targetComp.weeksArray.length;
-                        const lowerWeek = Math.floor(actualWeek);
-                        const upperWeek = Math.ceil(actualWeek);
-                        const lowerWeekIndex = numWeeks - 1 - lowerWeek;
-                        const upperWeekIndex = numWeeks - 1 - upperWeek;
-
-                        if (lowerWeekIndex >= 0 && upperWeekIndex < numWeeks) {
-                            let targetCompSales;
-                            if (lowerWeek === upperWeek) {
-                                targetCompSales = targetComp.weeksArray[lowerWeekIndex];
-                            } else {
-                                const lowerValue = targetComp.weeksArray[lowerWeekIndex];
-                                const upperValue = targetComp.weeksArray[upperWeekIndex];
-                                const fraction = actualWeek - lowerWeek;
-                                targetCompSales = lowerValue + (upperValue - lowerValue) * fraction;
-                            }
-
-                            // Calculate variance and projection (same as chart line 537)
-                            const variance = actualSales - targetCompSales;
-                            const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
-                            const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleTickets));
-
-                            projection = {
-                                projected: projectedFinal,
-                                variance: Math.round(variance),
-                                targetCompCurrent: Math.round(targetCompSales),
-                                targetCompFinal,
-                                weeksUntil: actualWeek,
-                                canProject: true,
-                                comparisonName: targetComp.comparison_name || 'Target Comp',
-                                confidence: 'high'
-                            };
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.warn('Error fetching historical snapshots for projection:', error);
-        }
-
-        // Fallback to comp-based projection if snapshot calculation didn't work
-        if (!projection) {
-            projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp, availableSingleTickets);
-        }
+        // Calculate sales projections using comp-based method
+        const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp, availableSingleTickets);
 
         // Helper function to create a section
         const createSection = (container, title, items, options = {}) => {
@@ -1679,37 +1604,6 @@ class DataTable {
 
 // Patch for data-table.js - add after line 1211
 
-    /**
-     * Calculate the actual week to use for projection based on historical data
-     * This ensures chart and table projections use the same week value
-     */
-    calculateActualWeekFromHistoricalData(historicalData, performanceDate) {
-        if (!historicalData || historicalData.length === 0) {
-            return null; // No historical data, use today's date instead
-        }
-
-        const parseDate = d3.timeParse('%Y-%m-%d');
-        const perfDate = parseDate(performanceDate);
-
-        const historicalPoints = historicalData.map(snapshot => {
-            const snapshotDate = parseDate(snapshot.snapshot_date);
-            const daysOut = (perfDate - snapshotDate) / (24 * 60 * 60 * 1000);
-            const exactWeeksOut = daysOut / 7;
-            return {
-                week: Math.max(0, exactWeeksOut),
-                tickets: snapshot.single_tickets_sold || 0
-            };
-        }).filter(d => d.week >= 0 && d.week <= 10)
-          .sort((a, b) => b.week - a.week);
-
-        if (historicalPoints.length > 0) {
-            const lastPoint = historicalPoints[historicalPoints.length - 1];
-            return lastPoint.week;
-        }
-
-        return null;
-    }
-
     async renderSalesChart(container, performance) {
         // Get historical snapshots for this performance (lazy-loaded on demand)
         // Note: performance.id contains the performance_code from BigQuery
@@ -1753,12 +1647,6 @@ class DataTable {
             } catch (error) {
                 console.warn('⚠️ Error fetching historical data:', error.message);
             }
-        }
-
-        // Store the actual week for use in projection calculations
-        const actualWeek = this.calculateActualWeekFromHistoricalData(historicalData, performance.date);
-        if (actualWeek !== null) {
-            performance._projectionWeek = actualWeek;
         }
 
         // Always use the standard sales curve chart (weeks-out view)
