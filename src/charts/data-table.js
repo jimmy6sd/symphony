@@ -115,7 +115,7 @@ class DataTable {
                 type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
 
                     // For group rows, aggregate W/W from child performances
                     if (row.isGroup && row.performances) {
@@ -156,18 +156,10 @@ class DataTable {
                 type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
-                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
                     const capacity = row.capacity || 0;
                     if (capacity === 0) return 'N/A';
                     const rate = (total / capacity * 100);
-
-                    console.log('🏟️ Occupancy formatter:', {
-                        isGroup: row.isGroup,
-                        performanceCode: row.performanceCode,
-                        wow: row._weekOverWeek,
-                        capacity,
-                        rate: rate.toFixed(1)
-                    });
 
                     // For group rows, aggregate W/W from child performances
                     if (row.isGroup && row.performances) {
@@ -316,7 +308,7 @@ class DataTable {
                 align: 'center',
                 hidden: true,
                 formatter: (value, row) => {
-                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+                    const currentSales = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
                     const capacity = row.capacity || 2000;
                     const occupancyGoal = row.occupancyGoal || 85; // Use actual occupancy goal from data
                     const targetSales = Math.floor(capacity * (occupancyGoal / 100));
@@ -975,15 +967,11 @@ class DataTable {
             .style('box-sizing', 'border-box');
 
         // Sales curve chart section - now the main content
-        chartSection.append('h3')
-            .style('font-size', '1.2em')
-            .style('margin-top', '25px')
-            .style('margin-bottom', '20px')
-            .style('color', '#2c3e50')
-            .style('border-bottom', '3px solid #3498db')
-            .style('padding-bottom', '10px')
-            .style('display', 'inline-block')
-            .text('Sales Progression Analysis');
+        modal.append('h3')
+            .style('margin-bottom', '15px')
+            .style('font-size', '1.1em')
+            .style('color', '#333')
+            .text('Single Ticket Sales Progression');
 
         const chartContainer = chartSection.append('div')
             .attr('id', 'modal-sales-chart')
@@ -1007,13 +995,8 @@ class DataTable {
         // Render chart in background (don't await)
         this.renderSalesChart(chartContainer, performance);
 
-        // Sales Information wrapper - no padding (modalBody handles it)
-        const salesWrapper = modalBody.append('div')
-            .style('width', '100%')
-            .style('box-sizing', 'border-box');
-
-        // Sales Information - full width section below chart
-        const detailsContainer = salesWrapper.append('div')
+        // Performance details - now below the chart
+        const detailsGrid = modal.append('div')
             .attr('class', 'performance-details sales-details-paired-grid')
             .style('width', '100%')
             .style('box-sizing', 'border-box')
@@ -1023,20 +1006,74 @@ class DataTable {
             .style('grid-template-columns', 'repeat(2, 1fr)')
             .style('gap', '20px');
 
-        // Sales Information section - sections will be grid items
-        const salesDetails = detailsContainer;
-
-        // Use totalSold already calculated in header section
-        const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
-
-        salesDetails.append('h3')
-            .style('grid-column', '1 / -1')  // Span both columns
+        // Sales Information header - spans both columns
+        detailsGrid.append('h3')
+            .style('grid-column', '1 / -1')
             .style('font-size', '1.2em')
             .style('margin-bottom', '20px')
             .style('color', '#2c3e50')
-            .style('border-bottom', '3px solid #27ae60')
+            .style('border-bottom', '2px solid #3498db')
             .style('padding-bottom', '10px')
-            .style('display', 'inline-block')
+            .text('Sales Progression Comparisons');
+
+        // Left column
+        const leftDetails = detailsGrid.append('div')
+            .style('background', '#f8f9fa')
+            .style('padding', '20px')
+            .style('border-radius', '8px');
+
+        leftDetails.append('h3')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #3498db')
+            .style('padding-bottom', '8px')
+            .text('Performance Information');
+
+        // Parse date without timezone shift
+        const [year, month, day] = performance.date.split('-');
+        const perfDate = new Date(year, month - 1, day);
+
+        const leftInfoItems = [
+            { label: 'Code', value: performance.code || performance.id || 'N/A' },
+            { label: 'Date', value: perfDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) },
+            { label: 'Venue', value: performance.venue },
+            { label: 'Series', value: performance.series },
+            { label: 'Season', value: performance.season }
+        ];
+
+        leftInfoItems.forEach(item => {
+            const row = leftDetails.append('div')
+                .style('display', 'flex')
+                .style('justify-content', 'space-between')
+                .style('padding', '8px 0')
+                .style('border-bottom', '1px solid #dee2e6');
+
+            row.append('span')
+                .style('font-weight', '600')
+                .style('color', '#495057')
+                .text(item.label + ':');
+
+            row.append('span')
+                .style('color', '#212529')
+                .text(item.value);
+        });
+
+        // Right column - Calculate derived values
+        const rightDetails = detailsGrid.append('div')
+            .style('background', '#f8f9fa')
+            .style('padding', '20px')
+            .style('border-radius', '8px');
+
+        const totalSold = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
+        const occupancyRate = performance.capacity ? (totalSold / performance.capacity * 100) : 0;
+
+        rightDetails.append('h3')
+            .style('font-size', '1.1em')
+            .style('margin-bottom', '15px')
+            .style('color', '#2c3e50')
+            .style('border-bottom', '2px solid #27ae60')
+            .style('padding-bottom', '8px')
             .text('Sales Information');
 
         // Get target comp data for comp-based projection
@@ -2339,7 +2376,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
     generateSparklineData(performance) {
         // Create a simplified version of the sales progression
-        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0);
+        const currentSales = (performance.singleTicketsSold || 0) + (performance.subscriptionTicketsSold || 0) + (performance.nonFixedTicketsSold || 0);
         const capacity = performance.capacity || 2000;
         const targetSales = capacity * 0.85; // 85% occupancy goal
 
@@ -2407,10 +2444,10 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
     getCellValue(row, key) {
         if (key === 'totalSold') {
-            return (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+            return (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
         }
         if (key === 'occupancyRate') {
-            const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0);
+            const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
             const capacity = row.capacity || 0;
             return capacity > 0 ? (total / capacity * 100) : 0;
         }

@@ -24,9 +24,10 @@ const SALES_PACING_TABLE = {
 /**
  * Calculate weeks until performance from today
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
- * @returns {number} Weeks until performance (rounded)
+ * @param {boolean} exact - If true, return exact decimal weeks; if false, return rounded up integer
+ * @returns {number} Weeks until performance
  */
-function calculateWeeksUntilPerformance(performanceDate) {
+function calculateWeeksUntilPerformance(performanceDate, exact = false) {
     // Parse date without timezone shift
     const [year, month, day] = performanceDate.split('-');
     const perfDate = new Date(year, month - 1, day);
@@ -37,8 +38,14 @@ function calculateWeeksUntilPerformance(performanceDate) {
     perfDate.setHours(0, 0, 0, 0);
 
     const daysUntil = Math.ceil((perfDate - today) / (1000 * 60 * 60 * 24));
-    const weeksUntil = Math.ceil(daysUntil / 7);
 
+    if (exact) {
+        // Return exact decimal weeks for interpolation
+        return Math.max(0, daysUntil / 7);
+    }
+
+    // Return rounded up integer weeks (legacy behavior)
+    const weeksUntil = Math.ceil(daysUntil / 7);
     return weeksUntil;
 }
 
@@ -145,13 +152,15 @@ function formatProjectionText(projection) {
 
 /**
  * Calculate projected final sales based on target comp variance
+ * Uses interpolation for accurate projections at fractional weeks
  * @param {number} currentSingleTicketsSold - Current single tickets sold
  * @param {string} performanceDate - Date string in YYYY-MM-DD format
  * @param {Object} targetComp - Target comparison object from API (with weeksArray)
  * @returns {Object} Projection data with comp-based logic
  */
 function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate, targetComp, availableSingleCapacity = null) {
-    const weeksUntil = calculateWeeksUntilPerformance(performanceDate);
+    // Use exact decimal weeks for interpolation (matches tracking status box logic)
+    const exactWeeksUntil = calculateWeeksUntilPerformance(performanceDate, true);
 
     // Can't project if no target comp or no sales
     if (!targetComp || !targetComp.weeksArray || currentSingleTicketsSold === 0) {
@@ -160,37 +169,53 @@ function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate,
             variance: null,
             targetCompCurrent: null,
             targetCompFinal: null,
-            weeksUntil,
+            weeksUntil: exactWeeksUntil,
             canProject: false,
             reason: !targetComp ? 'no_target_comp' : 'no_sales'
         };
     }
 
     const numWeeks = targetComp.weeksArray.length;
-    const weekIndex = numWeeks - 1 - weeksUntil; // Map weeks to array index
+
+    // Calculate interpolated target comp value at exact week position
+    const lowerWeek = Math.floor(exactWeeksUntil);
+    const upperWeek = Math.ceil(exactWeeksUntil);
+    const lowerWeekIndex = numWeeks - 1 - lowerWeek;
+    const upperWeekIndex = numWeeks - 1 - upperWeek;
 
     // Check if current week is within comp data range
-    if (weekIndex < 0 || weekIndex >= numWeeks) {
+    if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
         return {
             projected: null,
             variance: null,
             targetCompCurrent: null,
             targetCompFinal: null,
-            weeksUntil,
+            weeksUntil: exactWeeksUntil,
             canProject: false,
             reason: 'week_out_of_range'
         };
     }
 
-    // Get target comp data
-    const targetCompCurrent = targetComp.weeksArray[weekIndex]; // Comp sales at this week
+    // Calculate interpolated target comp value at exact week
+    let targetCompCurrent;
+    if (lowerWeek === upperWeek) {
+        // Exact integer week, use direct value
+        targetCompCurrent = targetComp.weeksArray[lowerWeekIndex];
+    } else {
+        // Interpolate between the two surrounding weeks
+        const lowerValue = targetComp.weeksArray[lowerWeekIndex];
+        const upperValue = targetComp.weeksArray[upperWeekIndex];
+        const fraction = exactWeeksUntil - lowerWeek;
+        targetCompCurrent = lowerValue + (upperValue - lowerValue) * fraction;
+    }
+
     const targetCompFinal = targetComp.weeksArray[numWeeks - 1]; // Comp final sales (last value)
 
     // Calculate variance (how far ahead/behind we are)
     const variance = currentSingleTicketsSold - targetCompCurrent;
 
     // Project final sales: target comp final + our current variance
-    let projected = targetCompFinal + variance;
+    let projected = Math.round(targetCompFinal + variance);
 
     // Cap at available single capacity if provided (can't sell more than available)
     if (availableSingleCapacity !== null && availableSingleCapacity > 0) {
@@ -199,13 +224,13 @@ function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate,
 
     return {
         projected: Math.max(0, projected), // Don't allow negative projections
-        variance,
-        targetCompCurrent,
+        variance: Math.round(variance),
+        targetCompCurrent: Math.round(targetCompCurrent),
         targetCompFinal,
-        weeksUntil,
+        weeksUntil: exactWeeksUntil,
         canProject: true,
         comparisonName: targetComp.comparison_name || 'Target Comp',
-        confidence: getProjectionConfidence(weeksUntil)
+        confidence: getProjectionConfidence(Math.ceil(exactWeeksUntil))
     };
 }
 
@@ -228,9 +253,10 @@ function formatCompProjectionText(projection) {
         return 'Cannot project';
     }
 
-    const weeksText = projection.weeksUntil === 0 ? 'today' :
-                      projection.weeksUntil === 1 ? '1 week out' :
-                      `${projection.weeksUntil} weeks out`;
+    const roundedWeeks = Math.ceil(projection.weeksUntil);
+    const weeksText = roundedWeeks === 0 ? 'today' :
+                      roundedWeeks === 1 ? '1 week out' :
+                      `${roundedWeeks} weeks out`;
 
     const varianceText = projection.variance > 0 ?
         `${projection.variance.toLocaleString()} ahead` :

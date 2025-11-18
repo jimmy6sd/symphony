@@ -528,16 +528,14 @@ class SalesCurveChart {
 
         // Calculate current and projected metrics
         const capacity = performance.capacity || 0;
-        const currentOcc = capacity > 0 ? (singleTicketsSold / capacity * 100).toFixed(1) : 0;
-        const currentRevenue = performance.totalRevenue || 0;
+        const currentSingleRevenue = performance.singleTicketRevenue || 0;
 
         // Calculate projected final metrics
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
         const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity)); // Cap at available singles and round to whole tickets
-        const projectedOcc = capacity > 0 ? (projectedFinal / capacity * 100).toFixed(1) : 0;
-        const avgTicketPrice = singleTicketsSold > 0 ? currentRevenue / singleTicketsSold : 0;
+        const avgTicketPrice = singleTicketsSold > 0 ? currentSingleRevenue / singleTicketsSold : 0;
         const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
 
         const statusGroup = chartGroup.append("g")
@@ -624,7 +622,7 @@ class SalesCurveChart {
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`${currentOcc}% • $${(currentRevenue / 1000).toFixed(0)}k`);
+            .text(`$${(currentSingleRevenue / 1000).toFixed(0)}k`);
 
         // Divider line
         statusGroup.append("line")
@@ -660,7 +658,7 @@ class SalesCurveChart {
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`${projectedOcc}% • $${(projectedRevenue / 1000).toFixed(0)}k`);
+            .text(`$${(projectedRevenue / 1000).toFixed(0)}k`);
 
         // Projection basis note
         statusGroup.append("text")
@@ -1085,7 +1083,9 @@ class SalesCurveChart {
 
                 if (isCurrentPoint) {
                     // Show actual sales data for current point (from historical snapshot or current)
-                    const totalTickets = actualSales;
+                    const singleTickets = actualSales;
+                    const subscriptionTickets = performance.subscriptionTicketsSold || 0;
+                    const totalSeats = singleTickets + subscriptionTickets;
 
                     // Ensure we handle both string and number types properly
                     const capacityValue = typeof performance.capacity === 'string'
@@ -1098,34 +1098,13 @@ class SalesCurveChart {
                         : (performance.totalRevenue || 0);
                     const revenue = revenueValue > 0 ? revenueValue : 0;
 
-                    const occupancyPercent = capacity > 0 ? ((totalTickets / capacity) * 100).toFixed(1) : '0.0';
-
-                    // Use single ticket ATP from BigQuery (should always be present)
-                    const atp = performance.single_atp || 0;
-
-                    // Log warning if ATP is missing (this should never happen)
-                    if (atp === 0 && totalTickets > 0) {
-                        console.error('⚠️ Missing single_atp for performance:', performance.performanceCode);
-                    }
-
-                    // Debug logging
-                    console.log('🔍 Tooltip debug:', {
-                        totalTickets,
-                        capacityRaw: performance.capacity,
-                        capacityType: typeof performance.capacity,
-                        capacityParsed: capacity,
-                        revenueRaw: performance.totalRevenue,
-                        revenueType: typeof performance.totalRevenue,
-                        revenueParsed: revenue,
-                        occupancyPercent,
-                        atp,
-                        performanceObject: performance
-                    });
+                    // Occupancy = (single + subscription) / total capacity
+                    const occupancyPercent = capacity > 0 ? ((totalSeats / capacity) * 100).toFixed(1) : '0.0';
 
                     tooltip.html(`
                         <strong style="color: #3498db;">🎫 Current Sales</strong><br/>
                         ${weekLabel}<br/>
-                        Tickets Sold: ${totalTickets.toLocaleString()}<br/>
+                        Single Tickets: ${singleTickets.toLocaleString()}<br/>
                         Occupancy: ${occupancyPercent}%<br/>
                         Single Ticket ATP: $${atp.toFixed(2)}<br/>
                         Revenue: $${revenue.toLocaleString()}<br/>
@@ -1133,19 +1112,23 @@ class SalesCurveChart {
                     `);
                 } else {
                     // Show projected data for future points with occupancy and estimated revenue
-                    const projectedTickets = Math.round(d.projectedSales);
+                    const projectedSingleTickets = Math.round(d.projectedSales);
+                    const subscriptionTickets = performance.subscriptionTicketsSold || 0;
+                    const projectedTotalSeats = projectedSingleTickets + subscriptionTickets;
                     const capacity = parseFloat(performance.capacity) || 0;
-                    const projectedOccupancy = capacity > 0 ? ((projectedTickets / capacity) * 100).toFixed(1) : '0.0';
+
+                    // Occupancy = (projected single + subscription) / total capacity
+                    const projectedOccupancy = capacity > 0 ? ((projectedTotalSeats / capacity) * 100).toFixed(1) : '0.0';
 
                     // Estimate revenue based on current average ticket price
                     const currentRevenue = parseFloat(performance.totalRevenue) || 0;
                     const avgTicketPrice = actualSales > 0 ? currentRevenue / actualSales : 0;
-                    const projectedRevenue = Math.round(projectedTickets * avgTicketPrice);
+                    const projectedRevenue = Math.round(projectedSingleTickets * avgTicketPrice);
 
                     tooltip.html(`
                         <strong style="color: #2ecc71;">📈 Projected Sales</strong><br/>
                         ${weekLabel}<br/>
-                        Projected: ${projectedTickets.toLocaleString()} tickets<br/>
+                        Projected Singles: ${projectedSingleTickets.toLocaleString()}<br/>
                         Occupancy: ${projectedOccupancy}%<br/>
                         Est. Revenue: $${projectedRevenue.toLocaleString()}<br/>
                         <em style="font-size: 10px;">Based on maintaining current ${variance >= 0 ? '+' : ''}${variance.toLocaleString()} ticket variance</em>
