@@ -914,9 +914,20 @@ class SalesCurveChart {
     }
 
     async renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons, availableSingleCapacity) {
-        // Only render projection if we have a target comp and we're not at performance date
-        if (!comparisons || comparisons.length === 0 || weeksToPerformance === 0) {
+        // Only render projection if we have a target comp and performance is in the future
+        if (!comparisons || comparisons.length === 0 || weeksToPerformance <= 0) {
             return;
+        }
+
+        // Also check actual performance date to ensure we don't project for past performances
+        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        performanceDate.setHours(0, 0, 0, 0);
+
+        if (performanceDate < today) {
+            return; // Don't show projection for past performances
         }
 
         const targetComp = comparisons.find(c => c.is_target === true);
@@ -930,9 +941,9 @@ class SalesCurveChart {
         let actualWeek, actualSales;
 
         if (this.historicalData && this.historicalData.length > 0) {
-            // Transform historical data EXACTLY the same way as overlayHistoricalData
-            const [perfYear, perfMonth, perfDay] = performance.date.split('-');
-            const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
+            // Transform historical data EXACTLY the same way as data-table.js overlayHistoricalData
+            const performanceDate = new Date(performance.date);
+            performanceDate.setHours(0, 0, 0, 0);
             const parseDate = d3.timeParse('%Y-%m-%d');
 
             const historicalPoints = this.historicalData.map(snapshot => {
@@ -941,6 +952,7 @@ class SalesCurveChart {
                 const exactWeeksOut = daysOut / 7;
                 return {
                     week: Math.max(0, exactWeeksOut),
+                    daysOut: Math.max(0, daysOut),  // Store days for tooltip display
                     tickets: snapshot.single_tickets_sold || 0,
                     snapshot_date: snapshot.snapshot_date
                 };
@@ -950,12 +962,16 @@ class SalesCurveChart {
             if (historicalPoints.length > 0) {
                 // Get the LAST element (most recent snapshot = smallest week number)
                 const lastPoint = historicalPoints[historicalPoints.length - 1];
+
+                // Use the last snapshot's week position so projection connects to last blue dot
                 actualWeek = lastPoint.week;
                 actualSales = lastPoint.tickets;
+                var actualDaysOut = lastPoint.daysOut;  // Store for tooltip display
 
                 console.log('📈 Using historical endpoint for projection:');
                 console.log('   Last snapshot date:', lastPoint.snapshot_date);
                 console.log('   Exact weeks out:', actualWeek.toFixed(2));
+                console.log('   Days out:', actualDaysOut);
                 console.log('   Actual sales from snapshot:', actualSales);
             } else {
                 // No valid historical points
@@ -1082,7 +1098,17 @@ class SalesCurveChart {
                 const tooltip = d3.select(".sales-curve-tooltip");
                 if (tooltip.empty()) return;
 
-                const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
+                // Show days if less than 1 week, otherwise show weeks
+                let weekLabel;
+                if (d.week === 0) {
+                    weekLabel = 'Performance Day';
+                } else if (d.week < 1) {
+                    const days = Math.round(d.week * 7);
+                    weekLabel = `${days} day${days !== 1 ? 's' : ''} before performance`;
+                } else {
+                    const weeks = Math.round(d.week);
+                    weekLabel = `${weeks} week${weeks !== 1 ? 's' : ''} before`;
+                }
 
                 // Check if this is the current sales point (first point in projection)
                 // Use actualWeek which may be decimal (from historical data)

@@ -2002,9 +2002,13 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
     // Parse performance date to calculate weeks
     const performanceDate = new Date(performance.date);
     const parseDate = d3.timeParse('%Y-%m-%d');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    performanceDate.setHours(0, 0, 0, 0);
+    const isPastPerformance = performanceDate < today;
 
     // Transform historical data to exact days-out format (not rounded to weeks)
-    const historicalPoints = historicalData.map(snapshot => {
+    let historicalPoints = historicalData.map(snapshot => {
         const snapshotDate = parseDate(snapshot.snapshot_date);
         const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
         const exactWeeksOut = daysOut / 7; // Precise decimal weeks (e.g., 4.3 weeks)
@@ -2017,10 +2021,36 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             occupancy: snapshot.capacity_percent || 0,   // Occupancy percentage
             single_atp: snapshot.single_atp || 0,        // Single ticket ATP from BigQuery
             date: snapshotDate,
-            snapshot_date: snapshot.snapshot_date
+            snapshot_date: snapshot.snapshot_date,
+            isPostPerformance: daysOut < 0  // Flag snapshots taken after performance
         };
     }).filter(d => d.week >= 0 && d.week <= maxWeeks) // Use actual maxWeeks from chart
       .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
+
+    // For past performances: consolidate post-performance snapshots to week 0
+    // Use the most recent snapshot's data (most accurate final numbers)
+    if (isPastPerformance && historicalPoints.length > 0) {
+        // Find all snapshots at week 0 (including post-performance ones)
+        const week0Points = historicalPoints.filter(d => d.week === 0);
+        const otherPoints = historicalPoints.filter(d => d.week > 0);
+
+        if (week0Points.length > 1) {
+            // Multiple points at week 0 - keep only the one with the latest snapshot date
+            // (this will have the most accurate final sales data)
+            const latestWeek0 = week0Points.reduce((latest, current) => {
+                const latestDate = new Date(latest.snapshot_date);
+                const currentDate = new Date(current.snapshot_date);
+                return currentDate > latestDate ? current : latest;
+            });
+
+            // Update to show performance date instead of snapshot date
+            latestWeek0.daysOut = 0;
+            latestWeek0.date = performanceDate;
+            latestWeek0.snapshot_date = performance.date; // Use performance date for display
+
+            historicalPoints = [...otherPoints, latestWeek0].sort((a, b) => b.week - a.week);
+        }
+    }
 
     console.log('📊 Historical points to overlay:', historicalPoints);
 
