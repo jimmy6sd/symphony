@@ -2585,7 +2585,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             const totalCapacity = perfs.reduce((sum, p) => sum + (p.capacity || 0), 0);
             const totalSingleTickets = perfs.reduce((sum, p) => sum + (p.singleTicketsSold || 0), 0);
             const totalSubscriptionTickets = perfs.reduce((sum, p) => sum + (p.subscriptionTicketsSold || 0), 0);
-            const totalTickets = totalSingleTickets + totalSubscriptionTickets;
+            const totalNonFixedTickets = perfs.reduce((sum, p) => sum + (p.nonFixedTicketsSold || 0), 0);
+            const totalTickets = totalSingleTickets + totalSubscriptionTickets + totalNonFixedTickets;
             const totalRevenue = perfs.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
             const totalBudget = perfs.reduce((sum, p) => sum + (p.budgetGoal || 0), 0);
 
@@ -2607,6 +2608,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 capacity: totalCapacity,
                 singleTicketsSold: totalSingleTickets,
                 subscriptionTicketsSold: totalSubscriptionTickets,
+                nonFixedTicketsSold: totalNonFixedTickets,
                 totalRevenue: totalRevenue,
                 budgetGoal: totalBudget,
                 occupancyGoal: firstPerf.occupancyGoal || 85,
