@@ -860,20 +860,25 @@ class SalesCurveChart {
                 const weekLabel = d.week === 0 ? 'Performance Day' : `${d.week} week${d.week > 1 ? 's' : ''} before`;
                 const targetBadge = comparison.is_target ? '<span style="color: gold; font-weight: bold;">★ TARGET COMP</span><br/>' : '';
 
-                // Calculate occupancy % if capacity is available
+                // Show stored occupancy % and subscription info if available
+                // Only show metadata at performance day (week 0) since that's the final data
                 let occupancyLine = '';
-                if (comparison.capacity && comparison.capacity > 0) {
-                    const occupancy = ((d.sales / comparison.capacity) * 100).toFixed(1);
-                    occupancyLine = `Occupancy: ${occupancy}%<br/>`;
-                }
-
-                // Calculate revenue and show ATP if available
                 let atpLine = '';
                 let revenueLine = '';
-                if (comparison.atp && comparison.atp > 0) {
-                    atpLine = `Blended ATP: $${comparison.atp.toFixed(2)}<br/>`;
-                    const revenue = d.sales * comparison.atp;
-                    revenueLine = `Revenue: $${revenue.toLocaleString()}<br/>`;
+
+                if (d.week === 0) {
+                    if (comparison.occupancy_percent && comparison.occupancy_percent > 0) {
+                        occupancyLine = `Occupancy: ${comparison.occupancy_percent}%<br/>`;
+                    }
+
+                    if (comparison.atp && comparison.atp > 0) {
+                        atpLine = `Blended ATP: $${comparison.atp.toFixed(2)}<br/>`;
+                        // Calculate total revenue including subscriptions
+                        const subs = comparison.subs || 0;
+                        const totalTickets = d.sales + subs;
+                        const revenue = totalTickets * comparison.atp;
+                        revenueLine = `Revenue: $${revenue.toLocaleString()}<br/>`;
+                    }
                 }
 
                 // Build tooltip with metadata
