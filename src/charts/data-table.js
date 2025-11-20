@@ -2739,7 +2739,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 totalRevenue: totalRevenue,
                 budgetGoal: totalBudget,
                 occupancyGoal: firstPerf.occupancyGoal || 85,
-                performanceCount: count
+                performanceCount: count,
+                _projection: firstPerf._projection // Preserve projection from first performance
             });
         });
 
