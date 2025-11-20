@@ -411,7 +411,7 @@ class DataTable {
         if (weeksToPerformance === 0) return null;
 
         // Get target comp data from BigQuery (same as sales curve chart)
-        const performanceCode = row.code || row.performanceId;
+        const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
         const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         const targetComp = comparisons?.find(c => c.is_target === true);
 
@@ -553,16 +553,23 @@ class DataTable {
     }
 
     async enrichWithProjections() {
+        console.log('📊 Calculating projections for', this.data.length, 'performances...');
         // Calculate projections for all performances in parallel
-        const projectionPromises = this.data.map(async (perf) => {
+        const projectionPromises = this.data.map(async (perf, index) => {
             try {
                 perf._projection = await this.calculateProjection(perf);
+                if (index === 0 && perf._projection) {
+                    console.log('✅ Sample projection for', perf.title, ':', perf._projection);
+                }
             } catch (error) {
+                console.error('❌ Projection error for', perf.title, ':', error.message);
                 perf._projection = null;
             }
         });
 
         await Promise.all(projectionPromises);
+        const successCount = this.data.filter(p => p._projection !== null).length;
+        console.log(`✅ Calculated ${successCount}/${this.data.length} projections successfully`);
     }
 
     async fetchWeekOverWeekData() {
