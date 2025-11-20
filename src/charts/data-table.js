@@ -423,8 +423,7 @@ class DataTable {
         const capacity = row.capacity || 0;
         const subscriptionSeats = row.subscriptionTicketsSold || 0;
         const singleTicketsSold = row.singleTicketsSold || 0;
-        const nonFixedTicketsSold = row.nonFixedTicketsSold || 0;
-        const currentSingleSales = singleTicketsSold + nonFixedTicketsSold;
+        const currentSingleSales = singleTicketsSold;
 
         if (capacity === 0) return null;
 
@@ -468,14 +467,14 @@ class DataTable {
         const targetFinalTotal = targetCompFinal + subscriptionSeats;
 
         // Calculate revenue projections
-        const currentSingleRevenue = row.singleTicketRevenue || 0;
-        const avgSingleTicketPrice = currentSingleSales > 0 ? currentSingleRevenue / currentSingleSales : 0;
-        const projectedSingleRevenue = Math.round(projectedFinalSingles * avgSingleTicketPrice);
+        // Use current total revenue and total tickets to get avg price
+        const currentTotalTickets = currentSingleSales + subscriptionSeats;
+        const currentTotalRevenue = row.totalRevenue || 0;
+        const avgTicketPrice = currentTotalTickets > 0 ? currentTotalRevenue / currentTotalTickets : 0;
 
-        // Add subscription revenue for total
-        const subscriptionRevenue = row.subscriptionTicketRevenue || 0;
-        const projectedRevenue = projectedSingleRevenue + subscriptionRevenue;
-        const targetRevenue = Math.round(targetCompFinal * avgSingleTicketPrice) + subscriptionRevenue;
+        // Project revenue based on projected total tickets
+        const projectedRevenue = Math.round(projectedFinalTotal * avgTicketPrice);
+        const targetRevenue = Math.round(targetFinalTotal * avgTicketPrice);
 
         return {
             projectedTickets: projectedFinalTotal,
