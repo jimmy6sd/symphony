@@ -277,8 +277,33 @@ class DataTable {
                 }
             },
             {
+                key: 'budgetPerformance',
+                label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
+                sortable: true,
+                type: 'number',
+                align: 'center',
+                formatter: (value, row) => {
+                    const revenue = Math.round(row.totalRevenue || 0);
+                    const goal = Math.round(row.budgetGoal || 0);
+                    if (goal === 0) return 'No Goal';
+
+                    const difference = revenue - goal;
+                    const percentage = (revenue / goal * 100);
+                    const status = percentage >= 100 ? 'good' : percentage >= 90 ? 'warning' : 'poor';
+                    const differenceSign = difference >= 0 ? '+' : '-';
+                    const differenceFormatted = `${differenceSign}$${Math.abs(difference).toLocaleString()}`;
+
+                    return `
+                        <div class="budget-cell">
+                            <div class="budget-goal">$${goal.toLocaleString()}</div>
+                            <div class="budget-performance budget-${status}">${differenceFormatted}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
                 key: 'projectedTickets',
-                label: '<div style="text-align: center;">Projected Tickets<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Pace)</span></div>',
+                label: '<div style="text-align: center;">Projected Tickets<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Comp)</span></div>',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -302,7 +327,7 @@ class DataTable {
             },
             {
                 key: 'projectedRevenue',
-                label: '<div style="text-align: center;">Projected Revenue<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Pace)</span></div>',
+                label: '<div style="text-align: center;">Projected Revenue<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Comp)</span></div>',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -320,31 +345,6 @@ class DataTable {
                         <div class="projection-cell">
                             <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
                             <div class="projection-variance projection-${status}">${varianceSign}$${Math.abs(variance).toLocaleString()}</div>
-                        </div>
-                    `;
-                }
-            },
-            {
-                key: 'budgetPerformance',
-                label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
-                sortable: true,
-                type: 'number',
-                align: 'center',
-                formatter: (value, row) => {
-                    const revenue = Math.round(row.totalRevenue || 0);
-                    const goal = Math.round(row.budgetGoal || 0);
-                    if (goal === 0) return 'No Goal';
-
-                    const difference = revenue - goal;
-                    const percentage = (revenue / goal * 100);
-                    const status = percentage >= 100 ? 'good' : percentage >= 90 ? 'warning' : 'poor';
-                    const differenceSign = difference >= 0 ? '+' : '-';
-                    const differenceFormatted = `${differenceSign}$${Math.abs(difference).toLocaleString()}`;
-
-                    return `
-                        <div class="budget-cell">
-                            <div class="budget-goal">$${goal.toLocaleString()}</div>
-                            <div class="budget-performance budget-${status}">${differenceFormatted}</div>
                         </div>
                     `;
                 }
