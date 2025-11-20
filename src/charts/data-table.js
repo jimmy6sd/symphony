@@ -440,12 +440,13 @@ class DataTable {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
-            return { projection: null, reason: `week_out_of_range (weeks: ${weeksToPerformance}, numWeeks: ${numWeeks})` };
-        }
-
         let targetCompAtActualWeek;
-        if (lowerWeek === upperWeek) {
+
+        // Handle cases where performance is further out than target comp has data for
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
+            // Use the earliest week's data (index 0) as baseline for far-out performances
+            targetCompAtActualWeek = targetComp.weeksArray[0];
+        } else if (lowerWeek === upperWeek) {
             targetCompAtActualWeek = targetComp.weeksArray[lowerWeekIndex];
         } else {
             const lowerValue = targetComp.weeksArray[lowerWeekIndex];
