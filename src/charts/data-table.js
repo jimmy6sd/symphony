@@ -68,6 +68,7 @@ class DataTable {
                 label: 'Production',
                 sortable: true,
                 type: 'string',
+                hidden: true,
                 formatter: (value) => {
                     if (!value || value === 'N/A') return '<span class="series-cell series-other">N/A</span>';
 
@@ -276,6 +277,54 @@ class DataTable {
                 }
             },
             {
+                key: 'projectedTickets',
+                label: '<div style="text-align: center;">Projected Tickets<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Pace)</span></div>',
+                sortable: true,
+                type: 'number',
+                align: 'center',
+                formatter: (value, row) => {
+                    const projection = this.calculateProjection(row);
+                    if (!projection) return 'N/A';
+
+                    const projectedTickets = Math.round(projection.projectedTickets);
+                    const targetTickets = Math.round(projection.targetTickets);
+                    const variance = projectedTickets - targetTickets;
+                    const status = variance >= 0 ? 'good' : variance >= -50 ? 'warning' : 'poor';
+                    const varianceSign = variance >= 0 ? '+' : '';
+
+                    return `
+                        <div class="projection-cell">
+                            <div class="projection-value">${projectedTickets.toLocaleString()}</div>
+                            <div class="projection-variance projection-${status}">${varianceSign}${variance.toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                key: 'projectedRevenue',
+                label: '<div style="text-align: center;">Projected Revenue<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Pace)</span></div>',
+                sortable: true,
+                type: 'number',
+                align: 'center',
+                formatter: (value, row) => {
+                    const projection = this.calculateProjection(row);
+                    if (!projection) return 'N/A';
+
+                    const projectedRevenue = Math.round(projection.projectedRevenue);
+                    const targetRevenue = Math.round(projection.targetRevenue);
+                    const variance = projectedRevenue - targetRevenue;
+                    const status = variance >= 0 ? 'good' : variance >= -5000 ? 'warning' : 'poor';
+                    const varianceSign = variance >= 0 ? '+' : '';
+
+                    return `
+                        <div class="projection-cell">
+                            <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
+                            <div class="projection-variance projection-${status}">${varianceSign}$${Math.abs(variance).toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
                 key: 'budgetPerformance',
                 label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
                 sortable: true,
@@ -348,6 +397,74 @@ class DataTable {
         const percentage = weekData ? weekData.percentage : 27; // Default to week 6+ percentage
 
         return Math.floor(targetSales * (percentage / 100));
+    }
+
+    calculateProjection(row) {
+        // Skip if performance has already occurred
+        const today = new Date();
+        const performanceDate = new Date(row.date);
+        if (performanceDate <= today) return null;
+
+        // Calculate weeks to performance
+        const weeksToPerformance = Math.max(0, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+        if (weeksToPerformance === 0) return null;
+
+        // Get current sales data
+        const capacity = row.capacity || 0;
+        const occupancyGoal = row.occupancyGoal || 85;
+        const subscriptionSeats = row.subscriptionTicketsSold || 0;
+        const singleTicketsSold = row.singleTicketsSold || 0;
+        const nonFixedTicketsSold = row.nonFixedTicketsSold || 0;
+        const currentTotalSales = singleTicketsSold + nonFixedTicketsSold + subscriptionSeats;
+
+        if (capacity === 0) return null;
+
+        // Calculate target final sales (based on occupancy goal)
+        const targetFinalSales = Math.floor(capacity * (occupancyGoal / 100));
+
+        // Use the same historic progression curve as sales curve chart
+        const progression = [
+            { week: 0, percentage: 100 },
+            { week: 1, percentage: 59 },
+            { week: 2, percentage: 46 },
+            { week: 3, percentage: 39 },
+            { week: 4, percentage: 33 },
+            { week: 5, percentage: 30 },
+            { week: 6, percentage: 27 }
+        ];
+
+        // Get expected percentage at current week
+        const weekData = progression.find(p => p.week === weeksToPerformance);
+        const currentPercentage = weekData ? weekData.percentage : 27;
+
+        // Calculate where we should be on the target curve (all tickets including subscriptions)
+        const expectedSalesAtCurrentWeek = targetFinalSales * (currentPercentage / 100);
+
+        // Calculate variance (actual vs expected at current week)
+        const variance = currentTotalSales - expectedSalesAtCurrentWeek;
+
+        // Project final sales: target final + variance, capped at capacity
+        const projectedFinalTotal = Math.min(
+            Math.max(0, targetFinalSales + variance),
+            capacity
+        );
+
+        // Calculate revenue projections
+        const currentRevenue = row.totalRevenue || 0;
+        const avgTicketPrice = currentTotalSales > 0 ? currentRevenue / currentTotalSales : 0;
+        const projectedRevenue = projectedFinalTotal * avgTicketPrice;
+
+        // Target revenue (what we'd expect at occupancy goal)
+        const targetRevenue = targetFinalSales * avgTicketPrice;
+
+        return {
+            projectedTickets: projectedFinalTotal,
+            targetTickets: targetFinalSales,
+            projectedRevenue: projectedRevenue,
+            targetRevenue: targetRevenue,
+            variance: variance,
+            weeksToPerformance: weeksToPerformance
+        };
     }
 
     create(containerId) {

@@ -867,6 +867,26 @@ body {
     font-weight: 600;
 }
 
+/* Projection cells with variance */
+.projection-cell {
+    text-align: center;
+}
+
+.projection-value {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.projection-variance {
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+.projection-good { color: var(--success-color); }
+.projection-warning { color: var(--warning-color); }
+.projection-poor { color: var(--danger-color); }
+
 /* Week-over-week styling */
 .wow-positive {
     color: var(--text-secondary);
