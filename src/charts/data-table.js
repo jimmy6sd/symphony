@@ -558,34 +558,17 @@ class DataTable {
     }
 
     async enrichWithProjections() {
-        console.log('📊 Calculating projections for', this.data.length, 'performances...');
-
-        const debugReasons = {};
-
         // Calculate projections for all performances in parallel
-        const projectionPromises = this.data.map(async (perf, index) => {
+        const projectionPromises = this.data.map(async (perf) => {
             try {
                 const result = await this.calculateProjection(perf);
                 perf._projection = result.projection;
-
-                if (!perf._projection) {
-                    debugReasons[result.reason] = (debugReasons[result.reason] || 0) + 1;
-                }
-
-                if (index === 0) {
-                    console.log('Sample calc for', perf.title, ':', result);
-                }
             } catch (error) {
-                console.error('❌ Projection error for', perf.title, ':', error.message);
                 perf._projection = null;
-                debugReasons['error'] = (debugReasons['error'] || 0) + 1;
             }
         });
 
         await Promise.all(projectionPromises);
-        const successCount = this.data.filter(p => p._projection !== null).length;
-        console.log(`✅ Calculated ${successCount}/${this.data.length} projections successfully`);
-        console.log('❌ Reasons for failures:', debugReasons);
     }
 
     async fetchWeekOverWeekData() {
