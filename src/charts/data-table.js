@@ -404,18 +404,18 @@ class DataTable {
         const today = new Date();
         const [perfYear, perfMonth, perfDay] = row.date.split('-');
         const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
-        if (performanceDate <= today) return null;
+        if (performanceDate <= today) return { projection: null, reason: 'past_performance' };
 
         // Calculate weeks to performance
         const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
-        if (weeksToPerformance === 0) return null;
+        if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
 
         // Get target comp data from BigQuery (same as sales curve chart)
         const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
         const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         const targetComp = comparisons?.find(c => c.is_target === true);
 
-        if (!targetComp || !targetComp.weeksArray) return null; // No target comp set
+        if (!targetComp || !targetComp.weeksArray) return { projection: null, reason: 'no_target_comp' };
 
         const numWeeks = targetComp.weeksArray.length;
 
@@ -425,7 +425,7 @@ class DataTable {
         const singleTicketsSold = row.singleTicketsSold || 0;
         const currentSingleSales = singleTicketsSold;
 
-        if (capacity === 0) return null;
+        if (capacity === 0) return { projection: null, reason: 'no_capacity' };
 
         // Available single capacity (total capacity minus subscriptions)
         const availableSingleCapacity = capacity - subscriptionSeats;
@@ -440,7 +440,9 @@ class DataTable {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return null; // Week out of range
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
+            return { projection: null, reason: `week_out_of_range (weeks: ${weeksToPerformance}, numWeeks: ${numWeeks})` };
+        }
 
         let targetCompAtActualWeek;
         if (lowerWeek === upperWeek) {
@@ -477,12 +479,15 @@ class DataTable {
         const targetRevenue = Math.round(targetFinalTotal * avgTicketPrice);
 
         return {
-            projectedTickets: projectedFinalTotal,
-            targetTickets: targetFinalTotal,
-            projectedRevenue: projectedRevenue,
-            targetRevenue: targetRevenue,
-            variance: variance,
-            weeksToPerformance: weeksToPerformance
+            projection: {
+                projectedTickets: projectedFinalTotal,
+                targetTickets: targetFinalTotal,
+                projectedRevenue: projectedRevenue,
+                targetRevenue: targetRevenue,
+                variance: variance,
+                weeksToPerformance: weeksToPerformance
+            },
+            reason: 'success'
         };
     }
 
@@ -553,22 +558,33 @@ class DataTable {
 
     async enrichWithProjections() {
         console.log('📊 Calculating projections for', this.data.length, 'performances...');
+
+        const debugReasons = {};
+
         // Calculate projections for all performances in parallel
         const projectionPromises = this.data.map(async (perf, index) => {
             try {
-                perf._projection = await this.calculateProjection(perf);
-                if (index === 0 && perf._projection) {
-                    console.log('✅ Sample projection for', perf.title, ':', perf._projection);
+                const result = await this.calculateProjection(perf);
+                perf._projection = result.projection;
+
+                if (!perf._projection) {
+                    debugReasons[result.reason] = (debugReasons[result.reason] || 0) + 1;
+                }
+
+                if (index === 0) {
+                    console.log('Sample calc for', perf.title, ':', result);
                 }
             } catch (error) {
                 console.error('❌ Projection error for', perf.title, ':', error.message);
                 perf._projection = null;
+                debugReasons['error'] = (debugReasons['error'] || 0) + 1;
             }
         });
 
         await Promise.all(projectionPromises);
         const successCount = this.data.filter(p => p._projection !== null).length;
         console.log(`✅ Calculated ${successCount}/${this.data.length} projections successfully`);
+        console.log('❌ Reasons for failures:', debugReasons);
     }
 
     async fetchWeekOverWeekData() {
