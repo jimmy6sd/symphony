@@ -308,7 +308,7 @@ class DataTable {
                 type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
-                    const projection = this.calculateProjection(row);
+                    const projection = row._projection;
                     if (!projection) return 'N/A';
 
                     const projectedTickets = Math.round(projection.projectedTickets);
@@ -332,7 +332,7 @@ class DataTable {
                 type: 'number',
                 align: 'center',
                 formatter: (value, row) => {
-                    const projection = this.calculateProjection(row);
+                    const projection = row._projection;
                     if (!projection) return 'N/A';
 
                     const projectedRevenue = Math.round(projection.projectedRevenue);
@@ -399,67 +399,87 @@ class DataTable {
         return Math.floor(targetSales * (percentage / 100));
     }
 
-    calculateProjection(row) {
+    async calculateProjection(row) {
         // Skip if performance has already occurred
         const today = new Date();
-        const performanceDate = new Date(row.date);
+        const [perfYear, perfMonth, perfDay] = row.date.split('-');
+        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
         if (performanceDate <= today) return null;
 
         // Calculate weeks to performance
-        const weeksToPerformance = Math.max(0, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
         if (weeksToPerformance === 0) return null;
 
-        // Get current sales data
+        // Get target comp data from BigQuery (same as sales curve chart)
+        const performanceCode = row.code || row.performanceId;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        const targetComp = comparisons?.find(c => c.is_target === true);
+
+        if (!targetComp || !targetComp.weeksArray) return null; // No target comp set
+
+        const numWeeks = targetComp.weeksArray.length;
+
+        // Get current sales data (SINGLES ONLY - same as sales curve chart)
         const capacity = row.capacity || 0;
-        const occupancyGoal = row.occupancyGoal || 85;
         const subscriptionSeats = row.subscriptionTicketsSold || 0;
         const singleTicketsSold = row.singleTicketsSold || 0;
         const nonFixedTicketsSold = row.nonFixedTicketsSold || 0;
-        const currentTotalSales = singleTicketsSold + nonFixedTicketsSold + subscriptionSeats;
+        const currentSingleSales = singleTicketsSold + nonFixedTicketsSold;
 
         if (capacity === 0) return null;
 
-        // Calculate target final sales (based on occupancy goal)
-        const targetFinalSales = Math.floor(capacity * (occupancyGoal / 100));
+        // Available single capacity (total capacity minus subscriptions)
+        const availableSingleCapacity = capacity - subscriptionSeats;
 
-        // Use the same historic progression curve as sales curve chart
-        const progression = [
-            { week: 0, percentage: 100 },
-            { week: 1, percentage: 59 },
-            { week: 2, percentage: 46 },
-            { week: 3, percentage: 39 },
-            { week: 4, percentage: 33 },
-            { week: 5, percentage: 30 },
-            { week: 6, percentage: 27 }
-        ];
+        // Calculate actual week (same as sales curve chart)
+        const actualWeek = weeksToPerformance;
+        const actualSales = currentSingleSales;
 
-        // Get expected percentage at current week
-        const weekData = progression.find(p => p.week === weeksToPerformance);
-        const currentPercentage = weekData ? weekData.percentage : 27;
+        // Get target comp value at actual week (with interpolation if needed)
+        const lowerWeek = Math.floor(actualWeek);
+        const upperWeek = Math.ceil(actualWeek);
+        const lowerWeekIndex = numWeeks - 1 - lowerWeek;
+        const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        // Calculate where we should be on the target curve (all tickets including subscriptions)
-        const expectedSalesAtCurrentWeek = targetFinalSales * (currentPercentage / 100);
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return null; // Week out of range
 
-        // Calculate variance (actual vs expected at current week)
-        const variance = currentTotalSales - expectedSalesAtCurrentWeek;
+        let targetCompAtActualWeek;
+        if (lowerWeek === upperWeek) {
+            targetCompAtActualWeek = targetComp.weeksArray[lowerWeekIndex];
+        } else {
+            const lowerValue = targetComp.weeksArray[lowerWeekIndex];
+            const upperValue = targetComp.weeksArray[upperWeekIndex];
+            const fraction = actualWeek - lowerWeek;
+            targetCompAtActualWeek = lowerValue + (upperValue - lowerValue) * fraction;
+        }
 
-        // Project final sales: target final + variance, capped at capacity
-        const projectedFinalTotal = Math.min(
-            Math.max(0, targetFinalSales + variance),
-            capacity
-        );
+        // Calculate variance (actual vs target comp at current week)
+        const variance = actualSales - targetCompAtActualWeek;
+
+        // Project final SINGLE ticket sales (target comp final + variance, capped at available singles)
+        const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
+        const projectedFinalSingles = Math.round(Math.min(
+            Math.max(0, targetCompFinal + variance),
+            availableSingleCapacity
+        ));
+
+        // Add subscriptions back for total projected tickets
+        const projectedFinalTotal = projectedFinalSingles + subscriptionSeats;
+        const targetFinalTotal = targetCompFinal + subscriptionSeats;
 
         // Calculate revenue projections
-        const currentRevenue = row.totalRevenue || 0;
-        const avgTicketPrice = currentTotalSales > 0 ? currentRevenue / currentTotalSales : 0;
-        const projectedRevenue = projectedFinalTotal * avgTicketPrice;
+        const currentSingleRevenue = row.singleTicketRevenue || 0;
+        const avgSingleTicketPrice = currentSingleSales > 0 ? currentSingleRevenue / currentSingleSales : 0;
+        const projectedSingleRevenue = Math.round(projectedFinalSingles * avgSingleTicketPrice);
 
-        // Target revenue (what we'd expect at occupancy goal)
-        const targetRevenue = targetFinalSales * avgTicketPrice;
+        // Add subscription revenue for total
+        const subscriptionRevenue = row.subscriptionTicketRevenue || 0;
+        const projectedRevenue = projectedSingleRevenue + subscriptionRevenue;
+        const targetRevenue = Math.round(targetCompFinal * avgSingleTicketPrice) + subscriptionRevenue;
 
         return {
             projectedTickets: projectedFinalTotal,
-            targetTickets: targetFinalSales,
+            targetTickets: targetFinalTotal,
             projectedRevenue: projectedRevenue,
             targetRevenue: targetRevenue,
             variance: variance,
@@ -515,6 +535,9 @@ class DataTable {
                     performance._weekOverWeek = wowData[performanceCode] || { tickets: 0, revenue: 0, available: false };
                 });
             }
+
+            // Pre-calculate projections for all performances
+            await this.enrichWithProjections();
         } catch (error) {
             console.error('Error initializing data table:', error);
             this.data = [];
@@ -527,6 +550,19 @@ class DataTable {
         // No prefetch needed - reduces initial page load overhead
 
         return this;
+    }
+
+    async enrichWithProjections() {
+        // Calculate projections for all performances in parallel
+        const projectionPromises = this.data.map(async (perf) => {
+            try {
+                perf._projection = await this.calculateProjection(perf);
+            } catch (error) {
+                perf._projection = null;
+            }
+        });
+
+        await Promise.all(projectionPromises);
     }
 
     async fetchWeekOverWeekData() {
