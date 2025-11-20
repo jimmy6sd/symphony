@@ -246,6 +246,8 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       p.capacity,
       p.occupancy_goal,
       p.budget_goal,
+      COALESCE(p.single_budget_goal, 0) as single_budget_goal,
+      COALESCE(p.subscription_budget_goal, 0) as subscription_budget_goal,
       COALESCE(s.single_tickets_sold, 0) as single_tickets_sold,
       COALESCE(s.fixed_tickets_sold, 0) as subscription_tickets_sold,
       COALESCE(s.non_fixed_tickets_sold, 0) as non_fixed_tickets_sold,

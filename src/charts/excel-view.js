@@ -271,20 +271,29 @@ class ExcelView {
                 label: 'BUDGET (Singles)',
                 width: '110px',
                 type: 'currency',
-                sortable: false,
-                tooltip: 'Not available - budget not broken down by ticket type',
-                formatter: () => '<span class="na-value">N/A</span>',
-                className: 'unavailable'
+                sortable: true,
+                tooltip: 'Budget goal for single ticket revenue\n\nData Source: Direct from BigQuery (single_budget_goal field)\n\nImported from weekly sales report CSV',
+                formatter: (value) => {
+                    if (!value || value === 0) return '<span class="na-value">N/A</span>';
+                    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                },
+                className: 'budget-column'
             },
             {
                 key: 'singlesBudgetPercent',
                 label: 'Actual/Budget % (Singles)',
                 width: '90px',
                 type: 'percent',
-                sortable: false,
-                tooltip: 'Not available - requires singles budget',
-                formatter: () => '<span class="na-value">N/A</span>',
-                className: 'unavailable'
+                sortable: true,
+                tooltip: 'Percentage of singles budget achieved\n\nCalculation: (Singles Revenue / Singles Budget) × 100\nData Source: Calculated from BigQuery fields',
+                formatter: (value) => {
+                    if (value === null || value === undefined) {
+                        return '<span class="na-value">N/A</span>';
+                    }
+                    const percent = value;
+                    const className = percent >= 100 ? 'over-budget' : percent >= 85 ? 'on-track' : 'under-budget';
+                    return `<span class="${className}">${percent.toFixed(1)}%</span>`;
+                }
             },
             {
                 key: 'projectedSinglesBudgetPercent',
@@ -320,20 +329,29 @@ class ExcelView {
                 label: 'BUDGET (Subscriptions)',
                 width: '110px',
                 type: 'currency',
-                sortable: false,
-                tooltip: 'Not available - budget not broken down by ticket type',
-                formatter: () => '<span class="na-value">N/A</span>',
-                className: 'unavailable'
+                sortable: true,
+                tooltip: 'Budget goal for subscription ticket revenue\n\nData Source: Direct from BigQuery (subscription_budget_goal field)\n\nImported from weekly sales report CSV',
+                formatter: (value) => {
+                    if (!value || value === 0) return '<span class="na-value">N/A</span>';
+                    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                },
+                className: 'budget-column'
             },
             {
                 key: 'subsBudgetPercent',
                 label: 'Actual vs Budget % (Subs)',
                 width: '90px',
                 type: 'percent',
-                sortable: false,
-                tooltip: 'Not available - requires subs budget',
-                formatter: () => '<span class="na-value">N/A</span>',
-                className: 'unavailable'
+                sortable: true,
+                tooltip: 'Percentage of subscription budget achieved\n\nCalculation: (Subs Revenue / Subs Budget) × 100\nData Source: Calculated from BigQuery fields',
+                formatter: (value) => {
+                    if (value === null || value === undefined) {
+                        return '<span class="na-value">N/A</span>';
+                    }
+                    const percent = value;
+                    const className = percent >= 100 ? 'over-budget' : percent >= 85 ? 'on-track' : 'under-budget';
+                    return `<span class="${className}">${percent.toFixed(1)}%</span>`;
+                }
             },
             {
                 key: 'capacity',
@@ -449,14 +467,6 @@ class ExcelView {
                 const comparisons = comparisonsMap.get(lookupCode);
                 const targetComp = comparisons?.find(c => c.is_target === true);
 
-                // Debug first few
-                if (index < 3) {
-                    console.log(`[Excel View] ${item.title}: lookupCode=${lookupCode}, hasComparisons=${!!comparisons}, hasTargetComp=${!!targetComp}`);
-                    if (comparisons) {
-                        console.log(`  Found ${comparisons.length} comparisons, target comp:`, targetComp?.comparison_name);
-                    }
-                }
-
                 // Available single capacity (for capping projections)
                 const availableSingleCapacity = (item.capacity || 0) - (item.subscriptionTicketsSold || item.subscription_tickets_sold || 0);
 
@@ -469,13 +479,6 @@ class ExcelView {
                         availableSingleCapacity
                     );
                     projectedSingles = projection.canProject ? projection.projected : null;
-
-                    // Debug logging for first few performances
-                    if (index < 3) {
-                        console.log(`[Excel View] Performance: ${item.title}`);
-                        console.log('  Projection result:', projection);
-                        console.log('  projectedSingles:', projectedSingles);
-                    }
                 }
                 // No fallback - only show projections when target comp is available
             }
@@ -507,6 +510,18 @@ class ExcelView {
             const revenueLastWeek = wow.available ? (totalRevenue - wow.revenue) : null;
             const increaseOverWeek = wow.available ? wow.revenue : null;
 
+            // Budget breakdown fields from BigQuery
+            const singlesBudget = item.single_budget_goal || 0;
+            const subsBudget = item.subscription_budget_goal || 0;
+
+            // Calculate budget percentages for singles and subs
+            const singlesBudgetPercent = singlesBudget > 0 && singlesRevenue > 0
+                ? (singlesRevenue / singlesBudget) * 100
+                : null;
+            const subsBudgetPercent = subsBudget > 0 && subsRevenue > 0
+                ? (subsRevenue / subsBudget) * 100
+                : null;
+
             const processedItem = {
                 ...item,
                 weekNum: index + 1,
@@ -520,6 +535,11 @@ class ExcelView {
                 singlesRevenue,
                 subsRevenue,
                 avgTicketPrice,
+                // Budget breakdown
+                singlesBudget,
+                subsBudget,
+                singlesBudgetPercent,
+                subsBudgetPercent,
                 // Calculated fields
                 weeksUntilPerf,
                 perfWeekMonday: perfWeekMonday.toISOString().split('T')[0],
@@ -536,19 +556,6 @@ class ExcelView {
                 revenueLastWeek,
                 increaseOverWeek
             };
-
-            // Debug logging for first few performances
-            if (index < 3) {
-                console.log(`[Excel View] Final data for ${item.title}:`, {
-                    totalTicketsSold: processedItem.totalTicketsSold,
-                    singleTicketsSold: processedItem.singleTicketsSold,
-                    subscriptionTicketsSold: processedItem.subscriptionTicketsSold,
-                    totalRevenue: processedItem.totalRevenue,
-                    projectedSingles: processedItem.projectedSingles,
-                    projectedTotal: processedItem.projectedTotal,
-                    projectedOccupancy: processedItem.projectedOccupancy
-                });
-            }
 
             return processedItem;
         });
