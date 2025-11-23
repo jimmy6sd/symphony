@@ -1,0 +1,184 @@
+/* styles/dashboard.css */
+
+/* --- Loading Indicator --- */
+.loading-container {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2em;
+    color: #666;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Dashboard Layout --- */
+.dashboard-grid {
+    display: grid;
+    grid-gap: 20px;
+    padding: 20px;
+}
+
+.dashboard-content h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* --- Scorecards --- */
+.scorecards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 20px;
+}
+
+.scorecard {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.scorecard .value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #3498db;
+    margin: 0;
+}
+
+.scorecard .label {
+    font-size: 1em;
+    color: #666;
+    margin: 5px 0 0 0;
+}
+
+/* --- Chart Layout --- */
+.chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.chart-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.chart-container h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* --- D3 Chart Styles --- */
+.chart-container svg {
+    width: 100%;
+    height: auto;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #ccc;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-size: 12px;
+    fill: #555;
+}
+
+.gridline path,
+.gridline line {
+    fill: none;
+    stroke: #f0f0f0;
+    shape-rendering: crispEdges;
+}
+
+.bar {
+    fill: #3498db;
+}
+
+.bar:hover {
+    fill: #2980b9;
+}
+
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font-size: 12px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+
+/* --- Data Table --- */
+.data-table-container {
+     background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+#full-data-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#full-data-table th, 
+#full-data-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+#full-data-table th {
+    background-color: #f7f7f7;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#full-data-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+#table-search {
+    margin-bottom: 15px;
+    padding: 8px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* --- Scatter Plot --- */
+.dot {
+    stroke: #fff;
+}
+
+/* --- Calendar Heatmap --- */
+#calendar-heatmap-container svg {
+    font-size: 10px;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Kansas City Symphony - Full Dashboard</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/dashboard.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Kansas City Symphony</h1>
+                    <p>Sales Analytics & Performance Dashboard • <a href="/" style="color: rgba(255,255,255,0.9); text-decoration: none;">Main View</a></p>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading Dashboard Data from BigQuery...</p>
+            </div>
+
+            <div class="dashboard-grid" style="display: none;">
+                <h2>Season Overview</h2>
+                <div id="kpi-scorecards" class="scorecards-container"></div>
+                
+                <h2>Revenue Analysis</h2>
+                <div class="chart-row">
+                    <div class="chart-container" id="revenue-by-type-chart-container">
+                        <div id="revenue-by-type-chart"></div>
+                    </div>
+                    <div class="chart-container" id="top-10-revenue-chart-container">
+                        <div id="top-10-revenue-chart"></div>
+                    </div>
+                </div>
+
+                <h2>Sales & Capacity</h2>
+                <div class="chart-row">
+                    <div class="chart-container" id="tickets-vs-capacity-chart-container">
+                        <div id="tickets-vs-capacity-chart"></div>
+                    </div>
+                     <div class="chart-container" id="revenue-vs-budget-chart-container">
+                        <h3>Revenue vs. Budget Goal</h3>
+                        <div id="revenue-vs-budget-chart"></div>
+                    </div>
+                </div>
+
+                <h2>Daily Revenue Calendar</h2>
+                <div class="chart-container" id="calendar-heatmap-container">
+                </div>
+
+                <h2>All Performances</h2>
+                <div id="full-data-table" class="data-table-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/dashboard.js"></script>
+</body>
+</html>

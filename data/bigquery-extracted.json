@@ -1,9 +1,43 @@
 {
-  "extractedAt": "2025-10-02T13:58:36.933Z",
+  "extractedAt": "2025-11-22T21:01:38.632Z",
   "source": "BigQuery",
   "dataset": "symphony_dashboard",
-  "performanceCount": 60,
+  "performanceCount": 123,
   "performances": [
+    {
+      "performanceId": 24085,
+      "performanceCode": "250902E",
+      "performanceName": "Morgan Freeman's Symphonic Blu",
+      "seriesCode": "Special Event",
+      "performanceDate": "2025-09-02",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 1156,
+        "subscriptionTickets": 0,
+        "totalTickets": 1156,
+        "totalRevenue": 137168
+      },
+      "metrics": {
+        "singleATP": 118.65743944636678,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 80.9,
+        "occupancyGoal": 90
+      },
+      "budget": {
+        "goal": 153473,
+        "achievement": 90.5
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.471Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
     {
       "performanceId": 24090,
       "performanceCode": "250903E",
@@ -13,29 +47,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Special",
       "currentSales": {
-        "singleTickets": 942,
-        "subscriptionTickets": 6,
-        "totalTickets": 948,
-        "totalRevenue": 113051
+        "singleTickets": 1131,
+        "subscriptionTickets": 0,
+        "totalTickets": 1131,
+        "totalRevenue": 133026
       },
       "metrics": {
-        "singleATP": 119.59766454352442,
-        "subscriptionATP": 65
+        "singleATP": 117.61803713527851,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1419,
-        "currentOccupancy": 66.8,
+        "total": 1302,
+        "currentOccupancy": 78.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 124780,
+        "goal": 153474,
         "achievement": 90.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -47,29 +81,97 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Special",
       "currentSales": {
-        "singleTickets": 629,
-        "subscriptionTickets": 252,
-        "totalTickets": 881,
-        "totalRevenue": 17715
+        "singleTickets": 699,
+        "subscriptionTickets": 0,
+        "totalTickets": 699,
+        "totalRevenue": 20005
       },
       "metrics": {
-        "singleATP": 2.12241653418124,
-        "subscriptionATP": 65
+        "singleATP": 28.619456366237483,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 742,
-        "currentOccupancy": 84.8,
+        "total": 600,
+        "currentOccupancy": 95.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 24673,
+        "goal": 55000,
         "achievement": 71.8
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24498,
+      "performanceCode": "250911E",
+      "performanceName": "26 Live @ HH Recording Session",
+      "seriesCode": "Other",
+      "performanceDate": "2025-09-11",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 58,
+        "subscriptionTickets": 0,
+        "totalTickets": 58,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24499,
+      "performanceCode": "250912M",
+      "performanceName": "26 Live @ HH Recording Session",
+      "seriesCode": "Other",
+      "performanceDate": "2025-09-12",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 24,
+        "subscriptionTickets": 0,
+        "totalTickets": 24,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -81,29 +183,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 214,
-        "subscriptionTickets": 695,
-        "totalTickets": 909,
-        "totalRevenue": 63832.1
+        "singleTickets": 504,
+        "subscriptionTickets": 0,
+        "totalTickets": 504,
+        "totalRevenue": 75022.8
       },
       "metrics": {
-        "singleATP": 87.18271028037383,
-        "subscriptionATP": 65
+        "singleATP": 148.85476190476192,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1578,
-        "currentOccupancy": 57.6,
+        "total": 1590,
+        "currentOccupancy": 67.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 70222,
+        "goal": 100666,
         "achievement": 90.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -115,29 +217,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 259,
-        "subscriptionTickets": 614,
-        "totalTickets": 873,
-        "totalRevenue": 62472.1
+        "singleTickets": 550,
+        "subscriptionTickets": 0,
+        "totalTickets": 550,
+        "totalRevenue": 74220.6
       },
       "metrics": {
-        "singleATP": 87.11235521235521,
-        "subscriptionATP": 65
+        "singleATP": 134.94654545454546,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1548,
-        "currentOccupancy": 56.4,
+        "total": 1590,
+        "currentOccupancy": 67,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 68726,
+        "goal": 100667,
         "achievement": 90.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -149,63 +251,131 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 300,
-        "subscriptionTickets": 382,
-        "totalTickets": 682,
-        "totalRevenue": 45342.2
+        "singleTickets": 648,
+        "subscriptionTickets": 0,
+        "totalTickets": 648,
+        "totalRevenue": 63211.8
       },
       "metrics": {
-        "singleATP": 68.374,
-        "subscriptionATP": 65
+        "singleATP": 97.54907407407408,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1568,
-        "currentOccupancy": 43.5,
+        "total": 1590,
+        "currentOccupancy": 57.1,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 46890,
-        "achievement": 96.7
+        "goal": 100667,
+        "achievement": 90.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23768,
       "performanceCode": "250928M",
-      "performanceName": "FS1 The Orchestra Gamez",
+      "performanceName": "FS1 The Orchestra Games",
       "seriesCode": "FS1",
       "performanceDate": "2025-09-28",
       "venue": "HELZBERG HALL",
       "season": "25-26 Family",
       "currentSales": {
-        "singleTickets": 132,
-        "subscriptionTickets": 297,
-        "totalTickets": 429,
-        "totalRevenue": 11178
+        "singleTickets": 503,
+        "subscriptionTickets": 0,
+        "totalTickets": 503,
+        "totalRevenue": 16786
       },
       "metrics": {
-        "singleATP": -61.56818181818182,
-        "subscriptionATP": 65
+        "singleATP": 33.37176938369781,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1986,
-        "currentOccupancy": 21.6,
+        "total": 1302,
+        "currentOccupancy": 32.5,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 29650,
+        "goal": 19500,
         "achievement": 37.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24412,
+      "performanceCode": "251002E",
+      "performanceName": "26 Forte",
+      "seriesCode": "Other",
+      "performanceDate": "2025-10-02",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Off Season",
+      "currentSales": {
+        "singleTickets": 339,
+        "subscriptionTickets": 0,
+        "totalTickets": 339,
+        "totalRevenue": 8250
+      },
+      "metrics": {
+        "singleATP": 24.336283185840706,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 31.2,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24272,
+      "performanceCode": "251004E",
+      "performanceName": "Chicken-Fried: Country Rock",
+      "seriesCode": "Other",
+      "performanceDate": "2025-10-04",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 58000,
+        "achievement": 48
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -217,29 +387,131 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 485,
-        "subscriptionTickets": 292,
-        "totalTickets": 777,
-        "totalRevenue": 50099.3
+        "singleTickets": 621,
+        "subscriptionTickets": 0,
+        "totalTickets": 621,
+        "totalRevenue": 62471.6
       },
       "metrics": {
-        "singleATP": 64.16350515463918,
-        "subscriptionATP": 65
+        "singleATP": 100.59838969404187,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1481,
-        "currentOccupancy": 45.1,
+        "total": 1433,
+        "currentOccupancy": 63.9,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 86276,
+        "goal": 50000,
         "achievement": 51.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1011,
+      "performanceCode": "251011A",
+      "performanceName": "Drum Safari",
+      "seriesCode": "Series-10",
+      "performanceDate": "2025-10-11",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 82,
+        "subscriptionTickets": 0,
+        "totalTickets": 82,
+        "totalRevenue": 656
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 45.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1011,
+      "performanceCode": "251011B",
+      "performanceName": "Drum Safari",
+      "seriesCode": "Series-10",
+      "performanceDate": "2025-10-11",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 113,
+        "subscriptionTickets": 0,
+        "totalTickets": 113,
+        "totalRevenue": 904
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 62.8,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1011,
+      "performanceCode": "251011C",
+      "performanceName": "Drum Safari",
+      "seriesCode": "Series-10",
+      "performanceDate": "2025-10-11",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 65,
+        "subscriptionTickets": 0,
+        "totalTickets": 65,
+        "totalRevenue": 520
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 36.1,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -251,29 +523,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 117,
-        "subscriptionTickets": 614,
-        "totalTickets": 731,
-        "totalRevenue": 48757.8
+        "singleTickets": 626,
+        "subscriptionTickets": 0,
+        "totalTickets": 626,
+        "totalRevenue": 67153.7
       },
       "metrics": {
-        "singleATP": 75.62222222222225,
-        "subscriptionATP": 65
+        "singleATP": 107.27428115015974,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1468,
-        "currentOccupancy": 49.8,
+        "total": 1433,
+        "currentOccupancy": 68.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 95416,
+        "goal": 50000,
         "achievement": 51.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -285,131 +557,165 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 160,
-        "subscriptionTickets": 633,
-        "totalTickets": 793,
-        "totalRevenue": 51402.4
+        "singleTickets": 700,
+        "subscriptionTickets": 0,
+        "totalTickets": 700,
+        "totalRevenue": 72060.1
       },
       "metrics": {
-        "singleATP": 64.10875000000001,
-        "subscriptionATP": 65
+        "singleATP": 102.94300000000001,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1510,
-        "currentOccupancy": 52.5,
+        "total": 1433,
+        "currentOccupancy": 73.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 100592,
+        "goal": 50000,
         "achievement": 51.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23912,
       "performanceCode": "251017E",
       "performanceName": "Top Gun: Maverick in Concert",
-      "seriesCode": "Top Gun Concert",
+      "seriesCode": "Film",
       "performanceDate": "2025-10-17",
       "venue": "HELZBERG HALL",
-      "season": "25-26 Special",
+      "season": "25-26 Film",
       "currentSales": {
-        "singleTickets": 544,
-        "subscriptionTickets": 4,
-        "totalTickets": 548,
-        "totalRevenue": 41921.5
+        "singleTickets": 1158,
+        "subscriptionTickets": 0,
+        "totalTickets": 1158,
+        "totalRevenue": 87116.5
       },
       "metrics": {
-        "singleATP": 76.58363970588235,
-        "subscriptionATP": 65
+        "singleATP": 75.23013816925734,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1308,
-        "currentOccupancy": 41.9,
+        "total": 1342,
+        "currentOccupancy": 87,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 40543,
+        "goal": 103497,
         "achievement": 103.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23913,
       "performanceCode": "251018E",
       "performanceName": "Top Gun: Maverick in Concert",
-      "seriesCode": "Top Gun Concert",
+      "seriesCode": "Film",
       "performanceDate": "2025-10-18",
       "venue": "HELZBERG HALL",
-      "season": "25-26 Special",
+      "season": "25-26 Film",
       "currentSales": {
-        "singleTickets": 659,
-        "subscriptionTickets": 12,
-        "totalTickets": 671,
-        "totalRevenue": 50743
+        "singleTickets": 1261,
+        "subscriptionTickets": 0,
+        "totalTickets": 1261,
+        "totalRevenue": 96019
       },
       "metrics": {
-        "singleATP": 75.81638846737481,
-        "subscriptionATP": 65
+        "singleATP": 76.14512291831879,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1323,
-        "currentOccupancy": 50.7,
+        "total": 1342,
+        "currentOccupancy": 95.9,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 49074,
+        "goal": 103497,
         "achievement": 103.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23914,
       "performanceCode": "251019M",
       "performanceName": "Top Gun: Maverick in Concert",
-      "seriesCode": "Top Gun Concert",
+      "seriesCode": "Film",
       "performanceDate": "2025-10-19",
       "venue": "HELZBERG HALL",
-      "season": "25-26 Special",
+      "season": "25-26 Film",
       "currentSales": {
-        "singleTickets": 465,
-        "subscriptionTickets": 10,
-        "totalTickets": 475,
-        "totalRevenue": 36365
+        "singleTickets": 973,
+        "subscriptionTickets": 0,
+        "totalTickets": 973,
+        "totalRevenue": 76389.5
       },
       "metrics": {
-        "singleATP": 76.80645161290323,
-        "subscriptionATP": 65
+        "singleATP": 78.5092497430627,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1309,
-        "currentOccupancy": 36.3,
+        "total": 1342,
+        "currentOccupancy": 76.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 35169,
+        "goal": 103496,
         "achievement": 103.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23725,
+      "performanceCode": "251022E",
+      "performanceName": "The Lodger Silent Film + Organ",
+      "seriesCode": null,
+      "performanceDate": "2025-10-22",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 375,
+        "subscriptionTickets": 0,
+        "totalTickets": 375,
+        "totalRevenue": 19285.3
+      },
+      "metrics": {
+        "singleATP": 51.42746666666667,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1342,
+        "currentOccupancy": 27.7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 50000,
+        "achievement": 71.7
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -421,29 +727,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 74,
-        "subscriptionTickets": 719,
-        "totalTickets": 793,
-        "totalRevenue": 56654.1
+        "singleTickets": 268,
+        "subscriptionTickets": 0,
+        "totalTickets": 268,
+        "totalRevenue": 63738.1
       },
       "metrics": {
-        "singleATP": 134.04189189189188,
-        "subscriptionATP": 65
+        "singleATP": 237.82873134328358,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1549,
-        "currentOccupancy": 51.2,
+        "total": 1601,
+        "currentOccupancy": 57.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 67931,
+        "goal": 92333,
         "achievement": 83.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -455,29 +761,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 73,
-        "subscriptionTickets": 636,
-        "totalTickets": 709,
-        "totalRevenue": 50266.1
+        "singleTickets": 488,
+        "subscriptionTickets": 0,
+        "totalTickets": 488,
+        "totalRevenue": 63358.5
       },
       "metrics": {
-        "singleATP": 122.27534246575341,
-        "subscriptionATP": 65
+        "singleATP": 129.8329918032787,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1562,
-        "currentOccupancy": 45.4,
+        "total": 1601,
+        "currentOccupancy": 57.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 60271,
+        "goal": 92333,
         "achievement": 83.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -489,29 +795,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 66,
-        "subscriptionTickets": 391,
-        "totalTickets": 457,
-        "totalRevenue": 30489.7
+        "singleTickets": 515,
+        "subscriptionTickets": 0,
+        "totalTickets": 515,
+        "totalRevenue": 44081.2
       },
       "metrics": {
-        "singleATP": 76.88939393939395,
-        "subscriptionATP": 65
+        "singleATP": 85.59456310679612,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1560,
-        "currentOccupancy": 29.3,
+        "total": 1601,
+        "currentOccupancy": 39.8,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 34374,
-        "achievement": 88.7
+        "goal": 92334,
+        "achievement": 83.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -523,29 +829,29 @@
       "venue": "SY-G/A Hall",
       "season": "25-26 Season",
       "currentSales": {
-        "singleTickets": 23,
-        "subscriptionTickets": 9,
-        "totalTickets": 32,
-        "totalRevenue": 2520
+        "singleTickets": 39,
+        "subscriptionTickets": 0,
+        "totalTickets": 39,
+        "totalRevenue": 4900
       },
       "metrics": {
-        "singleATP": 84.1304347826087,
-        "subscriptionATP": 65
+        "singleATP": 125.64102564102564,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 128,
-        "currentOccupancy": 18,
+        "total": 100,
+        "currentOccupancy": 35,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 3150,
+        "goal": 11200,
         "achievement": 80
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -557,29 +863,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 96,
-        "subscriptionTickets": 365,
-        "totalTickets": 461,
-        "totalRevenue": 30148.1
+        "singleTickets": 574,
+        "subscriptionTickets": 0,
+        "totalTickets": 574,
+        "totalRevenue": 39175.3
       },
       "metrics": {
-        "singleATP": 66.90729166666665,
-        "subscriptionATP": 65
+        "singleATP": 68.24965156794426,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1497,
-        "currentOccupancy": 30.8,
+        "total": 1450,
+        "currentOccupancy": 40,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 56776,
+        "goal": 52000,
         "achievement": 53.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -591,29 +897,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 212,
-        "subscriptionTickets": 590,
-        "totalTickets": 802,
-        "totalRevenue": 52754.2
+        "singleTickets": 960,
+        "subscriptionTickets": 0,
+        "totalTickets": 960,
+        "totalRevenue": 82628.3
       },
       "metrics": {
-        "singleATP": 67.9443396226415,
-        "subscriptionATP": 65
+        "singleATP": 86.07114583333333,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1488,
-        "currentOccupancy": 53.9,
+        "total": 1450,
+        "currentOccupancy": 84.5,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 59677,
+        "goal": 86500,
         "achievement": 88.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -625,29 +931,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 165,
-        "subscriptionTickets": 570,
-        "totalTickets": 735,
-        "totalRevenue": 46553.4
+        "singleTickets": 845,
+        "subscriptionTickets": 0,
+        "totalTickets": 845,
+        "totalRevenue": 78133.6
       },
       "metrics": {
-        "singleATP": 57.59636363636365,
-        "subscriptionATP": 65
+        "singleATP": 92.46579881656805,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1544,
-        "currentOccupancy": 47.6,
+        "total": 1450,
+        "currentOccupancy": 79.9,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 52662,
+        "goal": 86500,
         "achievement": 88.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -659,29 +965,63 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Family",
       "currentSales": {
-        "singleTickets": 94,
-        "subscriptionTickets": 300,
-        "totalTickets": 394,
-        "totalRevenue": 9815.5
+        "singleTickets": 561,
+        "subscriptionTickets": 0,
+        "totalTickets": 561,
+        "totalRevenue": 21808.5
       },
       "metrics": {
-        "singleATP": -103.02659574468085,
-        "subscriptionATP": 65
+        "singleATP": 38.87433155080214,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 2074,
-        "currentOccupancy": 19,
+        "total": 1380,
+        "currentOccupancy": 42.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 26036,
+        "goal": 19500,
         "achievement": 37.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23627,
+      "performanceCode": "251121E",
+      "performanceName": "CS03 Mahler No. #7 (Piazza 2)",
+      "seriesCode": "CS03",
+      "performanceDate": "2025-11-21",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 603,
+        "subscriptionTickets": 0,
+        "totalTickets": 603,
+        "totalRevenue": 43323.4
+      },
+      "metrics": {
+        "singleATP": 71.84643449419569,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1607,
+        "currentOccupancy": 42.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 40000,
+        "achievement": 39.1
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -693,29 +1033,63 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 72,
-        "subscriptionTickets": 592,
-        "totalTickets": 664,
-        "totalRevenue": 44782.9
+        "singleTickets": 615,
+        "subscriptionTickets": 0,
+        "totalTickets": 615,
+        "totalRevenue": 61751.7
       },
       "metrics": {
-        "singleATP": 87.5402777777778,
-        "subscriptionATP": 65
+        "singleATP": 100.40926829268292,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1519,
-        "currentOccupancy": 43.7,
+        "total": 1607,
+        "currentOccupancy": 60.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 69003,
+        "goal": 66500,
         "achievement": 64.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24644,
+      "performanceCode": "251123E",
+      "performanceName": "26 ProAm",
+      "seriesCode": "Education",
+      "performanceDate": "2025-11-23",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "currentSales": {
+        "singleTickets": 1939,
+        "subscriptionTickets": 0,
+        "totalTickets": 1939,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1607,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 66500,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -727,63 +1101,437 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 67,
-        "subscriptionTickets": 637,
-        "totalTickets": 704,
-        "totalRevenue": 45910.2
+        "singleTickets": 464,
+        "subscriptionTickets": 0,
+        "totalTickets": 464,
+        "totalRevenue": 57613.7
       },
       "metrics": {
-        "singleATP": 67.24179104477608,
-        "subscriptionATP": 65
+        "singleATP": 124.16745689655171,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1571,
-        "currentOccupancy": 44.8,
+        "total": 1607,
+        "currentOccupancy": 56.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 70740,
+        "goal": 66500,
         "achievement": 64.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23795,
+      "performanceCode": "251128E",
+      "performanceName": "Elf™ in Concert",
+      "seriesCode": "Film",
+      "performanceDate": "2025-11-28",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 1173,
+        "subscriptionTickets": 0,
+        "totalTickets": 1173,
+        "totalRevenue": 86485.95
+      },
+      "metrics": {
+        "singleATP": 73.73056265984654,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 86.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 107500,
+        "achievement": 107.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23797,
+      "performanceCode": "251129AM",
+      "performanceName": "Elf™ in Concert",
+      "seriesCode": "Film",
+      "performanceDate": "2025-11-29",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 1193,
+        "subscriptionTickets": 0,
+        "totalTickets": 1193,
+        "totalRevenue": 86613.8
+      },
+      "metrics": {
+        "singleATP": 72.60167644593461,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 86.7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 107500,
+        "achievement": 107.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23796,
+      "performanceCode": "251129BE",
+      "performanceName": "Elf™ in Concert",
+      "seriesCode": "Film",
+      "performanceDate": "2025-11-29",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 1153,
+        "subscriptionTickets": 0,
+        "totalTickets": 1153,
+        "totalRevenue": 85446.15
+      },
+      "metrics": {
+        "singleATP": 74.10767562879444,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 85.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 107500,
+        "achievement": 107.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23798,
       "performanceCode": "251130M",
       "performanceName": "Elf™ in Concert",
-      "seriesCode": null,
+      "seriesCode": "Film",
       "performanceDate": "2025-11-30",
       "venue": "HELZBERG HALL",
       "season": "25-26 Special",
       "currentSales": {
-        "singleTickets": 409,
-        "subscriptionTickets": 8,
-        "totalTickets": 417,
-        "totalRevenue": 29761.2
+        "singleTickets": 1246,
+        "subscriptionTickets": 0,
+        "totalTickets": 1246,
+        "totalRevenue": 93407.2
       },
       "metrics": {
-        "singleATP": 71.49437652811736,
-        "subscriptionATP": 65
+        "singleATP": 74.96565008025682,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1399,
-        "currentOccupancy": 29.8,
+        "total": 1302,
+        "currentOccupancy": 93.5,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 27659,
+        "goal": 107500,
         "achievement": 107.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23792,
+      "performanceCode": "251205E",
+      "performanceName": "Handel's Messiah",
+      "seriesCode": "Handel's Messiah",
+      "performanceDate": "2025-12-05",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Off Season",
+      "currentSales": {
+        "singleTickets": 1080,
+        "subscriptionTickets": 0,
+        "totalTickets": 1080,
+        "totalRevenue": 56966.4
+      },
+      "metrics": {
+        "singleATP": 52.74666666666667,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 72.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 78333,
+        "achievement": 99.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1205,
+      "performanceCode": "251205M",
+      "performanceName": "Performance 251205M",
+      "seriesCode": "Series-12",
+      "performanceDate": "2025-12-05",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 1208,
+        "subscriptionTickets": 0,
+        "totalTickets": 1208,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1206,
+      "performanceCode": "251206A",
+      "performanceName": "Holiday Harmonies",
+      "seriesCode": "Series-12",
+      "performanceDate": "2025-12-06",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 101,
+        "subscriptionTickets": 0,
+        "totalTickets": 101,
+        "totalRevenue": 808
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 56.1,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1206,
+      "performanceCode": "251206B",
+      "performanceName": "Holiday Harmonies",
+      "seriesCode": "Series-12",
+      "performanceDate": "2025-12-06",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 164,
+        "subscriptionTickets": 0,
+        "totalTickets": 164,
+        "totalRevenue": 1312
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 91.1,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1206,
+      "performanceCode": "251206C",
+      "performanceName": "Holiday Harmonies",
+      "seriesCode": "Series-12",
+      "performanceDate": "2025-12-06",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 57,
+        "subscriptionTickets": 0,
+        "totalTickets": 57,
+        "totalRevenue": 456
+      },
+      "metrics": {
+        "singleATP": 8,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 31.7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23793,
+      "performanceCode": "251206E",
+      "performanceName": "Handel's Messiah",
+      "seriesCode": "Handel's Messiah",
+      "performanceDate": "2025-12-06",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Off Season",
+      "currentSales": {
+        "singleTickets": 936,
+        "subscriptionTickets": 0,
+        "totalTickets": 936,
+        "totalRevenue": 51615.05
+      },
+      "metrics": {
+        "singleATP": 55.14428418803419,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 65.7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 78334,
+        "achievement": 99.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23794,
+      "performanceCode": "251207M",
+      "performanceName": "Handel's Messiah",
+      "seriesCode": "Handel's Messiah",
+      "performanceDate": "2025-12-07",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Off Season",
+      "currentSales": {
+        "singleTickets": 1129,
+        "subscriptionTickets": 0,
+        "totalTickets": 1129,
+        "totalRevenue": 62368.65
+      },
+      "metrics": {
+        "singleATP": 55.24238263950399,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 79.4,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 78333,
+        "achievement": 99.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24550,
+      "performanceCode": "251211M",
+      "performanceName": "26 Edward Jones Holiday",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-11",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "currentSales": {
+        "singleTickets": 1660,
+        "subscriptionTickets": 0,
+        "totalTickets": 1660,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -795,63 +1543,471 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Special",
       "currentSales": {
-        "singleTickets": 910,
-        "subscriptionTickets": 364,
-        "totalTickets": 1274,
-        "totalRevenue": 93712
+        "singleTickets": 1513,
+        "subscriptionTickets": 0,
+        "totalTickets": 1513,
+        "totalRevenue": 149749.7
       },
       "metrics": {
-        "singleATP": 76.98021978021978,
-        "subscriptionATP": 65
+        "singleATP": 98.97534699272968,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1499,
-        "currentOccupancy": 60.7,
+        "total": 1590,
+        "currentOccupancy": 96.8,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 96412,
-        "achievement": 97.2
+        "goal": 150000,
+        "achievement": 96.9
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23999,
+      "performanceCode": "251213E",
+      "performanceName": "Leslie Odom Jr. Christmas Tour",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-13",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 1572,
+        "subscriptionTickets": 0,
+        "totalTickets": 1572,
+        "totalRevenue": 154760.5
+      },
+      "metrics": {
+        "singleATP": 98.44815521628499,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 99.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 150000,
+        "achievement": 96.2
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24552,
+      "performanceCode": "251214AM",
+      "performanceName": "26 Edward Jones Holiday",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-14",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "currentSales": {
+        "singleTickets": 1760,
+        "subscriptionTickets": 0,
+        "totalTickets": 1760,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24553,
+      "performanceCode": "251214BE",
+      "performanceName": "26 Edward Jones Holiday",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-14",
+      "venue": "SY-G/A Hall",
+      "season": "25-26 Season",
+      "currentSales": {
+        "singleTickets": 1660,
+        "subscriptionTickets": 0,
+        "totalTickets": 1660,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1500,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 1215,
+      "performanceCode": "251215M",
+      "performanceName": "Performance 251215M",
+      "seriesCode": "Series-12",
+      "performanceDate": "2025-12-15",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 781,
+        "subscriptionTickets": 0,
+        "totalTickets": 781,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-02T14:45:21.738848000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23696,
+      "performanceCode": "251218E",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-18",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 543,
+        "subscriptionTickets": 0,
+        "totalTickets": 543,
+        "totalRevenue": 33226.7
+      },
+      "metrics": {
+        "singleATP": 61.19097605893185,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 37.5,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75833,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23697,
+      "performanceCode": "251219E",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-19",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 573,
+        "subscriptionTickets": 0,
+        "totalTickets": 573,
+        "totalRevenue": 33929
+      },
+      "metrics": {
+        "singleATP": 59.2129144851658,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 38.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75833,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23701,
+      "performanceCode": "251220AM",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-20",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 832,
+        "subscriptionTickets": 0,
+        "totalTickets": 832,
+        "totalRevenue": 48938.5
+      },
+      "metrics": {
+        "singleATP": 58.8203125,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 55.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75833,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23698,
+      "performanceCode": "251220BE",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-20",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 647,
+        "subscriptionTickets": 0,
+        "totalTickets": 647,
+        "totalRevenue": 39666.15
+      },
+      "metrics": {
+        "singleATP": 61.30780525502318,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 44.8,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75833,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23702,
+      "performanceCode": "251221AM",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-21",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 753,
+        "subscriptionTickets": 0,
+        "totalTickets": 753,
+        "totalRevenue": 49818.5
+      },
+      "metrics": {
+        "singleATP": 66.16002656042497,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 56.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75834,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23700,
+      "performanceCode": "251221BE",
+      "performanceName": "Christmas Festival",
+      "seriesCode": "Christmas Festival",
+      "performanceDate": "2025-12-21",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 493,
+        "subscriptionTickets": 0,
+        "totalTickets": 493,
+        "totalRevenue": 27620.8
+      },
+      "metrics": {
+        "singleATP": 56.025963488843814,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 31.2,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 75834,
+        "achievement": 88
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23800,
       "performanceCode": "251223E",
       "performanceName": "It's a Wonderful Life in Conce",
-      "seriesCode": null,
+      "seriesCode": "Film",
       "performanceDate": "2025-12-23",
       "venue": "HELZBERG HALL",
       "season": "25-26 Special",
       "currentSales": {
-        "singleTickets": 744,
-        "subscriptionTickets": 4,
-        "totalTickets": 748,
-        "totalRevenue": 57717.6
+        "singleTickets": 1297,
+        "subscriptionTickets": 0,
+        "totalTickets": 1297,
+        "totalRevenue": 113420.1
       },
       "metrics": {
-        "singleATP": 77.2279569892473,
-        "subscriptionATP": 65
+        "singleATP": 87.44803392444102,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1299,
-        "currentOccupancy": 57.6,
+        "total": 1302,
+        "currentOccupancy": 113.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 57833,
+        "goal": 100000,
         "achievement": 99.8
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23801,
+      "performanceCode": "251224M",
+      "performanceName": "It's a Wonderful Life in Conce",
+      "seriesCode": "Film",
+      "performanceDate": "2025-12-24",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 768,
+        "subscriptionTickets": 0,
+        "totalTickets": 768,
+        "totalRevenue": 56658.6
+      },
+      "metrics": {
+        "singleATP": 73.77421875,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 56.5,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 100000,
+        "achievement": 99.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23630,
+      "performanceCode": "260109E",
+      "performanceName": "CS04 Brahms' Fourth Symphony",
+      "seriesCode": "CS04",
+      "performanceDate": "2026-01-09",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 75,
+        "subscriptionTickets": 0,
+        "totalTickets": 75,
+        "totalRevenue": 42075.5
+      },
+      "metrics": {
+        "singleATP": 561.0066666666667,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 41.1,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 54999,
+        "achievement": 53.7
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -863,29 +2019,97 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 38,
-        "subscriptionTickets": 572,
-        "totalTickets": 610,
-        "totalRevenue": 39210.3
+        "singleTickets": 113,
+        "subscriptionTickets": 0,
+        "totalTickets": 113,
+        "totalRevenue": 42280.5
       },
       "metrics": {
-        "singleATP": 53.42894736842113,
-        "subscriptionATP": 65
+        "singleATP": 374.1637168141593,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1593,
-        "currentOccupancy": 38.3,
+        "total": 1590,
+        "currentOccupancy": 41.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 73017,
+        "goal": 54999,
         "achievement": 53.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23632,
+      "performanceCode": "260111M",
+      "performanceName": "CS04 Brahms' Fourth Symphony",
+      "seriesCode": "CS04",
+      "performanceDate": "2026-01-11",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 103,
+        "subscriptionTickets": 0,
+        "totalTickets": 103,
+        "totalRevenue": 42568.8
+      },
+      "metrics": {
+        "singleATP": 413.28932038834955,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 41.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 55002,
+        "achievement": 53.7
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23633,
+      "performanceCode": "260116E",
+      "performanceName": "CS05 Pines of Rome (Piazza 3)",
+      "seriesCode": "CS05",
+      "performanceDate": "2026-01-16",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 80,
+        "subscriptionTickets": 0,
+        "totalTickets": 80,
+        "totalRevenue": 30174.4
+      },
+      "metrics": {
+        "singleATP": 377.18,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 29.5,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 60000,
+        "achievement": 58.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -897,29 +2121,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 91,
-        "subscriptionTickets": 600,
-        "totalTickets": 691,
-        "totalRevenue": 45838.3
+        "singleTickets": 178,
+        "subscriptionTickets": 0,
+        "totalTickets": 178,
+        "totalRevenue": 49942.9
       },
       "metrics": {
-        "singleATP": 75.14615384615388,
-        "subscriptionATP": 65
+        "singleATP": 280.57808988764043,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1542,
-        "currentOccupancy": 44.8,
+        "total": 1590,
+        "currentOccupancy": 48.8,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 62621,
+        "goal": 75000,
         "achievement": 73.2
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -931,63 +2155,199 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 63,
-        "subscriptionTickets": 623,
-        "totalTickets": 686,
-        "totalRevenue": 43967.4
+        "singleTickets": 117,
+        "subscriptionTickets": 0,
+        "totalTickets": 117,
+        "totalRevenue": 46747.2
       },
       "metrics": {
-        "singleATP": 55.11746031746034,
-        "subscriptionATP": 65
+        "singleATP": 399.5487179487179,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1599,
-        "currentOccupancy": 42.9,
+        "total": 1590,
+        "currentOccupancy": 45.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 60065,
+        "goal": 75000,
         "achievement": 73.2
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23915,
+      "performanceCode": "260122E",
+      "performanceName": "Indiana Jones: Raiders of Lost",
+      "seriesCode": "Film",
+      "performanceDate": "2026-01-22",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 219,
+        "subscriptionTickets": 0,
+        "totalTickets": 219,
+        "totalRevenue": 14828
+      },
+      "metrics": {
+        "singleATP": 67.70776255707763,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 15.1,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 90000,
+        "achievement": 91.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23916,
+      "performanceCode": "260123E",
+      "performanceName": "Indiana Jones: Raiders of Lost",
+      "seriesCode": "Film",
+      "performanceDate": "2026-01-23",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 422,
+        "subscriptionTickets": 0,
+        "totalTickets": 422,
+        "totalRevenue": 31247.5
+      },
+      "metrics": {
+        "singleATP": 74.04620853080569,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 31.9,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 90000,
+        "achievement": 91.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23917,
       "performanceCode": "260124E",
       "performanceName": "Indiana Jones: Raiders of Lost",
-      "seriesCode": "Indiana Jones Concert",
+      "seriesCode": "Film",
       "performanceDate": "2026-01-24",
       "venue": "HELZBERG HALL",
-      "season": "25-26 Special",
+      "season": "25-26 Film",
       "currentSales": {
-        "singleTickets": 429,
-        "subscriptionTickets": 10,
-        "totalTickets": 439,
-        "totalRevenue": 32128.1
+        "singleTickets": 737,
+        "subscriptionTickets": 0,
+        "totalTickets": 737,
+        "totalRevenue": 53894.6
       },
       "metrics": {
-        "singleATP": 73.37552447552447,
-        "subscriptionATP": 65
+        "singleATP": 73.1270013568521,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1338,
-        "currentOccupancy": 32.8,
+        "total": 1302,
+        "currentOccupancy": 55,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 34998,
+        "goal": 90000,
         "achievement": 91.8
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23918,
+      "performanceCode": "260125M",
+      "performanceName": "Indiana Jones: Raiders of Lost",
+      "seriesCode": "Film",
+      "performanceDate": "2026-01-25",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 507,
+        "subscriptionTickets": 0,
+        "totalTickets": 507,
+        "totalRevenue": 37704.2
+      },
+      "metrics": {
+        "singleATP": 74.36725838264299,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 38.5,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 90000,
+        "achievement": 91.8
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23638,
+      "performanceCode": "260130E",
+      "performanceName": "CS06 Beethoven+ (Piazza4)",
+      "seriesCode": "CS06",
+      "performanceDate": "2026-01-30",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 95,
+        "subscriptionTickets": 0,
+        "totalTickets": 95,
+        "totalRevenue": 29738.4
+      },
+      "metrics": {
+        "singleATP": 313.03578947368425,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 29,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 54000,
+        "achievement": 52.7
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -999,29 +2359,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 53,
-        "subscriptionTickets": 614,
-        "totalTickets": 667,
-        "totalRevenue": 44237.1
+        "singleTickets": 140,
+        "subscriptionTickets": 0,
+        "totalTickets": 140,
+        "totalRevenue": 47286.7
       },
       "metrics": {
-        "singleATP": 81.64339622641506,
-        "subscriptionATP": 65
+        "singleATP": 337.76214285714286,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1544,
-        "currentOccupancy": 43.2,
+        "total": 1590,
+        "currentOccupancy": 46.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 60433,
+        "goal": 75000,
         "achievement": 73.2
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1033,29 +2393,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 41,
-        "subscriptionTickets": 617,
-        "totalTickets": 658,
-        "totalRevenue": 41792.9
+        "singleTickets": 98,
+        "subscriptionTickets": 0,
+        "totalTickets": 98,
+        "totalRevenue": 45688.5
       },
       "metrics": {
-        "singleATP": 41.16829268292687,
-        "subscriptionATP": 65
+        "singleATP": 466.2091836734694,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1613,
-        "currentOccupancy": 40.8,
+        "total": 1590,
+        "currentOccupancy": 44.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 57094,
+        "goal": 75000,
         "achievement": 73.2
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1067,29 +2427,29 @@
       "venue": "SY-G/A Hall",
       "season": "25-26 Season",
       "currentSales": {
-        "singleTickets": 19,
-        "subscriptionTickets": 8,
-        "totalTickets": 27,
-        "totalRevenue": 1960
+        "singleTickets": 20,
+        "subscriptionTickets": 0,
+        "totalTickets": 20,
+        "totalRevenue": 2100
       },
       "metrics": {
-        "singleATP": 75.78947368421052,
-        "subscriptionATP": 65
+        "singleATP": 105,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 136,
-        "currentOccupancy": 14,
+        "total": 100,
+        "currentOccupancy": 15,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 3048,
+        "goal": 9000,
         "achievement": 64.3
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1101,29 +2461,131 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 44,
-        "subscriptionTickets": 573,
-        "totalTickets": 617,
-        "totalRevenue": 39853.3
+        "singleTickets": 79,
+        "subscriptionTickets": 0,
+        "totalTickets": 79,
+        "totalRevenue": 41672.8
       },
       "metrics": {
-        "singleATP": 59.27954545454552,
-        "subscriptionATP": 65
+        "singleATP": 527.5037974683545,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1586,
-        "currentOccupancy": 38.9,
+        "total": 1590,
+        "currentOccupancy": 40.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 87398,
+        "goal": 46666,
         "achievement": 45.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23643,
+      "performanceCode": "260207E",
+      "performanceName": "CS07 Prokofiev, Symphony No. 5",
+      "seriesCode": "CS07",
+      "performanceDate": "2026-02-07",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 66,
+        "subscriptionTickets": 0,
+        "totalTickets": 66,
+        "totalRevenue": 39304.5
+      },
+      "metrics": {
+        "singleATP": 595.5227272727273,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 38.4,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 46666,
+        "achievement": 45.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23644,
+      "performanceCode": "260208M",
+      "performanceName": "CS07 Prokofiev, Symphony No. 5",
+      "seriesCode": "CS07",
+      "performanceDate": "2026-02-08",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 54,
+        "subscriptionTickets": 0,
+        "totalTickets": 54,
+        "totalRevenue": 38764.3
+      },
+      "metrics": {
+        "singleATP": 717.8574074074074,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 37.9,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 46668,
+        "achievement": 45.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23730,
+      "performanceCode": "260212E",
+      "performanceName": "Chris Thile with the KCS",
+      "seriesCode": null,
+      "performanceDate": "2026-02-12",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 405,
+        "subscriptionTickets": 0,
+        "totalTickets": 405,
+        "totalRevenue": 37352.1
+      },
+      "metrics": {
+        "singleATP": 92.2274074074074,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 26.2,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 128900,
+        "achievement": 90.5
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1135,29 +2597,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 48,
-        "subscriptionTickets": 723,
-        "totalTickets": 771,
-        "totalRevenue": 55079.7
+        "singleTickets": 91,
+        "subscriptionTickets": 0,
+        "totalTickets": 91,
+        "totalRevenue": 57836.3
       },
       "metrics": {
-        "singleATP": 168.43124999999995,
-        "subscriptionATP": 65
+        "singleATP": 635.5637362637362,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1551,
-        "currentOccupancy": 49.7,
+        "total": 1590,
+        "currentOccupancy": 52.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 64421,
+        "goal": 94666,
         "achievement": 85.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1169,63 +2631,233 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 38,
-        "subscriptionTickets": 660,
-        "totalTickets": 698,
-        "totalRevenue": 49814.5
+        "singleTickets": 99,
+        "subscriptionTickets": 0,
+        "totalTickets": 99,
+        "totalRevenue": 51728
       },
       "metrics": {
-        "singleATP": 181.96052631578948,
-        "subscriptionATP": 65
+        "singleATP": 522.5050505050505,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1551,
-        "currentOccupancy": 45,
+        "total": 1590,
+        "currentOccupancy": 46.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 58263,
+        "goal": 94667,
         "achievement": 85.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23685,
+      "performanceCode": "260215M",
+      "performanceName": "PS3 She's Got Soul",
+      "seriesCode": "PS3",
+      "performanceDate": "2026-02-15",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Pops",
+      "currentSales": {
+        "singleTickets": 79,
+        "subscriptionTickets": 0,
+        "totalTickets": 79,
+        "totalRevenue": 31474.9
+      },
+      "metrics": {
+        "singleATP": 398.41645569620255,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 28.4,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 94667,
+        "achievement": 85.5
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23802,
+      "performanceCode": "260219E",
+      "performanceName": "Harry Potter 2 Chamber Secrets",
+      "seriesCode": "Film",
+      "performanceDate": "2026-02-19",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 207,
+        "subscriptionTickets": 0,
+        "totalTickets": 207,
+        "totalRevenue": 14948.5
+      },
+      "metrics": {
+        "singleATP": 72.21497584541063,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 15.2,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 111250,
+        "achievement": 113
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23803,
+      "performanceCode": "260220E",
+      "performanceName": "Harry Potter 2 Chamber Secrets",
+      "seriesCode": "Film",
+      "performanceDate": "2026-02-20",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 394,
+        "subscriptionTickets": 0,
+        "totalTickets": 394,
+        "totalRevenue": 30117
+      },
+      "metrics": {
+        "singleATP": 76.43908629441624,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 30.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 111250,
+        "achievement": 113
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23804,
+      "performanceCode": "260221E",
+      "performanceName": "Harry Potter 2 Chamber Secrets",
+      "seriesCode": "Film",
+      "performanceDate": "2026-02-21",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Film",
+      "currentSales": {
+        "singleTickets": 678,
+        "subscriptionTickets": 0,
+        "totalTickets": 678,
+        "totalRevenue": 51216.05
+      },
+      "metrics": {
+        "singleATP": 75.53989675516225,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 52,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 111250,
+        "achievement": 113
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
       "performanceId": 23805,
       "performanceCode": "260222M",
       "performanceName": "Harry Potter 2 Chamber Secrets",
-      "seriesCode": "Harry Potter Concert",
+      "seriesCode": "Film",
       "performanceDate": "2026-02-22",
       "venue": "HELZBERG HALL",
-      "season": "25-26 Special",
+      "season": "25-26 Film",
       "currentSales": {
-        "singleTickets": 390,
-        "subscriptionTickets": 7,
-        "totalTickets": 397,
-        "totalRevenue": 29349
+        "singleTickets": 680,
+        "subscriptionTickets": 0,
+        "totalTickets": 680,
+        "totalRevenue": 47282
       },
       "metrics": {
-        "singleATP": 74.08717948717948,
-        "subscriptionATP": 65
+        "singleATP": 69.53235294117647,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1332,
-        "currentOccupancy": 29.8,
+        "total": 1302,
+        "currentOccupancy": 48,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 25973,
+        "goal": 111250,
         "achievement": 113
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23695,
+      "performanceCode": "260301M",
+      "performanceName": "FS3 Philharmonia Fantastiqu",
+      "seriesCode": "FS3",
+      "performanceDate": "2026-03-01",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Family",
+      "currentSales": {
+        "singleTickets": 58,
+        "subscriptionTickets": 0,
+        "totalTickets": 58,
+        "totalRevenue": 9677.5
+      },
+      "metrics": {
+        "singleATP": 166.85344827586206,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1302,
+        "currentOccupancy": 18.7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 19500,
+        "achievement": 37.7
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1237,29 +2869,131 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 32,
-        "subscriptionTickets": 579,
-        "totalTickets": 611,
-        "totalRevenue": 40372.9
+        "singleTickets": 91,
+        "subscriptionTickets": 0,
+        "totalTickets": 91,
+        "totalRevenue": 42820.3
       },
       "metrics": {
-        "singleATP": 85.55937500000005,
-        "subscriptionATP": 65
+        "singleATP": 470.5527472527473,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1551,
-        "currentOccupancy": 39.4,
+        "total": 1590,
+        "currentOccupancy": 41.8,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 75182,
+        "goal": 54999,
         "achievement": 53.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 314,
+      "performanceCode": "260314A",
+      "performanceName": "Performance 260314A",
+      "seriesCode": "Series-03",
+      "performanceDate": "2026-03-14",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 314,
+      "performanceCode": "260314B",
+      "performanceName": "Performance 260314B",
+      "seriesCode": "Series-03",
+      "performanceDate": "2026-03-14",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 314,
+      "performanceCode": "260314C",
+      "performanceName": "Performance 260314C",
+      "seriesCode": "Series-03",
+      "performanceDate": "2026-03-14",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1271,29 +3005,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 37,
-        "subscriptionTickets": 573,
-        "totalTickets": 610,
-        "totalRevenue": 39045.7
+        "singleTickets": 105,
+        "subscriptionTickets": 0,
+        "totalTickets": 105,
+        "totalRevenue": 42317.9
       },
       "metrics": {
-        "singleATP": 48.66756756756749,
-        "subscriptionATP": 65
+        "singleATP": 403.02761904761905,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1601,
-        "currentOccupancy": 38.1,
+        "total": 1590,
+        "currentOccupancy": 41.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 72711,
+        "goal": 55000,
         "achievement": 53.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1305,29 +3039,97 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 51,
-        "subscriptionTickets": 569,
-        "totalTickets": 620,
-        "totalRevenue": 39736
+        "singleTickets": 94,
+        "subscriptionTickets": 0,
+        "totalTickets": 94,
+        "totalRevenue": 43088.2
       },
       "metrics": {
-        "singleATP": 53.94117647058823,
-        "subscriptionATP": 65
+        "singleATP": 458.3851063829787,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1598,
-        "currentOccupancy": 38.8,
+        "total": 1590,
+        "currentOccupancy": 42.1,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 73996,
+        "goal": 55001,
         "achievement": 53.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24276,
+      "performanceCode": "260325E",
+      "performanceName": "Final Symphony: Music from FF",
+      "seriesCode": null,
+      "performanceDate": "2026-03-25",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 123,
+        "subscriptionTickets": 0,
+        "totalTickets": 123,
+        "totalRevenue": 8713
+      },
+      "metrics": {
+        "singleATP": 70.83739837398375,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 7,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 84109,
+        "achievement": 67.4
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24277,
+      "performanceCode": "260326E",
+      "performanceName": "Final Symphony: Music from FF",
+      "seriesCode": null,
+      "performanceDate": "2026-03-26",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 134,
+        "subscriptionTickets": 0,
+        "totalTickets": 134,
+        "totalRevenue": 9099.5
+      },
+      "metrics": {
+        "singleATP": 67.90671641791045,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 7.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 84109,
+        "achievement": 67.4
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1339,29 +3141,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 136,
-        "subscriptionTickets": 741,
-        "totalTickets": 877,
-        "totalRevenue": 62827.3
+        "singleTickets": 217,
+        "subscriptionTickets": 0,
+        "totalTickets": 217,
+        "totalRevenue": 68756.3
       },
       "metrics": {
-        "singleATP": 107.81102941176472,
-        "subscriptionATP": 65
+        "singleATP": 316.8493087557604,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1547,
-        "currentOccupancy": 56.7,
+        "total": 1590,
+        "currentOccupancy": 62.1,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 73482,
+        "goal": 94666,
         "achievement": 85.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1373,29 +3175,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 139,
-        "subscriptionTickets": 670,
-        "totalTickets": 809,
-        "totalRevenue": 58524.3
+        "singleTickets": 256,
+        "subscriptionTickets": 0,
+        "totalTickets": 256,
+        "totalRevenue": 66720.4
       },
       "metrics": {
-        "singleATP": 107.72877697841729,
-        "subscriptionATP": 65
+        "singleATP": 260.6265625,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1532,
-        "currentOccupancy": 52.8,
+        "total": 1590,
+        "currentOccupancy": 60.2,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 68449,
+        "goal": 94667,
         "achievement": 85.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1407,29 +3209,63 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 164,
-        "subscriptionTickets": 406,
-        "totalTickets": 570,
-        "totalRevenue": 39496.2
+        "singleTickets": 288,
+        "subscriptionTickets": 0,
+        "totalTickets": 288,
+        "totalRevenue": 48778.4
       },
       "metrics": {
-        "singleATP": 79.91585365853656,
-        "subscriptionATP": 65
+        "singleATP": 169.36944444444444,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1504,
-        "currentOccupancy": 37.9,
+        "total": 1590,
+        "currentOccupancy": 44,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 43450,
-        "achievement": 90.9
+        "goal": 94667,
+        "achievement": 85.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23648,
+      "performanceCode": "260410E",
+      "performanceName": "CS09 MidsummerNight (Piazza 5)",
+      "seriesCode": "CS09",
+      "performanceDate": "2026-04-10",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 51,
+        "subscriptionTickets": 0,
+        "totalTickets": 51,
+        "totalRevenue": 28654
+      },
+      "metrics": {
+        "singleATP": 561.843137254902,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1433,
+        "currentOccupancy": 29.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 52000,
+        "achievement": 53.1
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1441,29 +3277,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 69,
-        "subscriptionTickets": 574,
-        "totalTickets": 643,
-        "totalRevenue": 40572.7
+        "singleTickets": 115,
+        "subscriptionTickets": 0,
+        "totalTickets": 115,
+        "totalRevenue": 42212.8
       },
       "metrics": {
-        "singleATP": 47.28550724637677,
-        "subscriptionATP": 65
+        "singleATP": 367.06782608695653,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1549,
-        "currentOccupancy": 41.5,
+        "total": 1433,
+        "currentOccupancy": 43.1,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 53668,
+        "goal": 74000,
         "achievement": 75.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1475,29 +3311,63 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 43,
-        "subscriptionTickets": 569,
-        "totalTickets": 612,
-        "totalRevenue": 38434.6
+        "singleTickets": 80,
+        "subscriptionTickets": 0,
+        "totalTickets": 80,
+        "totalRevenue": 41236.6
       },
       "metrics": {
-        "singleATP": 33.71162790697671,
-        "subscriptionATP": 65
+        "singleATP": 515.4575,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1557,
-        "currentOccupancy": 39.3,
+        "total": 1433,
+        "currentOccupancy": 42.1,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 50839,
+        "goal": 74000,
         "achievement": 75.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23651,
+      "performanceCode": "260417E",
+      "performanceName": "CS10 Farrenc, Dvorák, Schumann",
+      "seriesCode": "CS10",
+      "performanceDate": "2026-04-17",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 35,
+        "subscriptionTickets": 0,
+        "totalTickets": 35,
+        "totalRevenue": 40254.7
+      },
+      "metrics": {
+        "singleATP": 1150.1342857142856,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 39.3,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 46666,
+        "achievement": 45.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1509,29 +3379,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 18,
-        "subscriptionTickets": 600,
-        "totalTickets": 618,
-        "totalRevenue": 41356.7
+        "singleTickets": 50,
+        "subscriptionTickets": 0,
+        "totalTickets": 50,
+        "totalRevenue": 41897.7
       },
       "metrics": {
-        "singleATP": 130.9277777777776,
-        "subscriptionATP": 65
+        "singleATP": 837.954,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1530,
-        "currentOccupancy": 40.4,
+        "total": 1590,
+        "currentOccupancy": 40.9,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 90695,
+        "goal": 46666,
         "achievement": 45.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1543,29 +3413,165 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 24,
-        "subscriptionTickets": 624,
-        "totalTickets": 648,
-        "totalRevenue": 40994.9
+        "singleTickets": 55,
+        "subscriptionTickets": 0,
+        "totalTickets": 55,
+        "totalRevenue": 42696.9
       },
       "metrics": {
-        "singleATP": 18.120833333333394,
-        "subscriptionATP": 65
+        "singleATP": 776.3072727272728,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1620,
-        "currentOccupancy": 40,
+        "total": 1590,
+        "currentOccupancy": 41.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 89901,
+        "goal": 46668,
         "achievement": 45.6
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23654,
+      "performanceCode": "260508E",
+      "performanceName": "CS11 Grieg Pno Cto (Piazza 6)",
+      "seriesCode": "CS11",
+      "performanceDate": "2026-05-08",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 45,
+        "subscriptionTickets": 0,
+        "totalTickets": 45,
+        "totalRevenue": 28102.7
+      },
+      "metrics": {
+        "singleATP": 624.5044444444445,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 27.4,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 45000,
+        "achievement": 43.9
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 509,
+      "performanceCode": "260509A",
+      "performanceName": "Performance 260509A",
+      "seriesCode": "Series-05",
+      "performanceDate": "2026-05-09",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 509,
+      "performanceCode": "260509B",
+      "performanceName": "Performance 260509B",
+      "seriesCode": "Series-05",
+      "performanceDate": "2026-05-09",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 509,
+      "performanceCode": "260509C",
+      "performanceName": "Performance 260509C",
+      "seriesCode": "Series-05",
+      "performanceDate": "2026-05-09",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 0,
+        "subscriptionTickets": 0,
+        "totalTickets": 0,
+        "totalRevenue": 0
+      },
+      "metrics": {
+        "singleATP": 0,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1600,
+        "currentOccupancy": 0,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 0,
+        "achievement": 0
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-11-12T13:00:26.878436000Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1577,29 +3583,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 61,
-        "subscriptionTickets": 607,
-        "totalTickets": 668,
-        "totalRevenue": 44337.3
+        "singleTickets": 106,
+        "subscriptionTickets": 0,
+        "totalTickets": 106,
+        "totalRevenue": 46467.9
       },
       "metrics": {
-        "singleATP": 80.03770491803283,
-        "subscriptionATP": 65
+        "singleATP": 438.3764150943396,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1543,
-        "currentOccupancy": 43.3,
+        "total": 1590,
+        "currentOccupancy": 45.4,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 69823,
+        "goal": 65000,
         "achievement": 63.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1611,29 +3617,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 40,
-        "subscriptionTickets": 626,
-        "totalTickets": 666,
-        "totalRevenue": 42307.7
+        "singleTickets": 76,
+        "subscriptionTickets": 0,
+        "totalTickets": 76,
+        "totalRevenue": 44735.5
       },
       "metrics": {
-        "singleATP": 40.442499999999924,
-        "subscriptionATP": 65
+        "singleATP": 588.625,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1613,
-        "currentOccupancy": 41.3,
+        "total": 1590,
+        "currentOccupancy": 43.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 66626,
+        "goal": 65000,
         "achievement": 63.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1645,29 +3651,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 60,
-        "subscriptionTickets": 734,
-        "totalTickets": 794,
-        "totalRevenue": 66945.1
+        "singleTickets": 92,
+        "subscriptionTickets": 0,
+        "totalTickets": 92,
+        "totalRevenue": 69180.1
       },
       "metrics": {
-        "singleATP": 320.5850000000001,
-        "subscriptionATP": 65
+        "singleATP": 751.9576086956522,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1398,
-        "currentOccupancy": 56.8,
+        "total": 1302,
+        "currentOccupancy": 58.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 76334,
+        "goal": 103333,
         "achievement": 87.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1679,29 +3685,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 59,
-        "subscriptionTickets": 669,
-        "totalTickets": 728,
-        "totalRevenue": 61516.5
+        "singleTickets": 87,
+        "subscriptionTickets": 0,
+        "totalTickets": 87,
+        "totalRevenue": 62857.8
       },
       "metrics": {
-        "singleATP": 305.6186440677966,
-        "subscriptionATP": 65
+        "singleATP": 722.5034482758621,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1395,
-        "currentOccupancy": 52.2,
+        "total": 1302,
+        "currentOccupancy": 53.3,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 70144,
+        "goal": 103334,
         "achievement": 87.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1713,29 +3719,97 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Pops",
       "currentSales": {
-        "singleTickets": 90,
-        "subscriptionTickets": 403,
-        "totalTickets": 493,
-        "totalRevenue": 39232.4
+        "singleTickets": 147,
+        "subscriptionTickets": 0,
+        "totalTickets": 147,
+        "totalRevenue": 44262.1
       },
       "metrics": {
-        "singleATP": 144.86,
-        "subscriptionATP": 65
+        "singleATP": 301.1027210884354,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1480,
-        "currentOccupancy": 33.3,
+        "total": 1302,
+        "currentOccupancy": 37.5,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 44735,
+        "goal": 103333,
         "achievement": 87.7
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24286,
+      "performanceCode": "260521E",
+      "performanceName": "Ben Rector with KCS",
+      "seriesCode": null,
+      "performanceDate": "2026-05-21",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 502,
+        "subscriptionTickets": 0,
+        "totalTickets": 502,
+        "totalRevenue": 48312.5
+      },
+      "metrics": {
+        "singleATP": 96.24003984063745,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 33.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 112468,
+        "achievement": 78.1
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 24287,
+      "performanceCode": "260522E",
+      "performanceName": "Ben Rector with KCS",
+      "seriesCode": null,
+      "performanceDate": "2026-05-22",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Special",
+      "currentSales": {
+        "singleTickets": 866,
+        "subscriptionTickets": 0,
+        "totalTickets": 866,
+        "totalRevenue": 82975
+      },
+      "metrics": {
+        "singleATP": 95.81408775981524,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 57.6,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 112468,
+        "achievement": 78.1
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1747,29 +3821,63 @@
       "venue": "SY-G/A Hall",
       "season": "25-26 Season",
       "currentSales": {
-        "singleTickets": 17,
-        "subscriptionTickets": 7,
-        "totalTickets": 24,
-        "totalRevenue": 1680
+        "singleTickets": 23,
+        "subscriptionTickets": 0,
+        "totalTickets": 23,
+        "totalRevenue": 2520
       },
       "metrics": {
-        "singleATP": 72.05882352941177,
-        "subscriptionATP": 65
+        "singleATP": 109.56521739130434,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 142,
-        "currentOccupancy": 12,
+        "total": 100,
+        "currentOccupancy": 18,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 2613,
+        "goal": 9000,
         "achievement": 64.3
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23657,
+      "performanceCode": "260529E",
+      "performanceName": "CS12 Gil Shaham Plays Brahms",
+      "seriesCode": "CS12",
+      "performanceDate": "2026-05-29",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 65,
+        "subscriptionTickets": 0,
+        "totalTickets": 65,
+        "totalRevenue": 40427.7
+      },
+      "metrics": {
+        "singleATP": 621.9646153846153,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 39.5,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 51666,
+        "achievement": 50.5
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1781,29 +3889,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 31,
-        "subscriptionTickets": 577,
-        "totalTickets": 608,
-        "totalRevenue": 38191.1
+        "singleTickets": 52,
+        "subscriptionTickets": 0,
+        "totalTickets": 52,
+        "totalRevenue": 39495.9
       },
       "metrics": {
-        "singleATP": 22.132258064516083,
-        "subscriptionATP": 65
+        "singleATP": 759.5365384615385,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1630,
-        "currentOccupancy": 37.3,
+        "total": 1590,
+        "currentOccupancy": 38.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 75626,
+        "goal": 51667,
         "achievement": 50.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1815,29 +3923,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 47,
-        "subscriptionTickets": 574,
-        "totalTickets": 621,
-        "totalRevenue": 39203.3
+        "singleTickets": 68,
+        "subscriptionTickets": 0,
+        "totalTickets": 68,
+        "totalRevenue": 40533.3
       },
       "metrics": {
-        "singleATP": 40.28297872340432,
-        "subscriptionATP": 65
+        "singleATP": 596.0779411764706,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1621,
-        "currentOccupancy": 38.3,
+        "total": 1590,
+        "currentOccupancy": 39.6,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 77630,
+        "goal": 51667,
         "achievement": 50.5
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1849,29 +3957,29 @@
       "venue": "SY-G/A Hall",
       "season": "25-26 Season",
       "currentSales": {
-        "singleTickets": 20,
-        "subscriptionTickets": 8,
-        "totalTickets": 28,
-        "totalRevenue": 2100
+        "singleTickets": 22,
+        "subscriptionTickets": 0,
+        "totalTickets": 22,
+        "totalRevenue": 2380
       },
       "metrics": {
-        "singleATP": 79,
-        "subscriptionATP": 65
+        "singleATP": 108.18181818181819,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 133,
-        "currentOccupancy": 15,
+        "total": 100,
+        "currentOccupancy": 17,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 3266,
+        "goal": 9000,
         "achievement": 64.3
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1883,29 +3991,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 35,
-        "subscriptionTickets": 585,
-        "totalTickets": 620,
-        "totalRevenue": 40915
+        "singleTickets": 68,
+        "subscriptionTickets": 0,
+        "totalTickets": 68,
+        "totalRevenue": 42692.2
       },
       "metrics": {
-        "singleATP": 82.57142857142857,
-        "subscriptionATP": 65
+        "singleATP": 627.8264705882352,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1550,
-        "currentOccupancy": 40,
+        "total": 1590,
+        "currentOccupancy": 41.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 62849,
+        "goal": 66666,
         "achievement": 65.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1917,29 +4025,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 53,
-        "subscriptionTickets": 613,
-        "totalTickets": 666,
-        "totalRevenue": 44551.9
+        "singleTickets": 106,
+        "subscriptionTickets": 0,
+        "totalTickets": 106,
+        "totalRevenue": 46588.8
       },
       "metrics": {
-        "singleATP": 88.80943396226418,
-        "subscriptionATP": 65
+        "singleATP": 439.5169811320755,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1531,
-        "currentOccupancy": 43.5,
+        "total": 1590,
+        "currentOccupancy": 45.5,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 68436,
+        "goal": 66667,
         "achievement": 65.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1951,29 +4059,63 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 58,
-        "subscriptionTickets": 643,
-        "totalTickets": 701,
-        "totalRevenue": 44788.6
+        "singleTickets": 114,
+        "subscriptionTickets": 0,
+        "totalTickets": 114,
+        "totalRevenue": 47892
       },
       "metrics": {
-        "singleATP": 51.61379310344825,
-        "subscriptionATP": 65
+        "singleATP": 420.10526315789474,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1604,
-        "currentOccupancy": 43.7,
+        "total": 1590,
+        "currentOccupancy": 46.8,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 68800,
+        "goal": 66667,
         "achievement": 65.1
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
+      }
+    },
+    {
+      "performanceId": 23665,
+      "performanceCode": "260619E",
+      "performanceName": "CS14 Rhapsody Blue (Piazza 7)",
+      "seriesCode": "CS14",
+      "performanceDate": "2026-06-19",
+      "venue": "HELZBERG HALL",
+      "season": "25-26 Classical",
+      "currentSales": {
+        "singleTickets": 127,
+        "subscriptionTickets": 0,
+        "totalTickets": 127,
+        "totalRevenue": 34979.6
+      },
+      "metrics": {
+        "singleATP": 275.4299212598425,
+        "subscriptionATP": 0
+      },
+      "capacity": {
+        "total": 1590,
+        "currentOccupancy": 34.2,
+        "occupancyGoal": 85
+      },
+      "budget": {
+        "goal": 60000,
+        "achievement": 58.6
+      },
+      "metadata": {
+        "hasSalesData": true,
+        "createdAt": "2025-10-01T15:47:57.472Z",
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -1985,29 +4127,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 152,
-        "subscriptionTickets": 603,
-        "totalTickets": 755,
-        "totalRevenue": 48586.5
+        "singleTickets": 260,
+        "subscriptionTickets": 0,
+        "totalTickets": 260,
+        "totalRevenue": 54650.2
       },
       "metrics": {
-        "singleATP": 61.786184210526315,
-        "subscriptionATP": 65
+        "singleATP": 210.19307692307692,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1589,
-        "currentOccupancy": 47.5,
+        "total": 1590,
+        "currentOccupancy": 53.4,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 71033,
+        "goal": 70000,
         "achievement": 68.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     },
     {
@@ -2019,29 +4161,29 @@
       "venue": "HELZBERG HALL",
       "season": "25-26 Classical",
       "currentSales": {
-        "singleTickets": 133,
-        "subscriptionTickets": 588,
-        "totalTickets": 721,
-        "totalRevenue": 45992.2
+        "singleTickets": 202,
+        "subscriptionTickets": 0,
+        "totalTickets": 202,
+        "totalRevenue": 49877.2
       },
       "metrics": {
-        "singleATP": 58.43759398496238,
-        "subscriptionATP": 65
+        "singleATP": 246.9168316831683,
+        "subscriptionATP": 0
       },
       "capacity": {
-        "total": 1606,
-        "currentOccupancy": 44.9,
+        "total": 1590,
+        "currentOccupancy": 48.7,
         "occupancyGoal": 85
       },
       "budget": {
-        "goal": 67240,
+        "goal": 70000,
         "achievement": 68.4
       },
       "metadata": {
         "hasSalesData": true,
         "createdAt": "2025-10-01T15:47:57.472Z",
-        "updatedAt": "2025-10-01T15:47:57.472Z",
-        "lastPdfImport": null
+        "updatedAt": "2025-11-22T13:00:28.965311000Z",
+        "lastPdfImport": "2025-11-22T13:00:28.965311000Z"
       }
     }
   ]
