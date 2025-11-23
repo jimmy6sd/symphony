@@ -406,8 +406,9 @@ class DataTable {
         const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
         if (performanceDate <= today) return { projection: null, reason: 'past_performance' };
 
-        // Calculate weeks to performance
-        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+        // Calculate weeks to performance (exact decimal for accurate interpolation, same as tracking status box)
+        const daysToPerformance = Math.ceil((performanceDate - today) / (24 * 60 * 60 * 1000));
+        const weeksToPerformance = Math.max(0, daysToPerformance / 7); // Exact decimal weeks
         if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
 
         // Get target comp data from BigQuery (same as sales curve chart)
@@ -430,8 +431,8 @@ class DataTable {
         // Available single capacity (total capacity minus subscriptions)
         const availableSingleCapacity = capacity - subscriptionSeats;
 
-        // Calculate actual week (same as sales curve chart)
-        const actualWeek = weeksToPerformance;
+        // Use exact decimal weeks for interpolation (same as tracking status box)
+        const actualWeek = weeksToPerformance; // Already exact decimal
         const actualSales = currentSingleSales;
 
         // Get target comp value at actual week (with interpolation if needed)
