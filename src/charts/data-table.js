@@ -309,7 +309,7 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const projection = row._projection;
-                    if (!projection) return 'N/A';
+                    if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
 
                     const projectedTickets = Math.round(projection.projectedTickets);
                     const targetTickets = Math.round(projection.targetTickets);
@@ -333,7 +333,7 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const projection = row._projection;
-                    if (!projection) return 'N/A';
+                    if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
 
                     const projectedRevenue = Math.round(projection.projectedRevenue);
                     const targetRevenue = Math.round(projection.targetRevenue);
@@ -2722,6 +2722,24 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             // Average occupancy across all performances
             const avgOccupancy = totalCapacity > 0 ? (totalTickets / totalCapacity * 100) : 0;
 
+            // Aggregate projections across all performances in the group
+            const hasAnyProjection = perfs.some(p => p._projection && (p._projection.projectedTickets > 0 || p._projection.targetTickets > 0));
+
+            const aggregateProjection = hasAnyProjection ? perfs.reduce((acc, p) => {
+                if (p._projection) {
+                    acc.projectedTickets += p._projection.projectedTickets || 0;
+                    acc.targetTickets += p._projection.targetTickets || 0;
+                    acc.projectedRevenue += p._projection.projectedRevenue || 0;
+                    acc.targetRevenue += p._projection.targetRevenue || 0;
+                }
+                return acc;
+            }, {
+                projectedTickets: 0,
+                targetTickets: 0,
+                projectedRevenue: 0,
+                targetRevenue: 0
+            }) : null;
+
             // Use first performance's metadata
             const firstPerf = perfs[0];
 
@@ -2741,7 +2759,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 budgetGoal: totalBudget,
                 occupancyGoal: firstPerf.occupancyGoal || 85,
                 performanceCount: count,
-                _projection: firstPerf._projection // Preserve projection from first performance
+                _projection: aggregateProjection // Use aggregated projection
             });
         });
 
