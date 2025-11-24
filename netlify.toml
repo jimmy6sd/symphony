@@ -22,6 +22,19 @@
   status = 200
 
 [[redirects]]
+  # Protect the new dashboard view - redirect to login if not authenticated
+  from = "/dashboard"
+  to = "/login.html"
+  status = 302
+  conditions = {Role = ["!authenticated"]}
+
+[[redirects]]
+  # Serve the dashboard view for authenticated users
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
   # Admin edit routes - serve admin-edit.html
   from = "/admin/edit/*"
   to = "/admin-edit.html"

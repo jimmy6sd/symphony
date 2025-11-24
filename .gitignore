@@ -75,5 +75,13 @@ parsed-*.json
 data/*.pdf
 data/*.csv
 
-# Dashboard data - always pull from BigQuery, never commit local cache
+# Dashboard runtime cache - always pull from BigQuery, never commit
 data/dashboard.json
+data/dashboard-*.json
+data/*-extracted.json
+data/unified-*.json
+data/historical-*.json
+
+# Archive and source files - OK to commit for reference
+!data/archive/**/*
+!data/source-files/**/*

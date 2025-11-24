@@ -118,15 +118,21 @@ exports.handler = async (event, context) => {
   }
 };
 
-// GET - Fetch comparisons for a performance
+// GET - Fetch comparisons for a performance (or batch)
 async function getComparisons(bigquery, params, headers) {
-  const { performanceId } = params || {};
+  const { performanceId, performanceIds } = params || {};
 
+  // Support batch requests with performanceIds parameter
+  if (performanceIds) {
+    return await getBatchComparisons(bigquery, performanceIds, headers);
+  }
+
+  // Single performance request
   if (!performanceId) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'performanceId query parameter required' })
+      body: JSON.stringify({ error: 'performanceId or performanceIds query parameter required' })
     };
   }
 
@@ -167,6 +173,74 @@ async function getComparisons(bigquery, params, headers) {
     statusCode: 200,
     headers,
     body: JSON.stringify(comparisons)
+  };
+}
+
+// GET (Batch) - Fetch comparisons for multiple performances
+async function getBatchComparisons(bigquery, performanceIdsParam, headers) {
+  const performanceIds = performanceIdsParam.split(',').map(id => id.trim()).filter(id => id.length > 0);
+
+  if (performanceIds.length === 0) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'performanceIds must contain at least one ID' })
+    };
+  }
+
+  // Build WHERE clause with IN operator
+  const placeholders = performanceIds.map(() => '?').join(',');
+  const query = `
+    SELECT
+      comparison_id,
+      performance_id,
+      comparison_name,
+      weeks_data,
+      line_color,
+      line_style,
+      is_target,
+      comp_date,
+      atp,
+      subs,
+      capacity,
+      occupancy_percent,
+      created_at,
+      updated_at
+    FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+    WHERE performance_id IN (${placeholders})
+    ORDER BY performance_id, is_target DESC, created_at DESC
+  `;
+
+  const [rows] = await bigquery.query({
+    query,
+    params: performanceIds.map(id => String(id)), // Convert all to strings for BigQuery
+    location: 'US'
+  });
+
+  // Group comparisons by performance_id
+  const grouped = {};
+  rows.forEach(row => {
+    const perfId = row.performance_id;
+    if (!grouped[perfId]) {
+      grouped[perfId] = [];
+    }
+    grouped[perfId].push({
+      ...row,
+      weeksArray: parseWeeksData(row.weeks_data)
+    });
+  });
+
+  // Ensure all requested performances have an entry (even if empty)
+  performanceIds.forEach(perfId => {
+    if (!grouped[perfId]) {
+      grouped[perfId] = [];
+    }
+  });
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(grouped)
   };
 }
 

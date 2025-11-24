@@ -407,6 +407,55 @@ class DataService {
         }
     }
 
+    // ⚡ BATCH OPTIMIZATION: Get comparisons for multiple performances in one API call
+    async getBatchPerformanceComparisons(performanceIds) {
+        try {
+            // Filter out already-cached IDs
+            const uncachedIds = performanceIds.filter(id => !this.comparisonCache.has(id));
+
+            if (uncachedIds.length === 0) {
+                console.log(`⚡ All ${performanceIds.length} comparisons already cached`);
+                // Return cached data for all requested IDs
+                const result = {};
+                performanceIds.forEach(id => {
+                    result[id] = this.comparisonCache.get(id);
+                });
+                return result;
+            }
+
+            console.log(`🔄 Batch fetching comparisons for ${uncachedIds.length} performances...`);
+
+            // Make batch API call
+            const response = await fetch(`/.netlify/functions/performance-comparisons?performanceIds=${uncachedIds.join(',')}`);
+            if (!response.ok) {
+                throw new Error(`Failed to batch fetch comparisons: ${response.status} ${response.statusText}`);
+            }
+            const batchData = await response.json();
+
+            // Cache all results
+            Object.entries(batchData).forEach(([perfId, comparisons]) => {
+                this.comparisonCache.set(perfId, comparisons);
+            });
+            console.log(`💾 Cached comparisons for ${Object.keys(batchData).length} performances`);
+
+            // Build complete result (cached + newly fetched)
+            const result = {};
+            performanceIds.forEach(id => {
+                result[id] = this.comparisonCache.get(id) || [];
+            });
+
+            return result;
+        } catch (error) {
+            console.error('Error batch fetching comparisons:', error);
+            // Return empty arrays for all IDs on error
+            const result = {};
+            performanceIds.forEach(id => {
+                result[id] = [];
+            });
+            return result;
+        }
+    }
+
     // Create a new comparison
     async createComparison(performanceId, comparisonData) {
         try {

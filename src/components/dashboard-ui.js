@@ -768,6 +768,17 @@ class DashboardUI extends BaseComponent {
 
             // Make it globally available for route handlers
             window.dataTable = this.dataTable;
+
+            // Initialize executive dashboard with the data
+            if (window.ExecutiveDashboard && this.dataTable.data) {
+                this.log('info', 'Initializing Executive Dashboard');
+                this.executiveDashboard = new window.ExecutiveDashboard();
+                await this.executiveDashboard.init({
+                    performances: this.dataTable.data,
+                    weekOverWeek: this.dataTable.weekOverWeekData || {}
+                });
+                this.log('info', 'Executive Dashboard initialized');
+            }
         } else if (window.symphonyApp) {
             // Fallback to app method
             await window.symphonyApp.initializeDataTable();

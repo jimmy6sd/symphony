@@ -309,7 +309,7 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const projection = row._projection;
-                    if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
+                    if (!projection) return 'N/A';
 
                     const projectedTickets = Math.round(projection.projectedTickets);
                     const targetTickets = Math.round(projection.targetTickets);
@@ -333,13 +333,13 @@ class DataTable {
                 align: 'center',
                 formatter: (value, row) => {
                     const projection = row._projection;
-                    if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
+                    if (!projection) return 'N/A';
 
                     const projectedRevenue = Math.round(projection.projectedRevenue);
                     const targetRevenue = Math.round(projection.targetRevenue);
                     const variance = projectedRevenue - targetRevenue;
                     const status = variance >= 0 ? 'good' : variance >= -5000 ? 'warning' : 'poor';
-                    const varianceSign = variance >= 0 ? '+' : '-';
+                    const varianceSign = variance >= 0 ? '+' : '';
 
                     return `
                         <div class="projection-cell">
@@ -399,24 +399,20 @@ class DataTable {
         return Math.floor(targetSales * (percentage / 100));
     }
 
-    async calculateProjection(row, comparisons = null) {
+    async calculateProjection(row) {
         // Skip if performance has already occurred
         const today = new Date();
         const [perfYear, perfMonth, perfDay] = row.date.split('-');
         const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
         if (performanceDate <= today) return { projection: null, reason: 'past_performance' };
 
-        // Calculate weeks to performance (exact decimal for accurate interpolation, same as tracking status box)
-        const daysToPerformance = Math.ceil((performanceDate - today) / (24 * 60 * 60 * 1000));
-        const weeksToPerformance = Math.max(0, daysToPerformance / 7); // Exact decimal weeks
+        // Calculate weeks to performance
+        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
         if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
 
         // Get target comp data from BigQuery (same as sales curve chart)
-        // If comparisons not provided (e.g., called from modal), fetch individually
-        if (!comparisons) {
-            const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
-            comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
-        }
+        const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         const targetComp = comparisons?.find(c => c.is_target === true);
 
         if (!targetComp || !targetComp.weeksArray) return { projection: null, reason: 'no_target_comp' };
@@ -434,8 +430,8 @@ class DataTable {
         // Available single capacity (total capacity minus subscriptions)
         const availableSingleCapacity = capacity - subscriptionSeats;
 
-        // Use exact decimal weeks for interpolation (same as tracking status box)
-        const actualWeek = weeksToPerformance; // Already exact decimal
+        // Calculate actual week (same as sales curve chart)
+        const actualWeek = weeksToPerformance;
         const actualSales = currentSingleSales;
 
         // Get target comp value at actual week (with interpolation if needed)
@@ -562,15 +558,10 @@ class DataTable {
     }
 
     async enrichWithProjections() {
-        // ⚡ BATCH OPTIMIZATION: Fetch all comparisons in one API call instead of N individual calls
-        const performanceIds = this.data.map(perf => perf.performanceCode || perf.performance_code || perf.code || perf.id);
-        const allComparisons = await window.dataService.getBatchPerformanceComparisons(performanceIds);
-
         // Calculate projections for all performances in parallel
         const projectionPromises = this.data.map(async (perf) => {
             try {
-                const performanceId = perf.performanceCode || perf.performance_code || perf.code || perf.id;
-                const result = await this.calculateProjection(perf, allComparisons[performanceId] || []);
+                const result = await this.calculateProjection(perf);
                 perf._projection = result.projection;
             } catch (error) {
                 perf._projection = null;
@@ -2170,13 +2161,9 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
     // Parse performance date to calculate weeks
     const performanceDate = new Date(performance.date);
     const parseDate = d3.timeParse('%Y-%m-%d');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    performanceDate.setHours(0, 0, 0, 0);
-    const isPastPerformance = performanceDate < today;
 
     // Transform historical data to exact days-out format (not rounded to weeks)
-    let historicalPoints = historicalData.map(snapshot => {
+    const historicalPoints = historicalData.map(snapshot => {
         const snapshotDate = parseDate(snapshot.snapshot_date);
         const daysOut = (performanceDate - snapshotDate) / (24 * 60 * 60 * 1000);
         const exactWeeksOut = daysOut / 7; // Precise decimal weeks (e.g., 4.3 weeks)
@@ -2189,36 +2176,10 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             occupancy: snapshot.capacity_percent || 0,   // Occupancy percentage
             single_atp: snapshot.single_atp || 0,        // Single ticket ATP from BigQuery
             date: snapshotDate,
-            snapshot_date: snapshot.snapshot_date,
-            isPostPerformance: daysOut < 0  // Flag snapshots taken after performance
+            snapshot_date: snapshot.snapshot_date
         };
     }).filter(d => d.week >= 0 && d.week <= maxWeeks) // Use actual maxWeeks from chart
       .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
-
-    // For past performances: consolidate post-performance snapshots to week 0
-    // Use the most recent snapshot's data (most accurate final numbers)
-    if (isPastPerformance && historicalPoints.length > 0) {
-        // Find all snapshots at week 0 (including post-performance ones)
-        const week0Points = historicalPoints.filter(d => d.week === 0);
-        const otherPoints = historicalPoints.filter(d => d.week > 0);
-
-        if (week0Points.length > 1) {
-            // Multiple points at week 0 - keep only the one with the latest snapshot date
-            // (this will have the most accurate final sales data)
-            const latestWeek0 = week0Points.reduce((latest, current) => {
-                const latestDate = new Date(latest.snapshot_date);
-                const currentDate = new Date(current.snapshot_date);
-                return currentDate > latestDate ? current : latest;
-            });
-
-            // Update to show performance date instead of snapshot date
-            latestWeek0.daysOut = 0;
-            latestWeek0.date = performanceDate;
-            latestWeek0.snapshot_date = performance.date; // Use performance date for display
-
-            historicalPoints = [...otherPoints, latestWeek0].sort((a, b) => b.week - a.week);
-        }
-    }
 
     console.log('📊 Historical points to overlay:', historicalPoints);
 
@@ -2753,31 +2714,12 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             const totalCapacity = perfs.reduce((sum, p) => sum + (p.capacity || 0), 0);
             const totalSingleTickets = perfs.reduce((sum, p) => sum + (p.singleTicketsSold || 0), 0);
             const totalSubscriptionTickets = perfs.reduce((sum, p) => sum + (p.subscriptionTicketsSold || 0), 0);
-            const totalNonFixedTickets = perfs.reduce((sum, p) => sum + (p.nonFixedTicketsSold || 0), 0);
-            const totalTickets = totalSingleTickets + totalSubscriptionTickets + totalNonFixedTickets;
+            const totalTickets = totalSingleTickets + totalSubscriptionTickets;
             const totalRevenue = perfs.reduce((sum, p) => sum + (p.totalRevenue || 0), 0);
             const totalBudget = perfs.reduce((sum, p) => sum + (p.budgetGoal || 0), 0);
 
             // Average occupancy across all performances
             const avgOccupancy = totalCapacity > 0 ? (totalTickets / totalCapacity * 100) : 0;
-
-            // Aggregate projections across all performances in the group
-            const hasAnyProjection = perfs.some(p => p._projection && (p._projection.projectedTickets > 0 || p._projection.targetTickets > 0));
-
-            const aggregateProjection = hasAnyProjection ? perfs.reduce((acc, p) => {
-                if (p._projection) {
-                    acc.projectedTickets += p._projection.projectedTickets || 0;
-                    acc.targetTickets += p._projection.targetTickets || 0;
-                    acc.projectedRevenue += p._projection.projectedRevenue || 0;
-                    acc.targetRevenue += p._projection.targetRevenue || 0;
-                }
-                return acc;
-            }, {
-                projectedTickets: 0,
-                targetTickets: 0,
-                projectedRevenue: 0,
-                targetRevenue: 0
-            }) : null;
 
             // Use first performance's metadata
             const firstPerf = perfs[0];
@@ -2794,12 +2736,11 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 capacity: totalCapacity,
                 singleTicketsSold: totalSingleTickets,
                 subscriptionTicketsSold: totalSubscriptionTickets,
-                nonFixedTicketsSold: totalNonFixedTickets,
                 totalRevenue: totalRevenue,
                 budgetGoal: totalBudget,
                 occupancyGoal: firstPerf.occupancyGoal || 85,
                 performanceCount: count,
-                _projection: aggregateProjection // Use aggregated projection
+                _projection: firstPerf._projection // Preserve projection from first performance
             });
         });
 

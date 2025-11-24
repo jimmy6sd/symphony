@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Kansas City Symphony - Board Dashboard</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Kansas City Symphony - Board Presentation</h1>
+                    <p>Budget Performance Dashboard • <a href="/" style="color: rgba(255,255,255,0.9); text-decoration: none;">Return to Performance View</a></p>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <!-- Hero KPI Section -->
+            <section id="hero-kpis" class="hero-section">
+                <div class="kpi-cards-grid">
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-details">
+                            <div class="kpi-label">Total Revenue</div>
+                            <div class="kpi-budget-row">
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Budget</span>
+                                    <span class="kpi-budget-value" id="kpi-budget-total">$0</span>
+                                </div>
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Actual</span>
+                                    <span class="kpi-budget-value" id="kpi-actual-total">$0</span>
+                                </div>
+                            </div>
+                            <div class="kpi-variance" id="kpi-variance-total"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-success">
+                        <div class="kpi-icon">🎫</div>
+                        <div class="kpi-details">
+                            <div class="kpi-label">Single Tickets</div>
+                            <div class="kpi-budget-row">
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Budget</span>
+                                    <span class="kpi-budget-value" id="kpi-budget-singles">$0</span>
+                                </div>
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Actual</span>
+                                    <span class="kpi-budget-value" id="kpi-actual-singles">$0</span>
+                                </div>
+                            </div>
+                            <div class="kpi-variance" id="kpi-variance-singles"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-info">
+                        <div class="kpi-icon">🎟️</div>
+                        <div class="kpi-details">
+                            <div class="kpi-label">Subscription Tickets</div>
+                            <div class="kpi-budget-row">
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Budget</span>
+                                    <span class="kpi-budget-value" id="kpi-budget-subs">$0</span>
+                                </div>
+                                <div class="kpi-budget-item">
+                                    <span class="kpi-budget-label">Actual</span>
+                                    <span class="kpi-budget-value" id="kpi-actual-subs">$0</span>
+                                </div>
+                            </div>
+                            <div class="kpi-variance" id="kpi-variance-subs"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-secondary">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-details">
+                            <div class="kpi-value" id="kpi-capacity">0%</div>
+                            <div class="kpi-label">Average Capacity</div>
+                            <div class="kpi-secondary-metric">
+                                <span class="kpi-metric-label">Avg Ticket Price:</span>
+                                <span class="kpi-metric-value" id="kpi-atp">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visual Analytics Grid -->
+            <section id="analytics-section" class="analytics-grid">
+                <div class="chart-card chart-primary">
+                    <div class="chart-card-header">
+                        <h3>Budget Performance by Series</h3>
+                        <div class="chart-period">Budget vs Actual</div>
+                    </div>
+                    <div class="chart-card-body">
+                        <div id="budget-variance-chart"></div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Singles vs Subscriptions</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <div id="singles-subs-chart"></div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Series Summary</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <div id="series-summary-cards"></div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Capacity Overview</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <div id="capacity-overview-chart"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Table View (Secondary View) -->
+            <section id="data-table-section" class="table-section">
+                <div class="section-header">
+                    <h2>Performance-Level Detail (Spreadsheet View)</h2>
+                    <button class="toggle-table-btn" id="toggle-table">
+                        <span id="toggle-table-text">Show Detailed Table</span>
+                        <span class="toggle-icon">▼</span>
+                    </button>
+                </div>
+                <div id="data-table-view" class="dashboard-view" style="display: none;">
+                    <div id="data-table" class="data-table-container"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Load the board dashboard -->
+    <script type="module">
+        import logger from './src/utils/logger.js';
+        import errorHandler from './src/utils/error-handler.js';
+
+        // Make utilities available globally
+        window.logger = logger;
+        window.errorHandler = errorHandler;
+
+        // Scripts to load
+        const SCRIPTS_TO_LOAD = [
+            '/src/config.js',
+            '/src/data-service.js',
+            '/src/charts/data-table.js',
+            '/src/executive-dashboard-board.js'
+        ];
+
+        // Load scripts
+        async function loadScripts() {
+            for (const src of SCRIPTS_TO_LOAD) {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error(`Failed to load: ${src}`));
+                    document.head.appendChild(script);
+                });
+            }
+        }
+
+        // Initialize
+        async function init() {
+            try {
+                logger.info('Loading Board Dashboard...');
+                await loadScripts();
+
+                // Initialize data table
+                if (window.DataTable) {
+                    const dataTable = new window.DataTable();
+                    await dataTable.init();
+                    window.dataTable = dataTable;
+
+                    // Initialize executive dashboard
+                    if (window.ExecutiveDashboard && dataTable.data) {
+                        logger.info('Initializing Executive Dashboard');
+                        const executiveDashboard = new window.ExecutiveDashboard();
+                        await executiveDashboard.init({
+                            performances: dataTable.data,
+                            weekOverWeek: dataTable.weekOverWeekData || {}
+                        });
+                        logger.info('Board Dashboard Ready!');
+                    }
+                }
+            } catch (error) {
+                logger.error('Board Dashboard failed to load:', error);
+                errorHandler.handleError(error, 'Board Dashboard Initialization');
+            }
+        }
+
+        // Start
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
