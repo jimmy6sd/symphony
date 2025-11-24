@@ -399,7 +399,7 @@ class DataTable {
         return Math.floor(targetSales * (percentage / 100));
     }
 
-    async calculateProjection(row) {
+    async calculateProjection(row, comparisons = null) {
         // Skip if performance has already occurred
         const today = new Date();
         const [perfYear, perfMonth, perfDay] = row.date.split('-');
@@ -412,8 +412,11 @@ class DataTable {
         if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
 
         // Get target comp data from BigQuery (same as sales curve chart)
-        const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
-        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        // If comparisons not provided (e.g., called from modal), fetch individually
+        if (!comparisons) {
+            const performanceCode = row.performanceCode || row.performance_code || row.code || row.id;
+            comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        }
         const targetComp = comparisons?.find(c => c.is_target === true);
 
         if (!targetComp || !targetComp.weeksArray) return { projection: null, reason: 'no_target_comp' };
@@ -559,10 +562,15 @@ class DataTable {
     }
 
     async enrichWithProjections() {
+        // ⚡ BATCH OPTIMIZATION: Fetch all comparisons in one API call instead of N individual calls
+        const performanceIds = this.data.map(perf => perf.performanceCode || perf.performance_code || perf.code || perf.id);
+        const allComparisons = await window.dataService.getBatchPerformanceComparisons(performanceIds);
+
         // Calculate projections for all performances in parallel
         const projectionPromises = this.data.map(async (perf) => {
             try {
-                const result = await this.calculateProjection(perf);
+                const performanceId = perf.performanceCode || perf.performance_code || perf.code || perf.id;
+                const result = await this.calculateProjection(perf, allComparisons[performanceId] || []);
                 perf._projection = result.projection;
             } catch (error) {
                 perf._projection = null;
