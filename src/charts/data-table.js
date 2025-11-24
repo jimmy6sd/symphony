@@ -339,7 +339,7 @@ class DataTable {
                     const targetRevenue = Math.round(projection.targetRevenue);
                     const variance = projectedRevenue - targetRevenue;
                     const status = variance >= 0 ? 'good' : variance >= -5000 ? 'warning' : 'poor';
-                    const varianceSign = variance >= 0 ? '+' : '';
+                    const varianceSign = variance >= 0 ? '+' : '-';
 
                     return `
                         <div class="projection-cell">
