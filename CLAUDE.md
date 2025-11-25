@@ -154,10 +154,13 @@ Actions:
 
 ### **Required Environment Variables**
 ```bash
-# BigQuery
+# BigQuery - ALWAYS use kcsymphony project
 GOOGLE_APPLICATION_CREDENTIALS=./symphony-bigquery-key.json  # (or JSON string)
 GOOGLE_CLOUD_PROJECT_ID=kcsymphony
 BIGQUERY_DATASET=symphony_dashboard
+
+# ⚠️ CRITICAL: When running bq commands, ALWAYS specify the full table path:
+# `kcsymphony.symphony_dashboard.table_name`
 
 # Authentication
 SITE_PASSWORD=<secure-password>  # For Basic Auth

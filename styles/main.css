@@ -1497,3 +1497,122 @@ body {
         gap: var(--spacing-sm);
     }
 }
+
+/* Mobile-friendly Sales Curve Chart */
+.mobile-status-box {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mobile-legend {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive adjustments for chart modal on mobile */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 95%;
+        max-height: 95vh;
+        margin: 2.5vh auto;
+    }
+
+    .modal-body {
+        padding: 8px;
+        overflow-y: auto;
+        max-height: calc(95vh - 60px);
+    }
+
+    .detailed-chart-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* Mobile status box and legend spacing */
+    .mobile-status-box,
+    .mobile-legend {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Ensure chart SVG is responsive */
+    .detailed-chart-container svg {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        max-width: 98%;
+        max-height: 98vh;
+        margin: 1vh auto;
+    }
+
+    .modal-header h2 {
+        font-size: 16px;
+    }
+
+    .modal-close {
+        font-size: 24px;
+        padding: 4px 8px;
+    }
+}
+
+/* Mobile-specific touch improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets for chart data points */
+    .comparison-point,
+    .projection-point,
+    .current-sales-point {
+        cursor: pointer;
+    }
+
+    /* Better tap feedback */
+    .mobile-legend-header:active {
+        background: #dde3eb !important;
+    }
+
+    /* Swipe hint indicator */
+    .performance-modal::after {
+        content: "← Swipe to navigate →";
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        color: rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+    }
+}
+
+/* Improve chart readability on small screens */
+@media (max-width: 768px) {
+    /* Ensure capacity labels don't overflow */
+    .detailed-chart-container text {
+        font-size: 10px !important;
+    }
+
+    /* Better mobile status box styling */
+    .mobile-status-box {
+        margin: 8px 0 !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ensure legend is readable */
+    .mobile-legend {
+        margin: 8px 0 !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ensure chart container has proper height to contain mobile elements */
+    #modal-sales-chart {
+        overflow: visible;
+        padding-bottom: 16px !important;
+    }
+}

@@ -1129,6 +1129,38 @@ class DataTable {
             .style('padding', '0 25px 25px')
             .style('box-sizing', 'border-box');
 
+        // Add swipe gesture support for mobile navigation
+        const self = this;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const minSwipeDistance = 50; // Minimum swipe distance in pixels
+
+        const modalNode = modal.node();
+        modalNode.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        modalNode.addEventListener('touchend', async (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const swipeDistance = touchEndX - touchStartX;
+
+            if (Math.abs(swipeDistance) > minSwipeDistance) {
+                if (swipeDistance > 0 && hasPrevious) {
+                    // Swipe right = previous
+                    const previousPerf = allPerformances[currentIndex - 1];
+                    document.removeEventListener('keydown', handleKeyPress);
+                    modalOverlay.remove();
+                    await self.showPerformanceDetails(previousPerf);
+                } else if (swipeDistance < 0 && hasNext) {
+                    // Swipe left = next
+                    const nextPerf = allPerformances[currentIndex + 1];
+                    document.removeEventListener('keydown', handleKeyPress);
+                    modalOverlay.remove();
+                    await self.showPerformanceDetails(nextPerf);
+                }
+            }
+        }, { passive: true });
+
         // Chart section - no padding (modalBody handles it)
         const chartSection = modalBody.append('div')
             .style('width', '100%')
@@ -3539,13 +3571,93 @@ const tableStyles = `
     }
 
     .performance-modal {
-        max-width: 95vw;
-        margin: 10px;
+        max-width: 98vw;
+        max-height: 98vh;
+        margin: 1vh 1vw;
+        border-radius: 12px;
     }
 
     .performance-details {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 12px;
+        padding: 0 !important;
+        margin-top: 16px !important;
+    }
+
+    .modal-header {
+        padding: 8px 12px !important;
+    }
+
+    .modal-header h2 {
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+    }
+
+    .modal-header .nav-prev,
+    .modal-header .nav-next {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+
+    .modal-header .close-modal {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 16px !important;
+    }
+
+    #modal-sales-chart {
+        padding: 8px;
+        margin: 0 8px 12px 8px;
+        height: auto !important;
+        min-height: 300px;
+    }
+
+    .modal-body {
+        padding: 8px 12px 12px 12px !important;
+        background: #f5f5f5;
+    }
+
+    /* Ensure cards have proper width */
+    .performance-details > div {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Compact info line on mobile */
+    .modal-header [style*="gap: 15px"] {
+        gap: 8px !important;
+        font-size: 10px !important;
+    }
+
+    /* Smaller status badge on mobile */
+    .modal-header [style*="border-radius: 12px"] {
+        padding: 3px 10px !important;
+        font-size: 10px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .performance-modal {
+        max-width: 100vw;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .modal-header h2 {
+        font-size: 13px !important;
+    }
+
+    .modal-header .nav-prev,
+    .modal-header .nav-next {
+        padding: 3px 6px !important;
+        font-size: 10px !important;
+    }
+
+    /* Hide some info items on very small screens */
+    .modal-header [style*="📍"],
+    .modal-header [style*="🎵"] {
+        display: none !important;
     }
 }
 `;

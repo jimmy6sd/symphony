@@ -1,15 +1,109 @@
 class SalesCurveChart {
     constructor(containerId, options = {}) {
-        console.log('🔥 SalesCurveChart v2.0 - PERFORMANCECODE FIX LOADED - Oct 24 10:30pm');
+        console.log('🔥 SalesCurveChart v2.2 - MOBILE-OPTIMIZED - Nov 24 2025');
         this.containerId = containerId;
         this.data = [];
         this.svg = null;
         this.width = CONFIG.charts.dimensions.defaultWidth;
         this.height = CONFIG.charts.dimensions.defaultHeight;
-        this.margin = { top: 50, right: 220, bottom: 75, left: 70 }; // Proper spacing for labels and legend
+
+        // Initialize responsive state
+        this.updateResponsiveState();
+
+        // Set responsive margins
+        this.margin = this.getResponsiveMargins();
+
         this.selectedPerformance = null;
         this.showSelector = options.showSelector !== false; // Default to true unless explicitly false
         this.historicalData = options.historicalData || []; // Store historical snapshots for projection alignment
+
+        // Debounced resize handler to prevent excessive re-renders
+        this.resizeTimeout = null;
+        this.boundResizeHandler = this.handleResize.bind(this);
+        window.addEventListener('resize', this.boundResizeHandler);
+    }
+
+    // Debounced resize handler
+    handleResize() {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+            const previousMobile = this.isMobile;
+            this.updateResponsiveState();
+            // Only re-render if breakpoint changed or on mobile (for orientation changes)
+            if (previousMobile !== this.isMobile || this.isMobile) {
+                if (this.data && this.data.length > 0) {
+                    this.render();
+                }
+            }
+        }, 150); // 150ms debounce
+    }
+
+    // Cleanup method to prevent memory leaks
+    destroy() {
+        clearTimeout(this.resizeTimeout);
+        window.removeEventListener('resize', this.boundResizeHandler);
+        // Remove any tooltips
+        d3.select('.sales-curve-tooltip').remove();
+    }
+
+    updateResponsiveState() {
+        const width = window.innerWidth;
+        this.isMobile = width <= 768;
+        this.isTablet = width > 768 && width <= 1024;
+        this.isDesktop = width > 1024;
+    }
+
+    // Smart tooltip positioning that stays within viewport
+    positionTooltip(tooltip, event) {
+        const tooltipNode = tooltip.node();
+        if (!tooltipNode) return;
+
+        // Get tooltip dimensions
+        const tooltipRect = tooltipNode.getBoundingClientRect();
+        const tooltipWidth = tooltipRect.width || 200;
+        const tooltipHeight = tooltipRect.height || 100;
+
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate initial position
+        let left = event.pageX + 15;
+        let top = event.pageY - 10;
+
+        // Adjust horizontal position if tooltip would go off right edge
+        if (left + tooltipWidth > viewportWidth - 10) {
+            left = event.pageX - tooltipWidth - 15;
+        }
+
+        // Adjust horizontal position if tooltip would go off left edge
+        if (left < 10) {
+            left = 10;
+        }
+
+        // Adjust vertical position if tooltip would go off bottom edge
+        if (top + tooltipHeight > viewportHeight - 10) {
+            top = event.pageY - tooltipHeight - 15;
+        }
+
+        // Adjust vertical position if tooltip would go off top edge
+        if (top < 10) {
+            top = 10;
+        }
+
+        tooltip
+            .style("left", left + "px")
+            .style("top", top + "px");
+    }
+
+    getResponsiveMargins() {
+        if (this.isMobile) {
+            return { top: 30, right: 15, bottom: 50, left: 45 };
+        } else if (this.isTablet) {
+            return { top: 40, right: 150, bottom: 60, left: 55 };
+        } else {
+            return { top: 50, right: 220, bottom: 75, left: 70 };
+        }
     }
 
     async init() {
@@ -34,11 +128,29 @@ class SalesCurveChart {
         const container = d3.select(`#${this.containerId}`);
         container.select("svg").remove();
 
-        // Get container dimensions dynamically
+        // Clear any existing mobile elements
+        container.selectAll(".mobile-status-box, .mobile-legend").remove();
+
+        // Update margins based on current responsive state
+        this.margin = this.getResponsiveMargins();
+
+        // Get container dimensions dynamically with responsive minimums
         const containerElement = container.node();
         const containerRect = containerElement.getBoundingClientRect();
-        this.width = Math.max(800, containerRect.width - 16); // Account for reduced padding
-        this.height = Math.max(350, containerRect.height - 16); // Account for reduced padding, smaller min height
+
+        if (this.isMobile) {
+            // Mobile: smaller minimums, full width
+            this.width = Math.max(320, containerRect.width - 16);
+            this.height = Math.max(300, containerRect.height - 16);
+        } else if (this.isTablet) {
+            // Tablet: moderate minimums
+            this.width = Math.max(600, containerRect.width - 16);
+            this.height = Math.max(350, containerRect.height - 16);
+        } else {
+            // Desktop: original minimums
+            this.width = Math.max(800, containerRect.width - 16);
+            this.height = Math.max(350, containerRect.height - 16);
+        }
 
         const innerWidth = this.width - this.margin.left - this.margin.right;
         const innerHeight = this.height - this.margin.top - this.margin.bottom;
@@ -263,19 +375,46 @@ class SalesCurveChart {
 
         // REMOVED: Target line data points - now using historical comp data points instead
 
-        // X-axis
+        // X-axis with responsive tick formatting
+        const xAxisGenerator = d3.axisBottom(xScale);
+        const [maxWeek, minWeek] = xScale.domain(); // Domain is [max, 0] since we flip it
+
+        if (this.isMobile) {
+            // On mobile: show fewer ticks and use shorter labels
+            // Generate tick values: show every 3rd week, plus 0 (show day)
+            const tickValues = [];
+            for (let w = maxWeek; w >= minWeek; w -= 3) {
+                tickValues.push(w);
+            }
+            // Always include 0 if not already there
+            if (!tickValues.includes(0)) {
+                tickValues.push(0);
+            }
+            tickValues.sort((a, b) => b - a); // Sort descending (matches x-axis direction)
+
+            xAxisGenerator
+                .tickValues(tickValues)
+                .tickFormat(d => d === 0 ? 'Show' : `${d}w`);
+        } else {
+            xAxisGenerator.tickFormat(d => d === 0 ? 'Performance' : `${d}w before`);
+        }
+
         const xAxis = chartGroup.append("g")
             .attr("transform", `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale).tickFormat(d => d === 0 ? 'Performance' : `${d}w before`));
+            .call(xAxisGenerator);
+
+        // Responsive font sizes
+        const tickFontSize = this.isMobile ? "8px" : "11px";
+        const labelFontSize = this.isMobile ? "10px" : "12px";
 
         // Style x-axis tick labels
         xAxis.selectAll("text")
             .style("text-anchor", "end")
-            .style("font-size", "11px")
+            .style("font-size", tickFontSize)
             .style("fill", "#666")
-            .attr("dx", "-.5em")
-            .attr("dy", ".3em")
-            .attr("transform", "rotate(-35)");
+            .attr("dx", this.isMobile ? "-.3em" : "-.5em")
+            .attr("dy", ".15em")
+            .attr("transform", this.isMobile ? "rotate(-55)" : "rotate(-35)");
 
         // Style x-axis line and ticks
         xAxis.select(".domain")
@@ -289,7 +428,7 @@ class SalesCurveChart {
 
         // Style y-axis
         yAxis.selectAll("text")
-            .style("font-size", "11px")
+            .style("font-size", tickFontSize)
             .style("fill", "#666");
         yAxis.select(".domain")
             .style("stroke", "#e0e0e0");
@@ -301,21 +440,36 @@ class SalesCurveChart {
             .attr("transform", `translate(${innerWidth / 2}, ${innerHeight + this.margin.bottom - 15})`)
             .style("text-anchor", "middle")
             .style("font-weight", "500")
-            .style("font-size", "12px")
+            .style("font-size", labelFontSize)
             .style("fill", "#666")
-            .text("Weeks Before Performance");
+            .text(this.isMobile ? "Weeks Before" : "Weeks Before Performance");
 
-        // Y-axis label
-        chartGroup.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - this.margin.left + 20)
-            .attr("x", 0 - (innerHeight / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .style("font-weight", "500")
-            .style("font-size", "12px")
-            .style("fill", "#666")
-            .text("Cumulative Tickets Sold");
+        // Y-axis label - position differently on mobile
+        if (!this.isMobile) {
+            // Desktop: rotated label on left side
+            chartGroup.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - this.margin.left + 20)
+                .attr("x", 0 - (innerHeight / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-weight", "500")
+                .style("font-size", labelFontSize)
+                .style("fill", "#666")
+                .text("Cumulative Tickets Sold");
+        } else {
+            // Mobile: shorter label, positioned with more space from tick labels
+            chartGroup.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - this.margin.left + 6)
+                .attr("x", 0 - (innerHeight / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-weight", "500")
+                .style("font-size", "9px")
+                .style("fill", "#666")
+                .text("Tickets Sold");
+        }
 
         // Add performance tracking status
         await this.addTrackingStatus(chartGroup, performance, innerWidth);
@@ -443,25 +597,10 @@ class SalesCurveChart {
         return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
     }
 
-    async addTrackingStatus(chartGroup, performance, innerWidth) {
-        // Track ONLY single ticket sales vs target historical comp
-        const singleTicketsSold = performance.singleTicketsSold || 0;
-
-        const today = new Date();
-        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
-        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
-        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
-
-        // Get target comp data
-        const performanceCode = performance.performanceCode || performance.performanceId;
-        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
-        const targetComp = comparisons?.find(c => c.is_target === true);
-
-        if (!targetComp || !targetComp.weeksArray) return; // No target comp set
-
+    calculateTrackingMetrics(targetComp, performance, singleTicketsSold, weeksToPerformance, performanceDate) {
         const numWeeks = targetComp.weeksArray.length;
 
-        // Use historical snapshot data if available (same as renderProjectionLine)
+        // Use historical snapshot data if available
         let actualWeek, actualSales;
         if (this.historicalData && this.historicalData.length > 0) {
             const parseDate = d3.timeParse('%Y-%m-%d');
@@ -495,7 +634,7 @@ class SalesCurveChart {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return; // Week out of range
+        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return null; // Week out of range
 
         let targetCompSales;
         if (lowerWeek === upperWeek) {
@@ -507,38 +646,80 @@ class SalesCurveChart {
             targetCompSales = lowerValue + (upperValue - lowerValue) * fraction;
         }
 
-        // Calculate variance based on actual sales from snapshot vs target comp
+        // Calculate variance
         const variance = actualSales - targetCompSales;
-        const variancePercentage = ((variance / targetCompSales) * 100).toFixed(1);
 
+        // Determine status
         let status = "On Track";
-        let statusColor = targetComp.line_color || "#f97316";
-        let badgeColor = "rgba(255, 255, 255, 0.2)"; // Default semi-transparent white
+        let badgeColor = "#f59e0b"; // Amber
 
         if (variance < -targetCompSales * 0.1) {
             status = "Behind";
-            statusColor = "#d62728";
-            badgeColor = "#ef4444"; // Beautiful red
+            badgeColor = "#ef4444"; // Red
         } else if (variance > targetCompSales * 0.1) {
             status = "Ahead";
-            statusColor = "#2ca02c";
-            badgeColor = "#10b981"; // Beautiful green
-        } else {
-            // On Track - use a nice yellow/amber
-            badgeColor = "#f59e0b"; // Beautiful amber
+            badgeColor = "#10b981"; // Green
         }
 
-        // Calculate current and projected metrics
+        // Calculate projected final metrics
         const capacity = performance.capacity || 0;
         const currentSingleRevenue = performance.singleTicketRevenue || 0;
-
-        // Calculate projected final metrics
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
-        const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity)); // Cap at available singles and round to whole tickets
+        const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity));
         const avgTicketPrice = singleTicketsSold > 0 ? currentSingleRevenue / singleTicketsSold : 0;
         const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
+
+        return {
+            variance,
+            status,
+            badgeColor,
+            singleTicketsSold,
+            currentSingleRevenue,
+            projectedFinal,
+            projectedRevenue,
+            targetComp
+        };
+    }
+
+    async addTrackingStatus(chartGroup, performance, innerWidth) {
+        // Track ONLY single ticket sales vs target historical comp
+        const singleTicketsSold = performance.singleTicketsSold || 0;
+
+        const today = new Date();
+        const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+        const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
+        const weeksToPerformance = Math.max(1, Math.ceil((performanceDate - today) / (7 * 24 * 60 * 60 * 1000)));
+
+        // Get target comp data
+        const performanceCode = performance.performanceCode || performance.performanceId;
+        const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
+        const targetComp = comparisons?.find(c => c.is_target === true);
+
+        if (!targetComp || !targetComp.weeksArray) return; // No target comp set
+
+        // Route to appropriate rendering method
+        if (this.isMobile) {
+            await this.addTrackingStatusHTML(performance, targetComp, singleTicketsSold, weeksToPerformance, performanceDate);
+        } else {
+            await this.addTrackingStatusSVG(chartGroup, performance, targetComp, singleTicketsSold, weeksToPerformance, performanceDate, innerWidth);
+        }
+    }
+
+    async addTrackingStatusSVG(chartGroup, performance, targetComp, singleTicketsSold, weeksToPerformance, performanceDate, innerWidth) {
+        // Calculate tracking metrics
+        const metrics = this.calculateTrackingMetrics(
+            targetComp,
+            performance,
+            singleTicketsSold,
+            weeksToPerformance,
+            performanceDate
+        );
+
+        if (!metrics) return; // Couldn't calculate metrics
+
+        const { variance, status, badgeColor, currentSingleRevenue, projectedFinal, projectedRevenue } = metrics;
 
         const statusGroup = chartGroup.append("g")
             .attr("transform", `translate(${innerWidth + 20}, 10)`);
@@ -680,7 +861,142 @@ class SalesCurveChart {
             });
     }
 
+    async addTrackingStatusHTML(performance, targetComp, singleTicketsSold, weeksToPerformance, performanceDate) {
+        // Calculate tracking metrics
+        const metrics = this.calculateTrackingMetrics(
+            targetComp,
+            performance,
+            singleTicketsSold,
+            weeksToPerformance,
+            performanceDate
+        );
+
+        if (!metrics) return; // Couldn't calculate metrics
+
+        const { variance, status, badgeColor, currentSingleRevenue, projectedFinal, projectedRevenue } = metrics;
+
+        // Create HTML status box below the chart
+        const container = d3.select(`#${this.containerId}`);
+
+        const statusBox = container
+            .append("div")
+            .attr("class", "mobile-status-box")
+            .style("background", "linear-gradient(135deg, #667eea 0%, #764ba2 100%)")
+            .style("border-radius", "12px")
+            .style("padding", "12px")
+            .style("margin-top", "12px")
+            .style("color", "white")
+            .style("box-shadow", "0 2px 8px rgba(102, 126, 234, 0.3)");
+
+        // Header with status badge - compact single line
+        const headerRow = statusBox.append("div")
+            .style("display", "flex")
+            .style("justify-content", "space-between")
+            .style("align-items", "center")
+            .style("margin-bottom", "10px");
+
+        headerRow.append("div")
+            .style("font-size", "12px")
+            .style("font-weight", "600")
+            .text("📊 Sales Tracking");
+
+        // Status badge inline
+        headerRow.append("div")
+            .style("background-color", badgeColor)
+            .style("border-radius", "10px")
+            .style("padding", "4px 10px")
+            .style("font-size", "11px")
+            .style("font-weight", "bold")
+            .text(`${status} ${variance > 0 ? '+' : ''}${Math.round(variance).toLocaleString()}`);
+
+        // Two-column layout for Current and Projected
+        const metricsRow = statusBox.append("div")
+            .style("display", "flex")
+            .style("gap", "10px");
+
+        // Current section (left column)
+        const currentSection = metricsRow.append("div")
+            .style("flex", "1")
+            .style("background", "rgba(255, 255, 255, 0.1)")
+            .style("border-radius", "8px")
+            .style("padding", "10px")
+            .style("text-align", "center");
+
+        currentSection.append("div")
+            .style("font-size", "9px")
+            .style("font-weight", "600")
+            .style("color", "rgba(255, 255, 255, 0.7)")
+            .style("margin-bottom", "4px")
+            .style("text-transform", "uppercase")
+            .style("letter-spacing", "0.5px")
+            .text("Current");
+
+        currentSection.append("div")
+            .style("font-size", "20px")
+            .style("font-weight", "700")
+            .style("line-height", "1.1")
+            .text(singleTicketsSold.toLocaleString());
+
+        currentSection.append("div")
+            .style("font-size", "11px")
+            .style("color", "rgba(255, 255, 255, 0.8)")
+            .style("margin-top", "2px")
+            .text(`$${(currentSingleRevenue / 1000).toFixed(0)}k`);
+
+        // Arrow indicator between columns
+        metricsRow.append("div")
+            .style("display", "flex")
+            .style("align-items", "center")
+            .style("font-size", "16px")
+            .style("color", "rgba(255, 255, 255, 0.6)")
+            .text("→");
+
+        // Projected section (right column)
+        const projectedSection = metricsRow.append("div")
+            .style("flex", "1")
+            .style("background", "rgba(255, 255, 255, 0.15)")
+            .style("border-radius", "8px")
+            .style("padding", "10px")
+            .style("text-align", "center");
+
+        projectedSection.append("div")
+            .style("font-size", "9px")
+            .style("font-weight", "600")
+            .style("color", "rgba(255, 255, 255, 0.7)")
+            .style("margin-bottom", "4px")
+            .style("text-transform", "uppercase")
+            .style("letter-spacing", "0.5px")
+            .text("Projected");
+
+        projectedSection.append("div")
+            .style("font-size", "20px")
+            .style("font-weight", "700")
+            .style("line-height", "1.1")
+            .text(projectedFinal.toLocaleString());
+
+        projectedSection.append("div")
+            .style("font-size", "11px")
+            .style("color", "rgba(255, 255, 255, 0.8)")
+            .style("margin-top", "2px")
+            .text(`$${(projectedRevenue / 1000).toFixed(0)}k`);
+
+        // Projection basis note - compact
+        statusBox.append("div")
+            .style("text-align", "center")
+            .style("font-size", "9px")
+            .style("font-style", "italic")
+            .style("color", "rgba(255, 255, 255, 0.5)")
+            .style("margin-top", "8px")
+            .text(`vs ${targetComp.comparison_name}`);
+    }
+
     addLegend(chartGroup, innerWidth) {
+        if (this.isMobile) {
+            // Mobile: legend will be added as HTML below chart
+            return;
+        }
+
+        // Desktop/Tablet: SVG legend on right side
         const legend = chartGroup.append("g")
             .attr("class", "chart-legend")
             .attr("transform", `translate(${innerWidth + 20}, 230)`);
@@ -712,19 +1028,137 @@ class SalesCurveChart {
         });
     }
 
+    addLegendHTML(comparisons) {
+        const container = d3.select(`#${this.containerId}`);
+
+        const legendBox = container
+            .append("div")
+            .attr("class", "mobile-legend")
+            .style("background", "#f8f9fa")
+            .style("border-radius", "8px")
+            .style("margin-top", "12px")
+            .style("overflow", "hidden");
+
+        // Collapsible header
+        const legendHeader = legendBox.append("div")
+            .attr("class", "mobile-legend-header")
+            .style("display", "flex")
+            .style("justify-content", "space-between")
+            .style("align-items", "center")
+            .style("padding", "10px 12px")
+            .style("cursor", "pointer")
+            .style("user-select", "none")
+            .style("background", "#eef1f5")
+            .style("border-bottom", "1px solid #dde3eb");
+
+        legendHeader.append("span")
+            .style("font-size", "11px")
+            .style("font-weight", "600")
+            .style("color", "#333")
+            .text("Legend");
+
+        const toggleIcon = legendHeader.append("span")
+            .attr("class", "legend-toggle-icon")
+            .style("font-size", "12px")
+            .style("color", "#666")
+            .style("transition", "transform 0.2s")
+            .text("▼");
+
+        // Legend content (collapsible)
+        const legendContent = legendBox.append("div")
+            .attr("class", "mobile-legend-content")
+            .style("padding", "10px 12px")
+            .style("display", "block"); // Start expanded
+
+        const legendItems = [
+            { label: "Actual Sales", color: "#3498db", style: "solid", lineWidth: 3 },
+            { label: "Available Singles", color: "#9b59b6", style: "solid" },
+            { label: "Total Capacity", color: "#ccc", style: "solid" }
+        ];
+
+        // Add comparisons to legend items
+        if (comparisons && comparisons.length > 0) {
+            comparisons.forEach(comp => {
+                const isTarget = comp.is_target === true;
+                // Truncate long names on mobile
+                let label = comp.comparison_name;
+                if (label.length > 20) {
+                    label = label.substring(0, 18) + '...';
+                }
+                legendItems.push({
+                    label: isTarget ? `★ ${label}` : label,
+                    color: comp.line_color,
+                    style: isTarget ? "solid" : comp.line_style,
+                    lineWidth: isTarget ? 3 : 2.5
+                });
+            });
+
+            // Add projection line
+            legendItems.push({
+                label: "Projected Sales",
+                color: "#2ecc71",
+                style: "dashed",
+                lineWidth: 2.5
+            });
+        }
+
+        // Use a two-column grid for legend items on mobile
+        const legendGrid = legendContent.append("div")
+            .style("display", "grid")
+            .style("grid-template-columns", "1fr 1fr")
+            .style("gap", "6px 12px");
+
+        legendItems.forEach(item => {
+            const row = legendGrid.append("div")
+                .style("display", "flex")
+                .style("align-items", "center");
+
+            // Create line representation
+            const lineStyle = item.style === "dashed" ? "dashed" : "solid";
+            row.append("div")
+                .style("width", "18px")
+                .style("height", "0")
+                .style("border-top", `${item.lineWidth || 2}px ${lineStyle} ${item.color}`)
+                .style("margin-right", "6px")
+                .style("flex-shrink", "0");
+
+            row.append("span")
+                .style("font-size", "10px")
+                .style("color", "#666")
+                .style("white-space", "nowrap")
+                .style("overflow", "hidden")
+                .style("text-overflow", "ellipsis")
+                .text(item.label);
+        });
+
+        // Toggle functionality
+        let isExpanded = true;
+        legendHeader.on("click", function() {
+            isExpanded = !isExpanded;
+            legendContent.style("display", isExpanded ? "block" : "none");
+            toggleIcon
+                .style("transform", isExpanded ? "rotate(0deg)" : "rotate(-90deg)");
+        });
+    }
+
     addTooltips(currentSales, weeksToPerformance, expectedData, performance) {
+        // Remove any existing tooltip first
+        d3.select(".sales-curve-tooltip").remove();
+
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "sales-curve-tooltip")
             .style("position", "absolute")
             .style("visibility", "hidden")
-            .style("background", "rgba(0, 0, 0, 0.8)")
+            .style("background", "rgba(0, 0, 0, 0.9)")
             .style("color", "white")
-            .style("padding", "10px")
-            .style("border-radius", "5px")
-            .style("font-size", "12px")
+            .style("padding", this.isMobile ? "8px 10px" : "10px")
+            .style("border-radius", "8px")
+            .style("font-size", this.isMobile ? "11px" : "12px")
             .style("z-index", "1001")
-            .style("pointer-events", "none");
+            .style("pointer-events", "none")
+            .style("max-width", this.isMobile ? "200px" : "280px")
+            .style("box-shadow", "0 4px 12px rgba(0, 0, 0, 0.3)");
 
         // Tooltip for current sales point
         this.svg.selectAll(".current-sales-point")
@@ -751,10 +1185,8 @@ class SalesCurveChart {
                 `);
                 return tooltip.style("visibility", "visible");
             })
-            .on("mousemove", function(event) {
-                return tooltip
-                    .style("top", (event.pageY - 10) + "px")
-                    .style("left", (event.pageX + 10) + "px");
+            .on("mousemove", (event) => {
+                this.positionTooltip(tooltip, event);
             })
             .on("mouseout", function() {
                 return tooltip.style("visibility", "hidden");
@@ -782,10 +1214,18 @@ class SalesCurveChart {
         });
 
         // Update legend to include comparisons
-        this.updateLegendWithComparisons(chartGroup, comparisons);
+        if (this.isMobile) {
+            // Mobile: add HTML legend below chart
+            this.addLegendHTML(comparisons);
+        } else {
+            // Desktop/Tablet: update SVG legend
+            this.updateLegendWithComparisons(chartGroup, comparisons);
+        }
     }
 
     renderSingleComparison(chartGroup, xScale, yScale, comparison) {
+        const self = this; // For use in D3 callbacks
+
         // Parse CSV data
         // Input format: "10,20,30,40,50,60,70,80,90"
         // First value (10) = farthest week out
@@ -833,6 +1273,9 @@ class SalesCurveChart {
             .style("filter", `drop-shadow(0 1px 2px ${comparison.line_color}40)`);
 
         // Add data points for comparison line
+        const pointRadius = this.isMobile ? 5 : 3.5; // Larger on mobile for touch
+        const hoverRadius = this.isMobile ? 7 : 5.5;
+
         chartGroup.selectAll(`.comparison-point-${comparison.comparison_id}`)
             .data(comparisonData)
             .enter()
@@ -840,7 +1283,7 @@ class SalesCurveChart {
             .attr("class", `comparison-point comparison-point-${comparison.comparison_id}`)
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.sales))
-            .attr("r", 3.5)  // Larger points
+            .attr("r", pointRadius)
             .attr("fill", comparison.line_color)
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
@@ -850,7 +1293,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 5.5)  // Larger hover
+                    .attr("r", hoverRadius)
                     .attr("opacity", 1);
 
                 // Show tooltip
@@ -892,15 +1335,13 @@ class SalesCurveChart {
             })
             .on("mousemove", function(event) {
                 const tooltip = d3.select(".sales-curve-tooltip");
-                tooltip
-                    .style("top", (event.pageY - 10) + "px")
-                    .style("left", (event.pageX + 10) + "px");
+                self.positionTooltip(tooltip, event);
             })
             .on("mouseout", function() {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 3.5)  // Match default size
+                    .attr("r", pointRadius)  // Match default size
                     .attr("opacity", 0.7);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
@@ -909,6 +1350,8 @@ class SalesCurveChart {
     }
 
     async renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons, availableSingleCapacity) {
+        const self = this; // For use in D3 callbacks
+
         // Only render projection if we have a target comp and we're not at performance date
         if (!comparisons || comparisons.length === 0 || weeksToPerformance === 0) {
             return;
@@ -1052,6 +1495,9 @@ class SalesCurveChart {
             .style("filter", "drop-shadow(0 1px 2px #2ecc7140)");
 
         // Add data points for projection line
+        const projPointRadius = this.isMobile ? 6 : 4; // Larger on mobile for touch
+        const projHoverRadius = this.isMobile ? 8 : 6;
+
         chartGroup.selectAll(".projection-point")
             .data(projectionData)
             .enter()
@@ -1059,7 +1505,7 @@ class SalesCurveChart {
             .attr("class", "projection-point")
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.projectedSales))
-            .attr("r", 4)  // Larger points
+            .attr("r", projPointRadius)
             .attr("fill", "#2ecc71")
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
@@ -1071,7 +1517,7 @@ class SalesCurveChart {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 6)  // Larger hover
+                    .attr("r", projHoverRadius)
                     .attr("opacity", 1);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
@@ -1144,15 +1590,13 @@ class SalesCurveChart {
             })
             .on("mousemove", function(event) {
                 const tooltip = d3.select(".sales-curve-tooltip");
-                tooltip
-                    .style("top", (event.pageY - 10) + "px")
-                    .style("left", (event.pageX + 10) + "px");
+                self.positionTooltip(tooltip, event);
             })
             .on("mouseout", function() {
                 d3.select(this)
                     .transition()
                     .duration(200)
-                    .attr("r", 4)  // Match default size
+                    .attr("r", projPointRadius)  // Match default size
                     .attr("opacity", 0.7);
 
                 const tooltip = d3.select(".sales-curve-tooltip");
