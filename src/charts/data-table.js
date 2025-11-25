@@ -40,12 +40,15 @@ class DataTable {
                         infoDisplay = `<span class="perf-meta-simple">${count} performance${count > 1 ? 's' : ''}</span>`;
                     }
 
+                    // Only show meta div if there's content
+                    const metaHtml = infoDisplay ? `<div class="performance-meta">${infoDisplay}</div>` : '';
+
                     return `
                         <div class="performance-cell">
                             ${chevron}${indent}
                             <div class="performance-info">
                                 <div class="performance-title">${value}</div>
-                                <div class="performance-meta">${infoDisplay}</div>
+                                ${metaHtml}
                             </div>
                         </div>
                     `;
@@ -489,7 +492,6 @@ class DataTable {
         const variance = actualSales - targetCompAtActualWeek;
 
         // Project final SINGLE ticket sales (target comp final + variance, capped at available singles)
-        // IMPORTANT: Floor at actual sales - can't project fewer tickets than already sold
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const projectedFinalSingles = Math.round(Math.min(
             Math.max(actualSales, targetCompFinal + variance),
@@ -497,7 +499,10 @@ class DataTable {
         ));
 
         // Add subscriptions back for total projected tickets
-        const projectedFinalTotal = projectedFinalSingles + subscriptionSeats;
+        // IMPORTANT: Floor at total current tickets - can't project fewer than already sold
+        const nonFixedTickets = row.nonFixedTicketsSold || 0;
+        const currentTotalSold = singleTicketsSold + subscriptionSeats + nonFixedTickets;
+        const projectedFinalTotal = Math.max(currentTotalSold, projectedFinalSingles + subscriptionSeats + nonFixedTickets);
         const targetFinalTotal = targetCompFinal + subscriptionSeats;
 
         // Calculate revenue projections
