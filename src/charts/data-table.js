@@ -15,6 +15,7 @@ class DataTable {
         this.snapshotCache = new Map(); // Cache for BigQuery snapshot data (performance optimization)
 
         // Define columns and their properties
+        // info: optional tooltip explaining calculation/data source (shown via ⓘ icon)
         this.columns = [
             {
                 key: 'title',
@@ -28,17 +29,24 @@ class DataTable {
                         '';
                     const indent = row.isChild ? '<span class="child-indent">└─</span>' : '';
 
-                    // Make performance code a clickable link with group slug for context
-                    let codeDisplay = '';
-                    if (row.code) {
-                        const groupSlug = row.groupKey ? this.slugify(row.groupKey) : 'other';
-                        codeDisplay = `<a href="/performance/${groupSlug}/${row.code}" data-route class="performance-code-link">${row.code}</a>`;
+                    // Build performance info line (shows/weeks/comp status)
+                    let infoDisplay = '';
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (row.isGroup && row.performances) {
+                        // Group row: "X performances"
+                        const count = row.performances.length;
+                        infoDisplay = `<span class="perf-meta-simple">${count} performance${count > 1 ? 's' : ''}</span>`;
                     }
 
                     return `
                         <div class="performance-cell">
-                            ${chevron}${indent}<div class="performance-title">${value}</div>
-                            <div class="performance-code">${codeDisplay}</div>
+                            ${chevron}${indent}
+                            <div class="performance-info">
+                                <div class="performance-title">${value}</div>
+                                <div class="performance-meta">${infoDisplay}</div>
+                            </div>
                         </div>
                     `;
                 }
@@ -95,10 +103,22 @@ class DataTable {
                 sortable: true,
                 type: 'string',
                 formatter: (value) => {
-                    if (!value) return '<span class="season-cell">N/A</span>';
+                    if (!value) return '<span class="season-tag season-other">N/A</span>';
                     // Remove leading "25-26 " or similar year prefix
                     const cleanValue = value.replace(/^\d{2}-\d{2}\s+/, '');
-                    return `<span class="season-cell">${cleanValue}</span>`;
+
+                    // Map season names to CSS classes
+                    const lowerValue = cleanValue.toLowerCase();
+                    const seasonClass =
+                        lowerValue.includes('classical') ? 'season-classical' :
+                        lowerValue.includes('pops') ? 'season-pops' :
+                        lowerValue.includes('family') ? 'season-family' :
+                        lowerValue.includes('special') ? 'season-special' :
+                        lowerValue.includes('film') || lowerValue.includes('movie') ? 'season-film' :
+                        lowerValue.includes('holiday') || lowerValue.includes('christmas') ? 'season-holiday' :
+                        'season-other';
+
+                    return `<span class="season-tag ${seasonClass}">${cleanValue}</span>`;
                 }
             },
             {
@@ -115,6 +135,7 @@ class DataTable {
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Source: Tessitura\nSingle + Subscription + Non-Fixed tickets\nW/W = change from 7 days ago',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
 
@@ -156,6 +177,7 @@ class DataTable {
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Source: Tessitura\nTickets Sold ÷ Venue Capacity\nW/W = change from 7 days ago',
                 formatter: (value, row) => {
                     const total = (row.singleTicketsSold || 0) + (row.subscriptionTicketsSold || 0) + (row.nonFixedTicketsSold || 0);
                     const capacity = row.capacity || 0;
@@ -225,10 +247,11 @@ class DataTable {
             },
             {
                 key: 'totalRevenue',
-                label: '<div style="text-align: center;">Actual Revenue</div>',
+                label: 'Actual Revenue',
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Source: Tessitura\nTotal ticket revenue to date\nW/W = change from 7 days ago',
                 formatter: (value, row) => {
                     const revenue = Math.round(value || 0);
 
@@ -278,10 +301,11 @@ class DataTable {
             },
             {
                 key: 'budgetPerformance',
-                label: '<div style="text-align: center;">Budget Goal<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(Variance)</span></div>',
+                label: 'Budget Goal',
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Source: Finance budget spreadsheet\nVariance = Actual Revenue − Budget Goal',
                 formatter: (value, row) => {
                     const revenue = Math.round(row.totalRevenue || 0);
                     const goal = Math.round(row.budgetGoal || 0);
@@ -303,10 +327,11 @@ class DataTable {
             },
             {
                 key: 'projectedTickets',
-                label: '<div style="text-align: center;">Projected Tickets<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Comp)</span></div>',
+                label: 'Projected Tickets',
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Projection = Target Comp Final + Current Variance\nVariance = Current Singles − Target Comp at same week\nCapped at available capacity, floored at current sales',
                 formatter: (value, row) => {
                     const projection = row._projection;
                     if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
@@ -327,10 +352,11 @@ class DataTable {
             },
             {
                 key: 'projectedRevenue',
-                label: '<div style="text-align: center;">Projected Revenue<br><span style="font-size: 0.85em; font-weight: normal; opacity: 0.8;">(vs Target Comp)</span></div>',
+                label: 'Projected Revenue',
                 sortable: true,
                 type: 'number',
                 align: 'center',
+                info: 'Projected Tickets × Avg Ticket Price\nAvg Price = Current Revenue ÷ Current Tickets\nVariance = Projected − Target Comp Revenue',
                 formatter: (value, row) => {
                     const projection = row._projection;
                     if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
@@ -2395,16 +2421,25 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 .attr('class', `header-${column.key}`)
                 .style('text-align', column.align || 'left');
 
+            // Build info icon HTML if column has info tooltip
+            const infoIcon = column.info
+                ? `<span class="header-info-icon" title="${column.info.replace(/\n/g, '&#10;')}">ⓘ</span>`
+                : '';
+
             if (column.sortable) {
                 th.attr('class', `header-${column.key} sortable`)
-                  .on('click', () => this.sortBy(column.key));
+                  .on('click', (event) => {
+                      // Don't sort if clicking on info icon
+                      if (event.target.classList.contains('header-info-icon')) return;
+                      this.sortBy(column.key);
+                  });
 
                 const sortIndicator = this.sortColumn === column.key ?
                     (this.sortDirection === 'asc' ? ' ↑' : ' ↓') : '';
 
-                th.html(`${column.label}${sortIndicator}`);
+                th.html(`${column.label}${infoIcon}${sortIndicator}`);
             } else {
-                th.text(column.label);
+                th.html(`${column.label}${infoIcon}`);
             }
         });
 
@@ -3320,6 +3355,11 @@ const tableStyles = `
 
 .sparkline-container svg {
     display: block;
+}
+
+.performance-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .performance-title {
