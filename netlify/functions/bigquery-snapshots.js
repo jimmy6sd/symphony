@@ -505,7 +505,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
         s.snapshot_date,
         s.total_tickets_sold,
         s.total_revenue,
-        ROW_NUMBER() OVER (PARTITION BY s.performance_code ORDER BY s.snapshot_date DESC) as rn
+        ROW_NUMBER() OVER (PARTITION BY s.performance_code ORDER BY s.snapshot_date DESC, s.created_at DESC) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
       INNER JOIN FuturePerformances fp ON s.performance_code = fp.performance_code
     ),
@@ -520,7 +520,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
         l.snapshot_date as latest_date,
         ROW_NUMBER() OVER (
           PARTITION BY s.performance_code
-          ORDER BY s.snapshot_date DESC
+          ORDER BY s.snapshot_date DESC, s.created_at DESC
         ) as rn
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
       INNER JOIN LatestSnapshots l ON s.performance_code = l.performance_code AND l.rn = 1
