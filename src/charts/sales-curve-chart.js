@@ -667,7 +667,9 @@ class SalesCurveChart {
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleCapacity = capacity - subscriptionSeats;
-        const projectedFinal = Math.round(Math.min(targetCompFinal + variance, availableSingleCapacity));
+        // Project final sales: target comp final + variance, capped at available capacity
+        // IMPORTANT: Floor at actual sales - can't project fewer tickets than already sold
+        const projectedFinal = Math.round(Math.max(actualSales, Math.min(targetCompFinal + variance, availableSingleCapacity)));
         const avgTicketPrice = singleTicketsSold > 0 ? currentSingleRevenue / singleTicketsSold : 0;
         const projectedRevenue = Math.round(projectedFinal * avgTicketPrice);
 
@@ -1481,9 +1483,10 @@ class SalesCurveChart {
                 const targetCompAtWeek = targetComp.weeksArray[weekIndex];
                 const projectedSales = targetCompAtWeek + variance;
 
-                // Cap between 0 and available single tickets capacity, round to whole tickets
+                // Cap between actualSales (floor) and available single tickets capacity (ceiling)
+                // Floor at actualSales: can't project fewer tickets than already sold
                 const cappedProjection = Math.round(Math.min(
-                    Math.max(0, projectedSales),
+                    Math.max(actualSales, projectedSales),
                     availableSingleCapacity
                 ));
 

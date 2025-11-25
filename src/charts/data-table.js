@@ -463,9 +463,10 @@ class DataTable {
         const variance = actualSales - targetCompAtActualWeek;
 
         // Project final SINGLE ticket sales (target comp final + variance, capped at available singles)
+        // IMPORTANT: Floor at actual sales - can't project fewer tickets than already sold
         const targetCompFinal = targetComp.weeksArray[numWeeks - 1];
         const projectedFinalSingles = Math.round(Math.min(
-            Math.max(0, targetCompFinal + variance),
+            Math.max(actualSales, targetCompFinal + variance),
             availableSingleCapacity
         ));
 
