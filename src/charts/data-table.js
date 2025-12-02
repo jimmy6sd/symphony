@@ -1273,6 +1273,7 @@ class DataTable {
         const subscriptionSeats = performance.subscriptionTicketsSold || 0;
         const availableSingleTickets = performance.capacity - subscriptionSeats;
         const singleTicketsSold = performance.singleTicketsSold || 0;
+        const compTickets = performance.compTickets || 0;
 
         // Calculate sales projections using comp-based method
         const projection = calculateCompBasedProjection(singleTicketsSold, performance.date, targetComp, availableSingleTickets);
@@ -1311,11 +1312,16 @@ class DataTable {
                     .style('border-bottom', index < items.length - 1 ? '1px solid #f0f0f0' : 'none')
                     .style('background', item.isHighlight ? '#f8f9ff' : 'white');
 
-                row.append('span')
+                const labelSpan = row.append('span')
                     .style('font-weight', '600')
                     .style('color', '#495057')
-                    .style('font-size', item.isHighlight ? '16px' : '14px')
-                    .text(item.label);
+                    .style('font-size', item.isHighlight ? '16px' : '14px');
+
+                if (item.info) {
+                    labelSpan.html(`${item.label} <span class="header-info-icon" title="${item.info.replace(/\n/g, '&#10;')}">ⓘ</span>`);
+                } else {
+                    labelSpan.text(item.label);
+                }
 
                 row.append('span')
                     .style('color', item.color || '#212529')
@@ -1339,26 +1345,32 @@ class DataTable {
 
         // === SECTION 1: CAPACITY OVERVIEW ===
         createSection(salesDetails, 'Capacity Overview', [
-            { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A') },
-            { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString() },
-            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isHighlight: true }
+            { label: 'Total Capacity', value: (performance.capacity?.toLocaleString() || 'N/A'), info: 'Venue capacity from source documents' },
+            { label: 'Subscription Sold', value: subscriptionSeats.toLocaleString(), info: 'Tickets sold via subscription packages (Tessitura)' },
+            { label: 'Available for Single Sale', value: availableSingleTickets.toLocaleString(), isHighlight: true, info: 'Capacity minus subscription seats' }
         ]);
 
         // === SECTION 2: SINGLE TICKET SALES ===
+        // Calculate adjusted ATP excluding comp tickets (comps are $0, drag down average)
+        const paidSingleTickets = singleTicketsSold - compTickets;
+        const singleRevenue = performance.singleTicketRevenue || 0;
+        const adjustedSingleAtp = paidSingleTickets > 0 ? singleRevenue / paidSingleTickets : 0;
+
         createSection(salesDetails, 'Single Ticket Sales', [
-            { label: 'Tickets Sold', value: singleTicketsSold.toLocaleString(), isHighlight: true },
-            { label: 'Average Ticket Price', value: performance.single_atp > 0 ? '$' + performance.single_atp.toFixed(2) : 'N/A' }
+            { label: 'Tickets Sold', value: singleTicketsSold.toLocaleString(), isHighlight: true, info: 'Single tickets sold to date (Tessitura)' },
+            { label: 'Comp Tickets', value: compTickets.toLocaleString(), info: 'Complimentary tickets at $0 (Tessitura PTC report)' },
+            { label: 'Average Ticket Price', value: adjustedSingleAtp > 0 ? '$' + adjustedSingleAtp.toFixed(2) : 'N/A', info: 'Single revenue ÷ paid tickets (excludes comps)' }
         ]);
 
         // === SECTION 3: PROJECTIONS ===
         if (projection.canProject) {
             createSection(salesDetails, 'Sales Projections', [
-                { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isHighlight: true },
+                { label: 'Projected Final Singles', value: projection.projected.toLocaleString(), isHighlight: true, info: 'Target comp final + current variance\nCapped at capacity, floored at current sales' },
                 { label: 'Current vs Target', value: `${projection.variance > 0 ? '+' : ''}${projection.variance.toLocaleString()}`,
-                  color: projection.variance >= 0 ? '#27ae60' : '#e74c3c' },
-                { label: 'Target Comp (Current)', value: projection.targetCompCurrent.toLocaleString() },
-                { label: 'Target Comp (Final)', value: projection.targetCompFinal.toLocaleString() },
-                { label: 'Target Comp ATP', value: targetComp?.atp > 0 ? '$' + targetComp.atp.toFixed(2) : 'N/A' }
+                  color: projection.variance >= 0 ? '#27ae60' : '#e74c3c', info: 'Current singles minus target comp at same weeks-out' },
+                { label: 'Target Comp (Current)', value: projection.targetCompCurrent.toLocaleString(), info: 'Target comp sales at same weeks before performance' },
+                { label: 'Target Comp (Final)', value: projection.targetCompFinal.toLocaleString(), info: "Target comp's final single ticket sales" },
+                { label: 'Target Comp ATP', value: targetComp?.atp > 0 ? '$' + targetComp.atp.toFixed(2) : 'N/A', info: "Target comp's average ticket price" }
             ], { note: formatCompProjectionText(projection) });
         } else {
             // Show why projection isn't available
@@ -1374,11 +1386,16 @@ class DataTable {
         }
 
         // === SECTION 4: OVERALL PERFORMANCE ===
+        // Calculate adjusted blended ATP excluding comp tickets
+        const paidTotalTickets = totalTickets - compTickets;
+        const totalRevenue = performance.totalRevenue || 0;
+        const adjustedBlendedAtp = paidTotalTickets > 0 ? totalRevenue / paidTotalTickets : 0;
+
         createSection(salesDetails, 'Overall Performance', [
-            { label: 'Total Tickets Sold', value: totalTickets.toLocaleString(), isHighlight: true },
-            { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%' },
-            { label: 'Total Revenue', value: '$' + (performance.totalRevenue || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) },
-            { label: 'Blended ATP', value: performance.overall_atp > 0 ? '$' + performance.overall_atp.toFixed(2) : 'N/A' },
+            { label: 'Total Tickets Sold', value: totalTickets.toLocaleString(), isHighlight: true, info: 'Single + subscription + non-fixed tickets (Tessitura)' },
+            { label: 'Total Occupancy', value: occupancyRate.toFixed(1) + '%', info: 'Total tickets ÷ venue capacity' },
+            { label: 'Total Revenue', value: '$' + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}), info: 'All ticket revenue to date (Tessitura)' },
+            { label: 'Blended ATP', value: adjustedBlendedAtp > 0 ? '$' + adjustedBlendedAtp.toFixed(2) : 'N/A', info: 'Total revenue ÷ paid tickets (excludes comps)' },
             { label: 'Status', value: status, color: statusColor }
         ]);
 

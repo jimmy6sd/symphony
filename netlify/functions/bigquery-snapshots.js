@@ -262,6 +262,7 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       COALESCE(s.overall_atp, 0) as overall_atp,
       COALESCE(s.fixed_atp, 0) as fixed_atp,
       COALESCE(s.non_fixed_atp, 0) as non_fixed_atp,
+      COALESCE(s.comp_tickets, 0) as comp_tickets,
       s.snapshot_date as last_updated,
       p.updated_at as metadata_updated_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
@@ -282,7 +283,8 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
         single_atp,
         overall_atp,
         fixed_atp,
-        non_fixed_atp
+        non_fixed_atp,
+        comp_tickets
       FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
       QUALIFY ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) = 1
     ) s
@@ -342,6 +344,7 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
     budgetGoal: row.budget_goal || 0,
     capacityPercent: row.capacity_percent || 0,
     budgetPercent: row.budget_percent || 0,
+    compTickets: row.comp_tickets || 0,
     lastUpdated: row.last_updated ? (typeof row.last_updated === 'object' ? row.last_updated.value : row.last_updated) : null,
     weeklySales: []  // Placeholder for compatibility
   }));
