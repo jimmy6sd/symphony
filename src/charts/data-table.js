@@ -2267,7 +2267,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             daysOut: Math.max(0, daysOut),
             tickets: snapshot.single_tickets_sold || 0,  // Only single tickets (includes non-fixed packages, excludes fixed subscriptions)
             revenue: snapshot.single_revenue || 0,       // Single ticket revenue (NOT total revenue)
-            occupancy: snapshot.capacity_percent || 0,   // Occupancy percentage
+            occupancy: performance.capacity ? ((snapshot.total_tickets_sold || 0) / performance.capacity * 100) : 0,   // Calculated occupancy
             single_atp: snapshot.single_atp || 0,        // Single ticket ATP from BigQuery
             date: snapshotDate,
             snapshot_date: snapshot.snapshot_date,
