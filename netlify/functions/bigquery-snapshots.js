@@ -128,6 +128,9 @@ exports.handler = async (event, context) => {
       case 'get-all-week-over-week':
         return await getAllWeekOverWeek(bigquery, params, headers);
 
+      case 'get-subscription-data':
+        return await getSubscriptionData(bigquery, params, headers);
+
       default:
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
     }
@@ -568,5 +571,100 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
     statusCode: 200,
     headers,
     body: JSON.stringify(wowData)
+  };
+}
+
+// Get subscription package sales data with day-over-day changes
+async function getSubscriptionData(bigquery, params, headers) {
+  const { category, season = '25-26' } = params;
+
+  // Build filter conditions
+  let filterConditions = [];
+  if (category) filterConditions.push(`category = '${category}'`);
+  if (season) filterConditions.push(`season = '${season}'`);
+  const filterClause = filterConditions.length > 0 ? `AND ${filterConditions.join(' AND ')}` : '';
+
+  // Get latest subscription snapshot data
+  // Note: Using CTEs to materialize data before JOIN (BigQuery doesn't support subqueries in JOIN predicates)
+  const query = `
+    WITH SnapshotDates AS (
+      SELECT
+        MAX(snapshot_date) as latest_date,
+        MAX(CASE WHEN snapshot_date < (SELECT MAX(snapshot_date) FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`) THEN snapshot_date END) as prev_date
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+    ),
+    LatestData AS (
+      SELECT *
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+      WHERE snapshot_date = (SELECT latest_date FROM SnapshotDates)
+      ${filterClause}
+    ),
+    PreviousData AS (
+      SELECT *
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+      WHERE snapshot_date = (SELECT prev_date FROM SnapshotDates)
+    )
+    SELECT
+      l.snapshot_date,
+      l.season,
+      l.category,
+      l.package_type,
+      l.package_name,
+      l.package_seats,
+      l.perf_seats,
+      l.total_amount,
+      l.paid_amount,
+      l.orders,
+      -- Day-over-day changes
+      l.package_seats - COALESCE(p.package_seats, l.package_seats) as package_seats_change,
+      l.total_amount - COALESCE(p.total_amount, l.total_amount) as revenue_change,
+      l.orders - COALESCE(p.orders, l.orders) as orders_change
+    FROM LatestData l
+    LEFT JOIN PreviousData p
+      ON l.package_name = p.package_name
+      AND l.category = p.category
+    ORDER BY l.category, l.package_type, l.package_name
+  `;
+
+  const [rows] = await bigquery.query({
+    query,
+    location: 'US'
+  });
+
+  // Transform data
+  const data = rows.map(row => ({
+    snapshot_date: typeof row.snapshot_date === 'object' ? row.snapshot_date.value : row.snapshot_date,
+    season: row.season,
+    category: row.category,
+    package_type: row.package_type,
+    package_name: row.package_name,
+    package_seats: row.package_seats,
+    perf_seats: row.perf_seats,
+    total_amount: row.total_amount,
+    paid_amount: row.paid_amount,
+    orders: row.orders
+  }));
+
+  // Build day-over-day lookup
+  const dayOverDay = {};
+  rows.forEach(row => {
+    dayOverDay[row.package_name] = {
+      package_seats_change: row.package_seats_change || 0,
+      revenue_change: row.revenue_change || 0,
+      orders_change: row.orders_change || 0
+    };
+  });
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      data,
+      dayOverDay,
+      _meta: {
+        timestamp: new Date().toISOString(),
+        packageCount: data.length
+      }
+    })
   };
 }
