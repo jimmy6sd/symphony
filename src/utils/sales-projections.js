@@ -183,22 +183,12 @@ function calculateCompBasedProjection(currentSingleTicketsSold, performanceDate,
     const lowerWeekIndex = numWeeks - 1 - lowerWeek;
     const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-    // Check if current week is within comp data range
-    if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
-        return {
-            projected: null,
-            variance: null,
-            targetCompCurrent: null,
-            targetCompFinal: null,
-            weeksUntil: exactWeeksUntil,
-            canProject: false,
-            reason: 'week_out_of_range'
-        };
-    }
-
-    // Calculate interpolated target comp value at exact week
+    // Handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
     let targetCompCurrent;
-    if (lowerWeek === upperWeek) {
+    if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+        // Use final sales value as baseline when weeks data is sparse or out of range
+        targetCompCurrent = targetComp.weeksArray[numWeeks - 1];
+    } else if (lowerWeek === upperWeek) {
         // Exact integer week, use direct value
         targetCompCurrent = targetComp.weeksArray[lowerWeekIndex];
     } else {

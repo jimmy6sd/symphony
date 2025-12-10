@@ -634,10 +634,12 @@ class SalesCurveChart {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) return null; // Week out of range
-
+        // Handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
         let targetCompSales;
-        if (lowerWeek === upperWeek) {
+        if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+            // Use final sales value as baseline when weeks data is sparse or out of range
+            targetCompSales = targetComp.weeksArray[numWeeks - 1];
+        } else if (lowerWeek === upperWeek) {
             targetCompSales = targetComp.weeksArray[lowerWeekIndex];
         } else {
             const lowerValue = targetComp.weeksArray[lowerWeekIndex];
@@ -1440,13 +1442,12 @@ class SalesCurveChart {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        // Ensure weeks are within target comp data range
-        if (lowerWeekIndex < 0 || upperWeekIndex >= numWeeks) {
-            return;
-        }
-
+        // Handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
         let targetCompAtActualWeek;
-        if (lowerWeek === upperWeek) {
+        if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+            // Use final sales value as baseline when weeks data is sparse or out of range
+            targetCompAtActualWeek = targetComp.weeksArray[numWeeks - 1];
+        } else if (lowerWeek === upperWeek) {
             // actualWeek is an integer, use direct value
             targetCompAtActualWeek = targetComp.weeksArray[lowerWeekIndex];
         } else {
