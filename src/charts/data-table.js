@@ -504,17 +504,23 @@ class DataTable {
         const nonFixedTickets = row.nonFixedTicketsSold || 0;
         const currentTotalSold = singleTicketsSold + subscriptionSeats + nonFixedTickets;
         const projectedFinalTotal = Math.max(currentTotalSold, projectedFinalSingles + subscriptionSeats + nonFixedTickets);
-        const targetFinalTotal = targetCompFinal + subscriptionSeats;
+
+        // Target total uses TARGET COMP's subs (not current performance's subs)
+        const targetCompSubs = targetComp.subs || 0;
+        const targetFinalTotal = targetCompFinal + targetCompSubs;
 
         // Calculate revenue projections
-        // Use current total revenue and total tickets to get avg price
+        // Use current total revenue and total tickets to get avg price for PROJECTED revenue
         const currentTotalTickets = currentSingleSales + subscriptionSeats;
         const currentTotalRevenue = row.totalRevenue || 0;
         const avgTicketPrice = currentTotalTickets > 0 ? currentTotalRevenue / currentTotalTickets : 0;
 
-        // Project revenue based on projected total tickets
+        // Project revenue: projected tickets × current ATP
         const projectedRevenue = Math.round(projectedFinalTotal * avgTicketPrice);
-        const targetRevenue = Math.round(targetFinalTotal * avgTicketPrice);
+
+        // Target revenue: target comp tickets × TARGET COMP's ATP (not current ATP)
+        const targetCompAtp = targetComp.atp || 0;
+        const targetRevenue = Math.round(targetFinalTotal * targetCompAtp);
 
         return {
             projection: {
