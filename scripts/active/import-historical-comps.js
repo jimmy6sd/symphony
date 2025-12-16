@@ -1,180 +1,201 @@
-// Import historical comp data from CSV into BigQuery
+// Import comp data from Excel into BigQuery
+// Reads from "Comps for 25-26 Performances (2).xlsx" in project root
 const { BigQuery } = require('@google-cloud/bigquery');
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
+const XLSX = require('xlsx');
 const path = require('path');
 
-// Parse CSV line (handle quoted values with commas)
-function parseCSVLine(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
+// Excel column structure (new format with Target column):
+// 0: Tess Performance Code
+// 1: Target (y = this is THE target comp for projections)
+// 2: Performance Desc
+// 3: Comp Desc
+// 4: Comp Date (Excel date number)
+// 5-16: Weeks 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, Final
+// 17: Subs
+// 18: Capacity
+// 19: Total OCC %
+// 20: ATP
 
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      result.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  result.push(current.trim());
-
-  return result;
-}
-
-// Clean and parse number (handle spaces, commas)
-function parseNumber(str) {
-  if (!str || str.trim() === '' || str.trim() === '-') {
-    return null;
-  }
-  const cleaned = str.replace(/,/g, '').trim();
+// Clean and parse number
+function parseNumber(val) {
+  if (val === undefined || val === null || val === '') return null;
+  if (typeof val === 'number') return val;
+  const cleaned = val.toString().replace(/,/g, '').replace('%', '').trim();
   const num = parseFloat(cleaned);
   return isNaN(num) ? null : num;
 }
 
-async function importHistoricalComps() {
+// Convert Excel date to ISO string
+function excelDateToISO(excelDate) {
+  if (!excelDate || typeof excelDate !== 'number') return null;
+  const d = new Date((excelDate - 25569) * 86400 * 1000);
+  return d.toISOString().split('T')[0];
+}
+
+// Colors for comp lines
+const COLORS = {
+  target: '#ff6b35',   // Orange for THE target comp
+  alt1: '#4285f4',     // Blue for first alternative
+  alt2: '#9c27b0',     // Purple for second alternative
+  alt3: '#00acc1'      // Cyan for third alternative
+};
+
+async function importComps() {
   try {
-    console.log('🚀 Importing historical comp data from CSV...\n');
+    // Allow passing filename as argument, default to the new file
+    const filename = process.argv[2] || 'Comps for 25-26 Performances (2).xlsx';
+    const excelPath = path.join(__dirname, '..', '..', filename);
+
+    console.log('🚀 Importing comp data from Excel...');
+    console.log(`📄 File: ${filename}\n`);
 
     // Initialize BigQuery
     const bigquery = new BigQuery({
       projectId: 'kcsymphony',
-      keyFilename: path.join(__dirname, '..', 'symphony-bigquery-key.json')
+      keyFilename: path.join(__dirname, '..', '..', 'symphony-bigquery-key.json')
     });
 
-    // Read CSV file
-    const csvPath = path.join(__dirname, '..', 'Comps for 25-26 Performances.xlsx - Sheet1.csv');
-    const csvContent = fs.readFileSync(csvPath, 'utf8');
-    const lines = csvContent.split('\n');
+    // Read Excel file
+    const wb = XLSX.readFile(excelPath);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-    console.log(`📄 Loaded CSV with ${lines.length} lines\n`);
+    console.log(`📊 Loaded ${rows.length} rows from Excel\n`);
 
-    // Parse lines
-    const rows = lines.map(line => parseCSVLine(line));
+    // Get existing comps to avoid duplicates
+    const [existingComps] = await bigquery.query({
+      query: 'SELECT performance_id, comparison_name FROM kcsymphony.symphony_dashboard.performance_sales_comparisons',
+      location: 'US'
+    });
+    const existingSet = new Set(existingComps.map(e => `${e.performance_id}|${e.comparison_name}`));
+    console.log(`📋 Found ${existingComps.length} existing comps in BigQuery\n`);
 
-    // Extract defaults (row 13 = Global Default, row 14 = Piazza Default)
-    const GLOBAL_DEFAULT = rows[12]; // 0-indexed, so row 13 is index 12
-    const PIAZZA_DEFAULT = rows[13]; // row 14 is index 13
+    // Extract defaults (row 12 = Global Default, row 13 = Piazza Default in 0-indexed)
+    const GLOBAL_DEFAULT = rows[12];
+    const PIAZZA_DEFAULT = rows[13];
 
-    console.log('📋 Default Values:');
-    console.log(`   Global Default: ${GLOBAL_DEFAULT[2]} (${GLOBAL_DEFAULT[3]} -> ${GLOBAL_DEFAULT[14]})`);
-    console.log(`   Piazza Default: ${PIAZZA_DEFAULT[2]} (${PIAZZA_DEFAULT[3]} -> ${PIAZZA_DEFAULT[14]})`);
+    console.log('📋 Default Curves:');
+    console.log(`   Global Default: weeks 10→Final = ${GLOBAL_DEFAULT.slice(5, 17).map(v => Math.round(v || 0)).join(', ')}`);
+    console.log(`   Piazza Default: weeks 10→Final = ${PIAZZA_DEFAULT.slice(5, 17).map(v => Math.round(v || 0)).join(', ')}`);
     console.log('');
 
     // Stats tracking
     const stats = {
       imported: 0,
       skipped: 0,
-      partialData: 0,
+      alreadyExists: 0,
+      noData: 0,
+      targets: 0,
+      alternatives: 0,
       usedGlobalDefault: 0,
       usedPiazzaDefault: 0,
       errors: []
     };
 
-    // Track which performances already have comps to set is_target appropriately
-    const performanceComps = new Map(); // performanceId -> count of comps
+    // Track alternative comp count per performance for color assignment
+    const altCountByPerf = new Map();
 
-    // Process data rows (skip headers, notes, defaults - start at row 15, index 14)
+    const now = new Date().toISOString();
+
+    // Process data rows (skip headers/notes - start at row 15, index 14)
     for (let i = 14; i < rows.length; i++) {
       const row = rows[i];
 
       // Skip empty rows
-      if (!row[0] || row[0].trim() === '') {
+      if (!row[0] || row[0].toString().trim() === '' || row[0] === 'N/A') {
         continue;
       }
 
-      const performanceId = row[0].trim();
-      const performanceDesc = row[1].trim();
-      const compDesc = row[2].trim();
+      const performanceId = row[0].toString().trim();
+      const isTarget = row[1] === 'y';
+      const performanceDesc = row[2] ? row[2].toString().trim() : '';
+      const compDesc = row[3] ? row[3].toString().trim() : '';
 
       // Skip if no comp description
-      if (!compDesc || compDesc === '') {
-        console.log(`⚠️  Skipping ${performanceId} (${performanceDesc}) - No comp data`);
-        stats.skipped++;
+      if (!compDesc) {
+        console.log(`⚠️  Skipping ${performanceId} (${performanceDesc}) - No comp assigned`);
+        stats.noData++;
         continue;
       }
 
-      // Determine weeks data source
-      let weeksData;
-      let sourceRow;
-      let comparisonName;
+      // Determine comparison name and data source
+      let sourceRow = row;
+      let comparisonName = compDesc;
 
       if (compDesc === 'Piazza Default') {
-        // Use Piazza Default values
         sourceRow = PIAZZA_DEFAULT;
         comparisonName = 'Piazza Default (Historical Avg)';
         stats.usedPiazzaDefault++;
       } else if (compDesc === 'Global Default') {
-        // Use Global Default values
         sourceRow = GLOBAL_DEFAULT;
         comparisonName = 'Global Default (Historical Avg)';
         stats.usedGlobalDefault++;
-      } else {
-        // Use this row's data
-        sourceRow = row;
-        comparisonName = compDesc;
       }
 
-      // Parse weeks data (columns D-O: indices 3-14)
-      // Weeks: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, Final
+      // Check if already exists
+      const key = `${performanceId}|${comparisonName}`;
+      if (existingSet.has(key)) {
+        stats.alreadyExists++;
+        continue;
+      }
+
+      // Parse weeks data (columns 5-16: weeks 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, Final)
       const weekValues = [];
       let hasData = false;
-      let hasPartialData = false;
 
-      for (let j = 3; j <= 14; j++) {
+      for (let j = 5; j <= 16; j++) {
         const value = parseNumber(sourceRow[j]);
         weekValues.push(value);
-        if (value !== null) {
-          hasData = true;
-          // Check if we have partial data (only week 0 and Final)
-          if (j >= 13) { // indices 13-14 are week 0 and Final
-            hasPartialData = true;
-          }
-        }
+        if (value !== null) hasData = true;
       }
 
-      // Skip if no data at all
+      // Skip if no week data at all
       if (!hasData) {
-        console.log(`⚠️  Skipping ${performanceId} (${performanceDesc}) - No numeric data`);
+        console.log(`⚠️  Skipping ${performanceId}: ${comparisonName} - No week data`);
         stats.skipped++;
         continue;
       }
 
-      // Check if it's only partial data (week 0 + Final)
-      const hasFullData = weekValues.slice(0, 11).some(v => v !== null);
-      if (!hasFullData && hasPartialData) {
-        stats.partialData++;
+      // Create CSV string for weeks_data (empty string for null values)
+      const weeksDataCSV = weekValues.map(v => v !== null ? Math.round(v) : '').join(',');
+
+      // Extract metadata from original row (not default row)
+      const compDate = excelDateToISO(row[4]);
+      const subs = parseNumber(row[17]);
+      const capacity = parseNumber(row[18]);
+      const occPercent = parseNumber(row[19]);
+      const atp = parseNumber(row[20]);
+
+      // Determine color and style based on target status
+      let lineColor, lineStyle;
+      if (isTarget) {
+        lineColor = COLORS.target;
+        lineStyle = 'solid';
+        stats.targets++;
+      } else {
+        // Assign different colors to alternative comps
+        const altCount = altCountByPerf.get(performanceId) || 0;
+        lineColor = altCount === 0 ? COLORS.alt1 : altCount === 1 ? COLORS.alt2 : COLORS.alt3;
+        lineStyle = 'dashed';
+        altCountByPerf.set(performanceId, altCount + 1);
+        stats.alternatives++;
       }
-
-      // Create CSV string for weeks_data
-      // Keep nulls as empty values for partial data
-      const weeksDataCSV = weekValues.map(v => v !== null ? v : '').join(',');
-
-      // Extract metadata (optional)
-      const subs = parseNumber(sourceRow[15]); // Column P
-      const capacity = parseNumber(sourceRow[16]); // Column Q
-      const occPercent = sourceRow[17] ? sourceRow[17].replace('%', '').trim() : null; // Column R
-
-      // Determine if this should be the target comp
-      // First comp for each performance is the target
-      const compCount = performanceComps.get(performanceId) || 0;
-      const isTarget = compCount === 0;
-      performanceComps.set(performanceId, compCount + 1);
 
       // Generate comparison ID
       const comparisonId = uuidv4();
-      const now = new Date().toISOString();
 
-      // Insert into BigQuery
+      // Build insert query
       const insertQuery = `
-        INSERT INTO \`kcsymphony.symphony_dashboard.performance_sales_comparisons\`
-        (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
+        INSERT INTO kcsymphony.symphony_dashboard.performance_sales_comparisons
+        (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style,
+         is_target, created_at, updated_at, comp_date, atp, subs, capacity, occupancy_percent)
+        VALUES (?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?),
+                ${compDate ? `DATE('${compDate}')` : 'NULL'},
+                ${atp !== null ? atp : 'NULL'},
+                ${subs !== null ? Math.round(subs) : 'NULL'},
+                ${capacity !== null ? Math.round(capacity) : 'NULL'},
+                ${occPercent !== null ? occPercent : 'NULL'})
       `;
 
       try {
@@ -185,8 +206,8 @@ async function importHistoricalComps() {
             performanceId,
             comparisonName,
             weeksDataCSV,
-            isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
-            isTarget ? 'solid' : 'dashed',
+            lineColor,
+            lineStyle,
             isTarget,
             now,
             now
@@ -194,14 +215,14 @@ async function importHistoricalComps() {
           location: 'US'
         });
 
-        const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
-        const dataType = !hasFullData && hasPartialData ? '[PARTIAL]' : '';
-        console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName} ${dataType}`);
+        const targetMarker = isTarget ? '🎯 [TARGET]' : '   [alt]';
+        console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName}`);
         stats.imported++;
+        existingSet.add(key);
 
       } catch (error) {
         console.error(`❌ Error importing ${performanceId}:`, error.message);
-        stats.errors.push({ performanceId, error: error.message });
+        stats.errors.push({ performanceId, comparisonName, error: error.message });
       }
     }
 
@@ -210,11 +231,12 @@ async function importHistoricalComps() {
     console.log('📊 IMPORT SUMMARY');
     console.log('='.repeat(60));
     console.log(`✅ Comps imported:        ${stats.imported}`);
-    console.log(`⚠️  Performances skipped: ${stats.skipped} (no comp data)`);
-    console.log(`📝 Partial data imports:  ${stats.partialData} (only week 0 + Final)`);
-    console.log(`🌍 Global defaults used:  ${stats.usedGlobalDefault}`);
-    console.log(`🎹 Piazza defaults used:  ${stats.usedPiazzaDefault}`);
-    console.log(`🎯 Target comps set:      ${performanceComps.size}`);
+    console.log(`   🎯 Target comps:       ${stats.targets}`);
+    console.log(`   📊 Alternative comps:  ${stats.alternatives}`);
+    console.log(`⏭️  Already existed:      ${stats.alreadyExists}`);
+    console.log(`⚠️  Skipped (no data):    ${stats.skipped + stats.noData}`);
+    console.log(`🌍 Used Global default:   ${stats.usedGlobalDefault}`);
+    console.log(`🎹 Used Piazza default:   ${stats.usedPiazzaDefault}`);
 
     if (stats.errors.length > 0) {
       console.log(`\n❌ Errors: ${stats.errors.length}`);
@@ -224,7 +246,6 @@ async function importHistoricalComps() {
     }
 
     console.log('\n✅ Import complete!');
-    console.log('💡 Next step: Update API to support is_target flag');
 
   } catch (error) {
     console.error('❌ Fatal error:', error.message);
@@ -233,4 +254,4 @@ async function importHistoricalComps() {
   }
 }
 
-importHistoricalComps();
+importComps();
