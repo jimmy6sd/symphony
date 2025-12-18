@@ -365,6 +365,17 @@ class DataTable {
                     if (!projection) return '<span style="color: var(--text-muted);">N/A</span>';
 
                     const projectedRevenue = Math.round(projection.projectedRevenue);
+
+                    // Check if target comp ATP is missing
+                    if (projection.targetCompAtpMissing || projection.targetRevenue === null) {
+                        return `
+                            <div class="projection-cell">
+                                <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
+                                <div class="projection-variance" style="color: var(--text-muted); font-size: 0.75rem;">Comp ATP Missing</div>
+                            </div>
+                        `;
+                    }
+
                     const targetRevenue = Math.round(projection.targetRevenue);
                     const variance = projectedRevenue - targetRevenue;
                     const status = variance >= 0 ? 'good' : variance >= -5000 ? 'warning' : 'poor';
@@ -518,9 +529,9 @@ class DataTable {
         // Project revenue: projected tickets × current ATP
         const projectedRevenue = Math.round(projectedFinalTotal * avgTicketPrice);
 
-        // Target revenue: target comp tickets × TARGET COMP's ATP (not current ATP)
-        const targetCompAtp = targetComp.atp || 0;
-        const targetRevenue = Math.round(targetFinalTotal * targetCompAtp);
+        // Target revenue: target comp tickets × TARGET COMP's ATP (shows message if missing)
+        const targetCompAtp = targetComp.atp ? parseFloat(targetComp.atp) : null;
+        const targetRevenue = targetCompAtp ? Math.round(targetFinalTotal * targetCompAtp) : null;
 
         return {
             projection: {
@@ -528,6 +539,7 @@ class DataTable {
                 targetTickets: targetFinalTotal,
                 projectedRevenue: projectedRevenue,
                 targetRevenue: targetRevenue,
+                targetCompAtpMissing: !targetCompAtp,
                 variance: variance,
                 weeksToPerformance: weeksToPerformance
             },
@@ -2861,6 +2873,9 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             // Aggregate projections across all performances in the group
             const hasAnyProjection = perfs.some(p => p._projection && (p._projection.projectedTickets > 0 || p._projection.targetTickets > 0));
 
+            // Check if any performance in the group has missing ATP
+            const hasAnyMissingAtp = perfs.some(p => p._projection && p._projection.targetCompAtpMissing);
+
             const aggregateProjection = hasAnyProjection ? perfs.reduce((acc, p) => {
                 if (p._projection) {
                     acc.projectedTickets += p._projection.projectedTickets || 0;
@@ -2873,7 +2888,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 projectedTickets: 0,
                 targetTickets: 0,
                 projectedRevenue: 0,
-                targetRevenue: 0
+                targetRevenue: 0,
+                targetCompAtpMissing: hasAnyMissingAtp
             }) : null;
 
             // Use first performance's metadata
