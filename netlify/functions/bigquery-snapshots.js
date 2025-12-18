@@ -131,6 +131,9 @@ exports.handler = async (event, context) => {
       case 'get-subscription-data':
         return await getSubscriptionData(bigquery, params, headers);
 
+      case 'get-subscription-history':
+        return await getSubscriptionHistory(bigquery, params, headers);
+
       default:
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
     }
@@ -664,6 +667,93 @@ async function getSubscriptionData(bigquery, params, headers) {
       _meta: {
         timestamp: new Date().toISOString(),
         packageCount: data.length
+      }
+    })
+  };
+}
+
+// Get subscription historical data for sales curve charts
+// Returns weekly snapshots grouped by season for comparison
+async function getSubscriptionHistory(bigquery, params, headers) {
+  const { series } = params;
+
+  if (!series) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'series parameter required (Classical or Pops)' })
+    };
+  }
+
+  // Query all historical data for this series
+  const query = `
+    SELECT
+      series,
+      season,
+      snapshot_date,
+      week_number,
+      new_units,
+      new_revenue,
+      renewal_units,
+      renewal_revenue,
+      total_units,
+      total_revenue,
+      is_final
+    FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
+    WHERE series = @series
+    ORDER BY season DESC, week_number ASC
+  `;
+
+  const [rows] = await bigquery.query({
+    query,
+    params: { series },
+    location: 'US'
+  });
+
+  // Group by season
+  const seasons = {};
+  rows.forEach(row => {
+    const season = row.season;
+    if (!seasons[season]) {
+      seasons[season] = {
+        season,
+        snapshots: [],
+        final: null
+      };
+    }
+
+    const snapshot = {
+      snapshot_date: row.snapshot_date ? (typeof row.snapshot_date === 'object' ? row.snapshot_date.value : row.snapshot_date) : null,
+      week_number: row.week_number,
+      new_units: row.new_units,
+      new_revenue: row.new_revenue,
+      renewal_units: row.renewal_units,
+      renewal_revenue: row.renewal_revenue,
+      total_units: row.total_units,
+      total_revenue: row.total_revenue
+    };
+
+    if (row.is_final) {
+      seasons[season].final = snapshot;
+    } else {
+      seasons[season].snapshots.push(snapshot);
+    }
+  });
+
+  // Sort snapshots within each season by week_number
+  Object.values(seasons).forEach(s => {
+    s.snapshots.sort((a, b) => a.week_number - b.week_number);
+  });
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      series,
+      seasons,
+      _meta: {
+        timestamp: new Date().toISOString(),
+        seasonCount: Object.keys(seasons).length
       }
     })
   };

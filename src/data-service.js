@@ -528,6 +528,20 @@ class DataService {
         }
     }
 
+    // Get subscription historical data for sales curve charts
+    async getSubscriptionHistory(series) {
+        try {
+            const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-subscription-history&series=${encodeURIComponent(series)}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch subscription history: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching subscription history:', error);
+            return { series, seasons: {}, _meta: { error: error.message } };
+        }
+    }
+
     // Add visual indicator for data source
     updateDataSourceIndicator(source, count, status) {
         // Create or update data source indicator in the UI

@@ -27,6 +27,7 @@ const SCRIPTS_TO_LOAD = [
     '/src/charts/ticket-type-chart.js',
     '/src/charts/data-table.js',
     '/src/charts/subscription-table.js',
+    '/src/charts/subscription-sales-curve.js',
     '/src/admin-panel.js',
     '/src/components/pipeline-status.js',
     '/src/components/dashboard-ui.js',

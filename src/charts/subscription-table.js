@@ -13,6 +13,12 @@ class SubscriptionTable {
 
         // Category order for display
         this.categoryOrder = ['Classical', 'Pops', 'Flex', 'Family'];
+
+        // Categories that support sales curve charts
+        this.chartCategories = ['Classical', 'Pops'];
+
+        // Store chart instances
+        this.charts = new Map();
     }
 
     async init() {
@@ -42,7 +48,10 @@ class SubscriptionTable {
         }
 
         const result = await response.json();
-        this.data = result.data || [];
+        // Filter out packages with 'mini' in the type
+        this.data = (result.data || []).filter(pkg =>
+            !pkg.package_type || !pkg.package_type.toLowerCase().includes('mini')
+        );
         this.dayOverDayData = result.dayOverDay || {};
     }
 
@@ -64,24 +73,19 @@ class SubscriptionTable {
     }
 
     render() {
-        if (!this.data || this.data.length === 0) {
-            this.container.innerHTML = `
-                <div class="subscription-table-wrapper" style="padding: 60px; text-align: center;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="margin-bottom: 16px;">
-                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                    </svg>
-                    <div style="color: var(--text-muted); font-size: 1.1rem;">No subscription data available</div>
-                </div>
-            `;
-            return;
-        }
-
-        // Group data by category
-        const groupedData = this.groupByCategory(this.data);
+        // Group data by category (may be empty)
+        const groupedData = this.data && this.data.length > 0 ? this.groupByCategory(this.data) : {};
 
         // Calculate totals
-        const totals = this.calculateTotals(this.data);
+        const totals = this.data && this.data.length > 0 ? this.calculateTotals(this.data) : {
+            totalPackages: 0,
+            totalPerf: 0,
+            totalRevenue: 0,
+            totalOrders: 0
+        };
+
+        // Always show chart categories even if no package data
+        const hasPackageData = this.data && this.data.length > 0;
 
         // Build HTML
         let html = `
@@ -109,9 +113,12 @@ class SubscriptionTable {
                 <!-- Categories -->
                 ${this.categoryOrder.map(category => {
                     const categoryData = groupedData[category] || [];
-                    if (categoryData.length === 0) return '';
+                    const hasChart = this.chartCategories.includes(category);
 
-                    const categoryTotals = this.calculateTotals(categoryData);
+                    // Skip categories with no data AND no chart
+                    if (categoryData.length === 0 && !hasChart) return '';
+
+                    const categoryTotals = categoryData.length > 0 ? this.calculateTotals(categoryData) : { totalPackages: 0, totalRevenue: 0 };
                     const isCollapsed = this.collapsedCategories.has(category);
 
                     return `
@@ -121,8 +128,9 @@ class SubscriptionTable {
                                 <div class="subscription-category-title">
                                     <span class="expand-icon">${isCollapsed ? '▸' : '▾'}</span>
                                     <span class="category-badge ${category.toLowerCase()}">${category}</span>
-                                    <span style="color: var(--text-secondary); font-weight: 400;">${categoryData.length} packages</span>
+                                    <span style="color: var(--text-secondary); font-weight: 400;">${hasChart ? 'Sales Curve' : ''}${categoryData.length > 0 ? (hasChart ? ' + ' : '') + categoryData.length + ' packages' : ''}</span>
                                 </div>
+                                ${categoryData.length > 0 ? `
                                 <div class="subscription-category-stats">
                                     <div class="subscription-stat">
                                         <div class="subscription-stat-value">${categoryTotals.totalPackages.toLocaleString()}</div>
@@ -133,8 +141,15 @@ class SubscriptionTable {
                                         <div class="subscription-stat-label">Revenue</div>
                                     </div>
                                 </div>
+                                ` : ''}
                             </div>
                             <div class="subscription-category-content" style="${isCollapsed ? 'display: none;' : ''}">
+                                ${hasChart ? `
+                                <div class="subscription-category-chart" id="sub-chart-${category.toLowerCase()}">
+                                    <div class="chart-loading">Loading sales curve...</div>
+                                </div>
+                                ` : ''}
+                                ${categoryData.length > 0 ? `
                                 <table>
                                     <thead>
                                         <tr>
@@ -150,6 +165,7 @@ class SubscriptionTable {
                                         ${categoryData.map(pkg => this.renderPackageRow(pkg)).join('')}
                                     </tbody>
                                 </table>
+                                ` : ''}
                             </div>
                         </div>
                     `;
@@ -158,6 +174,37 @@ class SubscriptionTable {
         `;
 
         this.container.innerHTML = html;
+
+        // Initialize charts for expanded categories
+        this.initializeCharts();
+    }
+
+    // Initialize sales curve charts for expanded categories
+    async initializeCharts() {
+        for (const category of this.chartCategories) {
+            const isCollapsed = this.collapsedCategories.has(category);
+            const containerId = `sub-chart-${category.toLowerCase()}`;
+            const container = document.getElementById(containerId);
+
+            if (!isCollapsed && container && !this.charts.has(category)) {
+                // Initialize chart for this category
+                try {
+                    const chart = new window.SubscriptionSalesCurve(containerId, { series: category });
+                    this.charts.set(category, chart);
+                    await chart.init();
+                } catch (error) {
+                    console.error(`Error initializing chart for ${category}:`, error);
+                    container.innerHTML = `<div class="chart-error">Error loading chart</div>`;
+                }
+            } else if (isCollapsed && this.charts.has(category)) {
+                // Destroy chart when collapsed
+                const chart = this.charts.get(category);
+                if (chart && chart.destroy) {
+                    chart.destroy();
+                }
+                this.charts.delete(category);
+            }
+        }
     }
 
     renderPackageRow(pkg) {
@@ -225,6 +272,15 @@ class SubscriptionTable {
     }
 
     toggleCategory(category) {
+        // Destroy existing chart before re-render
+        if (this.charts.has(category)) {
+            const chart = this.charts.get(category);
+            if (chart && chart.destroy) {
+                chart.destroy();
+            }
+            this.charts.delete(category);
+        }
+
         if (this.collapsedCategories.has(category)) {
             this.collapsedCategories.delete(category);
         } else {
