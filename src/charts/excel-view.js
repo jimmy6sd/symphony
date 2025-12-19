@@ -595,6 +595,11 @@ class ExcelView {
             .html('📥 Export to CSV')
             .on('click', () => this.exportToCSV());
 
+        toolbar.append('button')
+            .attr('class', 'export-button')
+            .html('📊 Export to Excel')
+            .on('click', () => this.exportToXLSX());
+
         // Create scrollable table container
         const tableContainer = this.container.append('div')
             .attr('class', 'excel-view-table-container');
@@ -792,6 +797,119 @@ class ExcelView {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    /**
+     * Export table data to Excel (XLSX)
+     * Matches KCS Weekly Sales Report format
+     */
+    exportToXLSX() {
+        const XLSX = window.XLSX;
+        if (!XLSX) {
+            alert('Excel export library not loaded. Please refresh the page.');
+            return;
+        }
+
+        const today = new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+
+        // Helper to safely get numeric value
+        const num = (val) => {
+            if (val === null || val === undefined || val === '' || isNaN(val)) return 0;
+            return Number(val);
+        };
+
+        // Helper to safely get string value
+        const str = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val);
+        };
+
+        // Row 1: Title with group headers
+        const row1 = [
+            `TICKET SALES REPORT as of ${today}`, '', '', '',
+            'SINGLE TICKETS', '', '', '',
+            'SUBSCRIPTION TICKETS', '', '',
+            'TOTAL SALES (Singles + Subs)', '', '',
+            'Hall Data', '', ''
+        ];
+
+        // Row 2: Column headers
+        const row2 = [
+            'SERIES', 'TITLE', '', 'DATE(S)',
+            'BUDGET', 'ACTUAL', 'VS. BUDGET', '# SOLD',
+            'BUDGET', 'ACTUAL', '# SOLD',
+            'BUDGET', 'ACTUAL', '# SOLD',
+            'CAP', 'CAP SOLD %', 'ATP'
+        ];
+
+        // Build data rows with safe values
+        const dataRows = this.data.map(row => {
+            const dateVal = row.date ? new Date(row.date) : null;
+            const dateStr = dateVal && !isNaN(dateVal)
+                ? dateVal.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : '';
+
+            const singlesBudget = num(row.singlesBudget);
+            const singlesRevenue = num(row.singlesRevenue);
+            const capPercent = num(row.capacityPercent);
+
+            return [
+                str(row.series),
+                str(row.title || row.name),
+                '',
+                dateStr,
+                singlesBudget,
+                singlesRevenue,
+                singlesRevenue - singlesBudget,
+                num(row.singleTicketsSold),
+                num(row.subsBudget),
+                num(row.subsRevenue),
+                num(row.subscriptionTicketsSold),
+                num(row.budgetGoal),
+                num(row.totalRevenue),
+                num(row.totalTicketsSold),
+                num(row.capacity),
+                capPercent > 0 ? (capPercent / 100) : 0,
+                num(row.avgTicketPrice)
+            ];
+        });
+
+        // Combine all rows
+        const sheetData = [row1, row2, ...dataRows];
+
+        // Create worksheet
+        const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+        // Set column widths
+        ws['!cols'] = [
+            { wch: 8 },   // A: Series code
+            { wch: 28 },  // B: Title
+            { wch: 3 },   // C: empty
+            { wch: 12 },  // D: Date
+            { wch: 12 },  // E: Single Budget
+            { wch: 12 },  // F: Single Actual
+            { wch: 12 },  // G: VS Budget
+            { wch: 8 },   // H: # Sold
+            { wch: 12 },  // I: Sub Budget
+            { wch: 12 },  // J: Sub Actual
+            { wch: 8 },   // K: # Sold
+            { wch: 12 },  // L: Total Budget
+            { wch: 12 },  // M: Total Actual
+            { wch: 8 },   // N: # Sold
+            { wch: 8 },   // O: Cap
+            { wch: 10 },  // P: Cap Sold
+            { wch: 10 }   // Q: ATP
+        ];
+
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
+
+        // Generate filename
+        const filename = `symphony-performance-data-${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Download
+        XLSX.writeFile(wb, filename);
     }
 }
 
