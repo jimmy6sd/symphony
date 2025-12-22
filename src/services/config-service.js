@@ -236,15 +236,6 @@ class ConfigService extends SymphonyModule {
                     { week: 9, percentage: 95 },
                     { week: 10, percentage: 100 }
                 ],
-                historicSalesProgression: [
-                    { week: 6, percentage: 27 },
-                    { week: 5, percentage: 30 },
-                    { week: 4, percentage: 33 },
-                    { week: 3, percentage: 39 },
-                    { week: 2, percentage: 46 },
-                    { week: 1, percentage: 59 },
-                    { week: 0, percentage: 100 }
-                ],
                 defaultModel: "expectedSalesProgression"
             },
 

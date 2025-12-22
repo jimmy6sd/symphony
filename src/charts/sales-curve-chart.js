@@ -289,19 +289,6 @@ class SalesCurveChart {
         this.maxWeeks = maxWeeks;
         this.maxSales = maxSales;
 
-        // Generate on-track line data based on historic progression
-        const onTrackData = this.generateOnTrackLine(performance, maxWeeks, capacity);
-        console.log('📊 Target line data:', onTrackData.filter(d => d.hasTarget));
-
-        // Line generator for expected sales only
-        // (No actual line since we only have one data point)
-
-        const expectedLine = d3.line()
-            .x(d => xScale(d.week))
-            .y(d => yScale(d.expectedCumulative))
-            .curve(d3.curveMonotoneX)
-            .defined(d => d.hasTarget && d.expectedCumulative !== null); // Only draw where we have target data
-
         // Add subtle grid lines FIRST (so they're in the back)
         chartGroup.append("g")
             .attr("class", "grid")
@@ -484,117 +471,7 @@ class SalesCurveChart {
         await this.renderProjectionLine(chartGroup, xScale, yScale, performance, currentSales, weeksToPerformance, comparisons, availableSingleCapacity);
 
         // Add tooltips for the single current sales point
-        this.addTooltips(currentSales, weeksToPerformance, onTrackData, performance);
-    }
-
-    generateOnTrackLine(performance, maxWeeks, capacity = null) {
-        const useCapacity = capacity || performance.capacity || 2000;
-
-        // NEW LOGIC: Calculate target based on available single tickets ONLY
-        // The target line shows the progression toward selling 85% of available single tickets
-        const subscriptionSeats = performance.subscriptionTicketsSold || 0;
-        const availableSingleTickets = useCapacity - subscriptionSeats;
-        const singleTicketTarget = Math.floor(availableSingleTickets * (performance.occupancyGoal / 100));
-
-        // Target sales = ONLY single ticket target (not including subscriptions)
-        // This shows the sales curve for single tickets only
-        const targetSales = singleTicketTarget;
-
-        const progression = CONFIG.salesCurve.historicSalesProgression;
-
-        console.log('🎯 Target generation (SINGLE TICKET TARGET):');
-        console.log('   Total Capacity:', useCapacity);
-        console.log('   Subscription Sold:', subscriptionSeats);
-        console.log('   Available Single Tickets:', availableSingleTickets);
-        console.log('   Single Ticket Target (85%):', singleTicketTarget);
-        console.log('   Target line shows:', targetSales, '(single tickets only)');
-        console.log('   Occupancy goal:', performance.occupancyGoal + '%');
-
-        const onTrackData = [];
-
-        // Generate target line from 6 weeks out to performance date (week 0)
-        // First add week 0 (performance date)
-        const week0Percentage = this.getHistoricPercentageAtWeek(0, progression);
-        const week0Cumulative = Math.floor(targetSales * (week0Percentage / 100));
-        console.log(`   Week 0 (performance): ${week0Percentage}% = ${week0Cumulative} tickets`);
-
-        for (let week = 1; week <= maxWeeks; week++) {
-            if (week <= 6) {
-                // Use historic progression for weeks 1-6
-                const expectedPercentage = this.getHistoricPercentageAtWeek(week, progression);
-                const expectedCumulative = Math.floor(targetSales * (expectedPercentage / 100));
-
-                console.log(`   Week ${week}: ${expectedPercentage}% = ${expectedCumulative} tickets`);
-
-                onTrackData.push({
-                    week: week,
-                    expectedCumulative: expectedCumulative,
-                    expectedPercentage: expectedPercentage,
-                    hasTarget: true  // Flag to indicate this point has target data
-                });
-            } else {
-                // No target line for weeks 7-10, but maintain data structure
-                onTrackData.push({
-                    week: week,
-                    expectedCumulative: null,
-                    expectedPercentage: null,
-                    hasTarget: false
-                });
-            }
-        }
-
-        // Add week 0 data point at the end for proper line drawing
-        onTrackData.unshift({
-            week: 0,
-            expectedCumulative: week0Cumulative,
-            expectedPercentage: week0Percentage,
-            hasTarget: true
-        });
-
-        return onTrackData;
-    }
-
-    getExpectedPercentageAtWeek(week, progression) {
-        if (!progression || !Array.isArray(progression)) {
-            return 0;
-        }
-        const dataPoint = progression.find(point => point.week === week);
-        if (dataPoint) {
-            return dataPoint.percentage;
-        }
-
-        // Interpolate if exact week not found
-        const lowerPoint = progression.filter(point => point.week < week).pop();
-        const upperPoint = progression.find(point => point.week > week);
-
-        if (!lowerPoint) return progression[0].percentage;
-        if (!upperPoint) return progression[progression.length - 1].percentage;
-
-        const ratio = (week - lowerPoint.week) / (upperPoint.week - lowerPoint.week);
-        return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
-    }
-
-    getHistoricPercentageAtWeek(week, progression) {
-        if (!progression || !Array.isArray(progression)) {
-            return 0;
-        }
-
-        // Historic progression has weeks 6, 5, 4, 3, 2, 1, 0
-        // Find the exact match first
-        const dataPoint = progression.find(point => point.week === week);
-        if (dataPoint) {
-            return dataPoint.percentage;
-        }
-
-        // Interpolate if exact week not found
-        const lowerPoint = progression.filter(point => point.week < week).pop();
-        const upperPoint = progression.find(point => point.week > week);
-
-        if (!lowerPoint) return progression[progression.length - 1].percentage; // lowest week
-        if (!upperPoint) return progression[0].percentage; // highest week
-
-        const ratio = (week - lowerPoint.week) / (upperPoint.week - lowerPoint.week);
-        return lowerPoint.percentage + ratio * (upperPoint.percentage - lowerPoint.percentage);
+        this.addTooltips(currentSales, weeksToPerformance, performance);
     }
 
     calculateTrackingMetrics(targetComp, performance, singleTicketsSold, weeksToPerformance, performanceDate) {
@@ -1145,7 +1022,7 @@ class SalesCurveChart {
         });
     }
 
-    addTooltips(currentSales, weeksToPerformance, expectedData, performance) {
+    addTooltips(currentSales, weeksToPerformance, performance) {
         // Remove any existing tooltip first
         d3.select(".sales-curve-tooltip").remove();
 

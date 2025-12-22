@@ -15,44 +15,7 @@ const CONFIG = {
         }
     },
 
-    // Sales curve heuristics for the "on-track" line
-    salesCurve: {
-        // Heuristic model for expected sales progression over 10 weeks
-        // This defines what percentage of total sales should be achieved by each week
-        expectedSalesProgression: [
-            { week: 1, percentage: 5 },   // Week 1: 5% of total expected sales
-            { week: 2, percentage: 12 },  // Week 2: 12% of total expected sales
-            { week: 3, percentage: 22 },  // Week 3: 22% of total expected sales
-            { week: 4, percentage: 35 },  // Week 4: 35% of total expected sales
-            { week: 5, percentage: 48 },  // Week 5: 48% of total expected sales
-            { week: 6, percentage: 62 },  // Week 6: 62% of total expected sales
-            { week: 7, percentage: 75 },  // Week 7: 75% of total expected sales
-            { week: 8, percentage: 87 },  // Week 8: 87% of total expected sales
-            { week: 9, percentage: 95 },  // Week 9: 95% of total expected sales
-            { week: 10, percentage: 100 } // Week 10: 100% of total expected sales
-        ],
-        historicSalesProgression: [
-            // This is a reversed version of the expected sales progression for historical comparison 6 weeks out
-            { week: 6, percentage: 27 },  // Week 6: 35% of total expected sales
-            { week: 5, percentage: 30 },  // Week 5: 48% of total expected sales
-            { week: 4, percentage: 33 },  // Week 4: 62% of total expected sales
-            { week: 3, percentage: 39 },  // Week 3: 75% of total expected sales
-            { week: 2, percentage: 46 },  // Week 2: 87% of total expected sales
-            { week: 1, percentage: 59 },  // Week 1: 95% of total expected sales
-            { week: 0, percentage: 100 } // Week 0: 100% of total expected sales
-        ],
 
-        // Alternative heuristic models (to be configured later)
-        heuristicModels: {
-            // "linear": [...],
-            // "exponential": [...],
-            // "s-curve": [...],
-            // "historical-average": [...]
-        },
-
-        // Default model to use
-        defaultModel: "expectedSalesProgression"
-    },
 
     // Chart styling and dimensions
     charts: {

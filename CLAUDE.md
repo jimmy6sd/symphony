@@ -321,5 +321,3 @@ For issues or questions:
 4. Review BigQuery console for data issues
 
 ---
-
-**Last Updated**: November 2024
