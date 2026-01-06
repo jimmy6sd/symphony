@@ -122,10 +122,15 @@ async function importHistoricalComps() {
       keyFilename: path.join(__dirname, '..', '..', 'symphony-bigquery-key.json')
     });
 
-    // Check if we should clear before importing
+    // Check flags
     const shouldClear = process.argv.includes('--clear') || process.env.CLEAR_BEFORE_IMPORT === 'true';
+    const isDryRun = process.argv.includes('--dry-run');
 
-    if (shouldClear) {
+    if (isDryRun) {
+      console.log('🔍 DRY RUN MODE - No data will be written to BigQuery\n');
+    }
+
+    if (shouldClear && !isDryRun) {
       await clearExistingComps(bigquery);
     }
 
@@ -158,11 +163,9 @@ async function importHistoricalComps() {
       usedGlobalDefault: 0,
       usedPiazzaDefault: 0,
       withMetadata: 0,
+      targetComps: 0,
       errors: []
     };
-
-    // Track which performances already have comps to set is_target appropriately
-    const performanceComps = new Map(); // performanceId -> count of comps
 
     // Process data rows (skip headers, notes, defaults - start at row 15, index 14)
     for (let i = 14; i < rows.length; i++) {
@@ -174,8 +177,9 @@ async function importHistoricalComps() {
       }
 
       const performanceId = row[0].trim();
-      const performanceDesc = row[1].trim();
-      const compDesc = row[2].trim();
+      const targetFlag = String(row[1] || '').trim().toLowerCase(); // Column B - Target designation
+      const performanceDesc = row[2] ? String(row[2]).trim() : ''; // Column C - PerfDesc
+      const compDesc = row[3] ? String(row[3]).trim() : ''; // Column D - CompDesc
 
       // Skip if no comp description
       if (!compDesc || compDesc === '') {
@@ -263,11 +267,10 @@ async function importHistoricalComps() {
         stats.withMetadata++;
       }
 
-      // Determine if this should be the target comp
-      // First comp for each performance is the target
-      const compCount = performanceComps.get(performanceId) || 0;
-      const isTarget = compCount === 0;
-      performanceComps.set(performanceId, compCount + 1);
+      // Determine if this should be the target comp using explicit Target column (B)
+      // Any non-empty value in Target column marks it as target
+      const isTarget = targetFlag !== '';
+      if (isTarget) stats.targetComps++;
 
       // Generate comparison ID
       const comparisonId = uuidv4();
@@ -281,53 +284,60 @@ async function importHistoricalComps() {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
       `;
 
-      try {
-        await bigquery.query({
-          query: insertQuery,
-          params: [
-            comparisonId,
-            String(performanceId), // Convert to string for BigQuery
-            comparisonName,
-            weeksDataCSV,
-            isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
-            isTarget ? 'solid' : 'dashed',
-            isTarget,
-            compDate, // NEW
-            atp, // NEW
-            subs, // NEW
-            capacity, // NEW
-            occPercent, // NEW
-            now,
-            now
-          ],
-          types: [
-            'STRING',  // comparison_id
-            'STRING',  // performance_id
-            'STRING',  // comparison_name
-            'STRING',  // weeks_data
-            'STRING',  // line_color
-            'STRING',  // line_style
-            'BOOL',    // is_target
-            'DATE',    // comp_date
-            'FLOAT64', // atp
-            'INT64',   // subs
-            'INT64',   // capacity
-            'FLOAT64', // occupancy_percent
-            'STRING',  // created_at
-            'STRING'   // updated_at
-          ],
-          location: 'US'
-        });
+      const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
+      const dataType = !hasFullData && hasPartialData ? '[PARTIAL]' : '';
+      const metadataMarker = (compDate || atp) ? '📊' : '';
 
-        const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
-        const dataType = !hasFullData && hasPartialData ? '[PARTIAL]' : '';
-        const metadataMarker = (compDate || atp) ? '📊' : '';
-        console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
+      if (isDryRun) {
+        // Dry run - just show what would be imported
+        console.log(`📝 ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
         stats.imported++;
+      } else {
+        try {
+          await bigquery.query({
+            query: insertQuery,
+            params: [
+              comparisonId,
+              String(performanceId), // Convert to string for BigQuery
+              comparisonName,
+              weeksDataCSV,
+              isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
+              isTarget ? 'solid' : 'dashed',
+              isTarget,
+              compDate, // NEW
+              atp, // NEW
+              subs, // NEW
+              capacity, // NEW
+              occPercent, // NEW
+              now,
+              now
+            ],
+            types: [
+              'STRING',  // comparison_id
+              'STRING',  // performance_id
+              'STRING',  // comparison_name
+              'STRING',  // weeks_data
+              'STRING',  // line_color
+              'STRING',  // line_style
+              'BOOL',    // is_target
+              'DATE',    // comp_date
+              'FLOAT64', // atp
+              'INT64',   // subs
+              'INT64',   // capacity
+              'FLOAT64', // occupancy_percent
+              'STRING',  // created_at
+              'STRING'   // updated_at
+            ],
+            location: 'US'
+          });
 
-      } catch (error) {
-        console.error(`❌ Error importing ${performanceId}:`, error.message);
-        stats.errors.push({ performanceId, error: error.message });
+          console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
+          stats.imported++;
+
+        } catch (error) {
+          console.error(`❌ Error importing ${performanceId}:`, error.message);
+          stats.errors.push({ performanceId, error: error.message });
+        }
       }
     }
 
@@ -340,7 +350,7 @@ async function importHistoricalComps() {
     console.log(`📝 Partial data imports:  ${stats.partialData} (only week 0 + Final)`);
     console.log(`🌍 Global defaults used:  ${stats.usedGlobalDefault}`);
     console.log(`🎹 Piazza defaults used:  ${stats.usedPiazzaDefault}`);
-    console.log(`🎯 Target comps set:      ${performanceComps.size}`);
+    console.log(`🎯 Target comps set:      ${stats.targetComps}`);
     console.log(`📊 With metadata:         ${stats.withMetadata} (comp_date, ATP, etc.)`);
 
     if (stats.errors.length > 0) {
