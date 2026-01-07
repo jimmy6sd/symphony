@@ -14,6 +14,7 @@
     "apply-schema-enhancements": "node scripts/archive/apply-schema-enhancements.js",
     "test-webhook": "node scripts/tests/test-webhook.js",
     "test-makecom": "node scripts/tests/test-webhook.js --makecom",
+    "import-comps": "node scripts/active/import-comps.js",
     "extract-excel": "node scripts/archive/extract-excel-data.js",
     "extract-bigquery": "node scripts/active/extract-bigquery-data.js",
     "merge-data": "node scripts/archive/merge-excel-bigquery.js",
