@@ -1,9 +1,11 @@
-// Import historical comp data from CSV into BigQuery
+// Import historical comp data from Excel into BigQuery
 // Version 2: Includes new metadata fields (comp_date, atp, subs, capacity, occupancy_percent)
+// Updated: Now reads Excel (xlsx) files directly instead of CSV
 const { BigQuery } = require('@google-cloud/bigquery');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const path = require('path');
+const XLSX = require('xlsx');
 
 // Parse CSV line (handle quoted values with commas)
 function parseCSVLine(line) {
@@ -28,48 +30,66 @@ function parseCSVLine(line) {
   return result;
 }
 
-// Clean and parse number (handle spaces, commas)
-function parseNumber(str) {
-  if (!str || str.trim() === '' || str.trim() === '-') {
-    return null;
-  }
+// Clean and parse number (handle Excel numeric values or string values)
+// Rounds to integer since BigQuery expects INT64 for ticket counts
+function parseNumber(val) {
+  if (val === null || val === undefined || val === '') return null;
+  // If already a number, round it to integer
+  if (typeof val === 'number') return isNaN(val) ? null : Math.round(val);
+  // Handle string values
+  const str = String(val).trim();
+  if (str === '' || str === '-') return null;
   const cleaned = str.replace(/,/g, '').trim();
   const num = parseFloat(cleaned);
-  return isNaN(num) ? null : num;
+  return isNaN(num) ? null : Math.round(num);
 }
 
-// Parse percentage (remove % sign)
-function parsePercent(str) {
-  if (!str || str.trim() === '' || str.trim() === '-') {
-    return null;
-  }
+// Parse percentage (handle Excel decimal or string %)
+function parsePercent(val) {
+  if (val === null || val === undefined || val === '') return null;
+  // If already a number (Excel stores % as decimal, e.g., 0.85 for 85%)
+  if (typeof val === 'number') return isNaN(val) ? null : val * 100;
+  // Handle string values
+  const str = String(val).trim();
+  if (str === '' || str === '-') return null;
   const cleaned = str.replace(/%/g, '').trim();
   const num = parseFloat(cleaned);
   return isNaN(num) ? null : num;
 }
 
-// Parse ATP (remove $ sign)
-function parseATP(str) {
-  if (!str || str.trim() === '' || str.trim() === '-') {
-    return null;
-  }
+// Parse ATP (handle Excel numeric or string $)
+function parseATP(val) {
+  if (val === null || val === undefined || val === '') return null;
+  // If already a number, return it
+  if (typeof val === 'number') return isNaN(val) ? null : val;
+  // Handle string values
+  const str = String(val).trim();
+  if (str === '' || str === '-') return null;
   const cleaned = str.replace(/\$/g, '').replace(/,/g, '').trim();
   const num = parseFloat(cleaned);
   return isNaN(num) ? null : num;
 }
 
-// Parse date (format: M/D/YYYY)
-function parseDate(str) {
-  if (!str || str.trim() === '' || str.trim() === '-') {
-    return null;
-  }
+// Parse date (handle Excel serial numbers or string dates)
+function parseDate(val) {
+  if (val === null || val === undefined || val === '') return null;
+
   try {
-    const cleaned = str.trim();
-    const date = new Date(cleaned);
-    if (isNaN(date.getTime())) {
-      return null;
+    // If it's a number, it's an Excel serial date (days since Jan 1, 1900)
+    if (typeof val === 'number') {
+      // Excel date serial to JS date
+      // Excel incorrectly treats 1900 as a leap year, so subtract 1 for dates after Feb 28, 1900
+      const excelEpoch = new Date(1899, 11, 30); // Dec 30, 1899
+      const date = new Date(excelEpoch.getTime() + val * 24 * 60 * 60 * 1000);
+      if (isNaN(date.getTime())) return null;
+      return date.toISOString().split('T')[0];
     }
-    // Return in YYYY-MM-DD format for BigQuery DATE type
+
+    // Handle string values
+    const str = String(val).trim();
+    if (str === '' || str === '-') return null;
+    const date = new Date(str);
+    if (isNaN(date.getTime())) return null;
     return date.toISOString().split('T')[0];
   } catch (error) {
     return null;
@@ -102,30 +122,37 @@ async function importHistoricalComps() {
       keyFilename: path.join(__dirname, '..', '..', 'symphony-bigquery-key.json')
     });
 
-    // Check if we should clear before importing
+    // Check flags
     const shouldClear = process.argv.includes('--clear') || process.env.CLEAR_BEFORE_IMPORT === 'true';
+    const isDryRun = process.argv.includes('--dry-run');
 
-    if (shouldClear) {
+    if (isDryRun) {
+      console.log('🔍 DRY RUN MODE - No data will be written to BigQuery\n');
+    }
+
+    if (shouldClear && !isDryRun) {
       await clearExistingComps(bigquery);
     }
 
-    // Read NEW CSV file from root
-    const csvPath = path.join(__dirname, '..', '..', 'Comps for 25-26 Performances(Sheet1).csv');
-    const csvContent = fs.readFileSync(csvPath, 'utf8');
-    const lines = csvContent.split('\n');
+    // Read Excel file from root
+    const excelPath = path.join(__dirname, '..', '..', 'Comps for 25-26 Performances (4).xlsx');
+    console.log(`📄 Loading Excel file: ${excelPath}`);
 
-    console.log(`📄 Loaded CSV with ${lines.length} lines\n`);
+    const workbook = XLSX.readFile(excelPath);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-    // Parse lines
-    const rows = lines.map(line => parseCSVLine(line));
+    // Convert to array of arrays (each row is an array of cell values)
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+    console.log(`📄 Loaded Excel with ${rows.length} rows\n`);
 
     // Extract defaults (row 13 = Global Default, row 14 = Piazza Default)
     const GLOBAL_DEFAULT = rows[12]; // 0-indexed, so row 13 is index 12
     const PIAZZA_DEFAULT = rows[13]; // row 14 is index 13
 
     console.log('📋 Default Values:');
-    console.log(`   Global Default: ${GLOBAL_DEFAULT[2]} (week 10: ${GLOBAL_DEFAULT[4]} -> Final: ${GLOBAL_DEFAULT[15]})`);
-    console.log(`   Piazza Default: ${PIAZZA_DEFAULT[2]} (week 10: ${PIAZZA_DEFAULT[4]} -> Final: ${PIAZZA_DEFAULT[15]})`);
+    console.log(`   Global Default: ${GLOBAL_DEFAULT[3]} (week 10: ${GLOBAL_DEFAULT[5]} -> week 0: ${GLOBAL_DEFAULT[15]} -> Final: ${GLOBAL_DEFAULT[16]})`);
+    console.log(`   Piazza Default: ${PIAZZA_DEFAULT[3]} (week 10: ${PIAZZA_DEFAULT[5]} -> week 0: ${PIAZZA_DEFAULT[15]} -> Final: ${PIAZZA_DEFAULT[16]})`);
     console.log('');
 
     // Stats tracking
@@ -136,11 +163,9 @@ async function importHistoricalComps() {
       usedGlobalDefault: 0,
       usedPiazzaDefault: 0,
       withMetadata: 0,
+      targetComps: 0,
       errors: []
     };
-
-    // Track which performances already have comps to set is_target appropriately
-    const performanceComps = new Map(); // performanceId -> count of comps
 
     // Process data rows (skip headers, notes, defaults - start at row 15, index 14)
     for (let i = 14; i < rows.length; i++) {
@@ -152,8 +177,9 @@ async function importHistoricalComps() {
       }
 
       const performanceId = row[0].trim();
-      const performanceDesc = row[1].trim();
-      const compDesc = row[2].trim();
+      const targetFlag = String(row[1] || '').trim().toLowerCase(); // Column B - Target designation
+      const performanceDesc = row[2] ? String(row[2]).trim() : ''; // Column C - PerfDesc
+      const compDesc = row[3] ? String(row[3]).trim() : ''; // Column D - CompDesc
 
       // Skip if no comp description
       if (!compDesc || compDesc === '') {
@@ -182,26 +208,35 @@ async function importHistoricalComps() {
         comparisonName = compDesc;
       }
 
-      // NEW: Parse comp_date from column D (index 3)
-      const compDate = parseDate(row[3]);
+      // Parse comp_date from column E (index 4)
+      // Column layout: A=PerfCode, B=Target, C=PerfDesc, D=CompDesc, E=CompDate, F-P=Weeks(10-0), Q=Final, R=Subs, S=Capacity, T=OCC%, U=ATP
+      const compDate = parseDate(row[4]);
 
-      // Parse weeks data (columns E-P: indices 4-15)
-      // NEW POSITIONS: Column D is comp_date, so weeks start at E (index 4)
-      // Weeks: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, Final
+      // Parse weeks data (columns F-P: indices 5-15 for weeks 10-0)
+      // Optionally include Final (column Q, index 16) in the array
+      // Weeks: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, [Final]
       const weekValues = [];
       let hasData = false;
       let hasPartialData = false;
 
-      for (let j = 4; j <= 15; j++) {
+      // Weeks 10-0 are in columns F-P (indices 5-15)
+      for (let j = 5; j <= 15; j++) {
         const value = parseNumber(sourceRow[j]);
         weekValues.push(value);
         if (value !== null) {
           hasData = true;
-          // Check if we have partial data (only week 0 and Final)
-          if (j >= 14) { // indices 14-15 are week 0 and Final
+          // Check if we have partial data (only week 0)
+          if (j >= 15) { // index 15 is week 0
             hasPartialData = true;
           }
         }
+      }
+
+      // Also include Final (column Q, index 16) in weeks array for completeness
+      const finalValue = parseNumber(sourceRow[16]);
+      if (finalValue !== null) {
+        weekValues.push(finalValue);
+        hasData = true;
       }
 
       // Skip if no data at all
@@ -221,22 +256,21 @@ async function importHistoricalComps() {
       // Keep nulls as empty values for partial data
       const weeksDataCSV = weekValues.map(v => v !== null ? v : '').join(',');
 
-      // NEW: Parse metadata (columns P, Q, R, S: indices 16, 17, 18, 19)
-      const subs = parseNumber(sourceRow[16]); // Column P
-      const capacity = parseNumber(sourceRow[17]); // Column Q
-      const occPercent = parsePercent(sourceRow[18]); // Column R
-      const atp = parseATP(sourceRow[19]); // Column S
+      // Parse metadata (columns R, S, T, U: indices 17, 18, 19, 20)
+      const subs = parseNumber(sourceRow[17]); // Column R - Subs
+      const capacity = parseNumber(sourceRow[18]); // Column S - Capacity
+      const occPercent = parsePercent(sourceRow[19]); // Column T - Total OCC %
+      const atp = parseATP(sourceRow[20]); // Column U - ATP
 
       // Track if we have metadata
       if (compDate || atp || subs || capacity || occPercent) {
         stats.withMetadata++;
       }
 
-      // Determine if this should be the target comp
-      // First comp for each performance is the target
-      const compCount = performanceComps.get(performanceId) || 0;
-      const isTarget = compCount === 0;
-      performanceComps.set(performanceId, compCount + 1);
+      // Determine if this should be the target comp using explicit Target column (B)
+      // Any non-empty value in Target column marks it as target
+      const isTarget = targetFlag !== '';
+      if (isTarget) stats.targetComps++;
 
       // Generate comparison ID
       const comparisonId = uuidv4();
@@ -250,53 +284,60 @@ async function importHistoricalComps() {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
       `;
 
-      try {
-        await bigquery.query({
-          query: insertQuery,
-          params: [
-            comparisonId,
-            String(performanceId), // Convert to string for BigQuery
-            comparisonName,
-            weeksDataCSV,
-            isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
-            isTarget ? 'solid' : 'dashed',
-            isTarget,
-            compDate, // NEW
-            atp, // NEW
-            subs, // NEW
-            capacity, // NEW
-            occPercent, // NEW
-            now,
-            now
-          ],
-          types: [
-            'STRING',  // comparison_id
-            'STRING',  // performance_id
-            'STRING',  // comparison_name
-            'STRING',  // weeks_data
-            'STRING',  // line_color
-            'STRING',  // line_style
-            'BOOL',    // is_target
-            'DATE',    // comp_date
-            'FLOAT64', // atp
-            'INT64',   // subs
-            'INT64',   // capacity
-            'FLOAT64', // occupancy_percent
-            'STRING',  // created_at
-            'STRING'   // updated_at
-          ],
-          location: 'US'
-        });
+      const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
+      const dataType = !hasFullData && hasPartialData ? '[PARTIAL]' : '';
+      const metadataMarker = (compDate || atp) ? '📊' : '';
 
-        const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
-        const dataType = !hasFullData && hasPartialData ? '[PARTIAL]' : '';
-        const metadataMarker = (compDate || atp) ? '📊' : '';
-        console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
+      if (isDryRun) {
+        // Dry run - just show what would be imported
+        console.log(`📝 ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
         stats.imported++;
+      } else {
+        try {
+          await bigquery.query({
+            query: insertQuery,
+            params: [
+              comparisonId,
+              String(performanceId), // Convert to string for BigQuery
+              comparisonName,
+              weeksDataCSV,
+              isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
+              isTarget ? 'solid' : 'dashed',
+              isTarget,
+              compDate, // NEW
+              atp, // NEW
+              subs, // NEW
+              capacity, // NEW
+              occPercent, // NEW
+              now,
+              now
+            ],
+            types: [
+              'STRING',  // comparison_id
+              'STRING',  // performance_id
+              'STRING',  // comparison_name
+              'STRING',  // weeks_data
+              'STRING',  // line_color
+              'STRING',  // line_style
+              'BOOL',    // is_target
+              'DATE',    // comp_date
+              'FLOAT64', // atp
+              'INT64',   // subs
+              'INT64',   // capacity
+              'FLOAT64', // occupancy_percent
+              'STRING',  // created_at
+              'STRING'   // updated_at
+            ],
+            location: 'US'
+          });
 
-      } catch (error) {
-        console.error(`❌ Error importing ${performanceId}:`, error.message);
-        stats.errors.push({ performanceId, error: error.message });
+          console.log(`✅ ${targetMarker} ${performanceId}: ${comparisonName} ${dataType} ${metadataMarker}`);
+          stats.imported++;
+
+        } catch (error) {
+          console.error(`❌ Error importing ${performanceId}:`, error.message);
+          stats.errors.push({ performanceId, error: error.message });
+        }
       }
     }
 
@@ -309,7 +350,7 @@ async function importHistoricalComps() {
     console.log(`📝 Partial data imports:  ${stats.partialData} (only week 0 + Final)`);
     console.log(`🌍 Global defaults used:  ${stats.usedGlobalDefault}`);
     console.log(`🎹 Piazza defaults used:  ${stats.usedPiazzaDefault}`);
-    console.log(`🎯 Target comps set:      ${performanceComps.size}`);
+    console.log(`🎯 Target comps set:      ${stats.targetComps}`);
     console.log(`📊 With metadata:         ${stats.withMetadata} (comp_date, ATP, etc.)`);
 
     if (stats.errors.length > 0) {
