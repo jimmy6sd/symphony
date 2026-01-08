@@ -1725,6 +1725,18 @@ body {
     overflow: hidden;
 }
 
+/* Season label */
+.subscription-season-label {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
 /* Summary header with gradient */
 .subscription-summary {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -91,6 +91,9 @@ class SubscriptionTable {
         // Build HTML
         let html = `
             <div class="subscription-table-wrapper">
+                <!-- Season Label -->
+                <div class="subscription-season-label">2025-26 Season</div>
+
                 <!-- Summary Header -->
                 <div class="subscription-summary">
                     <div class="subscription-summary-item">
@@ -363,21 +366,49 @@ class SubscriptionTable {
     }
 
     toggleCategory(category) {
-        // Destroy existing chart before re-render
-        if (this.charts.has(category)) {
-            const chart = this.charts.get(category);
-            if (chart && chart.destroy) {
-                chart.destroy();
-            }
-            this.charts.delete(category);
-        }
+        const categoryEl = this.container.querySelector(`.subscription-category[data-category="${category}"]`);
+        if (!categoryEl) return;
+
+        const header = categoryEl.querySelector('.subscription-category-header');
+        const content = categoryEl.querySelector('.subscription-category-content');
+        const expandIcon = categoryEl.querySelector('.expand-icon');
 
         if (this.collapsedCategories.has(category)) {
+            // Expanding
             this.collapsedCategories.delete(category);
+            header.classList.remove('collapsed');
+            content.style.display = '';
+            expandIcon.textContent = '▾';
+
+            // Initialize chart if this category supports it
+            if (this.chartCategories.includes(category) && !this.charts.has(category)) {
+                const containerId = `sub-chart-${category.toLowerCase()}`;
+                const container = document.getElementById(containerId);
+                if (container) {
+                    const chart = new window.SubscriptionSalesCurve(containerId, { series: category });
+                    this.charts.set(category, chart);
+                    chart.init().catch(err => {
+                        console.error(`Error initializing chart for ${category}:`, err);
+                        container.innerHTML = `<div class="chart-error">Error loading chart</div>`;
+                    });
+                }
+            }
         } else {
+            // Collapsing
             this.collapsedCategories.add(category);
+            header.classList.add('collapsed');
+            content.style.display = 'none';
+            expandIcon.textContent = '▸';
+
+            // Destroy chart when collapsed to free memory
+            if (this.charts.has(category)) {
+                const chart = this.charts.get(category);
+                if (chart && chart.destroy) {
+                    chart.destroy();
+                }
+                this.charts.delete(category);
+            }
         }
-        this.render();
     }
 
     async refresh() {
