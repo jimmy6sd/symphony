@@ -1265,9 +1265,10 @@ class SalesCurveChart {
         let actualWeek, actualSales;
 
         if (this.historicalData && this.historicalData.length > 0) {
-            // Transform historical data EXACTLY the same way as data-table.js overlayHistoricalData
-            const performanceDate = new Date(performance.date);
-            performanceDate.setHours(0, 0, 0, 0);
+            // Parse performance date consistently (midnight local time)
+            // Must use component-based constructor to avoid UTC/local timezone issues
+            const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+            const performanceDate = new Date(parseInt(perfYear), parseInt(perfMonth) - 1, parseInt(perfDay));
             const parseDate = d3.timeParse('%Y-%m-%d');
 
             const historicalPoints = this.historicalData.map(snapshot => {
