@@ -627,7 +627,7 @@ class SalesCurveChart {
         // Main box with gradient
         statusGroup.append("rect")
             .attr("width", 180)
-            .attr("height", 200)
+            .attr("height", 175)
             .attr("fill", "url(#metricsGradient)")
             .attr("rx", 8)
             .attr("filter", "drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3))");
@@ -673,34 +673,26 @@ class SalesCurveChart {
 
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 80)
+            .attr("y", 84)
             .attr("text-anchor", "middle")
             .attr("font-size", "18px")
-            .attr("font-weight", "700")
+            .attr("font-weight", "600")
             .attr("fill", "white")
-            .text(singleTicketsSold.toLocaleString());
-
-        statusGroup.append("text")
-            .attr("x", 90)
-            .attr("y", 96)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "10px")
-            .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`$${(currentSingleRevenue / 1000).toFixed(0)}k`);
+            .text(`${singleTicketsSold.toLocaleString()} · $${(currentSingleRevenue / 1000).toFixed(0)}k`);
 
         // Divider line
         statusGroup.append("line")
             .attr("x1", 30)
             .attr("x2", 150)
-            .attr("y1", 110)
-            .attr("y2", 110)
+            .attr("y1", 100)
+            .attr("y2", 100)
             .attr("stroke", "rgba(255, 255, 255, 0.3)")
             .attr("stroke-width", 1);
 
         // Projected section
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 126)
+            .attr("y", 116)
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("font-weight", "600")
@@ -709,25 +701,17 @@ class SalesCurveChart {
 
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 144)
+            .attr("y", 138)
             .attr("text-anchor", "middle")
             .attr("font-size", "18px")
-            .attr("font-weight", "700")
+            .attr("font-weight", "600")
             .attr("fill", "white")
-            .text(projectedFinal.toLocaleString());
-
-        statusGroup.append("text")
-            .attr("x", 90)
-            .attr("y", 160)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "10px")
-            .attr("fill", "rgba(255, 255, 255, 0.8)")
-            .text(`$${(projectedRevenue / 1000).toFixed(0)}k`);
+            .text(`${projectedFinal.toLocaleString()} · $${(projectedRevenue / 1000).toFixed(0)}k`);
 
         // Projection basis note
         statusGroup.append("text")
             .attr("x", 90)
-            .attr("y", 180)
+            .attr("y", 160)
             .attr("text-anchor", "middle")
             .attr("font-size", "8px")
             .attr("font-style", "italic")
