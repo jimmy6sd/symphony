@@ -178,9 +178,8 @@ class SubscriptionSalesCurve {
                 result.push({
                     season: seasonKey,
                     color: this.seasonColors[seasonKey] || '#666',
-                    isTarget: seasonKey === '25-26',
-                    isProjectionBase: seasonKey === '24-25',  // Used for projection calculations
                     isCurrent: seasonKey === '25-26',
+                    isProjectionBase: seasonKey === '24-25',  // Target comp for projections
                     points: season.snapshots.map(s => ({
                         week: s.week_number,
                         total_units: s.total_units,
@@ -291,9 +290,9 @@ class SubscriptionSalesCurve {
             .curve(d3.curveMonotoneX);
 
         // Line styling based on season type
-        const strokeWidth = season.isTarget ? 3 : (season.isCurrent ? 3 : 2);
-        const strokeDasharray = season.isCurrent ? 'none' : (season.isTarget ? 'none' : '5,3');
-        const opacity = season.isCurrent ? 1 : (season.isTarget ? 0.9 : 0.6);
+        const strokeWidth = season.isCurrent ? 3 : (season.isProjectionBase ? 3 : 2);
+        const strokeDasharray = season.isCurrent ? 'none' : (season.isProjectionBase ? 'none' : '5,3');
+        const opacity = season.isCurrent ? 1 : (season.isProjectionBase ? 0.9 : 0.6);
 
         // Draw the line
         g.append('path')
@@ -426,9 +425,9 @@ class SubscriptionSalesCurve {
             .attr('transform', `translate(${innerWidth + 15}, 0)`);
 
         const items = seasonData.map(s => ({
-            label: s.season + (s.isTarget ? ' (Target)' : ''),
+            label: s.season + (s.isCurrent ? ' (Current)' : s.isProjectionBase ? ' (Target)' : ''),
             color: s.color,
-            dashed: !s.isCurrent && !s.isTarget
+            dashed: !s.isCurrent && !s.isProjectionBase
         }));
 
         // Add projection to legend

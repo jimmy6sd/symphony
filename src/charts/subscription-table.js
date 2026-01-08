@@ -53,6 +53,7 @@ class SubscriptionTable {
             !pkg.package_type || !pkg.package_type.toLowerCase().includes('mini')
         );
         this.dayOverDayData = result.dayOverDay || {};
+        this.categoryProjections = result.categoryProjections || { status: 'awaiting_data', categories: {} };
     }
 
     showLoading() {
@@ -120,6 +121,7 @@ class SubscriptionTable {
 
                     const categoryTotals = categoryData.length > 0 ? this.calculateTotals(categoryData) : { totalPackages: 0, totalRevenue: 0 };
                     const isCollapsed = this.collapsedCategories.has(category);
+                    const projection = this.categoryProjections?.categories?.[category];
 
                     return `
                         <div class="subscription-category" data-category="${category}">
@@ -130,19 +132,8 @@ class SubscriptionTable {
                                     <span class="category-badge ${category.toLowerCase()}">${category}</span>
                                     <span style="color: var(--text-secondary); font-weight: 400;">${hasChart ? 'Sales Curve' : ''}${categoryData.length > 0 ? (hasChart ? ' + ' : '') + categoryData.length + ' packages' : ''}</span>
                                 </div>
-                                ${categoryData.length > 0 ? `
-                                <div class="subscription-category-stats">
-                                    <div class="subscription-stat">
-                                        <div class="subscription-stat-value">${categoryTotals.totalPackages.toLocaleString()}</div>
-                                        <div class="subscription-stat-label">Pkg Seats</div>
-                                    </div>
-                                    <div class="subscription-stat">
-                                        <div class="subscription-stat-value">$${this.formatCurrency(categoryTotals.totalRevenue)}</div>
-                                        <div class="subscription-stat-label">Revenue</div>
-                                    </div>
-                                </div>
-                                ` : ''}
                             </div>
+                            ${this.renderCategoryMetrics(category, projection, categoryTotals)}
                             <div class="subscription-category-content" style="${isCollapsed ? 'display: none;' : ''}">
                                 ${hasChart ? `
                                 <div class="subscription-category-chart" id="sub-chart-${category.toLowerCase()}">
@@ -233,6 +224,106 @@ class SubscriptionTable {
         const value = isCurrency ? `$${Math.abs(change).toLocaleString()}` : Math.abs(change).toLocaleString();
 
         return `<span class="dd-change ${cssClass}">${prefix}${isPositive ? '' : '-'}${value}</span>`;
+    }
+
+    renderCategoryMetrics(category, projection, categoryTotals) {
+        // Check if we're awaiting data (no current season data yet)
+        if (this.categoryProjections?.status === 'awaiting_data') {
+            return `
+                <div class="subscription-rollup-table awaiting-data">
+                    <div class="subscription-metrics-placeholder">
+                        ${this.categoryProjections.message || 'Awaiting subscription data'}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Only show metrics for Classical and Pops (they have projections)
+        if (!projection) {
+            // Fallback to simple stats for Flex/Family
+            if (categoryTotals.totalPackages > 0) {
+                return `
+                    <table class="subscription-rollup-table simple">
+                        <thead>
+                            <tr>
+                                <th>Packages Sold</th>
+                                <th>Actual Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="rollup-row">
+                                <td>${categoryTotals.totalPackages.toLocaleString()}</td>
+                                <td>$${this.formatCurrency(categoryTotals.totalRevenue)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+            }
+            return '';
+        }
+
+        // Full metrics table for Classical/Pops with projections
+        const { current, targetAtDate, targetFinal, projected, variance } = projection;
+        const targetSeason = this.categoryProjections?.targetSeason || '25-26';
+
+        // Variance status classes
+        const packagesVsDateStatus = variance.vsDatePackages >= 0 ? 'good' : 'poor';
+        const packagesVsDateSign = variance.vsDatePackages >= 0 ? '+' : '';
+        const revenueVsDateStatus = variance.vsDateRevenue >= 0 ? 'good' : 'poor';
+        const revenueVsDateSign = variance.vsDateRevenue >= 0 ? '+' : '-';
+        const projectedStatus = variance.vsTargetPackages >= 0 ? 'good' : 'poor';
+        const projectedSign = variance.vsTargetPackages >= 0 ? '+' : '';
+        const projectedRevStatus = variance.vsTargetRevenue >= 0 ? 'good' : 'poor';
+        const projectedRevSign = variance.vsTargetRevenue >= 0 ? '+' : '-';
+
+        return `
+            <table class="subscription-rollup-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <div style="text-align: center;">Packages Sold<br><span class="th-sub">(vs ${targetSeason})</span></div>
+                        </th>
+                        <th>
+                            <div style="text-align: center;">Actual Revenue<br><span class="th-sub">(vs ${targetSeason})</span></div>
+                        </th>
+                        <th>
+                            <div style="text-align: center;">Projected Pkgs<br><span class="th-sub">(vs Target)</span></div>
+                        </th>
+                        <th>
+                            <div style="text-align: center;">Projected Revenue<br><span class="th-sub">(vs Target)</span></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="rollup-row">
+                        <td>
+                            <div class="projection-cell">
+                                <div class="projection-value">${current.packages.toLocaleString()}</div>
+                                <div class="projection-variance projection-${packagesVsDateStatus}">${packagesVsDateSign}${variance.vsDatePackages.toLocaleString()}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="projection-cell">
+                                <div class="projection-value">$${this.formatCurrency(current.revenue)}</div>
+                                <div class="projection-variance projection-${revenueVsDateStatus}">${revenueVsDateSign}$${this.formatCurrency(Math.abs(variance.vsDateRevenue))}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="projection-cell">
+                                <div class="projection-value">${projected.packages.toLocaleString()}</div>
+                                <div class="projection-variance projection-${projectedStatus}">${projectedSign}${variance.vsTargetPackages.toLocaleString()} (${projectedSign}${variance.vsTargetPercent}%)</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="projection-cell">
+                                <div class="projection-value">$${this.formatCurrency(projected.revenue)}</div>
+                                <div class="projection-variance projection-${projectedRevStatus}">${projectedRevSign}$${this.formatCurrency(Math.abs(variance.vsTargetRevenue))}</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
     }
 
     groupByCategory(data) {

@@ -577,7 +577,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
   };
 }
 
-// Get subscription package sales data with day-over-day changes
+// Get subscription package sales data with day-over-day changes and category projections
 async function getSubscriptionData(bigquery, params, headers) {
   const { category, season = '25-26' } = params;
 
@@ -658,18 +658,213 @@ async function getSubscriptionData(bigquery, params, headers) {
     };
   });
 
+  // Calculate category rollup projections (for 26-27 vs 25-26 comparison)
+  const categoryProjections = await calculateCategoryProjections(bigquery, data, season);
+
   return {
     statusCode: 200,
     headers,
     body: JSON.stringify({
       data,
       dayOverDay,
+      categoryProjections,
       _meta: {
         timestamp: new Date().toISOString(),
-        packageCount: data.length
+        packageCount: data.length,
+        currentSeason: season
       }
     })
   };
+}
+
+// Calculate category-level projections comparing current season to target comp
+async function calculateCategoryProjections(bigquery, currentData, currentSeason) {
+  // Only calculate for Classical and Pops (they have historical data)
+  const categories = ['Classical', 'Pops'];
+
+  // Calculate target season (previous season)
+  // e.g., 26-27 -> 25-26, 25-26 -> 24-25
+  const [startYear] = currentSeason.split('-').map(y => parseInt(y));
+  const targetSeason = `${String(startYear - 1).padStart(2, '0')}-${String(startYear).padStart(2, '0')}`;
+
+  // Check if we have current season data
+  const hasCurrentData = currentData.length > 0 && currentData[0].season === currentSeason;
+
+  if (!hasCurrentData) {
+    // No current season data yet - return placeholder state
+    return {
+      status: 'awaiting_data',
+      message: `Awaiting ${currentSeason} subscription data`,
+      categories: {}
+    };
+  }
+
+  // Calculate current totals by category
+  const currentByCategory = {};
+  currentData.forEach(pkg => {
+    const cat = pkg.category;
+    if (!currentByCategory[cat]) {
+      currentByCategory[cat] = { packages: 0, revenue: 0, orders: 0 };
+    }
+    currentByCategory[cat].packages += pkg.package_seats || 0;
+    currentByCategory[cat].revenue += pkg.total_amount || 0;
+    currentByCategory[cat].orders += pkg.orders || 0;
+  });
+
+  // Get current snapshot date
+  const currentSnapshotDate = currentData[0]?.snapshot_date;
+
+  // Get target comp data at same calendar date (1 year ago)
+  const targetCompData = await getTargetCompAtDate(bigquery, targetSeason, currentSnapshotDate);
+
+  // Get target comp final totals from subscription_historical_data
+  const targetFinalData = await getTargetCompFinals(bigquery, targetSeason);
+
+  // Calculate projections for each category
+  const projections = {};
+
+  for (const cat of categories) {
+    const current = currentByCategory[cat] || { packages: 0, revenue: 0, orders: 0 };
+    const targetAtDate = targetCompData[cat] || { packages: 0, revenue: 0 };
+    const targetFinal = targetFinalData[cat] || { packages: 0, revenue: 0 };
+
+    // Calculate variance at current date
+    const packagesVariance = current.packages - targetAtDate.packages;
+    const revenueVariance = current.revenue - targetAtDate.revenue;
+
+    // Project final (apply variance to target final, floor at current)
+    const projectedPackages = Math.max(current.packages, targetFinal.packages + packagesVariance);
+    const projectedRevenue = Math.max(current.revenue, targetFinal.revenue + revenueVariance);
+
+    // Calculate variance vs target final
+    const varianceVsTarget = projectedPackages - targetFinal.packages;
+    const varianceVsTargetRevenue = projectedRevenue - targetFinal.revenue;
+    const variancePercent = targetFinal.packages > 0 ? (varianceVsTarget / targetFinal.packages * 100) : 0;
+
+    projections[cat] = {
+      current: {
+        packages: current.packages,
+        revenue: current.revenue,
+        orders: current.orders,
+        snapshotDate: currentSnapshotDate
+      },
+      targetAtDate: {
+        packages: targetAtDate.packages,
+        revenue: targetAtDate.revenue,
+        snapshotDate: targetAtDate.snapshotDate
+      },
+      targetFinal: {
+        packages: targetFinal.packages,
+        revenue: targetFinal.revenue
+      },
+      projected: {
+        packages: Math.round(projectedPackages),
+        revenue: Math.round(projectedRevenue)
+      },
+      variance: {
+        vsDatePackages: packagesVariance,
+        vsDateRevenue: revenueVariance,
+        vsTargetPackages: varianceVsTarget,
+        vsTargetRevenue: varianceVsTargetRevenue,
+        vsTargetPercent: Math.round(variancePercent * 10) / 10
+      }
+    };
+  }
+
+  return {
+    status: 'active',
+    currentSeason,
+    targetSeason,
+    categories: projections
+  };
+}
+
+// Get target comp category totals at same calendar date (1 year prior)
+// Uses subscription_historical_data (weekly aggregates) for historical seasons
+async function getTargetCompAtDate(bigquery, targetSeason, currentDate) {
+  if (!currentDate) return {};
+
+  // Calculate ISO week number for the current date
+  const currentDateObj = new Date(currentDate);
+  const weekNumber = getISOWeek(currentDateObj);
+
+  // Query subscription_historical_data for nearest week
+  const query = `
+    SELECT
+      series as category,
+      snapshot_date,
+      week_number,
+      total_units as packages,
+      total_revenue as revenue
+    FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
+    WHERE season = '${targetSeason}'
+      AND series IN ('Classical', 'Pops')
+      AND is_final = FALSE
+    ORDER BY ABS(week_number - ${weekNumber}) ASC
+  `;
+
+  try {
+    const [rows] = await bigquery.query({ query, location: 'US' });
+
+    // Get the closest week for each category
+    const result = {};
+    const seenCategories = new Set();
+
+    rows.forEach(row => {
+      if (!seenCategories.has(row.category)) {
+        seenCategories.add(row.category);
+        result[row.category] = {
+          packages: row.packages || 0,
+          revenue: row.revenue || 0,
+          weekNumber: row.week_number,
+          snapshotDate: row.snapshot_date ? (typeof row.snapshot_date === 'object' ? row.snapshot_date.value : row.snapshot_date) : null
+        };
+      }
+    });
+    return result;
+  } catch (error) {
+    console.error('Error getting target comp at date:', error);
+    return {};
+  }
+}
+
+// Calculate ISO week number from date
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+// Get target comp final totals from subscription_historical_data
+async function getTargetCompFinals(bigquery, targetSeason) {
+  const query = `
+    SELECT
+      series as category,
+      total_units as packages,
+      total_revenue as revenue
+    FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
+    WHERE season = '${targetSeason}'
+      AND is_final = TRUE
+      AND series IN ('Classical', 'Pops')
+  `;
+
+  try {
+    const [rows] = await bigquery.query({ query, location: 'US' });
+
+    const result = {};
+    rows.forEach(row => {
+      result[row.category] = {
+        packages: row.packages || 0,
+        revenue: row.revenue || 0
+      };
+    });
+    return result;
+  } catch (error) {
+    console.error('Error getting target comp finals:', error);
+    return {};
+  }
 }
 
 // Get subscription historical data for sales curve charts
