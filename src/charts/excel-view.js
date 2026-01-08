@@ -172,12 +172,12 @@ class ExcelView {
                 className: 'budget-column'
             },
             {
-                key: 'budgetPercent',
+                key: 'calculatedBudgetPercent',
                 label: 'Actual/Budget<br>%',
                 width: '65px',
                 type: 'percent',
                 sortable: true,
-                tooltip: 'Percentage of budget achieved\n\nCalculation: (Total Revenue / Budget Goal) × 100\nData Source: Calculated from BigQuery fields\n\nColor coding:\n  • Green (≥100%): Over budget\n  • Blue (≥85%): On track\n  • Red (<85%): Under budget',
+                tooltip: 'Percentage of budget achieved\n\nCalculation: (Total Revenue / Budget Goal) × 100\nData Source: CALCULATED client-side from BigQuery fields\n  • total_revenue from performance_sales_snapshots\n  • budget_goal from performances table\n\nColor coding:\n  • Green (≥100%): Over budget\n  • Blue (≥85%): On track\n  • Red (<85%): Under budget',
                 formatter: (value) => {
                     const percent = value || 0;
                     const className = percent >= 100 ? 'over-budget' : percent >= 85 ? 'on-track' : 'under-budget';
@@ -300,10 +300,17 @@ class ExcelView {
                 label: 'Projected/Budget % (Singles)',
                 width: '100px',
                 type: 'percent',
-                sortable: false,
-                tooltip: 'Not available',
-                formatter: () => '<span class="na-value">N/A</span>',
-                className: 'unavailable'
+                sortable: true,
+                tooltip: 'Projected percentage of singles budget at performance time\n\nCalculation: (Projected Singles Revenue / Singles Budget) × 100\nData Source: CALCULATED from comparison-based projection\n\nFormula:\n  Projected Singles Revenue = Projected Singles × Current Single ATP\n  Projected/Budget % = (Projected Singles Revenue / Singles Budget) × 100\n\nNote: Uses current average single ticket price (ATP) as estimate\nN/A if: no target comp set, no sales yet, singles budget not set, or no ATP available',
+                formatter: (value) => {
+                    if (value === null || value === undefined) {
+                        return '<span class="na-value">N/A</span>';
+                    }
+                    const percent = value;
+                    const className = percent >= 100 ? 'over-budget' : percent >= 85 ? 'on-track' : 'under-budget';
+                    return `<span class="${className} projected-value">${percent.toFixed(1)}%</span>`;
+                },
+                className: 'projection-column'
             },
             {
                 key: 'subscriptionTicketsSold',
@@ -363,12 +370,12 @@ class ExcelView {
                 formatter: (value) => value?.toLocaleString() || '0'
             },
             {
-                key: 'capacityPercent',
+                key: 'calculatedOccupancy',
                 label: 'Actual OCC SOLD',
                 width: '90px',
                 type: 'percent',
                 sortable: true,
-                tooltip: 'Current occupancy percentage\n\nCalculation: (Total Tickets Sold / Capacity) × 100\nData Source: Direct from BigQuery (capacity_percent field)\n\nColor coding:\n  • Green (≥85%): High occupancy\n  • Orange (70-84%): Medium occupancy\n  • Red (<70%): Low occupancy\n\nGoal: Typically 85% occupancy',
+                tooltip: 'Current occupancy percentage\n\nCalculation: (Total Tickets Sold / Capacity) × 100\nData Source: CALCULATED client-side from BigQuery fields\n  • total_tickets_sold from performance_sales_snapshots\n  • capacity from performances table\n\nColor coding:\n  • Green (≥85%): High occupancy\n  • Orange (70-84%): Medium occupancy\n  • Red (<70%): Low occupancy\n\nGoal: Typically 85% occupancy',
                 formatter: (value) => {
                     const percent = value || 0;
                     const className = percent >= 85 ? 'high-occ' : percent >= 70 ? 'medium-occ' : 'low-occ';
@@ -504,6 +511,15 @@ class ExcelView {
                 ? (projectedRevenue / item.budgetGoal) * 100
                 : null;
 
+            // Calculate projected singles revenue and budget percentage
+            const projectedSinglesRevenue = projectedSingles !== null && avgTicketPrice > 0
+                ? projectedSingles * avgTicketPrice
+                : null;
+            const singlesBudgetGoal = item.single_budget_goal || 0;
+            const projectedSinglesBudgetPercent = projectedSinglesRevenue !== null && singlesBudgetGoal > 0
+                ? (projectedSinglesRevenue / singlesBudgetGoal) * 100
+                : null;
+
             // Get week-over-week data for this performance
             const perfCode = item.performance_code || item.id;
             const wow = weekOverWeek[perfCode] || {};
@@ -544,6 +560,10 @@ class ExcelView {
                 weeksUntilPerf,
                 perfWeekMonday: perfWeekMonday.toISOString().split('T')[0],
                 targetSinglesFor85,
+                // Occupancy calculated client-side (not from PDF)
+                calculatedOccupancy: item.capacity > 0 ? (totalTickets / item.capacity) * 100 : 0,
+                // Budget percent calculated client-side (not from PDF)
+                calculatedBudgetPercent: item.budgetGoal > 0 ? (totalRevenue / item.budgetGoal) * 100 : 0,
                 // Projection data
                 projection,
                 projectedSingles,
@@ -552,6 +572,8 @@ class ExcelView {
                 projectedVsTarget,
                 projectedRevenue,
                 projectedBudgetPercent,
+                projectedSinglesRevenue,
+                projectedSinglesBudgetPercent,
                 // Week-over-week data
                 revenueLastWeek,
                 increaseOverWeek
@@ -594,6 +616,11 @@ class ExcelView {
             .attr('class', 'export-button')
             .html('📥 Export to CSV')
             .on('click', () => this.exportToCSV());
+
+        toolbar.append('button')
+            .attr('class', 'export-button')
+            .html('📊 Export to Excel')
+            .on('click', () => this.exportToXLSX());
 
         // Create scrollable table container
         const tableContainer = this.container.append('div')
@@ -792,6 +819,217 @@ class ExcelView {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    /**
+     * Export table data to Excel (XLSX)
+     * Full export with all columns from the web view
+     */
+    exportToXLSX() {
+        const XLSX = window.XLSX;
+        if (!XLSX) {
+            alert('Excel export library not loaded. Please refresh the page.');
+            return;
+        }
+
+        const today = new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+
+        // Helper to safely get numeric value (returns null for N/A values)
+        const num = (val) => {
+            if (val === null || val === undefined || val === '' || isNaN(val)) return null;
+            return Number(val);
+        };
+
+        // Helper to safely get string value
+        const str = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val);
+        };
+
+        // Helper to format date
+        const formatDate = (val) => {
+            if (!val) return '';
+            const date = new Date(val);
+            return isNaN(date) ? '' : date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+        };
+
+        // Helper for percent (convert to decimal for Excel, null for N/A)
+        const pct = (val) => {
+            if (val === null || val === undefined || isNaN(val)) return null;
+            return Number(val) / 100;
+        };
+
+        // Row 1: Title
+        const row1 = [`SYMPHONY DASHBOARD FULL EXPORT - ${today}`];
+
+        // Row 2: Column headers (matching web view order)
+        const headers = [
+            'Wk #',
+            '# Weeks Until Perf',
+            'Perf Week (Monday)',
+            'Performance',
+            'Code',
+            'Perf Date',
+            'Series',
+            'Actual Total Tickets',
+            'Projected Total (Singles + Subs)',
+            'Projected OCC %',
+            'Total Actual Revenue',
+            'Total Budget',
+            'Actual/Budget %',
+            'Projected/Budget %',
+            'Actual Singles Sold',
+            'Target Singles for 85%',
+            'Projected Singles',
+            'Projected vs 85% Target',
+            'Singles Revenue',
+            'Singles Budget',
+            'Singles Actual/Budget %',
+            'Singles Projected/Budget %',
+            'Actual Subs Sold',
+            'Subs Revenue',
+            'Subs Budget',
+            'Subs Actual/Budget %',
+            'Max Capacity',
+            'Actual OCC %',
+            'Single Ticket ATP',
+            'Revenue Last Week',
+            'Week-over-Week Change'
+        ];
+
+        // Build data rows
+        const dataRows = this.data.map(row => [
+            num(row.weekNum),                                           // A: Wk #
+            num(row.weeksUntilPerf),                                    // B: # Weeks Until Perf
+            formatDate(row.perfWeekMonday),                             // C: Perf Week (Monday)
+            str(row.title),                                             // D: Performance
+            str(row.code || row.performance_code),                      // E: Code
+            formatDate(row.date),                                       // F: Perf Date
+            str(row.series),                                            // G: Series
+            num(row.totalTicketsSold),                                  // H: Actual Total Tickets
+            num(row.projectedTotal),                                    // I: Projected Total
+            pct(row.projectedOccupancy),                                // J: Projected OCC %
+            num(row.totalRevenue),                                      // K: Total Actual Revenue
+            num(row.budgetGoal),                                        // L: Total Budget
+            pct(row.calculatedBudgetPercent),                           // M: Actual/Budget %
+            pct(row.projectedBudgetPercent),                            // N: Projected/Budget %
+            num(row.singleTicketsSold),                                 // O: Actual Singles Sold
+            num(row.targetSinglesFor85),                                // P: Target Singles for 85%
+            num(row.projectedSingles),                                  // Q: Projected Singles
+            num(row.projectedVsTarget),                                 // R: Projected vs 85% Target
+            num(row.singlesRevenue),                                    // S: Singles Revenue
+            num(row.singlesBudget),                                     // T: Singles Budget
+            pct(row.singlesBudgetPercent),                              // U: Singles Actual/Budget %
+            pct(row.projectedSinglesBudgetPercent),                     // V: Singles Projected/Budget %
+            num(row.subscriptionTicketsSold),                           // W: Actual Subs Sold
+            num(row.subsRevenue),                                       // X: Subs Revenue
+            num(row.subsBudget),                                        // Y: Subs Budget
+            pct(row.subsBudgetPercent),                                 // Z: Subs Actual/Budget %
+            num(row.capacity),                                          // AA: Max Capacity
+            pct(row.calculatedOccupancy),                               // AB: Actual OCC %
+            num(row.avgTicketPrice),                                    // AC: Single Ticket ATP
+            num(row.revenueLastWeek),                                   // AD: Revenue Last Week
+            num(row.increaseOverWeek)                                   // AE: Week-over-Week Change
+        ]);
+
+        // Combine all rows
+        const sheetData = [row1, headers, ...dataRows];
+
+        // Create worksheet
+        const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+        // Set column widths
+        ws['!cols'] = [
+            { wch: 6 },   // A: Wk #
+            { wch: 8 },   // B: # Weeks Until Perf
+            { wch: 12 },  // C: Perf Week (Monday)
+            { wch: 30 },  // D: Performance
+            { wch: 10 },  // E: Code
+            { wch: 12 },  // F: Perf Date
+            { wch: 12 },  // G: Series
+            { wch: 10 },  // H: Actual Total Tickets
+            { wch: 12 },  // I: Projected Total
+            { wch: 12 },  // J: Projected OCC %
+            { wch: 14 },  // K: Total Actual Revenue
+            { wch: 12 },  // L: Total Budget
+            { wch: 12 },  // M: Actual/Budget %
+            { wch: 14 },  // N: Projected/Budget %
+            { wch: 12 },  // O: Actual Singles Sold
+            { wch: 14 },  // P: Target Singles for 85%
+            { wch: 14 },  // Q: Projected Singles
+            { wch: 16 },  // R: Projected vs 85% Target
+            { wch: 14 },  // S: Singles Revenue
+            { wch: 12 },  // T: Singles Budget
+            { wch: 14 },  // U: Singles Actual/Budget %
+            { wch: 16 },  // V: Singles Projected/Budget %
+            { wch: 12 },  // W: Actual Subs Sold
+            { wch: 12 },  // X: Subs Revenue
+            { wch: 12 },  // Y: Subs Budget
+            { wch: 14 },  // Z: Subs Actual/Budget %
+            { wch: 10 },  // AA: Max Capacity
+            { wch: 12 },  // AB: Actual OCC %
+            { wch: 12 },  // AC: Single Ticket ATP
+            { wch: 14 },  // AD: Revenue Last Week
+            { wch: 16 }   // AE: Week-over-Week Change
+        ];
+
+        // Define formatting by column index (0-based)
+        const currencyFormat = '"$"#,##0';
+        const currencyDecimalFormat = '"$"#,##0.00';
+        const percentFormat = '0.0%';
+        const numberFormat = '#,##0';
+        const signedNumberFormat = '+#,##0;-#,##0;0';
+        const signedCurrencyFormat = '"$"+#,##0;"-$"#,##0;"$"0';
+
+        // Column formatting map
+        const formatMap = {
+            0: numberFormat,          // A: Wk #
+            1: numberFormat,          // B: # Weeks Until Perf
+            7: numberFormat,          // H: Actual Total Tickets
+            8: numberFormat,          // I: Projected Total
+            9: percentFormat,         // J: Projected OCC %
+            10: currencyFormat,       // K: Total Actual Revenue
+            11: currencyFormat,       // L: Total Budget
+            12: percentFormat,        // M: Actual/Budget %
+            13: percentFormat,        // N: Projected/Budget %
+            14: numberFormat,         // O: Actual Singles Sold
+            15: numberFormat,         // P: Target Singles for 85%
+            16: numberFormat,         // Q: Projected Singles
+            17: signedNumberFormat,   // R: Projected vs 85% Target
+            18: currencyFormat,       // S: Singles Revenue
+            19: currencyFormat,       // T: Singles Budget
+            20: percentFormat,        // U: Singles Actual/Budget %
+            21: percentFormat,        // V: Singles Projected/Budget %
+            22: numberFormat,         // W: Actual Subs Sold
+            23: currencyFormat,       // X: Subs Revenue
+            24: currencyFormat,       // Y: Subs Budget
+            25: percentFormat,        // Z: Subs Actual/Budget %
+            26: numberFormat,         // AA: Max Capacity
+            27: percentFormat,        // AB: Actual OCC %
+            28: currencyDecimalFormat,// AC: Single Ticket ATP
+            29: currencyFormat,       // AD: Revenue Last Week
+            30: signedCurrencyFormat  // AE: Week-over-Week Change
+        };
+
+        // Apply formatting to each data row (starting from row 3, index 2)
+        for (let rowIdx = 2; rowIdx < sheetData.length; rowIdx++) {
+            Object.entries(formatMap).forEach(([colIdx, format]) => {
+                const cellRef = XLSX.utils.encode_cell({ r: rowIdx, c: parseInt(colIdx) });
+                if (ws[cellRef] && ws[cellRef].v !== null) {
+                    ws[cellRef].z = format;
+                }
+            });
+        }
+
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Full Export');
+
+        // Generate filename
+        const filename = `symphony-full-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+
+        // Download
+        XLSX.writeFile(wb, filename);
     }
 }
 
