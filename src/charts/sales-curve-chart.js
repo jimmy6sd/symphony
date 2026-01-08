@@ -1176,7 +1176,7 @@ class SalesCurveChart {
 
                 if (d.week === 0) {
                     if (comparison.occupancy_percent && comparison.occupancy_percent > 0) {
-                        occupancyLine = `Occupancy: ${comparison.occupancy_percent}%<br/>`;
+                        occupancyLine = `Occupancy: ${parseFloat(comparison.occupancy_percent).toFixed(1)}%<br/>`;
                     }
 
                     if (comparison.atp && comparison.atp > 0) {
@@ -1469,9 +1469,9 @@ class SalesCurveChart {
                     // Occupancy = (projected single + subscription) / total capacity
                     const projectedOccupancy = capacity > 0 ? ((projectedTotalSeats / capacity) * 100).toFixed(1) : '0.0';
 
-                    // Estimate revenue based on current average ticket price
-                    const currentRevenue = parseFloat(performance.totalRevenue) || 0;
-                    const avgTicketPrice = actualSales > 0 ? currentRevenue / actualSales : 0;
+                    // Estimate revenue based on current single ticket average price
+                    const currentSingleRevenue = parseFloat(performance.singleTicketRevenue) || 0;
+                    const avgTicketPrice = actualSales > 0 ? currentSingleRevenue / actualSales : 0;
                     const projectedRevenue = Math.round(projectedSingleTickets * avgTicketPrice);
 
                     tooltip.html(`

@@ -2268,11 +2268,12 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
     console.log('📊 Using chart scales - maxWeeks:', maxWeeks, 'xScale domain:', xScale.domain());
 
     // Parse performance date to calculate weeks
-    const performanceDate = new Date(performance.date);
+    // Must use component-based constructor to avoid UTC/local timezone issues
+    const [perfYear, perfMonth, perfDay] = performance.date.split('-');
+    const performanceDate = new Date(parseInt(perfYear), parseInt(perfMonth) - 1, parseInt(perfDay));
     const parseDate = d3.timeParse('%Y-%m-%d');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    performanceDate.setHours(0, 0, 0, 0);
     const isPastPerformance = performanceDate < today;
 
     // Transform historical data to exact days-out format (not rounded to weeks)
