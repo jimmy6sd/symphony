@@ -134,6 +134,9 @@ exports.handler = async (event, context) => {
       case 'get-subscription-history':
         return await getSubscriptionHistory(bigquery, params, headers);
 
+      case 'get-ytd-comparison':
+        return await getYTDComparison(bigquery, params, headers);
+
       default:
         return await getPerformancesWithLatestSnapshots(bigquery, params, headers);
     }
@@ -952,6 +955,155 @@ async function getSubscriptionHistory(bigquery, params, headers) {
       _meta: {
         timestamp: new Date().toISOString(),
         seasonCount: Object.keys(seasons).length
+      }
+    })
+  };
+}
+
+// Get YTD comparison data for year-over-year analysis
+// Returns weekly YTD totals grouped by fiscal year
+async function getYTDComparison(bigquery, params, headers) {
+  const { fiscalYears, weekType = 'fiscal' } = params;
+
+  // Default to all available years
+  const yearsFilter = fiscalYears
+    ? fiscalYears.split(',').map(y => `'${y.trim()}'`).join(',')
+    : "'FY23','FY24','FY25','FY26'";
+
+  // Select week column based on weekType parameter
+  const weekColumn = weekType === 'iso' ? 'iso_week' : 'fiscal_week';
+
+  // Query historical data from ytd_weekly_totals
+  // Filter to excel-validated-json source only (verified accurate data)
+  const histQuery = `
+    SELECT
+      fiscal_year,
+      ${weekColumn} as week,
+      iso_week,
+      fiscal_week,
+      week_end_date,
+      ytd_tickets_sold,
+      ytd_single_tickets,
+      ytd_subscription_tickets,
+      ytd_revenue,
+      performance_count
+    FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_weekly_totals\`
+    WHERE fiscal_year IN (${yearsFilter})
+      AND source = 'excel-validated-json'
+    ORDER BY fiscal_year, ${weekColumn}
+  `;
+
+  // Query live FY26 data from snapshots (current YTD by week)
+  // FY26 = season starting with '25-26' (July 2025 - June 2026)
+  const liveQuery = `
+    WITH latest_snapshots AS (
+      SELECT
+        s.performance_code,
+        s.snapshot_date,
+        s.single_tickets_sold,
+        s.single_revenue,
+        ROW_NUMBER() OVER (
+          PARTITION BY s.performance_code, DATE_TRUNC(s.snapshot_date, WEEK(SATURDAY))
+          ORDER BY s.snapshot_date DESC
+        ) as rn
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
+      JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+        ON p.performance_code = s.performance_code
+      WHERE p.season LIKE '25-26%'
+    ),
+    weekly_totals AS (
+      SELECT
+        DATE_TRUNC(snapshot_date, WEEK(SATURDAY)) as week_start,
+        SUM(single_tickets_sold) as total_tickets,
+        SUM(single_revenue) as total_revenue,
+        COUNT(DISTINCT performance_code) as perf_count
+      FROM latest_snapshots
+      WHERE rn = 1
+      GROUP BY week_start
+    )
+    SELECT
+      week_start,
+      total_tickets,
+      total_revenue,
+      perf_count,
+      -- Calculate fiscal week (FY26 starts July 1, 2025)
+      DIV(DATE_DIFF(week_start, DATE '2025-07-01', DAY), 7) + 1 as fiscal_week,
+      EXTRACT(ISOWEEK FROM week_start) as iso_week
+    FROM weekly_totals
+    ORDER BY week_start
+  `;
+
+  // Run both queries in parallel
+  const [[histRows], [liveRows]] = await Promise.all([
+    bigquery.query({ query: histQuery, location: 'US' }),
+    bigquery.query({ query: liveQuery, location: 'US' })
+  ]);
+
+  // Transform historical data to frontend-friendly format grouped by year
+  const byYear = {};
+  histRows.forEach(row => {
+    const fy = row.fiscal_year;
+    if (!byYear[fy]) {
+      byYear[fy] = [];
+    }
+    byYear[fy].push({
+      week: row.week,
+      fiscalWeek: row.fiscal_week,
+      isoWeek: row.iso_week,
+      date: typeof row.week_end_date === 'object' ? row.week_end_date.value : row.week_end_date,
+      tickets: row.ytd_tickets_sold || 0,
+      singleTickets: row.ytd_single_tickets || 0,
+      subscriptionTickets: row.ytd_subscription_tickets || 0,
+      revenue: row.ytd_revenue || 0,
+      performanceCount: row.performance_count || 0
+    });
+  });
+
+  // Add live FY26 data as "FY26 Current" series
+  if (liveRows && liveRows.length > 0) {
+    byYear['FY26 Current'] = [];
+    let cumulativeTickets = 0;
+    let cumulativeRevenue = 0;
+
+    // Sort by week and calculate running totals
+    const sortedLive = liveRows.sort((a, b) => {
+      const dateA = typeof a.week_start === 'object' ? a.week_start.value : a.week_start;
+      const dateB = typeof b.week_start === 'object' ? b.week_start.value : b.week_start;
+      return dateA.localeCompare(dateB);
+    });
+
+    sortedLive.forEach(row => {
+      const weekNum = weekType === 'iso' ? row.iso_week : row.fiscal_week;
+      const weekStart = typeof row.week_start === 'object' ? row.week_start.value : row.week_start;
+
+      // The query already gives us the snapshot totals for each week
+      // which represent YTD at that point (sum of all performances' current sold)
+      byYear['FY26 Current'].push({
+        week: weekNum,
+        fiscalWeek: row.fiscal_week,
+        isoWeek: row.iso_week,
+        date: weekStart,
+        tickets: row.total_tickets || 0,
+        singleTickets: row.total_tickets || 0,
+        subscriptionTickets: 0,
+        revenue: row.total_revenue || 0,
+        performanceCount: row.perf_count || 0,
+        source: 'live-snapshots'
+      });
+    });
+  }
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      data: byYear,
+      _meta: {
+        timestamp: new Date().toISOString(),
+        fiscalYears: Object.keys(byYear).sort(),
+        weekType: weekType,
+        totalRecords: histRows.length,
+        liveDataWeeks: liveRows?.length || 0
       }
     })
   };

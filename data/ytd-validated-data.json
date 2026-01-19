@@ -1,0 +1,1381 @@
+{
+  "generated": "2026-01-14T20:33:04.114Z",
+  "note": "FY23-FY25 from Excel total rows; FY26 from summing performance rows (BigQuery starts Oct 2025)",
+  "fiscal_years": {
+    "FY23": [
+      {
+        "date": "2022-11-22",
+        "fiscal_year": "FY23",
+        "filename": "2022.11.22 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 29847,
+        "single_revenue": 2151069,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2022-11-30",
+        "fiscal_year": "FY23",
+        "filename": "2022.11.30 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 31779,
+        "single_revenue": 2283782,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2022-12-06",
+        "fiscal_year": "FY23",
+        "filename": "2022.12.06 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 34772,
+        "single_revenue": 2449441,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2022-12-12",
+        "fiscal_year": "FY23",
+        "filename": "2022.12.12 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 34772,
+        "single_revenue": 2570108,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)",
+        "manual_correction": true
+      },
+      {
+        "date": "2022-12-17",
+        "fiscal_year": "FY23",
+        "filename": "2022.12.17 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 48637,
+        "single_revenue": 2853468,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-02-09",
+        "fiscal_year": "FY23",
+        "filename": "2023.02.09 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 46687,
+        "single_revenue": 3167202,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-03-07",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.07 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 49817,
+        "single_revenue": 3366962,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-03-07",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.07.2 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 49817,
+        "single_revenue": 3366962,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-03-14",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.14 FY23 Ticket Sales Report.xlsx",
+        "extraction_failed": true
+      },
+      {
+        "date": "2023-03-14",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.14.2 FY23 Ticket Sales Report.xlsx",
+        "extraction_failed": true
+      },
+      {
+        "date": "2023-03-20",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.20 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 51958,
+        "single_revenue": 3488250,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-03-20",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.20.2 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 51958,
+        "single_revenue": 3488250,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-03-29",
+        "fiscal_year": "FY23",
+        "filename": "2023.03.29 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 53013,
+        "single_revenue": 3542670,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-04-03",
+        "fiscal_year": "FY23",
+        "filename": "2023.04.03 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 54073,
+        "single_revenue": 3604124,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-04-12",
+        "fiscal_year": "FY23",
+        "filename": "2023.04.12 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 54473,
+        "single_revenue": 3631517,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-04-19",
+        "fiscal_year": "FY23",
+        "filename": "2023.04.19 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 54937,
+        "single_revenue": 3663905,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-05-01",
+        "fiscal_year": "FY23",
+        "filename": "2023.05.01 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 56150,
+        "single_revenue": 3737257,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-05-16",
+        "fiscal_year": "FY23",
+        "filename": "2023.05.16 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 57547,
+        "single_revenue": 3837819,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-05-30",
+        "fiscal_year": "FY23",
+        "filename": "2023.05.30 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 58536,
+        "single_revenue": 3907306,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-06-16",
+        "fiscal_year": "FY23",
+        "filename": "2023.06.16 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 59599,
+        "single_revenue": 3962455,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-06-21",
+        "fiscal_year": "FY23",
+        "filename": "2023.06.21 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 59991,
+        "single_revenue": 3978720,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      },
+      {
+        "date": "2023-06-30",
+        "fiscal_year": "FY23",
+        "filename": "2023.06.30 FY23 Ticket Sales Report.xlsx",
+        "single_tickets": 60528,
+        "single_revenue": 4002200,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7)"
+      }
+    ],
+    "FY24": [
+      {
+        "date": "2023-07-27",
+        "fiscal_year": "FY24",
+        "filename": "2023.07.27 FY24 Sales Report.xlsx",
+        "extraction_failed": true
+      },
+      {
+        "date": "2023-08-03",
+        "fiscal_year": "FY24",
+        "filename": "2023.08.03 FY24 Sales Report.xlsx",
+        "single_tickets": 10519,
+        "single_revenue": 722960,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-08-28",
+        "fiscal_year": "FY24",
+        "filename": "2023.08.28 FY24 Sales Report.xlsx",
+        "single_tickets": 16392,
+        "single_revenue": 1146203,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-09-18",
+        "fiscal_year": "FY24",
+        "filename": "2023.09.18 Sales Report.xlsx",
+        "single_tickets": 22427,
+        "single_revenue": 1590778,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-10-09",
+        "fiscal_year": "FY24",
+        "filename": "2023.10.09 Sales Report.xlsx",
+        "single_tickets": 26765,
+        "single_revenue": 1857929,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-10-16",
+        "fiscal_year": "FY24",
+        "filename": "2023.10.16 Sales Report.xlsx",
+        "single_tickets": 28164,
+        "single_revenue": 1947783,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-10-23",
+        "fiscal_year": "FY24",
+        "filename": "2023.10.23 Sales Report.xlsx",
+        "single_tickets": 29715,
+        "single_revenue": 2038587,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-10-30",
+        "fiscal_year": "FY24",
+        "filename": "2023.10.30 Sales Report.xlsx",
+        "single_tickets": 31612,
+        "single_revenue": 2149813,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "GRAND TOTAL (6,7) early"
+      },
+      {
+        "date": "2023-11-06",
+        "fiscal_year": "FY24",
+        "filename": "2023.11.06 Sales Report.xlsx",
+        "single_tickets": 33268,
+        "single_revenue": 2255718,
+        "total_tickets": 73667,
+        "total_revenue": 4567724,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-11-13",
+        "fiscal_year": "FY24",
+        "filename": "2023.11.13 Sales Report.xlsx",
+        "single_tickets": 35254,
+        "single_revenue": 2379660,
+        "total_tickets": 75709,
+        "total_revenue": 4692645,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-11-20",
+        "fiscal_year": "FY24",
+        "filename": "2023.11.20 Sales Report.xlsx",
+        "single_tickets": 37437,
+        "single_revenue": 2515203,
+        "total_tickets": 78000,
+        "total_revenue": 4831299,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-11-27",
+        "fiscal_year": "FY24",
+        "filename": "2023.11.27 Sales Report.xlsx",
+        "single_tickets": 39207,
+        "single_revenue": 2631938,
+        "total_tickets": 79829,
+        "total_revenue": 4949960,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-12-04",
+        "fiscal_year": "FY24",
+        "filename": "2023.12.04 Sales Report.xlsx",
+        "single_tickets": 41327,
+        "single_revenue": 2788465,
+        "total_tickets": 82086,
+        "total_revenue": 5110009,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-12-11",
+        "fiscal_year": "FY24",
+        "filename": "2023.12.11 Sales Report.xlsx",
+        "single_tickets": 42962,
+        "single_revenue": 2914347,
+        "total_tickets": 83840,
+        "total_revenue": 5240350,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2023-12-18",
+        "fiscal_year": "FY24",
+        "filename": "2023.12.18 Sales Report.xlsx",
+        "single_tickets": 44643,
+        "single_revenue": 3044202,
+        "total_tickets": 85627,
+        "total_revenue": 5373226,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-05",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.05 Sales Report.xlsx",
+        "single_tickets": 47462,
+        "single_revenue": 3258024,
+        "total_tickets": 88556,
+        "total_revenue": 5588750,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-17",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.17 Sales Report.xlsx",
+        "single_tickets": 50625,
+        "single_revenue": 3500690,
+        "total_tickets": 91781,
+        "total_revenue": 5833099,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-19",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.19 Sales Report.xlsx",
+        "single_tickets": 51222,
+        "single_revenue": 3550422,
+        "total_tickets": 92414,
+        "total_revenue": 5883359,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-23",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.23 Sales Report.xlsx",
+        "single_tickets": 51604,
+        "single_revenue": 3591776,
+        "total_tickets": 92801,
+        "total_revenue": 5925653,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-26",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.26 Sales Report.xlsx",
+        "single_tickets": 52532,
+        "single_revenue": 3661936,
+        "total_tickets": 93736,
+        "total_revenue": 5996187,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-01-31",
+        "fiscal_year": "FY24",
+        "filename": "2024.01.31 Sales Report.xlsx",
+        "single_tickets": 52963,
+        "single_revenue": 3691610,
+        "total_tickets": 94185,
+        "total_revenue": 6026533,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-02-02",
+        "fiscal_year": "FY24",
+        "filename": "2024.02.02 Sales Report.xlsx",
+        "single_tickets": 53979,
+        "single_revenue": 3767517,
+        "total_tickets": 95258,
+        "total_revenue": 6104074,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-02-07",
+        "fiscal_year": "FY24",
+        "filename": "2024.02.07 Sales Report.xlsx",
+        "single_tickets": 54461,
+        "single_revenue": 3831618,
+        "total_tickets": 96236,
+        "total_revenue": 6168175,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-02-23",
+        "fiscal_year": "FY24",
+        "filename": "2024.02.23 Sales Report.xlsx",
+        "single_tickets": 57193,
+        "single_revenue": 4128242,
+        "total_tickets": 99694,
+        "total_revenue": 6467123,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-02-27",
+        "fiscal_year": "FY24",
+        "filename": "2024.02.27 Sales Report.xlsx",
+        "single_tickets": 57570,
+        "single_revenue": 4165066,
+        "total_tickets": 100201,
+        "total_revenue": 6504105,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-01",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.01 Sales Report.xlsx",
+        "single_tickets": 59697,
+        "single_revenue": 4214686,
+        "total_tickets": 101126,
+        "total_revenue": 6553813,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-06",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.06 Sales Report.xlsx",
+        "single_tickets": 60273,
+        "single_revenue": 4243846,
+        "total_tickets": 101695,
+        "total_revenue": 6581803,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-08",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.08 Sales Report.xlsx",
+        "single_tickets": 60813,
+        "single_revenue": 4278045,
+        "total_tickets": 102193,
+        "total_revenue": 6613424,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-11",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.11Sales Report.xlsx",
+        "single_tickets": 61369,
+        "single_revenue": 4308744,
+        "total_tickets": 102809,
+        "total_revenue": 6647871,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-15",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.15 Sales Report.xlsx",
+        "single_tickets": 61976,
+        "single_revenue": 4344410,
+        "total_tickets": 103420,
+        "total_revenue": 6681962,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-18",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.18 Sales Report.xlsx",
+        "single_tickets": 62445,
+        "single_revenue": 4392867,
+        "total_tickets": 103891,
+        "total_revenue": 6730419,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-19",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.19 Sales Report.xlsx",
+        "single_tickets": 62445,
+        "single_revenue": 4392867,
+        "total_tickets": 103891,
+        "total_revenue": 6730419,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-22",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.22 Sales Report.xlsx",
+        "single_tickets": 63223,
+        "single_revenue": 4455038,
+        "total_tickets": 104669,
+        "total_revenue": 6794165,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-03-29",
+        "fiscal_year": "FY24",
+        "filename": "2024.03.29 Sales Report.xlsx",
+        "single_tickets": 64261,
+        "single_revenue": 4526998,
+        "total_tickets": 105732,
+        "total_revenue": 6866125,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-02",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.02 Sales Report.xlsx",
+        "single_tickets": 64461,
+        "single_revenue": 4541119,
+        "total_tickets": 105934,
+        "total_revenue": 6880246,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-05",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.05 Sales Report.xlsx",
+        "single_tickets": 65022,
+        "single_revenue": 4588309,
+        "total_tickets": 106497,
+        "total_revenue": 6918436,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-08",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.08 Sales Report.xlsx",
+        "single_tickets": 65447,
+        "single_revenue": 4612388,
+        "total_tickets": 106961,
+        "total_revenue": 6942515,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-12",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.12 Sales Report.xlsx",
+        "single_tickets": 65849,
+        "single_revenue": 4633772,
+        "total_tickets": 107368,
+        "total_revenue": 6972899,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-15",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.15 Sales Report.xlsx",
+        "single_tickets": 66088,
+        "single_revenue": 4650428,
+        "total_tickets": 107607,
+        "total_revenue": 6989555,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-16",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.16 Sales Report.xlsx",
+        "extraction_failed": true
+      },
+      {
+        "date": "2024-04-19",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.19 Sales Report.xlsx",
+        "single_tickets": 66433,
+        "single_revenue": 4670166,
+        "total_tickets": 107954,
+        "total_revenue": 7009293,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-26",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.26 Sales Report.xlsx",
+        "single_tickets": 66878,
+        "single_revenue": 4695248,
+        "total_tickets": 108412,
+        "total_revenue": 7034375,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-04-29",
+        "fiscal_year": "FY24",
+        "filename": "2024.04.29 Sales Report.xlsx",
+        "single_tickets": 67102,
+        "single_revenue": 4710261,
+        "total_tickets": 108636,
+        "total_revenue": 7049388,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-05-03",
+        "fiscal_year": "FY24",
+        "filename": "2024.05.03 Sales Report.xlsx",
+        "single_tickets": 67598,
+        "single_revenue": 4742207,
+        "total_tickets": 109132,
+        "total_revenue": 7081334,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-05-06",
+        "fiscal_year": "FY24",
+        "filename": "2024.05.06 Sales Report.xlsx",
+        "single_tickets": 67812,
+        "single_revenue": 4756328,
+        "total_tickets": 109346,
+        "total_revenue": 7095455,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-05-10",
+        "fiscal_year": "FY24",
+        "filename": "2024.05.10 Sales Report.xlsx",
+        "single_tickets": 68158,
+        "single_revenue": 4778934,
+        "total_tickets": 109692,
+        "total_revenue": 7118061,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-05-13",
+        "fiscal_year": "FY24",
+        "filename": "2024.05.13 Sales Report.xlsx",
+        "single_tickets": 68387,
+        "single_revenue": 4792527,
+        "total_tickets": 109921,
+        "total_revenue": 7131654,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-05-31",
+        "fiscal_year": "FY24",
+        "filename": "2024.05.31 Sales Report.xlsx",
+        "single_tickets": 69519,
+        "single_revenue": 4867685,
+        "total_tickets": 111072,
+        "total_revenue": 7206812,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-03",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.03 Sales Report.xlsx",
+        "single_tickets": 69833,
+        "single_revenue": 4883293,
+        "total_tickets": 111387,
+        "total_revenue": 7222420,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-07",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.07 Sales Report.xlsx",
+        "single_tickets": 70065,
+        "single_revenue": 4901322,
+        "total_tickets": 111618,
+        "total_revenue": 7240449,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-10",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.10 Sales Report.xlsx",
+        "single_tickets": 70240,
+        "single_revenue": 4910356,
+        "total_tickets": 111794,
+        "total_revenue": 7249483,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-14",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.14 Sales Report.xlsx",
+        "single_tickets": 70626,
+        "single_revenue": 4931160,
+        "total_tickets": 112183,
+        "total_revenue": 7270287,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-17",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.17 Sales Report.xlsx",
+        "single_tickets": 70929,
+        "single_revenue": 4946593,
+        "total_tickets": 112493,
+        "total_revenue": 7285720,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-17",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.17.2 Sales Report.xlsx",
+        "extraction_failed": true
+      },
+      {
+        "date": "2024-06-21",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.21 Sales Report.xlsx",
+        "single_tickets": 71225,
+        "single_revenue": 4964932,
+        "total_tickets": 112789,
+        "total_revenue": 7304059,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-06-24",
+        "fiscal_year": "FY24",
+        "filename": "2024.06.24 Sales Report.xlsx",
+        "single_tickets": 71444,
+        "single_revenue": 4977071,
+        "total_tickets": 113008,
+        "total_revenue": 7316198,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      }
+    ],
+    "FY25": [
+      {
+        "date": "2024-08-20",
+        "fiscal_year": "FY25",
+        "filename": "2024.08.20 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 14832,
+        "single_revenue": 1041752,
+        "total_tickets": 49420,
+        "total_revenue": 3158909,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-08-26",
+        "fiscal_year": "FY25",
+        "filename": "2024.08.26 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 15745,
+        "single_revenue": 1105848,
+        "total_tickets": 50441,
+        "total_revenue": 3233141,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-09-03",
+        "fiscal_year": "FY25",
+        "filename": "2024.09.03 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 16819,
+        "single_revenue": 1186232,
+        "total_tickets": 51776,
+        "total_revenue": 3321230,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-09-09",
+        "fiscal_year": "FY25",
+        "filename": "2024.09.09 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 17748,
+        "single_revenue": 1253381,
+        "total_tickets": 52811,
+        "total_revenue": 3391300,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-09-16",
+        "fiscal_year": "FY25",
+        "filename": "2024.09.16 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 19191,
+        "single_revenue": 1342051,
+        "total_tickets": 54574,
+        "total_revenue": 3493299,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-09-23",
+        "fiscal_year": "FY25",
+        "filename": "2024.09.23 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 20743,
+        "single_revenue": 1448057,
+        "total_tickets": 56202,
+        "total_revenue": 3600680,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-09-30",
+        "fiscal_year": "FY25",
+        "filename": "2024.09.30 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 21877,
+        "single_revenue": 1534714,
+        "total_tickets": 57361,
+        "total_revenue": 3691178,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-10-28",
+        "fiscal_year": "FY25",
+        "filename": "2024.10.28 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 34474,
+        "single_revenue": 2199395,
+        "total_tickets": 72596,
+        "total_revenue": 5101190,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-11-04",
+        "fiscal_year": "FY25",
+        "filename": "2024.11.04 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 36528,
+        "single_revenue": 2391293,
+        "total_tickets": 70950,
+        "total_revenue": 4141256,
+        "method": "GRAND TOTAL (6,8,13,14)"
+      },
+      {
+        "date": "2024-11-12",
+        "fiscal_year": "FY25",
+        "filename": "2024.11.12 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 40888,
+        "single_revenue": 2508012,
+        "total_tickets": 73315,
+        "total_revenue": 4519863,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2024-11-18",
+        "fiscal_year": "FY25",
+        "filename": "2024.11.18 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 43686,
+        "single_revenue": 2710631.4,
+        "total_tickets": 76053,
+        "total_revenue": 4718899.3,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2024-12-09",
+        "fiscal_year": "FY25",
+        "filename": "2024.12.09 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 52636,
+        "single_revenue": 3231225.5,
+        "total_tickets": 84784,
+        "total_revenue": 5226862.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2024-12-17",
+        "fiscal_year": "FY25",
+        "filename": "2024.12.17 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 55260,
+        "single_revenue": 3400831.5,
+        "total_tickets": 87419,
+        "total_revenue": 5396142.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2024-12-23",
+        "fiscal_year": "FY25",
+        "filename": "2024.12.23 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 58511,
+        "single_revenue": 3619494.5,
+        "total_tickets": 90626,
+        "total_revenue": 5611742.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2024-12-30",
+        "fiscal_year": "FY25",
+        "filename": "2024.12.30 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 60407,
+        "single_revenue": 3759940.5,
+        "total_tickets": 92515,
+        "total_revenue": 5750330.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-01-06",
+        "fiscal_year": "FY25",
+        "filename": "2025.01.06 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 61993,
+        "single_revenue": 3875427.5,
+        "total_tickets": 93932,
+        "total_revenue": 5851818.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-01-13",
+        "fiscal_year": "FY25",
+        "filename": "2025.01.13 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 63675,
+        "single_revenue": 3997058.5,
+        "total_tickets": 95278,
+        "total_revenue": 5951055.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-01-20",
+        "fiscal_year": "FY25",
+        "filename": "2025.01.20 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 65711,
+        "single_revenue": 4101781.5,
+        "total_tickets": 97027,
+        "total_revenue": 6038132.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-01-27",
+        "fiscal_year": "FY25",
+        "filename": "2025.01.27 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 67534,
+        "single_revenue": 4204968.5,
+        "total_tickets": 98650,
+        "total_revenue": 6129059.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-02-03",
+        "fiscal_year": "FY25",
+        "filename": "2025.02.03 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 69386,
+        "single_revenue": 4328355.5,
+        "total_tickets": 100368,
+        "total_revenue": 6244302.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-02-10",
+        "fiscal_year": "FY25",
+        "filename": "2025.02.10 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 71925,
+        "single_revenue": 4465192.5,
+        "total_tickets": 102694,
+        "total_revenue": 6367903.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-02-17",
+        "fiscal_year": "FY25",
+        "filename": "2025.02.17 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 74127,
+        "single_revenue": 4615683.5,
+        "total_tickets": 104602,
+        "total_revenue": 6499565.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-02-24",
+        "fiscal_year": "FY25",
+        "filename": "2025.02.24 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 76617,
+        "single_revenue": 4768736.5,
+        "total_tickets": 106899,
+        "total_revenue": 6639517.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-03-03",
+        "fiscal_year": "FY25",
+        "filename": "2025.03.03 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 77893,
+        "single_revenue": 4852459.5,
+        "total_tickets": 107976,
+        "total_revenue": 6717216.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-03-17",
+        "fiscal_year": "FY25",
+        "filename": "2025.03.17 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 80161,
+        "single_revenue": 4997818.5,
+        "total_tickets": 109886,
+        "total_revenue": 6842593.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-03-24",
+        "fiscal_year": "FY25",
+        "filename": "2025.03.24 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 80880,
+        "single_revenue": 5055480.5,
+        "total_tickets": 110447,
+        "total_revenue": 6890486.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-03-31",
+        "fiscal_year": "FY25",
+        "filename": "2025.03.31 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 81550,
+        "single_revenue": 5100323.5,
+        "total_tickets": 110963,
+        "total_revenue": 6924379.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-04-07",
+        "fiscal_year": "FY25",
+        "filename": "2025.04.07 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 82576,
+        "single_revenue": 5156457.5,
+        "total_tickets": 111747,
+        "total_revenue": 6964960.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-04-14",
+        "fiscal_year": "FY25",
+        "filename": "2025.04.14 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 83821,
+        "single_revenue": 5215981.5,
+        "total_tickets": 112777,
+        "total_revenue": 7011224.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-04-21",
+        "fiscal_year": "FY25",
+        "filename": "2025.04.21 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 84349,
+        "single_revenue": 5250779.5,
+        "total_tickets": 113190,
+        "total_revenue": 7037361.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-04-28",
+        "fiscal_year": "FY25",
+        "filename": "2025.04.28 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 84943,
+        "single_revenue": 5287521.5,
+        "total_tickets": 113650,
+        "total_revenue": 7064877.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-05-05",
+        "fiscal_year": "FY25",
+        "filename": "2025.05.05 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 85855,
+        "single_revenue": 5318103.5,
+        "total_tickets": 114516,
+        "total_revenue": 7092406.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-05-12",
+        "fiscal_year": "FY25",
+        "filename": "2025.05.12 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 87273,
+        "single_revenue": 5363199.5,
+        "total_tickets": 115772,
+        "total_revenue": 7129001.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-05-19",
+        "fiscal_year": "FY25",
+        "filename": "2025.05.19 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 87930,
+        "single_revenue": 5406395.5,
+        "total_tickets": 116349,
+        "total_revenue": 7167303.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-05-26",
+        "fiscal_year": "FY25",
+        "filename": "2025.05.26 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 88360,
+        "single_revenue": 5435253.5,
+        "total_tickets": 116740,
+        "total_revenue": 7194007.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-06-02",
+        "fiscal_year": "FY25",
+        "filename": "2025.06.02 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 89156,
+        "single_revenue": 5467038.5,
+        "total_tickets": 117450,
+        "total_revenue": 7219827.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-06-09",
+        "fiscal_year": "FY25",
+        "filename": "2025.06.09 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 90041,
+        "single_revenue": 5487172.5,
+        "total_tickets": 118274,
+        "total_revenue": 7237587.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      },
+      {
+        "date": "2025-06-16",
+        "fiscal_year": "FY25",
+        "filename": "2025.06.16 FY25 Ticket Sales Report.xlsx",
+        "single_tickets": 90041,
+        "single_revenue": 5487172.5,
+        "total_tickets": 118274,
+        "total_revenue": 7237587.5,
+        "method": "ALL CONCERT (5,7,12,13)"
+      }
+    ],
+    "FY26": [
+      {
+        "date": "2025-08-04",
+        "fiscal_year": "FY26",
+        "filename": "2025.08.04 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 13837,
+        "single_revenue": 1000968,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/17)"
+      },
+      {
+        "date": "2025-08-11",
+        "fiscal_year": "FY26",
+        "filename": "2025.08.11 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 15982,
+        "single_revenue": 1176339,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/17)"
+      },
+      {
+        "date": "2025-08-18",
+        "fiscal_year": "FY26",
+        "filename": "2025.08.18 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 17701,
+        "single_revenue": 1312569,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/17)"
+      },
+      {
+        "date": "2025-08-21",
+        "fiscal_year": "FY26",
+        "filename": "2025.08.21 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 17701,
+        "single_revenue": 1312569,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/17)"
+      },
+      {
+        "date": "2025-08-25",
+        "fiscal_year": "FY26",
+        "filename": "2025.08.25 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 19251,
+        "single_revenue": 1413580,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/17)"
+      },
+      {
+        "date": "2025-09-01",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.01 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 20655,
+        "single_revenue": 1511865.2,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/19)"
+      },
+      {
+        "date": "2025-09-08",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.08 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 22104,
+        "single_revenue": 1614088.7,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/19)"
+      },
+      {
+        "date": "2025-09-15",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.15 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 23451,
+        "single_revenue": 1695345,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows from 2nd tab (Performances by Week)"
+      },
+      {
+        "date": "2025-09-17",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.17 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 22104,
+        "single_revenue": 1614088.7,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/19)"
+      },
+      {
+        "date": "2025-09-22",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.22 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 24903,
+        "single_revenue": 1788868.3,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 15/19)"
+      },
+      {
+        "date": "2025-09-29",
+        "fiscal_year": "FY26",
+        "filename": "2025.09.29 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 26054,
+        "single_revenue": 1860566.1,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/23)"
+      },
+      {
+        "date": "2025-10-07",
+        "fiscal_year": "FY26",
+        "filename": "2025.10.07 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 27509,
+        "single_revenue": 1955935.6,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/23)"
+      },
+      {
+        "date": "2025-10-13",
+        "fiscal_year": "FY26",
+        "filename": "2025.10.13 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 29633,
+        "single_revenue": 2086094.6,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/24)"
+      },
+      {
+        "date": "2025-10-20",
+        "fiscal_year": "FY26",
+        "filename": "2025.10.20 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 31583,
+        "single_revenue": 2207513.6,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/24)"
+      },
+      {
+        "date": "2025-10-27",
+        "fiscal_year": "FY26",
+        "filename": "2025.10.27 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 33713,
+        "single_revenue": 2319078.6,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/24)"
+      },
+      {
+        "date": "2025-11-05",
+        "fiscal_year": "FY26",
+        "filename": "2025.11.05 FY26 Ticket Sales Report.xlsx",
+        "single_tickets": 37175,
+        "single_revenue": 2519706.1,
+        "total_tickets": null,
+        "total_revenue": null,
+        "method": "Sum performance rows (cols 18/24)"
+      }
+    ]
+  },
+  "summary": {
+    "FY23": {
+      "total_files": 22,
+      "extracted": 20,
+      "failed": 2,
+      "errors": 0,
+      "date_range": {
+        "first": "2022-11-22",
+        "last": "2023-06-30"
+      },
+      "final_values": {
+        "single_tickets": 60528,
+        "single_revenue": 4002200,
+        "total_tickets": null,
+        "total_revenue": null
+      }
+    },
+    "FY24": {
+      "total_files": 56,
+      "extracted": 53,
+      "failed": 3,
+      "errors": 0,
+      "date_range": {
+        "first": "2023-08-03",
+        "last": "2024-06-24"
+      },
+      "final_values": {
+        "single_tickets": 71444,
+        "single_revenue": 4977071,
+        "total_tickets": 113008,
+        "total_revenue": 7316198
+      }
+    },
+    "FY25": {
+      "total_files": 38,
+      "extracted": 38,
+      "failed": 0,
+      "errors": 0,
+      "date_range": {
+        "first": "2024-08-20",
+        "last": "2025-06-16"
+      },
+      "final_values": {
+        "single_tickets": 90041,
+        "single_revenue": 5487172.5,
+        "total_tickets": 118274,
+        "total_revenue": 7237587.5
+      }
+    },
+    "FY26": {
+      "total_files": 16,
+      "extracted": 16,
+      "failed": 0,
+      "errors": 0,
+      "date_range": {
+        "first": "2025-08-04",
+        "last": "2025-11-05"
+      },
+      "final_values": {
+        "single_tickets": 37175,
+        "single_revenue": 2519706.1,
+        "total_tickets": null,
+        "total_revenue": null
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>YTD Comparison - Kansas City Symphony Dashboard</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/ytd-comparison.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="ytd-comparison-page">
+        <header class="ytd-comparison-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Kansas City Symphony - YTD Sales Comparison</h1>
+                    <p>Year-over-year ticket sales by week</p>
+                </div>
+                <div class="header-right">
+                    <a href="/" class="back-button">← Back to Dashboard</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="ytd-comparison-content">
+            <!-- Controls -->
+            <div class="ytd-controls">
+                <div class="control-group">
+                    <label>Metric:</label>
+                    <select id="metric-select">
+                        <option value="tickets">Total Tickets Sold</option>
+                        <option value="revenue" selected>Total Revenue</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Week Type:</label>
+                    <select id="week-type-select">
+                        <option value="fiscal" selected>Fiscal Week (from July 1)</option>
+                        <option value="iso">ISO Week (from Jan 1)</option>
+                    </select>
+                </div>
+                <div class="control-group year-toggles" id="year-toggles">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-indicator" class="loading-indicator">
+                <div class="loading-spinner"></div>
+                <p>Loading YTD comparison data...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-message" class="error-message" style="display: none;">
+                <p class="error-text"></p>
+                <button class="retry-button">Retry</button>
+            </div>
+
+            <!-- Chart Container -->
+            <div id="ytd-chart-container" class="ytd-chart-wrapper" style="display: none;">
+                <!-- D3 chart rendered here -->
+            </div>
+
+            <!-- Summary Stats -->
+            <div id="ytd-summary" class="ytd-summary" style="display: none;">
+                <!-- Summary cards populated dynamically -->
+            </div>
+
+            <!-- Segment Comparison -->
+            <div id="segment-comparison" class="segment-comparison" style="display: none;">
+                <div class="segment-controls">
+                    <h2 class="segment-section-title">Segment Comparison</h2>
+                    <div class="segment-controls-right">
+                        <div class="control-group">
+                            <label>Metric:</label>
+                            <select id="segment-metric-select">
+                                <option value="tickets">Total Tickets Sold</option>
+                                <option value="revenue" selected>Total Revenue</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Week Type:</label>
+                            <select id="segment-week-type-select">
+                                <option value="fiscal" selected>Fiscal Week (from July 1)</option>
+                                <option value="iso">ISO Week (from Jan 1)</option>
+                            </select>
+                        </div>
+                        <div class="control-group segment-selector">
+                            <label>Segments:</label>
+                            <div class="segment-toggles" id="segment-toggles">
+                                <button class="segment-btn active" data-segments="4">4</button>
+                                <button class="segment-btn" data-segments="5">5</button>
+                                <button class="segment-btn" data-segments="6">6</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="segment-cards" class="segment-cards">
+                    <!-- Segment cards populated dynamically -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="/src/ytd-comparison-app.js"></script>
+</body>
+</html>

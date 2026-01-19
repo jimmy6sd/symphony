@@ -16,11 +16,15 @@
                     <h1>Kansas City Symphony</h1>
                     <p>Sales Analytics & Performance Dashboard • <a href="https://kcsymphony.org" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: none;">kcsymphony.org</a></p>
                 </div>
+                <nav class="header-nav">
+                    <!-- YTD Comparison link hidden for now - route still accessible -->
+                    <a href="/excel.html" class="nav-link">Excel Export</a>
+                </nav>
             </div>
         </header>
 
-        <!-- Dashboard Tab Navigation -->
-        <nav class="dashboard-tabs">
+        <!-- Dashboard Tab Navigation (hidden for now) -->
+        <nav class="dashboard-tabs" style="display: none;">
             <div class="dashboard-tabs-container">
                 <button class="tab-btn active" data-tab="single-tickets">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -31,7 +35,7 @@
                     </svg>
                     Single Tickets
                 </button>
-                <button class="tab-btn" data-tab="subscriptions" style="display: none;">
+                <button class="tab-btn" data-tab="subscriptions">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
                         <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
