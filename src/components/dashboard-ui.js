@@ -932,3 +932,66 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = DashboardUI;
 }
+// Tab switching for Single Tickets / Subscriptions
+DashboardUI.prototype.setupTabSwitching = function() {
+    const tabButtons = document.querySelectorAll('.dashboard-tabs .tab-btn');
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.getAttribute('data-tab');
+            this.switchDashboardTab(tabName);
+        });
+    });
+};
+
+DashboardUI.prototype.switchDashboardTab = function(tabName) {
+    // Update button states
+    document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Update view visibility
+    document.querySelectorAll('.tab-content').forEach(view => {
+        view.classList.remove('active');
+        view.style.display = 'none';
+    });
+
+    const targetView = document.getElementById(`${tabName}-view`);
+    if (targetView) {
+        targetView.classList.add('active');
+        targetView.style.display = 'block';
+    }
+
+    // Initialize subscription table if switching to subscriptions tab (lazy load)
+    if (tabName === 'subscriptions' && !window.subscriptionTable) {
+        this.initializeSubscriptionTable();
+    }
+};
+
+DashboardUI.prototype.initializeSubscriptionTable = async function() {
+    if (window.SubscriptionTable) {
+        this.log('info', 'Initializing Subscription Table');
+        window.subscriptionTable = new window.SubscriptionTable('subscription-table');
+        await window.subscriptionTable.init();
+        this.log('info', 'Subscription Table initialized');
+    }
+};
+
+// Initialize tab switching after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.dashboardUI) {
+            window.dashboardUI.setupTabSwitching();
+        }
+    });
+} else {
+    // DOM already loaded, setup tabs after a short delay to ensure dashboardUI exists
+    setTimeout(() => {
+        if (window.dashboardUI) {
+            window.dashboardUI.setupTabSwitching();
+        }
+    }, 100);
+}

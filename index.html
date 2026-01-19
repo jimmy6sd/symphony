@@ -19,10 +19,41 @@
             </div>
         </header>
 
+        <!-- Dashboard Tab Navigation -->
+        <nav class="dashboard-tabs">
+            <div class="dashboard-tabs-container">
+                <button class="tab-btn active" data-tab="single-tickets">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+                        <path d="M13 5v2"/>
+                        <path d="M13 17v2"/>
+                        <path d="M13 11v2"/>
+                    </svg>
+                    Single Tickets
+                </button>
+                <button class="tab-btn" data-tab="subscriptions" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <path d="M12 11h4"/>
+                        <path d="M12 16h4"/>
+                        <path d="M8 11h.01"/>
+                        <path d="M8 16h.01"/>
+                    </svg>
+                    Subscriptions
+                </button>
+            </div>
+        </nav>
+
         <main class="dashboard-content">
-            <!-- Data Table View (Primary View) -->
-            <div id="data-table-view" class="dashboard-view active">
+            <!-- Single Tickets View (Default) -->
+            <div id="single-tickets-view" class="dashboard-view tab-content active">
                 <div id="data-table" class="data-table-container"></div>
+            </div>
+
+            <!-- Subscriptions View -->
+            <div id="subscriptions-view" class="dashboard-view tab-content" style="display: none;">
+                <div id="subscription-table" class="data-table-container"></div>
             </div>
 
             <!-- Performance Detail Modal -->
