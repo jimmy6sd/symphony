@@ -1007,6 +1007,7 @@ async function getYTDComparison(bigquery, params, headers) {
 
   // Query live FY26 data from snapshots (current YTD by week)
   // FY26 = season starting with '25-26' (July 2025 - June 2026)
+  // Now includes subscription data from the reimported PDFs
   const liveQuery = `
     WITH latest_snapshots AS (
       SELECT
@@ -1014,6 +1015,8 @@ async function getYTDComparison(bigquery, params, headers) {
         s.snapshot_date,
         s.single_tickets_sold,
         s.single_revenue,
+        COALESCE(s.fixed_tickets_sold, 0) + COALESCE(s.non_fixed_tickets_sold, 0) as subscription_tickets,
+        COALESCE(s.fixed_revenue, 0) + COALESCE(s.non_fixed_revenue, 0) as subscription_revenue,
         ROW_NUMBER() OVER (
           PARTITION BY s.performance_code, DATE_TRUNC(s.snapshot_date, WEEK(SATURDAY))
           ORDER BY s.snapshot_date DESC
@@ -1022,12 +1025,17 @@ async function getYTDComparison(bigquery, params, headers) {
       JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
         ON p.performance_code = s.performance_code
       WHERE p.season LIKE '25-26%'
+        AND (p.cancelled IS NULL OR p.cancelled = false)
     ),
     weekly_totals AS (
       SELECT
         DATE_TRUNC(snapshot_date, WEEK(SATURDAY)) as week_start,
-        SUM(single_tickets_sold) as total_tickets,
-        SUM(single_revenue) as total_revenue,
+        SUM(single_tickets_sold) as single_tickets,
+        SUM(single_revenue) as single_revenue,
+        SUM(subscription_tickets) as subscription_tickets,
+        SUM(subscription_revenue) as subscription_revenue,
+        SUM(COALESCE(single_tickets_sold, 0) + COALESCE(subscription_tickets, 0)) as total_tickets,
+        SUM(COALESCE(single_revenue, 0) + COALESCE(subscription_revenue, 0)) as total_revenue,
         COUNT(DISTINCT performance_code) as perf_count
       FROM latest_snapshots
       WHERE rn = 1
@@ -1035,6 +1043,10 @@ async function getYTDComparison(bigquery, params, headers) {
     )
     SELECT
       week_start,
+      single_tickets,
+      single_revenue,
+      subscription_tickets,
+      subscription_revenue,
       total_tickets,
       total_revenue,
       perf_count,
@@ -1100,11 +1112,11 @@ async function getYTDComparison(bigquery, params, headers) {
         isoWeek: row.iso_week,
         date: weekStart,
         tickets: row.total_tickets || 0,
-        singleTickets: row.total_tickets || 0,
-        subscriptionTickets: 0,
+        singleTickets: row.single_tickets || 0,
+        subscriptionTickets: row.subscription_tickets || 0,
         revenue: row.total_revenue || 0,
-        singleRevenue: row.total_revenue || 0,  // Live data only has single ticket revenue
-        subscriptionRevenue: 0,
+        singleRevenue: row.single_revenue || 0,
+        subscriptionRevenue: row.subscription_revenue || 0,
         performanceCount: row.perf_count || 0,
         source: 'live-snapshots'
       });

@@ -102,8 +102,9 @@ async function parsePDF(pdfPath, filename) {
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Check if this is a performance code (25XXXXY or 25XXXXYY format, not a total row)
-          if (item.match(/^25\d{4}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
+          // Check if this is a performance code (YYMMDDX or YYMMDDXX format, not a total row)
+          // Matches any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
+          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
             const performanceCode = item;
             let idx = i + 1;
 
