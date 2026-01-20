@@ -411,6 +411,9 @@ class YTDComparisonChart {
     }
 
     renderProjection(g, xScale, yScale, visibleData, line) {
+        // Clear previous projection data
+        this.projectionData = [];
+
         // Only render if we have both FY25 (target) and FY26 data
         const fy25Data = visibleData['FY25'];
         const fy26CurrentData = visibleData['FY26'];
@@ -459,6 +462,16 @@ class YTDComparisonChart {
         }
 
         // Build projection data: FY25 future values + variance (applied to current metric)
+        // Calculate variance for each metric type
+        const varianceByMetric = {
+            tickets: lastFY26Point.tickets - (fy25AtSameWeek.tickets || 0),
+            revenue: lastFY26Point.revenue - (fy25AtSameWeek.revenue || 0),
+            singleTickets: (lastFY26Point.singleTickets || 0) - (fy25AtSameWeek.singleTickets || 0),
+            singleRevenue: (lastFY26Point.singleRevenue || 0) - (fy25AtSameWeek.singleRevenue || 0),
+            subscriptionTickets: (lastFY26Point.subscriptionTickets || 0) - (fy25AtSameWeek.subscriptionTickets || 0),
+            subscriptionRevenue: (lastFY26Point.subscriptionRevenue || 0) - (fy25AtSameWeek.subscriptionRevenue || 0)
+        };
+
         const projectionData = [
             // Start from last actual FY26 point
             {
@@ -472,19 +485,22 @@ class YTDComparisonChart {
                 subscriptionRevenue: lastFY26Point.subscriptionRevenue,
                 isActual: true
             },
-            // Project future weeks - add variance to the current metric only
+            // Project future weeks - add variance to each metric
             ...fy25FutureWeeks.map(d => ({
                 fiscalWeek: d.fiscalWeek,
                 isoWeek: d.isoWeek,
-                tickets: (d.tickets || 0) + (this.metric === 'tickets' ? variance : 0),
-                revenue: (d.revenue || 0) + (this.metric === 'revenue' ? variance : 0),
-                singleTickets: (d.singleTickets || 0) + (this.metric === 'singleTickets' ? variance : 0),
-                singleRevenue: (d.singleRevenue || 0) + (this.metric === 'singleRevenue' ? variance : 0),
-                subscriptionTickets: (d.subscriptionTickets || 0) + (this.metric === 'subscriptionTickets' ? variance : 0),
-                subscriptionRevenue: (d.subscriptionRevenue || 0) + (this.metric === 'subscriptionRevenue' ? variance : 0),
+                tickets: (d.tickets || 0) + varianceByMetric.tickets,
+                revenue: (d.revenue || 0) + varianceByMetric.revenue,
+                singleTickets: (d.singleTickets || 0) + varianceByMetric.singleTickets,
+                singleRevenue: (d.singleRevenue || 0) + varianceByMetric.singleRevenue,
+                subscriptionTickets: (d.subscriptionTickets || 0) + varianceByMetric.subscriptionTickets,
+                subscriptionRevenue: (d.subscriptionRevenue || 0) + varianceByMetric.subscriptionRevenue,
                 isProjected: true
             }))
         ];
+
+        // Store projection data for tooltip access
+        this.projectionData = projectionData;
 
         // Draw projection line (dashed green)
         g.append('path')
@@ -627,6 +643,21 @@ class YTDComparisonChart {
                     }
                 });
 
+                // Check for projected FY26 value at this week
+                if (self.projectionData && self.projectionData.length > 0) {
+                    const projMatch = self.projectionData.find(w =>
+                        (self.weekType === 'iso' ? w.isoWeek : w.fiscalWeek) === week && w.isProjected
+                    );
+                    if (projMatch) {
+                        weekValues.push({
+                            year: 'FY26 Projected',
+                            value: self.getValue(projMatch),
+                            date: null,
+                            isProjected: true
+                        });
+                    }
+                }
+
                 weekValues.sort((a, b) => b.value - a.value);
 
                 let html = `<strong style="border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 6px; margin-bottom: 8px; display: block;">${weekLabel}</strong>`;
@@ -635,11 +666,13 @@ class YTDComparisonChart {
                         ? '$' + Math.round(v.value).toLocaleString()
                         : v.value.toLocaleString() + ' tickets';
                     const dateStr = v.date ? new Date(v.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                    const italicStyle = v.isProjected ? 'font-style: italic;' : '';
+                    const labelStyle = v.isProjected ? 'font-weight: 400; font-style: italic;' : 'font-weight: 500;';
                     html += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; ${italicStyle}">
                             <span>
                                 <span style="width: 10px; height: 10px; border-radius: 50%; background: ${self.yearColors[v.year]}; display: inline-block; margin-right: 6px;"></span>
-                                <span style="font-weight: 500;">${v.year}</span>
+                                <span style="${labelStyle}">${v.year}</span>
                             </span>
                             <span style="font-weight: 600; margin-left: 12px;">${formattedValue}</span>
                         </div>

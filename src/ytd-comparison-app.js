@@ -15,6 +15,15 @@ class YTDComparisonApp {
             'FY26': '#3498db',  // Blue (current year - merged)
             'FY26 Projected': '#2ecc71'  // Green (projection)
         };
+
+        this.metricLabels = {
+            'revenue': 'Total Revenue',
+            'tickets': 'Total Tickets',
+            'singleRevenue': 'Single Ticket Revenue',
+            'singleTickets': 'Single Tickets',
+            'subscriptionRevenue': 'Subscription Revenue',
+            'subscriptionTickets': 'Subscription Tickets'
+        };
     }
 
     async init() {
@@ -194,11 +203,12 @@ class YTDComparisonApp {
 
             if (!latestWeek.data) return;
 
-            const value = metric === 'tickets'
-                ? latestWeek.data.tickets
-                : latestWeek.data.revenue;
+            // Get value for the selected metric (field names match metric values directly)
+            const value = latestWeek.data[metric] || 0;
 
-            const formattedValue = metric === 'tickets'
+            // Format based on whether it's a ticket count or revenue
+            const isTicketMetric = metric.toLowerCase().includes('ticket');
+            const formattedValue = isTicketMetric
                 ? value.toLocaleString()
                 : '$' + Math.round(value).toLocaleString();
 
@@ -213,10 +223,11 @@ class YTDComparisonApp {
                 card.style.opacity = '0.7';
             }
 
+            const metricLabel = this.metricLabels[metric] || metric;
             card.innerHTML = `
                 <h3>${year} <span style="font-size: 0.7em; font-weight: normal; color: #555;">${statusLabel}</span></h3>
                 <div class="value">${formattedValue}</div>
-                <div class="subtext" style="color: #555;">Week ${latestWeek.week}</div>
+                <div class="subtext" style="color: #555;">Week ${latestWeek.week} · ${metricLabel}</div>
             `;
 
             container.appendChild(card);
@@ -276,7 +287,7 @@ class YTDComparisonApp {
         , weeksInSegment[0]);
 
         const firstWeekInSegment = firstInSegment[weekKey];
-        const lastValue = metric === 'tickets' ? lastInSegment.tickets : lastInSegment.revenue;
+        const lastValue = lastInSegment[metric] || 0;
 
         // Check if this is the current segment for the current year (still in progress)
         const currentWeek = this.getCurrentWeek(weekType);
@@ -288,7 +299,7 @@ class YTDComparisonApp {
         if (prevWeeks.length === 0) {
             // No data before this segment
             // Only count what we can measure: last - first within segment
-            const firstValue = metric === 'tickets' ? firstInSegment.tickets : firstInSegment.revenue;
+            const firstValue = firstInSegment[metric] || 0;
             const incomplete = firstWeekInSegment > segment.start || isCurrentSegment;
             return { value: lastValue - firstValue, incomplete };
         }
@@ -297,7 +308,7 @@ class YTDComparisonApp {
         const endOfPrevSegment = prevWeeks.reduce((max, w) =>
             w[weekKey] > max[weekKey] ? w : max
         , prevWeeks[0]);
-        const prevEndValue = metric === 'tickets' ? endOfPrevSegment.tickets : endOfPrevSegment.revenue;
+        const prevEndValue = endOfPrevSegment[metric] || 0;
 
         // Check if there's a gap between end of prev segment and start of this one
         const gapWeeks = (segment.start - 1) - endOfPrevSegment[weekKey];
@@ -363,7 +374,9 @@ class YTDComparisonApp {
                 const barWidth = maxValue > 0 ? (value / maxValue) * 100 : 0;
                 const color = this.yearColors[year] || '#999';
 
-                const formattedValue = metric === 'tickets'
+                // Format based on whether it's a ticket count or revenue
+                const isTicketMetric = metric.toLowerCase().includes('ticket');
+                const formattedValue = isTicketMetric
                     ? value.toLocaleString()
                     : '$' + Math.round(value).toLocaleString();
 
