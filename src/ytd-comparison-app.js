@@ -10,7 +10,7 @@ class YTDComparisonApp {
 
         this.yearColors = {
             'FY23': '#8884d8',
-            'FY24': '#82ca9d',
+            'FY24': '#8884d8',  // Purple (was FY23's color)
             'FY25': '#ff7c43',  // Orange (target comp)
             'FY26': '#3498db',  // Blue (current year - merged)
             'FY26 Projected': '#2ecc71'  // Green (projection)
@@ -47,7 +47,7 @@ class YTDComparisonApp {
         // Merge FY26 and FY26 Current into a single FY26 series
         this.mergeFY26Data();
 
-        this.availableYears = Object.keys(this.data).filter(y => !y.includes('Projected'));
+        this.availableYears = Object.keys(this.data).filter(y => !y.includes('Projected') && y !== 'FY23');
 
         console.log('Loaded YTD data:', this.availableYears, 'years');
     }
@@ -200,16 +200,23 @@ class YTDComparisonApp {
 
             const formattedValue = metric === 'tickets'
                 ? value.toLocaleString()
-                : '$' + value.toLocaleString();
+                : '$' + Math.round(value).toLocaleString();
 
             const card = document.createElement('div');
             card.className = 'summary-card';
+
+            const isCurrent = year === 'FY26';
+            const statusLabel = isCurrent ? 'YTD' : 'FINAL';
+
             card.style.borderLeft = `4px solid ${this.yearColors[year]}`;
+            if (isCurrent) {
+                card.style.opacity = '0.7';
+            }
 
             card.innerHTML = `
-                <h3>${year} YTD</h3>
+                <h3>${year} <span style="font-size: 0.7em; font-weight: normal; color: #555;">${statusLabel}</span></h3>
                 <div class="value">${formattedValue}</div>
-                <div class="subtext">Week ${latestWeek.week}</div>
+                <div class="subtext" style="color: #555;">Week ${latestWeek.week}</div>
             `;
 
             container.appendChild(card);
@@ -358,7 +365,7 @@ class YTDComparisonApp {
 
                 const formattedValue = metric === 'tickets'
                     ? value.toLocaleString()
-                    : '$' + value.toLocaleString();
+                    : '$' + Math.round(value).toLocaleString();
 
                 const incompleteIndicator = incomplete ? '<span class="incomplete-indicator" title="Incomplete data">*</span>' : '';
 

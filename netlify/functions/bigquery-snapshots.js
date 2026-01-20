@@ -975,21 +975,33 @@ async function getYTDComparison(bigquery, params, headers) {
 
   // Query historical data from ytd_weekly_totals
   // Filter to excel-validated-json source only (verified accurate data)
+  // Deduplicate by taking the latest entry per fiscal_year + fiscal_week
   const histQuery = `
-    SELECT
-      fiscal_year,
-      ${weekColumn} as week,
-      iso_week,
-      fiscal_week,
-      week_end_date,
-      ytd_tickets_sold,
-      ytd_single_tickets,
-      ytd_subscription_tickets,
-      ytd_revenue,
-      performance_count
-    FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_weekly_totals\`
-    WHERE fiscal_year IN (${yearsFilter})
-      AND source = 'excel-validated-json'
+    WITH ranked AS (
+      SELECT
+        fiscal_year,
+        ${weekColumn} as week,
+        iso_week,
+        fiscal_week,
+        week_end_date,
+        ytd_tickets_sold,
+        ytd_single_tickets,
+        ytd_subscription_tickets,
+        ytd_revenue,
+        ytd_single_revenue,
+        ytd_subscription_revenue,
+        performance_count,
+        ROW_NUMBER() OVER (
+          PARTITION BY fiscal_year, fiscal_week
+          ORDER BY week_end_date DESC, ytd_tickets_sold DESC
+        ) as rn
+      FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_weekly_totals\`
+      WHERE fiscal_year IN (${yearsFilter})
+        AND source = 'excel-validated-json'
+    )
+    SELECT * EXCEPT(rn)
+    FROM ranked
+    WHERE rn = 1
     ORDER BY fiscal_year, ${weekColumn}
   `;
 
@@ -1026,8 +1038,10 @@ async function getYTDComparison(bigquery, params, headers) {
       total_tickets,
       total_revenue,
       perf_count,
-      -- Calculate fiscal week (FY26 starts July 1, 2025)
-      DIV(DATE_DIFF(week_start, DATE '2025-07-01', DAY), 7) + 1 as fiscal_week,
+      -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1)
+      CASE WHEN EXTRACT(ISOWEEK FROM week_start) >= 27
+           THEN EXTRACT(ISOWEEK FROM week_start) - 26
+           ELSE EXTRACT(ISOWEEK FROM week_start) + 26 END as fiscal_week,
       EXTRACT(ISOWEEK FROM week_start) as iso_week
     FROM weekly_totals
     ORDER BY week_start
@@ -1055,6 +1069,8 @@ async function getYTDComparison(bigquery, params, headers) {
       singleTickets: row.ytd_single_tickets || 0,
       subscriptionTickets: row.ytd_subscription_tickets || 0,
       revenue: row.ytd_revenue || 0,
+      singleRevenue: row.ytd_single_revenue || 0,
+      subscriptionRevenue: row.ytd_subscription_revenue || 0,
       performanceCount: row.performance_count || 0
     });
   });
@@ -1087,6 +1103,8 @@ async function getYTDComparison(bigquery, params, headers) {
         singleTickets: row.total_tickets || 0,
         subscriptionTickets: 0,
         revenue: row.total_revenue || 0,
+        singleRevenue: row.total_revenue || 0,  // Live data only has single ticket revenue
+        subscriptionRevenue: 0,
         performanceCount: row.perf_count || 0,
         source: 'live-snapshots'
       });

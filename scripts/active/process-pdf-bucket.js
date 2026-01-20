@@ -12,16 +12,22 @@
  *   node scripts/process-pdf-bucket.js gs://symphony-dashboard-pdfs/2025
  */
 
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const PDFParser = require('pdf2json');
 const { BigQuery } = require('@google-cloud/bigquery');
 const { Storage } = require('@google-cloud/storage');
 
+// Load credentials from key file
+const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || './symphony-bigquery-key.json';
+const creds = JSON.parse(fs.readFileSync(credPath, 'utf8'));
+
 // Initialize BigQuery
 const bigquery = new BigQuery({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || 'kcsymphony',
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+  credentials: { client_email: creds.client_email, private_key: creds.private_key },
+  location: 'US'
 });
 
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
@@ -130,19 +136,37 @@ async function parsePDF(pdfPath, filename) {
 
             const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
             const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
+            const fixedRev = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
             const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
+            const nonFixedRev = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
             const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
+            const singleRev = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
             const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
             const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
+            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
+            const reservedRev = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
+            const subtotalRev = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
+            const availableSeats = parseInt(availStr.replace(/,/g, '')) || 0;
 
             const subscriptionTickets = fixedCount + nonFixedCount;
+            const subscriptionRevenue = fixedRev + nonFixedRev;
             const totalTickets = subscriptionTickets + singleCount;
 
             performances.push({
               performance_code: performanceCode,
               performance_date: dateTime,
               single_tickets: singleCount,
+              single_revenue: singleRev,
               subscription_tickets: subscriptionTickets,
+              subscription_revenue: subscriptionRevenue,
+              fixed_tickets: fixedCount,
+              fixed_revenue: fixedRev,
+              non_fixed_tickets: nonFixedCount,
+              non_fixed_revenue: nonFixedRev,
+              reserved_tickets: reservedCount,
+              reserved_revenue: reservedRev,
+              subtotal_revenue: subtotalRev,
+              available_seats: availableSeats,
               total_tickets: totalTickets,
               total_revenue: totalRevenue,
               capacity_percent: capacityPercent,
@@ -202,13 +226,21 @@ async function insertSnapshots(snapshots) {
     performance_code: snapshot.performance_code,
     snapshot_date: snapshot.snapshot_date,
     single_tickets_sold: snapshot.single_tickets_sold,
+    single_revenue: snapshot.single_revenue,
     subscription_tickets_sold: snapshot.subscription_tickets_sold,
+    fixed_tickets_sold: snapshot.fixed_tickets_sold,
+    fixed_revenue: snapshot.fixed_revenue,
+    non_fixed_tickets_sold: snapshot.non_fixed_tickets_sold,
+    non_fixed_revenue: snapshot.non_fixed_revenue,
+    reserved_tickets: snapshot.reserved_tickets,
+    reserved_revenue: snapshot.reserved_revenue,
+    subtotal_revenue: snapshot.subtotal_revenue,
+    available_seats: snapshot.available_seats,
     total_tickets_sold: snapshot.total_tickets_sold,
     total_revenue: snapshot.total_revenue,
     capacity_percent: snapshot.capacity_percent,
     budget_percent: snapshot.budget_percent,
     source: snapshot.source,
-    // source_filename removed - not in schema
     created_at: new Date().toISOString()
   }));
 
@@ -260,12 +292,21 @@ async function processLocalDirectory(dirPath) {
         performance_code: perf.performance_code,
         snapshot_date: snapshotDate,
         single_tickets_sold: perf.single_tickets,
+        single_revenue: perf.single_revenue,
         subscription_tickets_sold: perf.subscription_tickets,
+        fixed_tickets_sold: perf.fixed_tickets,
+        fixed_revenue: perf.fixed_revenue,
+        non_fixed_tickets_sold: perf.non_fixed_tickets,
+        non_fixed_revenue: perf.non_fixed_revenue,
+        reserved_tickets: perf.reserved_tickets,
+        reserved_revenue: perf.reserved_revenue,
+        subtotal_revenue: perf.subtotal_revenue,
+        available_seats: perf.available_seats,
         total_tickets_sold: perf.total_tickets,
         total_revenue: perf.total_revenue,
         capacity_percent: perf.capacity_percent,
         budget_percent: perf.budget_percent,
-        source: 'historical_pdf_import_v2',
+        source: 'historical_pdf_import_v3',
         source_filename: filename
       }));
 
@@ -288,8 +329,8 @@ async function processGCSBucket(bucketPath) {
   console.log(`☁️  Processing GCS bucket: ${bucketPath}\n`);
 
   const storage = new Storage({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || 'kcsymphony',
+    credentials: { client_email: creds.client_email, private_key: creds.private_key }
   });
 
   // Parse bucket path: gs://bucket-name/prefix
@@ -304,13 +345,14 @@ async function processGCSBucket(bucketPath) {
   console.log(`   Bucket: ${bucketName}`);
   console.log(`   Prefix: ${prefix || '(root)'}\n`);
 
-  // List all PDFs in bucket
+  // List all PDFs in bucket (exclude PTC files which have different format)
   const [files] = await bucket.getFiles({ prefix });
   const pdfFiles = files
     .filter(f => f.name.toLowerCase().endsWith('.pdf'))
+    .filter(f => !f.name.includes('/ptc/') && !f.name.includes('_ptc_'))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  console.log(`Found ${pdfFiles.length} PDF files in bucket\n`);
+  console.log(`Found ${pdfFiles.length} PDF files in bucket (excluding PTC files)\n`);
 
   const allSnapshots = [];
   let successCount = 0;
@@ -344,12 +386,21 @@ async function processGCSBucket(bucketPath) {
         performance_code: perf.performance_code,
         snapshot_date: snapshotDate,
         single_tickets_sold: perf.single_tickets,
+        single_revenue: perf.single_revenue,
         subscription_tickets_sold: perf.subscription_tickets,
+        fixed_tickets_sold: perf.fixed_tickets,
+        fixed_revenue: perf.fixed_revenue,
+        non_fixed_tickets_sold: perf.non_fixed_tickets,
+        non_fixed_revenue: perf.non_fixed_revenue,
+        reserved_tickets: perf.reserved_tickets,
+        reserved_revenue: perf.reserved_revenue,
+        subtotal_revenue: perf.subtotal_revenue,
+        available_seats: perf.available_seats,
         total_tickets_sold: perf.total_tickets,
         total_revenue: perf.total_revenue,
         capacity_percent: perf.capacity_percent,
         budget_percent: perf.budget_percent,
-        source: 'historical_pdf_import_v2',
+        source: 'historical_pdf_import_v3',
         source_filename: file.name
       }));
 

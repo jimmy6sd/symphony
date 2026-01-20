@@ -7,12 +7,12 @@ class YTDComparisonChart {
         this.data = {};  // { FY23: [...], FY24: [...], ... }
         this.metric = options.metric || 'revenue';
         this.weekType = options.weekType || 'fiscal';
-        this.visibleYears = new Set(['FY23', 'FY24', 'FY25', 'FY26']);
+        this.visibleYears = new Set(['FY24', 'FY25', 'FY26']);
 
         // Year colors (FY25 is target comp in orange, FY26 is current in blue)
         this.yearColors = {
             'FY23': '#8884d8',  // Purple
-            'FY24': '#82ca9d',  // Green
+            'FY24': '#8884d8',  // Purple (was FY23's color)
             'FY25': '#ff7c43',  // Orange (target comp)
             'FY26': '#3498db',  // Blue (current year - merged Excel + live)
             'FY26 Projected': '#2ecc71'  // Green dashed (projection based on FY25)
@@ -22,6 +22,37 @@ class YTDComparisonChart {
         this.updateResponsiveState();
         this.resizeTimeout = null;
         window.addEventListener('resize', this.handleResize.bind(this));
+    }
+
+    // Get value from data point based on current metric
+    getValue(d) {
+        switch (this.metric) {
+            case 'tickets': return d.tickets || 0;
+            case 'revenue': return d.revenue || 0;
+            case 'singleTickets': return d.singleTickets || 0;
+            case 'singleRevenue': return d.singleRevenue || 0;
+            case 'subscriptionTickets': return d.subscriptionTickets || 0;
+            case 'subscriptionRevenue': return d.subscriptionRevenue || 0;
+            default: return d.revenue || 0;
+        }
+    }
+
+    // Check if current metric is a revenue metric
+    isRevenueMetric() {
+        return ['revenue', 'singleRevenue', 'subscriptionRevenue'].includes(this.metric);
+    }
+
+    // Get Y-axis label for current metric
+    getYAxisLabel() {
+        const labels = {
+            tickets: 'Cumulative Total Tickets',
+            revenue: 'Cumulative Total Revenue ($)',
+            singleTickets: 'Cumulative Single Tickets',
+            singleRevenue: 'Cumulative Single Ticket Revenue ($)',
+            subscriptionTickets: 'Cumulative Subscription Tickets',
+            subscriptionRevenue: 'Cumulative Subscription Revenue ($)'
+        };
+        return labels[this.metric] || 'Cumulative Value';
     }
 
     handleResize() {
@@ -49,17 +80,13 @@ class YTDComparisonChart {
             const days = Math.floor((today - jan1) / (24 * 60 * 60 * 1000));
             return Math.ceil((days + jan1.getDay() + 1) / 7);
         } else {
-            // Fiscal week (starts July 1)
-            const year = today.getFullYear();
-            const month = today.getMonth();
+            // Fiscal week = ISO week offset by 26 (so ISO week 27 = fiscal week 1)
+            const jan1 = new Date(today.getFullYear(), 0, 1);
+            const days = Math.floor((today - jan1) / (24 * 60 * 60 * 1000));
+            const isoWeek = Math.ceil((days + jan1.getDay() + 1) / 7);
 
-            // Fiscal year starts July 1
-            const fiscalYearStart = month >= 6
-                ? new Date(year, 6, 1)  // July 1 of current year
-                : new Date(year - 1, 6, 1);  // July 1 of previous year
-
-            const days = Math.floor((today - fiscalYearStart) / (24 * 60 * 60 * 1000));
-            return Math.ceil((days + 1) / 7);
+            // Offset: ISO 27+ becomes fiscal 1-26, ISO 1-26 becomes fiscal 27-52
+            return isoWeek >= 27 ? isoWeek - 26 : isoWeek + 26;
         }
     }
 
@@ -132,7 +159,7 @@ class YTDComparisonChart {
                 visibleData[year] = weeks;
                 weeks.forEach(w => {
                     const weekNum = this.weekType === 'iso' ? w.isoWeek : w.fiscalWeek;
-                    const value = this.metric === 'tickets' ? w.tickets : w.revenue;
+                    const value = this.getValue(w);
                     if (weekNum > maxWeek) maxWeek = weekNum;
                     if (value > maxValue) maxValue = value;
                 });
@@ -199,11 +226,39 @@ class YTDComparisonChart {
             .style('font-size', this.isMobile ? '10px' : '11px')
             .style('fill', '#666');
 
+        // Add month labels below week axis (fiscal year starts July 1)
+        const fiscalMonths = [
+            { week: 1, label: 'Jul' },
+            { week: 5, label: 'Aug' },
+            { week: 9, label: 'Sep' },
+            { week: 14, label: 'Oct' },
+            { week: 18, label: 'Nov' },
+            { week: 22, label: 'Dec' },
+            { week: 27, label: 'Jan' },
+            { week: 31, label: 'Feb' },
+            { week: 36, label: 'Mar' },
+            { week: 40, label: 'Apr' },
+            { week: 44, label: 'May' },
+            { week: 49, label: 'Jun' }
+        ];
+
+        const monthLabelY = innerHeight + (this.isMobile ? 32 : 38);
+        fiscalMonths.forEach(m => {
+            g.append('text')
+                .attr('x', xScale(m.week))
+                .attr('y', monthLabelY)
+                .attr('text-anchor', 'start')
+                .style('font-size', this.isMobile ? '9px' : '10px')
+                .style('fill', '#999')
+                .style('font-weight', '500')
+                .text(m.label);
+        });
+
         const yAxis = g.append('g')
             .call(d3.axisLeft(yScale)
                 .ticks(6)
                 .tickFormat(d => {
-                    if (this.metric === 'revenue') {
+                    if (this.isRevenueMetric()) {
                         return d >= 1000000 ? `$${(d / 1000000).toFixed(1)}M` : `$${(d / 1000).toFixed(0)}K`;
                     }
                     return d >= 1000 ? `${(d / 1000).toFixed(0)}K` : d;
@@ -231,7 +286,7 @@ class YTDComparisonChart {
                 .style('text-anchor', 'middle')
                 .style('font-size', '12px')
                 .style('fill', '#666')
-                .text(this.metric === 'tickets' ? 'Cumulative Tickets Sold' : 'Cumulative Revenue ($)');
+                .text(this.getYAxisLabel());
         }
 
         // Current week indicator line
@@ -263,11 +318,11 @@ class YTDComparisonChart {
         // Line generator
         const line = d3.line()
             .x(d => xScale(this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek))
-            .y(d => yScale(this.metric === 'tickets' ? d.tickets : d.revenue))
+            .y(d => yScale(this.getValue(d)))
             .curve(d3.curveMonotoneX);
 
         // Draw lines for each year
-        const sortedYears = Object.keys(visibleData).sort();
+        const sortedYears = Object.keys(visibleData).sort().reverse();
 
         sortedYears.forEach(year => {
             const yearData = visibleData[year]
@@ -297,7 +352,7 @@ class YTDComparisonChart {
                 .append('circle')
                 .attr('class', `year-point point-${year}`)
                 .attr('cx', d => xScale(this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek))
-                .attr('cy', d => yScale(this.metric === 'tickets' ? d.tickets : d.revenue))
+                .attr('cy', d => yScale(this.getValue(d)))
                 .attr('r', this.isMobile ? 5 : 4)
                 .attr('fill', this.yearColors[year])
                 .attr('stroke', 'white')
@@ -335,7 +390,7 @@ class YTDComparisonChart {
         });
         const lastFY26Point = sortedFY26[0];
         const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
-        const lastFY26Value = this.metric === 'tickets' ? lastFY26Point.tickets : lastFY26Point.revenue;
+        const lastFY26Value = this.getValue(lastFY26Point);
 
         // Find FY25 value at the same week
         const fy25AtSameWeek = fy25Data.find(d => {
@@ -347,11 +402,11 @@ class YTDComparisonChart {
             return 0;
         }
 
-        const fy25ValueAtWeek = this.metric === 'tickets' ? fy25AtSameWeek.tickets : fy25AtSameWeek.revenue;
+        const fy25ValueAtWeek = this.getValue(fy25AtSameWeek);
         const variance = lastFY26Value - fy25ValueAtWeek;
 
         // Find max FY25 value and add variance
-        const fy25Max = Math.max(...fy25Data.map(d => this.metric === 'tickets' ? d.tickets : d.revenue));
+        const fy25Max = Math.max(...fy25Data.map(d => this.getValue(d)));
         return fy25Max + variance;
     }
 
@@ -372,7 +427,7 @@ class YTDComparisonChart {
         });
         const lastFY26Point = sortedFY26[0];
         const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
-        const lastFY26Value = this.metric === 'tickets' ? lastFY26Point.tickets : lastFY26Point.revenue;
+        const lastFY26Value = this.getValue(lastFY26Point);
 
         // Find FY25 value at the same week
         const fy25AtSameWeek = fy25Data.find(d => {
@@ -384,7 +439,7 @@ class YTDComparisonChart {
             return; // Can't calculate variance without matching week
         }
 
-        const fy25ValueAtWeek = this.metric === 'tickets' ? fy25AtSameWeek.tickets : fy25AtSameWeek.revenue;
+        const fy25ValueAtWeek = this.getValue(fy25AtSameWeek);
         const variance = lastFY26Value - fy25ValueAtWeek;
 
         // Get FY25 data points AFTER the current FY26 week
@@ -403,7 +458,7 @@ class YTDComparisonChart {
             return; // No future weeks to project
         }
 
-        // Build projection data: FY25 future values + variance
+        // Build projection data: FY25 future values + variance (applied to current metric)
         const projectionData = [
             // Start from last actual FY26 point
             {
@@ -411,14 +466,22 @@ class YTDComparisonChart {
                 isoWeek: lastFY26Point.isoWeek,
                 tickets: lastFY26Point.tickets,
                 revenue: lastFY26Point.revenue,
+                singleTickets: lastFY26Point.singleTickets,
+                singleRevenue: lastFY26Point.singleRevenue,
+                subscriptionTickets: lastFY26Point.subscriptionTickets,
+                subscriptionRevenue: lastFY26Point.subscriptionRevenue,
                 isActual: true
             },
-            // Project future weeks
+            // Project future weeks - add variance to the current metric only
             ...fy25FutureWeeks.map(d => ({
                 fiscalWeek: d.fiscalWeek,
                 isoWeek: d.isoWeek,
                 tickets: (d.tickets || 0) + (this.metric === 'tickets' ? variance : 0),
                 revenue: (d.revenue || 0) + (this.metric === 'revenue' ? variance : 0),
+                singleTickets: (d.singleTickets || 0) + (this.metric === 'singleTickets' ? variance : 0),
+                singleRevenue: (d.singleRevenue || 0) + (this.metric === 'singleRevenue' ? variance : 0),
+                subscriptionTickets: (d.subscriptionTickets || 0) + (this.metric === 'subscriptionTickets' ? variance : 0),
+                subscriptionRevenue: (d.subscriptionRevenue || 0) + (this.metric === 'subscriptionRevenue' ? variance : 0),
                 isProjected: true
             }))
         ];
@@ -441,7 +504,7 @@ class YTDComparisonChart {
             .append('circle')
             .attr('class', 'year-point projection-point')
             .attr('cx', d => xScale(this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek))
-            .attr('cy', d => yScale(this.metric === 'tickets' ? d.tickets : d.revenue))
+            .attr('cy', d => yScale(this.getValue(d)))
             .attr('r', this.isMobile ? 4 : 3)
             .attr('fill', this.yearColors['FY26 Projected'])
             .attr('stroke', 'white')
@@ -558,7 +621,7 @@ class YTDComparisonChart {
                     if (match) {
                         weekValues.push({
                             year,
-                            value: self.metric === 'tickets' ? match.tickets : match.revenue,
+                            value: self.getValue(match),
                             date: match.date
                         });
                     }
@@ -568,9 +631,9 @@ class YTDComparisonChart {
 
                 let html = `<strong style="border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 6px; margin-bottom: 8px; display: block;">${weekLabel}</strong>`;
                 weekValues.forEach(v => {
-                    const formattedValue = self.metric === 'tickets'
-                        ? v.value.toLocaleString() + ' tickets'
-                        : '$' + (v.value / 1000000).toFixed(2) + 'M';
+                    const formattedValue = self.isRevenueMetric()
+                        ? '$' + Math.round(v.value).toLocaleString()
+                        : v.value.toLocaleString() + ' tickets';
                     const dateStr = v.date ? new Date(v.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                     html += `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0;">
