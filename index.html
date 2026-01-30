@@ -17,14 +17,12 @@
                     <p>Sales Analytics & Performance Dashboard • <a href="https://kcsymphony.org" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: none;">kcsymphony.org</a></p>
                 </div>
                 <nav class="header-nav">
-                    <!-- YTD Comparison link hidden for now - route still accessible -->
-                    <a href="/excel.html" class="nav-link">Excel Export</a>
                 </nav>
             </div>
         </header>
 
-        <!-- Dashboard Tab Navigation (hidden for now) -->
-        <nav class="dashboard-tabs" style="display: none;">
+        <!-- Dashboard Tab Navigation -->
+        <nav class="dashboard-tabs">
             <div class="dashboard-tabs-container">
                 <button class="tab-btn active" data-tab="single-tickets">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -46,6 +44,13 @@
                     </svg>
                     Subscriptions
                 </button>
+                <a href="/year-to-date" class="tab-btn tab-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                    Year to Date
+                </a>
             </div>
         </nav>
 

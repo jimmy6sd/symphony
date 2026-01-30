@@ -2439,7 +2439,13 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         header
             .append('h3')
-            .text('2025 Season Performance Details');
+            .text('2026 Season Performance Details');
+
+        header
+            .append('a')
+            .attr('href', '/excel.html')
+            .attr('class', 'nav-link excel-export-link')
+            .text('Excel Export');
     }
 
     createTable() {

@@ -585,7 +585,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
 
 // Get subscription package sales data with day-over-day changes and category projections
 async function getSubscriptionData(bigquery, params, headers) {
-  const { category, season = '25-26' } = params;
+  const { category, season = '26-27' } = params;
 
   // Build filter conditions
   let filterConditions = [];
@@ -963,7 +963,7 @@ async function getSubscriptionHistory(bigquery, params, headers) {
 // Get YTD comparison data for year-over-year analysis
 // Returns weekly YTD totals grouped by fiscal year
 async function getYTDComparison(bigquery, params, headers) {
-  const { fiscalYears, weekType = 'fiscal' } = params;
+  const { fiscalYears, weekType = 'fiscal', attributionMode = 'snapshot' } = params;
 
   // Default to all available years
   const yearsFilter = fiscalYears
@@ -973,91 +973,240 @@ async function getYTDComparison(bigquery, params, headers) {
   // Select week column based on weekType parameter
   const weekColumn = weekType === 'iso' ? 'iso_week' : 'fiscal_week';
 
-  // Query historical data from ytd_weekly_totals
-  // Filter to excel-validated-json source only (verified accurate data)
-  // Deduplicate by taking the latest entry per fiscal_year + fiscal_week
-  const histQuery = `
-    WITH ranked AS (
+  // Query historical data (FY23-FY25)
+  // Two modes: snapshot (from ytd_weekly_totals) or performance (from ytd_historical_performances)
+  let histQuery;
+
+  if (attributionMode === 'performance') {
+    // Performance attribution: Revenue attributed to when concerts occurred
+    // Use ytd_historical_performances table with performance dates and actual revenue
+    histQuery = `
+      WITH performance_data AS (
+        SELECT
+          CASE
+            WHEN season = '22-23' THEN 'FY23'
+            WHEN season = '23-24' THEN 'FY24'
+            WHEN season = '24-25' THEN 'FY25'
+            ELSE NULL
+          END as fiscal_year,
+          ${weekColumn} as week,
+          fiscal_week,
+          iso_week,
+          performance_date,
+          COALESCE(total_revenue, 0) as total_revenue,
+          COALESCE(total_tickets, 0) as total_tickets,
+          COALESCE(single_revenue, 0) as single_revenue,
+          COALESCE(single_tickets, 0) as single_tickets,
+          COALESCE(subscription_revenue, 0) as subscription_revenue,
+          COALESCE(subscription_tickets, 0) as subscription_tickets
+        FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_historical_performances\`
+        WHERE season IN ('22-23', '23-24', '24-25')
+      ),
+      weekly_totals AS (
+        SELECT
+          fiscal_year,
+          week,
+          fiscal_week,
+          iso_week,
+          SUM(total_revenue) as week_revenue,
+          SUM(total_tickets) as week_tickets,
+          SUM(single_revenue) as week_single_revenue,
+          SUM(single_tickets) as week_single_tickets,
+          SUM(subscription_revenue) as week_subscription_revenue,
+          SUM(subscription_tickets) as week_subscription_tickets,
+          COUNT(*) as performance_count
+        FROM performance_data
+        GROUP BY fiscal_year, week, fiscal_week, iso_week
+      ),
+      ytd_running_totals AS (
+        SELECT
+          fiscal_year,
+          week,
+          fiscal_week,
+          iso_week,
+          SUM(week_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_revenue,
+          SUM(week_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_tickets,
+          SUM(week_single_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_single_revenue,
+          SUM(week_single_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_single_tickets,
+          SUM(week_subscription_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_subscription_revenue,
+          SUM(week_subscription_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_subscription_tickets,
+          SUM(performance_count) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_performance_count
+        FROM weekly_totals
+      )
       SELECT
         fiscal_year,
-        ${weekColumn} as week,
-        iso_week,
+        week,
         fiscal_week,
-        week_end_date,
-        ytd_tickets_sold,
+        iso_week,
+        NULL as week_end_date,
+        ytd_tickets as ytd_tickets_sold,
         ytd_single_tickets,
         ytd_subscription_tickets,
         ytd_revenue,
         ytd_single_revenue,
         ytd_subscription_revenue,
-        performance_count,
-        ROW_NUMBER() OVER (
-          PARTITION BY fiscal_year, fiscal_week
-          ORDER BY week_end_date DESC, ytd_tickets_sold DESC
-        ) as rn
-      FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_weekly_totals\`
+        ytd_performance_count as performance_count
+      FROM ytd_running_totals
       WHERE fiscal_year IN (${yearsFilter})
-        AND source = 'excel-validated-json'
-    )
-    SELECT * EXCEPT(rn)
-    FROM ranked
-    WHERE rn = 1
-    ORDER BY fiscal_year, ${weekColumn}
-  `;
+      ORDER BY fiscal_year, week
+    `;
+  } else {
+    // Snapshot attribution: Revenue attributed to when sales data was captured (current behavior)
+    // Filter to excel-validated-json source only (verified accurate data)
+    // Deduplicate by taking the latest entry per fiscal_year + fiscal_week
+    histQuery = `
+      WITH ranked AS (
+        SELECT
+          fiscal_year,
+          ${weekColumn} as week,
+          iso_week,
+          fiscal_week,
+          week_end_date,
+          ytd_tickets_sold,
+          ytd_single_tickets,
+          ytd_subscription_tickets,
+          ytd_revenue,
+          ytd_single_revenue,
+          ytd_subscription_revenue,
+          performance_count,
+          ROW_NUMBER() OVER (
+            PARTITION BY fiscal_year, fiscal_week
+            ORDER BY week_end_date DESC, ytd_tickets_sold DESC
+          ) as rn
+        FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_weekly_totals\`
+        WHERE fiscal_year IN (${yearsFilter})
+          AND source = 'excel-validated-json'
+      )
+      SELECT * EXCEPT(rn)
+      FROM ranked
+      WHERE rn = 1
+      ORDER BY fiscal_year, ${weekColumn}
+    `;
+  }
 
   // Query live FY26 data from snapshots (current YTD by week)
   // FY26 = season starting with '25-26' (July 2025 - June 2026)
-  // Now includes subscription data from the reimported PDFs
-  const liveQuery = `
-    WITH latest_snapshots AS (
+  // Two modes: snapshot (when sales captured) or performance (when concerts occurred)
+  let liveQuery;
+
+  if (attributionMode === 'performance') {
+    // Performance attribution: Group by performance_date week
+    liveQuery = `
+      WITH latest_snapshots AS (
+        SELECT
+          s.performance_code,
+          p.performance_date,
+          s.snapshot_date,
+          s.single_tickets_sold,
+          s.single_revenue,
+          COALESCE(s.fixed_tickets_sold, 0) + COALESCE(s.non_fixed_tickets_sold, 0) as subscription_tickets,
+          COALESCE(s.fixed_revenue, 0) + COALESCE(s.non_fixed_revenue, 0) as subscription_revenue,
+          ROW_NUMBER() OVER (
+            PARTITION BY s.performance_code
+            ORDER BY s.snapshot_date DESC
+          ) as rn
+        FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
+        JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+          ON p.performance_code = s.performance_code
+        WHERE p.season LIKE '25-26%'
+          AND (p.cancelled IS NULL OR p.cancelled = false)
+      ),
+      weekly_totals AS (
+        SELECT
+          DATE_TRUNC(performance_date, WEEK(SATURDAY)) as week_start,
+          SUM(single_tickets_sold) as week_single_tickets,
+          SUM(single_revenue) as week_single_revenue,
+          SUM(subscription_tickets) as week_subscription_tickets,
+          SUM(subscription_revenue) as week_subscription_revenue,
+          SUM(COALESCE(single_tickets_sold, 0) + COALESCE(subscription_tickets, 0)) as week_total_tickets,
+          SUM(COALESCE(single_revenue, 0) + COALESCE(subscription_revenue, 0)) as week_total_revenue,
+          COUNT(DISTINCT performance_code) as perf_count
+        FROM latest_snapshots
+        WHERE rn = 1
+        GROUP BY week_start
+      ),
+      ytd_running_totals AS (
+        SELECT
+          week_start,
+          SUM(week_total_revenue) OVER (ORDER BY week_start) as total_revenue,
+          SUM(week_total_tickets) OVER (ORDER BY week_start) as total_tickets,
+          SUM(week_single_revenue) OVER (ORDER BY week_start) as single_revenue,
+          SUM(week_single_tickets) OVER (ORDER BY week_start) as single_tickets,
+          SUM(week_subscription_revenue) OVER (ORDER BY week_start) as subscription_revenue,
+          SUM(week_subscription_tickets) OVER (ORDER BY week_start) as subscription_tickets,
+          SUM(perf_count) OVER (ORDER BY week_start) as perf_count
+        FROM weekly_totals
+      )
       SELECT
-        s.performance_code,
-        s.snapshot_date,
-        s.single_tickets_sold,
-        s.single_revenue,
-        COALESCE(s.fixed_tickets_sold, 0) + COALESCE(s.non_fixed_tickets_sold, 0) as subscription_tickets,
-        COALESCE(s.fixed_revenue, 0) + COALESCE(s.non_fixed_revenue, 0) as subscription_revenue,
-        ROW_NUMBER() OVER (
-          PARTITION BY s.performance_code, DATE_TRUNC(s.snapshot_date, WEEK(SATURDAY))
-          ORDER BY s.snapshot_date DESC
-        ) as rn
-      FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
-      JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
-        ON p.performance_code = s.performance_code
-      WHERE p.season LIKE '25-26%'
-        AND (p.cancelled IS NULL OR p.cancelled = false)
-    ),
-    weekly_totals AS (
+        week_start,
+        single_tickets,
+        single_revenue,
+        subscription_tickets,
+        subscription_revenue,
+        total_tickets,
+        total_revenue,
+        perf_count,
+        -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1)
+        CASE WHEN EXTRACT(ISOWEEK FROM week_start) >= 27
+             THEN EXTRACT(ISOWEEK FROM week_start) - 26
+             ELSE EXTRACT(ISOWEEK FROM week_start) + 26 END as fiscal_week,
+        EXTRACT(ISOWEEK FROM week_start) as iso_week
+      FROM ytd_running_totals
+      ORDER BY week_start
+    `;
+  } else {
+    // Snapshot attribution: Group by snapshot_date week (current behavior)
+    liveQuery = `
+      WITH latest_snapshots AS (
+        SELECT
+          s.performance_code,
+          s.snapshot_date,
+          s.single_tickets_sold,
+          s.single_revenue,
+          COALESCE(s.fixed_tickets_sold, 0) + COALESCE(s.non_fixed_tickets_sold, 0) as subscription_tickets,
+          COALESCE(s.fixed_revenue, 0) + COALESCE(s.non_fixed_revenue, 0) as subscription_revenue,
+          ROW_NUMBER() OVER (
+            PARTITION BY s.performance_code, DATE_TRUNC(s.snapshot_date, WEEK(SATURDAY))
+            ORDER BY s.snapshot_date DESC
+          ) as rn
+        FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
+        JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+          ON p.performance_code = s.performance_code
+        WHERE p.season LIKE '25-26%'
+          AND (p.cancelled IS NULL OR p.cancelled = false)
+      ),
+      weekly_totals AS (
+        SELECT
+          DATE_TRUNC(snapshot_date, WEEK(SATURDAY)) as week_start,
+          SUM(single_tickets_sold) as single_tickets,
+          SUM(single_revenue) as single_revenue,
+          SUM(subscription_tickets) as subscription_tickets,
+          SUM(subscription_revenue) as subscription_revenue,
+          SUM(COALESCE(single_tickets_sold, 0) + COALESCE(subscription_tickets, 0)) as total_tickets,
+          SUM(COALESCE(single_revenue, 0) + COALESCE(subscription_revenue, 0)) as total_revenue,
+          COUNT(DISTINCT performance_code) as perf_count
+        FROM latest_snapshots
+        WHERE rn = 1
+        GROUP BY week_start
+      )
       SELECT
-        DATE_TRUNC(snapshot_date, WEEK(SATURDAY)) as week_start,
-        SUM(single_tickets_sold) as single_tickets,
-        SUM(single_revenue) as single_revenue,
-        SUM(subscription_tickets) as subscription_tickets,
-        SUM(subscription_revenue) as subscription_revenue,
-        SUM(COALESCE(single_tickets_sold, 0) + COALESCE(subscription_tickets, 0)) as total_tickets,
-        SUM(COALESCE(single_revenue, 0) + COALESCE(subscription_revenue, 0)) as total_revenue,
-        COUNT(DISTINCT performance_code) as perf_count
-      FROM latest_snapshots
-      WHERE rn = 1
-      GROUP BY week_start
-    )
-    SELECT
-      week_start,
-      single_tickets,
-      single_revenue,
-      subscription_tickets,
-      subscription_revenue,
-      total_tickets,
-      total_revenue,
-      perf_count,
-      -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1)
-      CASE WHEN EXTRACT(ISOWEEK FROM week_start) >= 27
-           THEN EXTRACT(ISOWEEK FROM week_start) - 26
-           ELSE EXTRACT(ISOWEEK FROM week_start) + 26 END as fiscal_week,
-      EXTRACT(ISOWEEK FROM week_start) as iso_week
-    FROM weekly_totals
-    ORDER BY week_start
-  `;
+        week_start,
+        single_tickets,
+        single_revenue,
+        subscription_tickets,
+        subscription_revenue,
+        total_tickets,
+        total_revenue,
+        perf_count,
+        -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1)
+        CASE WHEN EXTRACT(ISOWEEK FROM week_start) >= 27
+             THEN EXTRACT(ISOWEEK FROM week_start) - 26
+             ELSE EXTRACT(ISOWEEK FROM week_start) + 26 END as fiscal_week,
+        EXTRACT(ISOWEEK FROM week_start) as iso_week
+      FROM weekly_totals
+      ORDER BY week_start
+    `;
+  }
 
   // Run both queries in parallel
   const [[histRows], [liveRows]] = await Promise.all([
@@ -1072,11 +1221,18 @@ async function getYTDComparison(bigquery, params, headers) {
     if (!byYear[fy]) {
       byYear[fy] = [];
     }
+
+    // Handle week_end_date - may be null in performance attribution mode
+    let dateValue = null;
+    if (row.week_end_date) {
+      dateValue = typeof row.week_end_date === 'object' ? row.week_end_date.value : row.week_end_date;
+    }
+
     byYear[fy].push({
       week: row.week,
       fiscalWeek: row.fiscal_week,
       isoWeek: row.iso_week,
-      date: typeof row.week_end_date === 'object' ? row.week_end_date.value : row.week_end_date,
+      date: dateValue,
       tickets: row.ytd_tickets_sold || 0,
       singleTickets: row.ytd_single_tickets || 0,
       subscriptionTickets: row.ytd_subscription_tickets || 0,
@@ -1132,6 +1288,13 @@ async function getYTDComparison(bigquery, params, headers) {
         timestamp: new Date().toISOString(),
         fiscalYears: Object.keys(byYear).sort(),
         weekType: weekType,
+        attributionMode: attributionMode,
+        attributionModeSupport: {
+          'FY23': ['snapshot', 'performance'],
+          'FY24': ['snapshot', 'performance'],
+          'FY25': ['snapshot', 'performance'],
+          'FY26': ['snapshot', 'performance']
+        },
         totalRecords: histRows.length,
         liveDataWeeks: liveRows?.length || 0
       }

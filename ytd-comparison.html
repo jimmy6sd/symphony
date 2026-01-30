@@ -10,18 +10,49 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <div class="ytd-comparison-page">
-        <header class="ytd-comparison-header">
+    <div class="dashboard">
+        <header class="dashboard-header">
             <div class="header-content">
                 <div class="header-left">
-                    <h1>Kansas City Symphony - YTD Sales Comparison</h1>
-                    <p>Year-over-year ticket sales by week</p>
+                    <h1>Kansas City Symphony</h1>
+                    <p>Sales Analytics & Performance Dashboard • <a href="https://kcsymphony.org" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: none;">kcsymphony.org</a></p>
                 </div>
-                <div class="header-right">
-                    <a href="/" class="back-button">← Back to Dashboard</a>
-                </div>
+                <nav class="header-nav">
+                </nav>
             </div>
         </header>
+
+        <nav class="dashboard-tabs">
+            <div class="dashboard-tabs-container">
+                <a href="/" class="tab-btn tab-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+                        <path d="M13 5v2"/>
+                        <path d="M13 17v2"/>
+                        <path d="M13 11v2"/>
+                    </svg>
+                    Single Tickets
+                </a>
+                <a href="/subscriptions" class="tab-btn tab-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <path d="M12 11h4"/>
+                        <path d="M12 16h4"/>
+                        <path d="M8 11h.01"/>
+                        <path d="M8 16h.01"/>
+                    </svg>
+                    Subscriptions
+                </a>
+                <a href="/year-to-date" class="tab-btn tab-link active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <path d="m19 9-5 5-4-4-3 3"/>
+                    </svg>
+                    Year to Date
+                </a>
+            </div>
+        </nav>
 
         <main class="ytd-comparison-content">
             <!-- Controls -->
@@ -88,6 +119,13 @@
                                 <button class="segment-btn" data-segments="6">6</button>
                             </div>
                         </div>
+                        <div class="control-group">
+                            <label>Attribution:</label>
+                            <select id="segment-attribution-select">
+                                <option value="snapshot" selected>Snapshot Date (when sales captured)</option>
+                                <option value="performance">Performance Date (when concerts occurred)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div id="segment-cards" class="segment-cards">
@@ -95,6 +133,7 @@
                 </div>
             </div>
         </main>
+    </div>
     </div>
 
     <script type="module" src="/src/ytd-comparison-app.js"></script>

@@ -71,6 +71,18 @@
   status = 200
 
 [[redirects]]
+  # Client-side routing for subscriptions
+  from = "/subscriptions"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  # Year-to-date comparison page
+  from = "/year-to-date"
+  to = "/ytd-comparison.html"
+  status = 200
+
+[[redirects]]
   # Fallback for any other routes EXCEPT functions (must be last)
   from = "/*"
   to = "/index.html"

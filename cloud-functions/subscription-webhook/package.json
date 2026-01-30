@@ -1,0 +1,21 @@
+{
+  "name": "symphony-subscription-webhook",
+  "version": "1.0.0",
+  "description": "Google Cloud Function for processing Symphony subscription/package sales PDFs",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.0.0",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "@google-cloud/storage": "^7.0.0",
+    "pdf2json": "^3.0.5"
+  },
+  "scripts": {
+    "start": "functions-framework --target=subscriptionWebhook --signature-type=http",
+    "deploy": "gcloud functions deploy symphony-subscription-webhook --gen2 --runtime=nodejs20 --region=us-central1 --source=. --entry-point=subscriptionWebhook --trigger-http --allow-unauthenticated --memory=1GB --timeout=300s",
+    "logs": "gcloud functions logs read symphony-subscription-webhook --region=us-central1 --gen2 --limit=50",
+    "test": "node test-local.js"
+  }
+}

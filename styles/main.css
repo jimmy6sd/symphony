@@ -575,6 +575,21 @@ body {
     color: var(--text-primary);
 }
 
+.table-header .excel-export-link {
+    font-size: var(--font-size-sm);
+    color: var(--primary-color);
+    text-decoration: none;
+    padding: 6px 14px;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease;
+}
+
+.table-header .excel-export-link:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 .table-controls {
     display: flex;
     gap: var(--spacing-md);
@@ -1769,6 +1784,12 @@ body {
 
 .tab-btn.active svg {
     opacity: 1;
+}
+
+/* Anchor-based tab links */
+a.tab-btn.tab-link {
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Tab content visibility */

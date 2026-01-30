@@ -92,7 +92,7 @@ class SubscriptionTable {
         let html = `
             <div class="subscription-table-wrapper">
                 <!-- Season Label -->
-                <div class="subscription-season-label">2025-26 Season</div>
+                <div class="subscription-season-label">2026-27 Season</div>
 
                 <!-- Summary Header -->
                 <div class="subscription-summary">

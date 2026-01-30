@@ -944,7 +944,7 @@ DashboardUI.prototype.setupTabSwitching = function() {
     });
 };
 
-DashboardUI.prototype.switchDashboardTab = function(tabName) {
+DashboardUI.prototype.switchDashboardTab = function(tabName, updateUrl = true) {
     // Update button states
     document.querySelectorAll('.dashboard-tabs .tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -965,6 +965,12 @@ DashboardUI.prototype.switchDashboardTab = function(tabName) {
         targetView.style.display = 'block';
     }
 
+    // Update URL without reload
+    if (updateUrl) {
+        const url = tabName === 'subscriptions' ? '/subscriptions' : '/';
+        window.history.pushState({ tab: tabName }, '', url);
+    }
+
     // Initialize subscription table if switching to subscriptions tab (lazy load)
     if (tabName === 'subscriptions' && !window.subscriptionTable) {
         this.initializeSubscriptionTable();
@@ -980,18 +986,42 @@ DashboardUI.prototype.initializeSubscriptionTable = async function() {
     }
 };
 
+// Detect initial tab from URL path
+DashboardUI.prototype.detectInitialTab = function() {
+    const path = window.location.pathname;
+    if (path === '/subscriptions') {
+        return 'subscriptions';
+    }
+    return 'single-tickets';
+};
+
 // Initialize tab switching after DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         if (window.dashboardUI) {
             window.dashboardUI.setupTabSwitching();
+            const initialTab = window.dashboardUI.detectInitialTab();
+            if (initialTab !== 'single-tickets') {
+                window.dashboardUI.switchDashboardTab(initialTab, false);
+            }
         }
     });
 } else {
-    // DOM already loaded, setup tabs after a short delay to ensure dashboardUI exists
     setTimeout(() => {
         if (window.dashboardUI) {
             window.dashboardUI.setupTabSwitching();
+            const initialTab = window.dashboardUI.detectInitialTab();
+            if (initialTab !== 'single-tickets') {
+                window.dashboardUI.switchDashboardTab(initialTab, false);
+            }
         }
     }, 100);
 }
+
+// Handle browser back/forward
+window.addEventListener('popstate', (event) => {
+    if (window.dashboardUI) {
+        const tab = event.state?.tab || window.dashboardUI.detectInitialTab();
+        window.dashboardUI.switchDashboardTab(tab, false);
+    }
+});

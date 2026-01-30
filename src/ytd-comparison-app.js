@@ -7,6 +7,7 @@ class YTDComparisonApp {
         this.data = null;
         this.availableYears = [];
         this.segmentCount = 4;  // Default to 4 segments
+        this.attributionMode = 'snapshot';  // Default to snapshot-based attribution
 
         this.yearColors = {
             'FY23': '#8884d8',
@@ -43,8 +44,9 @@ class YTDComparisonApp {
 
     async loadData() {
         const weekType = document.getElementById('week-type-select')?.value || 'fiscal';
+        const attributionMode = document.getElementById('segment-attribution-select')?.value || 'snapshot';
 
-        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}`);
+        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=${attributionMode}`);
 
         if (!response.ok) {
             throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
@@ -130,6 +132,15 @@ class YTDComparisonApp {
         // Segment-specific week type selector
         const segmentWeekTypeSelect = document.getElementById('segment-week-type-select');
         segmentWeekTypeSelect?.addEventListener('change', () => {
+            this.renderSegmentCards();
+        });
+
+        // Attribution mode selector
+        const segmentAttributionSelect = document.getElementById('segment-attribution-select');
+        segmentAttributionSelect?.addEventListener('change', async (e) => {
+            this.attributionMode = e.target.value;
+            await this.loadData();
+            this.chart?.setData(this.data);
             this.renderSegmentCards();
         });
 
@@ -296,25 +307,10 @@ class YTDComparisonApp {
         // Check if we have data from before this segment
         const prevWeeks = yearData.filter(w => w[weekKey] < segment.start);
 
-        if (prevWeeks.length === 0) {
-            // No data before this segment
-            // Only count what we can measure: last - first within segment
-            const firstValue = firstInSegment[metric] || 0;
-            const incomplete = firstWeekInSegment > segment.start || isCurrentSegment;
-            return { value: lastValue - firstValue, incomplete };
-        }
-
-        // We have data before this segment - use end of previous segment as baseline
-        const endOfPrevSegment = prevWeeks.reduce((max, w) =>
-            w[weekKey] > max[weekKey] ? w : max
-        , prevWeeks[0]);
-        const prevEndValue = endOfPrevSegment[metric] || 0;
-
-        // Check if there's a gap between end of prev segment and start of this one
-        const gapWeeks = (segment.start - 1) - endOfPrevSegment[weekKey];
-        const incomplete = gapWeeks > 2 || isCurrentSegment;
-
-        return { value: lastValue - prevEndValue, incomplete };
+        // Return absolute YTD total at the end of this segment
+        // Check if segment is incomplete (missing early weeks or still in progress)
+        const incomplete = firstWeekInSegment > segment.start || isCurrentSegment;
+        return { value: lastValue, incomplete };
     }
 
     renderSegmentCards() {

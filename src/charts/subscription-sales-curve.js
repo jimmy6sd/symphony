@@ -1,7 +1,7 @@
 /**
  * Subscription Sales Curve Chart Component
  * Displays historical subscription sales data with comparisons across seasons
- * X-axis: Calendar weeks (1-52)
+ * X-axis: Day of year (1-365) for daily granularity
  * Y-axis: Total subscription units
  */
 class SubscriptionSalesCurve {
@@ -19,10 +19,10 @@ class SubscriptionSalesCurve {
 
         // Season colors
         this.seasonColors = {
-            '25-26': '#3498db',  // Blue - current season
-            '24-25': '#e74c3c',  // Red - target (most recent complete)
-            '23-24': '#9b59b6',  // Purple
-            '22-23': '#95a5a6'   // Gray
+            '26-27': '#3498db',  // Blue - current season
+            '25-26': '#ff7c43',  // Orange - target comp (matches sales dashboard)
+            '24-25': '#9b59b6',  // Purple
+            '23-24': '#95a5a6'   // Gray
         };
 
         // Debounced resize handler
@@ -47,7 +47,7 @@ class SubscriptionSalesCurve {
     destroy() {
         clearTimeout(this.resizeTimeout);
         window.removeEventListener('resize', this.boundResizeHandler);
-        d3.select('.subscription-curve-tooltip').remove();
+        d3.select(`.subscription-curve-tooltip-${this.series}`).remove();
     }
 
     updateResponsiveState() {
@@ -65,6 +65,29 @@ class SubscriptionSalesCurve {
         } else {
             return { top: 30, right: 180, bottom: 60, left: 70 };
         }
+    }
+
+    // Convert a snapshot_date string or week_number to day-of-year
+    toDayOfYear(snapshot) {
+        // If we have a snapshot_date, compute actual day of year
+        if (snapshot.snapshot_date) {
+            // Parse as local date to avoid timezone shifts
+            const parts = snapshot.snapshot_date.split('-');
+            const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+            const start = new Date(d.getFullYear(), 0, 0);
+            const diff = d - start;
+            return Math.floor(diff / 86400000);
+        }
+        // Fallback: approximate from week number (mid-week)
+        return (snapshot.week_number || 1) * 7 - 3;
+    }
+
+    // Format a day-of-year as a date string for tooltip
+    formatDayOfYear(day) {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        // Approximate month and day from day-of-year
+        const d = new Date(2026, 0, day); // year doesn't matter for month/day calc
+        return `${monthNames[d.getMonth()]} ${d.getDate()}`;
     }
 
     async init() {
@@ -132,12 +155,12 @@ class SubscriptionSalesCurve {
             return;
         }
 
-        // Calculate scales
-        const maxWeek = 52;
+        // Calculate scales - day of year (1-365)
+        const maxDay = 365;
         const maxUnits = Math.max(...seasonData.flatMap(s => s.points.map(p => p.total_units)));
 
         const xScale = d3.scaleLinear()
-            .domain([1, maxWeek])
+            .domain([1, maxDay])
             .range([0, innerWidth]);
 
         const yScale = d3.scaleLinear()
@@ -155,7 +178,7 @@ class SubscriptionSalesCurve {
             this.drawSeasonLine(g, season, xScale, yScale);
         });
 
-        // Add projection line for current season (25-26)
+        // Add projection line for current season
         this.drawProjectionLine(g, seasonData, xScale, yScale);
 
         // Add legend
@@ -170,7 +193,7 @@ class SubscriptionSalesCurve {
         const result = [];
 
         // Sort seasons in order: current first, then by recency
-        const seasonOrder = ['25-26', '24-25', '23-24', '22-23'];
+        const seasonOrder = ['26-27', '25-26', '24-25', '23-24'];
 
         seasonOrder.forEach(seasonKey => {
             const season = seasons[seasonKey];
@@ -178,16 +201,17 @@ class SubscriptionSalesCurve {
                 result.push({
                     season: seasonKey,
                     color: this.seasonColors[seasonKey] || '#666',
-                    isCurrent: seasonKey === '25-26',
-                    isProjectionBase: seasonKey === '24-25',  // Target comp for projections
+                    isCurrent: seasonKey === '26-27',
+                    isProjectionBase: seasonKey === '25-26',
                     points: season.snapshots.map(s => ({
+                        day: this.toDayOfYear(s),
                         week: s.week_number,
                         total_units: s.total_units,
                         total_revenue: s.total_revenue,
                         new_units: s.new_units,
                         renewal_units: s.renewal_units,
                         snapshot_date: s.snapshot_date
-                    })).sort((a, b) => a.week - b.week),
+                    })).sort((a, b) => a.day - b.day),
                     final: season.final
                 });
             }
@@ -223,27 +247,22 @@ class SubscriptionSalesCurve {
 
     addAxes(g, xScale, yScale, innerWidth, innerHeight) {
         const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        // Day-of-year for the 1st of each month
+        const monthStartDays = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
 
         // X-axis with month labels
         const xAxisGenerator = d3.axisBottom(xScale);
 
         if (this.isMobile) {
             // Show every 3 months on mobile
-            const tickValues = [1, 13, 26, 39, 52];
+            const tickValues = [1, 91, 182, 274, 365];
+            const tickLabels = ['Jan', 'Apr', 'Jul', 'Oct', 'Dec'];
             xAxisGenerator
                 .tickValues(tickValues)
-                .tickFormat(d => {
-                    const monthIndex = Math.floor((d - 1) / 4.33);
-                    return monthLabels[Math.min(monthIndex, 11)];
-                });
+                .tickFormat((d, i) => tickLabels[i] || '');
         } else {
-            // Show monthly on desktop
-            const tickValues = [];
-            for (let m = 0; m < 12; m++) {
-                tickValues.push(Math.round(m * 4.33) + 1);
-            }
             xAxisGenerator
-                .tickValues(tickValues)
+                .tickValues(monthStartDays)
                 .tickFormat((d, i) => monthLabels[i] || '');
         }
 
@@ -285,7 +304,7 @@ class SubscriptionSalesCurve {
 
     drawSeasonLine(g, season, xScale, yScale) {
         const line = d3.line()
-            .x(d => xScale(d.week))
+            .x(d => xScale(d.day))
             .y(d => yScale(d.total_units))
             .curve(d3.curveMonotoneX);
 
@@ -314,7 +333,7 @@ class SubscriptionSalesCurve {
             .enter()
             .append('circle')
             .attr('class', `season-point season-point-${season.season}`)
-            .attr('cx', d => xScale(d.week))
+            .attr('cx', d => xScale(d.day))
             .attr('cy', d => yScale(d.total_units))
             .attr('r', pointRadius)
             .attr('fill', season.color)
@@ -322,7 +341,7 @@ class SubscriptionSalesCurve {
             .attr('stroke-width', 1.5)
             .attr('opacity', opacity)
             .attr('data-season', season.season)
-            .attr('data-week', d => d.week)
+            .attr('data-day', d => d.day)
             .attr('data-units', d => d.total_units);
     }
 
@@ -336,36 +355,35 @@ class SubscriptionSalesCurve {
 
         // Get last point of current season
         const lastCurrentPoint = currentSeason.points[currentSeason.points.length - 1];
-        const currentWeek = lastCurrentPoint.week;
+        const currentDay = lastCurrentPoint.day;
         const currentUnits = lastCurrentPoint.total_units;
 
-        // Find target season value at current week (interpolate if needed)
-        const targetAtCurrentWeek = this.interpolateAtWeek(targetSeason.points, currentWeek);
+        // Find target season value at current day (interpolate if needed)
+        const targetAtCurrentDay = this.interpolateAtDay(targetSeason.points, currentDay);
 
-        if (targetAtCurrentWeek === null) {
+        if (targetAtCurrentDay === null) {
             return;
         }
 
         // Calculate variance
-        const variance = currentUnits - targetAtCurrentWeek;
+        const variance = currentUnits - targetAtCurrentDay;
 
-        // Generate projection points from current week to week 52
+        // Generate projection points from current day to day 365, weekly steps
         const projectionPoints = [];
-        projectionPoints.push({ week: currentWeek, units: currentUnits });
+        projectionPoints.push({ day: currentDay, units: currentUnits });
 
-        for (let week = currentWeek + 1; week <= 52; week++) {
-            const targetAtWeek = this.interpolateAtWeek(targetSeason.points, week);
-            if (targetAtWeek !== null) {
-                // Project with variance, but floor at current units
-                const projected = Math.max(currentUnits, targetAtWeek + variance);
-                projectionPoints.push({ week, units: projected });
+        for (let day = currentDay + 7; day <= 365; day += 7) {
+            const targetAtDay = this.interpolateAtDay(targetSeason.points, day);
+            if (targetAtDay !== null) {
+                const projected = Math.max(currentUnits, targetAtDay + variance);
+                projectionPoints.push({ day, units: projected });
             }
         }
 
         // Add final target if available
         if (targetSeason.final) {
             const projectedFinal = Math.max(currentUnits, targetSeason.final.total_units + variance);
-            projectionPoints.push({ week: 52, units: projectedFinal });
+            projectionPoints.push({ day: 365, units: projectedFinal });
         }
 
         if (projectionPoints.length < 2) {
@@ -374,7 +392,7 @@ class SubscriptionSalesCurve {
 
         // Draw projection line
         const line = d3.line()
-            .x(d => xScale(d.week))
+            .x(d => xScale(d.day))
             .y(d => yScale(d.units))
             .curve(d3.curveMonotoneX);
 
@@ -396,21 +414,21 @@ class SubscriptionSalesCurve {
         };
     }
 
-    interpolateAtWeek(points, week) {
+    interpolateAtDay(points, day) {
         // Find exact match
-        const exact = points.find(p => p.week === week);
+        const exact = points.find(p => p.day === day);
         if (exact) return exact.total_units;
 
         // Find surrounding points for interpolation
-        const before = points.filter(p => p.week < week).pop();
-        const after = points.find(p => p.week > week);
+        const before = points.filter(p => p.day < day).pop();
+        const after = points.find(p => p.day > day);
 
         if (!before && !after) return null;
         if (!before) return after.total_units;
         if (!after) return before.total_units;
 
         // Linear interpolation
-        const ratio = (week - before.week) / (after.week - before.week);
+        const ratio = (day - before.day) / (after.day - before.day);
         return before.total_units + ratio * (after.total_units - before.total_units);
     }
 
@@ -462,11 +480,12 @@ class SubscriptionSalesCurve {
     addTooltip(seasonData) {
         const self = this;
 
-        // Create tooltip
-        d3.select('.subscription-curve-tooltip').remove();
+        // Create tooltip unique to this chart instance
+        const tooltipClass = `subscription-curve-tooltip-${this.series}`;
+        d3.select(`.${tooltipClass}`).remove();
         const tooltip = d3.select('body')
             .append('div')
-            .attr('class', 'subscription-curve-tooltip')
+            .attr('class', `subscription-curve-tooltip ${tooltipClass}`)
             .style('position', 'absolute')
             .style('visibility', 'hidden')
             .style('background', 'rgba(0, 0, 0, 0.9)')
@@ -483,7 +502,7 @@ class SubscriptionSalesCurve {
             .on('mouseover', function(event) {
                 const circle = d3.select(this);
                 const season = circle.attr('data-season');
-                const week = +circle.attr('data-week');
+                const day = +circle.attr('data-day');
                 const units = +circle.attr('data-units');
 
                 circle
@@ -491,23 +510,26 @@ class SubscriptionSalesCurve {
                     .duration(200)
                     .attr('r', self.isMobile ? 6 : 5);
 
-                // Find full data for this point
+                // Find full data for this point (closest match in case of rounding)
                 const seasonObj = seasonData.find(s => s.season === season);
-                const point = seasonObj?.points.find(p => p.week === week);
+                const point = seasonObj?.points.reduce((closest, p) => {
+                    if (!closest) return p;
+                    return Math.abs(p.day - day) < Math.abs(closest.day - day) ? p : closest;
+                }, null);
 
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                const monthIndex = Math.floor((week - 1) / 4.33);
-                const monthName = monthNames[Math.min(monthIndex, 11)];
+                const dateLabel = point?.snapshot_date || self.formatDayOfYear(day);
 
                 let html = `
                     <strong style="color: ${self.seasonColors[season] || '#fff'}">${season} Season</strong><br/>
-                    Week ${week} (${monthName})<br/>
-                    Total Units: ${units.toLocaleString()}<br/>
+                    ${dateLabel}<br/>
+                    Total Orders: ${units.toLocaleString()}<br/>
                 `;
 
                 if (point) {
-                    html += `New: ${point.new_units?.toLocaleString() || 0} | Renewal: ${point.renewal_units?.toLocaleString() || 0}<br/>`;
                     html += `Revenue: $${(point.total_revenue || 0).toLocaleString()}`;
+                    if (!seasonObj?.isCurrent && (point.new_units || point.renewal_units)) {
+                        html += `<br/>New: ${point.new_units?.toLocaleString() || 0} | Renewal: ${point.renewal_units?.toLocaleString() || 0}`;
+                    }
                 }
 
                 tooltip.html(html);
