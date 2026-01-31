@@ -12,7 +12,7 @@ const { BigQuery } = require('@google-cloud/bigquery');
 const path = require('path');
 
 // Configuration
-const EXCEL_FILE = path.join(__dirname, '../../KCS 25-26 Sub Tracker (1).xlsx');
+const EXCEL_FILE = path.join(__dirname, '../../KCS 25-26 Sub Tracker.xlsx');
 const PROJECT_ID = 'kcsymphony';
 const DATASET_ID = 'symphony_dashboard';
 const TABLE_ID = 'subscription_historical_data';
@@ -107,123 +107,114 @@ function parseWeeklyRow(row, startCol, series, seasonOverride = null) {
 }
 
 /**
+ * Add a data point if not already present (dedup by series + season + date)
+ */
+function addIfNew(allData, entry) {
+    if (!entry) return;
+    const exists = allData.find(d =>
+        d.series === entry.series &&
+        d.season === entry.season &&
+        d.snapshot_date === entry.snapshot_date
+    );
+    if (!exists) allData.push(entry);
+}
+
+/**
+ * Parse all data points from a sheet for a given series
+ * Extracts 25-26 (cols 0-7), 24-25 (cols 9-16), and 23-24 (cols 18-25)
+ */
+function parseDataSheet(workbook, sheetName, series, allData) {
+    const ws = workbook.Sheets[sheetName];
+    if (!ws) {
+        console.log(`  Sheet "${sheetName}" not found, skipping`);
+        return;
+    }
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    console.log(`  Processing ${series} from ${sheetName} (${data.length} rows)...`);
+
+    let counts = { '25-26': 0, '24-25': 0, '23-24': 0 };
+
+    for (let i = 0; i < data.length; i++) {
+        const row = data[i];
+        if (!row) continue;
+
+        // 25-26 data in columns 0-7
+        const d2526 = parseWeeklyRow(row, 0, series, '25-26');
+        if (d2526) { addIfNew(allData, d2526); counts['25-26']++; }
+
+        // 24-25 data in columns 9-16
+        if (row.length > 16) {
+            const d2425 = parseWeeklyRow(row, 9, series, '24-25');
+            if (d2425) { addIfNew(allData, d2425); counts['24-25']++; }
+        }
+
+        // 23-24 data in columns 18-25
+        if (row.length > 25) {
+            const d2324 = parseWeeklyRow(row, 18, series, '23-24');
+            if (d2324) { addIfNew(allData, d2324); counts['23-24']++; }
+        }
+    }
+
+    console.log(`    Found: 25-26=${counts['25-26']}, 24-25=${counts['24-25']}, 23-24=${counts['23-24']}`);
+}
+
+/**
  * Parse the Excel file and extract subscription data
  */
 function parseExcelFile() {
-    console.log('📖 Reading Excel file:', EXCEL_FILE);
+    console.log('Reading Excel file:', EXCEL_FILE);
     const workbook = XLSX.readFile(EXCEL_FILE);
 
     const allData = [];
 
-    // Parse Sheet1 for Classical and Pops current year
+    // Primary sources: CL Data sheet for Classical, Pops sheet for Pops
+    // These have the most complete data (28+ rows per season)
+    console.log('\nParsing primary data sheets...');
+    parseDataSheet(workbook, 'CL Data', 'Classical', allData);
+    parseDataSheet(workbook, 'Pops', 'Pops', allData);
+
+    // Secondary source: Sheet1 has recent data that may extend beyond the data sheets
     const sheet1 = workbook.Sheets['Sheet1'];
-    const sheet1Data = XLSX.utils.sheet_to_json(sheet1, { header: 1 });
+    if (sheet1) {
+        const sheet1Data = XLSX.utils.sheet_to_json(sheet1, { header: 1 });
+        console.log('\nParsing Sheet1 for additional data points...');
 
-    console.log('\n📊 Parsing Sheet1...');
-
-    // Classical section starts at row 3, data starts at row 8
-    // 25-26 data: columns 0-7
-    // 24-25 data: columns 9-16
-    console.log('  Processing Classical from Sheet1...');
-    for (let i = 8; i < sheet1Data.length; i++) {
-        const row = sheet1Data[i];
-        if (!row || row.length === 0) continue;
-
-        // Check if we've hit the Pops section (row with "Pops" header)
-        if (row[0] === 'Pops') break;
-
-        // 25-26 Classical data
-        const data2526 = parseWeeklyRow(row, 0, 'Classical', '25-26');
-        if (data2526) allData.push(data2526);
-
-        // 24-25 Classical data
-        const data2425 = parseWeeklyRow(row, 9, 'Classical', '24-25');
-        if (data2425) allData.push(data2425);
-    }
-
-    // Pops section starts around row 21, data starts at row 26
-    console.log('  Processing Pops from Sheet1...');
-    let popsStartRow = -1;
-    for (let i = 0; i < sheet1Data.length; i++) {
-        if (sheet1Data[i] && sheet1Data[i][0] === 'Pops') {
-            popsStartRow = i + 5; // Data starts 5 rows after header
-            break;
-        }
-    }
-
-    if (popsStartRow > 0) {
-        for (let i = popsStartRow; i < sheet1Data.length; i++) {
+        // Classical section: rows 8 until "Pops" header
+        let classicalAdded = 0;
+        for (let i = 8; i < sheet1Data.length; i++) {
             const row = sheet1Data[i];
             if (!row || row.length === 0) continue;
+            if (row[0] === 'Pops') break;
 
-            // 25-26 Pops data
-            const data2526 = parseWeeklyRow(row, 0, 'Pops', '25-26');
-            if (data2526) allData.push(data2526);
-
-            // 24-25 Pops data
-            const data2425 = parseWeeklyRow(row, 9, 'Pops', '24-25');
-            if (data2425) allData.push(data2425);
+            const d2526 = parseWeeklyRow(row, 0, 'Classical', '25-26');
+            if (d2526) { addIfNew(allData, d2526); classicalAdded++; }
+            const d2425 = parseWeeklyRow(row, 9, 'Classical', '24-25');
+            if (d2425) { addIfNew(allData, d2425); classicalAdded++; }
         }
-    }
 
-    // Parse Pops sheet for additional historical data (23-24)
-    const popsSheet = workbook.Sheets['Pops'];
-    if (popsSheet) {
-        const popsData = XLSX.utils.sheet_to_json(popsSheet, { header: 1 });
-        console.log('\n📊 Parsing Pops sheet for 23-24 historical data...');
-
-        for (let i = 0; i < popsData.length; i++) {
-            const row = popsData[i];
-            if (!row || row.length < 26) continue;
-
-            // 23-24 data is in columns 18-25
-            const data2324 = parseWeeklyRow(row, 18, 'Pops', '23-24');
-            if (data2324) allData.push(data2324);
-
-            // Also get 25-26 and 24-25 from this sheet if present (more complete data)
-            const data2526 = parseWeeklyRow(row, 0, 'Pops', '25-26');
-            const data2425 = parseWeeklyRow(row, 9, 'Pops', '24-25');
-
-            // Only add if not already present (avoid duplicates)
-            if (data2526 && !allData.find(d =>
-                d.series === 'Pops' &&
-                d.season === '25-26' &&
-                d.snapshot_date === data2526.snapshot_date
-            )) {
-                allData.push(data2526);
-            }
-            if (data2425 && !allData.find(d =>
-                d.series === 'Pops' &&
-                d.season === '24-25' &&
-                d.snapshot_date === data2425.snapshot_date
-            )) {
-                allData.push(data2425);
+        // Pops section: starts 5 rows after "Pops" header
+        let popsStartRow = -1;
+        for (let i = 0; i < sheet1Data.length; i++) {
+            if (sheet1Data[i] && sheet1Data[i][0] === 'Pops') {
+                popsStartRow = i + 5;
+                break;
             }
         }
-    }
 
-    // Check for CL Data sheet for Classical 23-24 data
-    const clSheet = workbook.Sheets['CL Data'];
-    if (clSheet) {
-        const clData = XLSX.utils.sheet_to_json(clSheet, { header: 1 });
-        console.log('\n📊 Parsing CL Data sheet for Classical 23-24 historical data...');
+        let popsAdded = 0;
+        if (popsStartRow > 0) {
+            for (let i = popsStartRow; i < sheet1Data.length; i++) {
+                const row = sheet1Data[i];
+                if (!row || row.length === 0) continue;
 
-        for (let i = 0; i < clData.length; i++) {
-            const row = clData[i];
-            if (!row || row.length < 18) continue;
-
-            // Try to find 23-24 data
-            const data2324 = parseWeeklyRow(row, 18, 'Classical', '23-24');
-            if (data2324) {
-                if (!allData.find(d =>
-                    d.series === 'Classical' &&
-                    d.season === '23-24' &&
-                    d.snapshot_date === data2324.snapshot_date
-                )) {
-                    allData.push(data2324);
-                }
+                const d2526 = parseWeeklyRow(row, 0, 'Pops', '25-26');
+                if (d2526) { addIfNew(allData, d2526); popsAdded++; }
+                const d2425 = parseWeeklyRow(row, 9, 'Pops', '24-25');
+                if (d2425) { addIfNew(allData, d2425); popsAdded++; }
             }
         }
+
+        console.log(`  Sheet1 added: Classical=${classicalAdded}, Pops=${popsAdded} (new points only)`);
     }
 
     // Add final totals from summary rows
@@ -315,14 +306,17 @@ async function createTable() {
 }
 
 /**
- * Clear existing data from the table
+ * Clear existing data from the table for the seasons being imported.
+ * Preserves data from other seasons (e.g., 26-27 written by the webhook).
  */
-async function clearTable() {
-    console.log('🗑️  Clearing existing data...');
-    const query = `DELETE FROM \`${PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\` WHERE TRUE`;
+async function clearImportedSeasons(data) {
+    const seasons = [...new Set(data.map(d => d.season))];
+    console.log(`🗑️  Clearing existing data for seasons: ${seasons.join(', ')}...`);
+    const placeholders = seasons.map(s => `'${s}'`).join(', ');
+    const query = `DELETE FROM \`${PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\` WHERE season IN (${placeholders})`;
     try {
         await bigquery.query(query);
-        console.log('✅ Table cleared');
+        console.log('✅ Seasons cleared');
     } catch (e) {
         console.log('ℹ️  Table was empty or does not exist yet');
     }
@@ -385,8 +379,8 @@ async function main() {
         // Create table
         await createTable();
 
-        // Clear existing data
-        await clearTable();
+        // Clear existing data only for seasons being imported (preserves 26-27 webhook data)
+        await clearImportedSeasons(data);
 
         // Insert new data
         await insertData(data);

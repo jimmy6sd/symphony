@@ -325,8 +325,8 @@ async function insertSnapshots(bigquery, snapshots) {
   return { inserted: rows.length, skipped };
 }
 
-// Update subscription_historical_data with aggregated weekly totals for the sales curve chart
-// This upserts a row for the current category (series) + season + week
+// Update subscription_historical_data with daily totals for the sales curve chart
+// This upserts a row for the current category (series) + season + snapshot_date
 async function updateHistoricalData(bigquery, category, season, snapshotDate, snapshots) {
   // Only track Classical and Pops (matches existing historical data)
   if (category !== 'Classical' && category !== 'Pops') {
@@ -338,7 +338,7 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
 
   const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
 
-  // Calculate ISO week number
+  // Calculate ISO week number (kept for reference/compatibility)
   const d = new Date(snapshotDate);
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
@@ -349,20 +349,20 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
   const totalUnits = snapshots.reduce((sum, s) => sum + (s.package_seats || 0), 0);
   const totalRevenue = snapshots.reduce((sum, s) => sum + (s.total_amount || 0), 0);
 
-  console.log(`Updating historical data: ${category} ${season} week ${weekNumber} - ${totalUnits} units, $${totalRevenue}`);
+  console.log(`Updating historical data: ${category} ${season} ${snapshotDate} (week ${weekNumber}) - ${totalUnits} units, $${totalRevenue}`);
 
   try {
-    // MERGE upsert — avoids streaming buffer conflicts with DELETE
+    // MERGE upsert keyed on snapshot_date for daily granularity
     const mergeQuery = `
       MERGE \`${projectId}.${DATASET_ID}.subscription_historical_data\` target
-      USING (SELECT '${category}' as series, '${season}' as season, ${weekNumber} as week_number) source
+      USING (SELECT '${category}' as series, '${season}' as season, DATE('${snapshotDate}') as snapshot_date) source
       ON target.series = source.series
         AND target.season = source.season
-        AND target.week_number = source.week_number
+        AND target.snapshot_date = source.snapshot_date
         AND target.is_final = FALSE
       WHEN MATCHED THEN
         UPDATE SET
-          snapshot_date = '${snapshotDate}',
+          week_number = ${weekNumber},
           total_units = ${totalUnits},
           total_revenue = ${totalRevenue}
       WHEN NOT MATCHED THEN
@@ -371,7 +371,7 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
     `;
     await bigquery.query({ query: mergeQuery, location: 'US' });
 
-    console.log(`Historical data updated: ${category} week ${weekNumber}`);
+    console.log(`Historical data updated: ${category} ${snapshotDate}`);
   } catch (error) {
     console.error(`Historical data update failed for ${category}:`, error.message);
   }
