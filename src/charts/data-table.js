@@ -59,11 +59,30 @@ class DataTable {
                 label: 'Date',
                 sortable: true,
                 type: 'date',
-                formatter: (value) => {
+                formatter: (value, row) => {
                     // Parse date without timezone shift (value is YYYY-MM-DD)
                     const [year, month, day] = value.split('-');
                     const date = new Date(year, month - 1, day);
-                    return `<div class="date-cell">${date.toLocaleDateString()}</div>`;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let isPast;
+                    if (row.isGroup && row.performances) {
+                        // For rollup rows, check if ALL performances are past
+                        isPast = row.performances.every(p => {
+                            const [y, m, d] = (p.date || '').split('-');
+                            const pd = new Date(y, m - 1, d);
+                            pd.setHours(0, 0, 0, 0);
+                            return pd <= today;
+                        });
+                    } else {
+                        const perfDate = new Date(year, month - 1, day);
+                        perfDate.setHours(0, 0, 0, 0);
+                        isPast = perfDate <= today;
+                    }
+
+                    const finalLabel = isPast ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>' : '';
+                    return `<div class="date-cell">${finalLabel}${date.toLocaleDateString()}</div>`;
                 }
             },
             {
@@ -344,6 +363,15 @@ class DataTable {
                     const variance = projectedTickets - targetTickets;
                     const status = variance >= 0 ? 'good' : variance >= -50 ? 'warning' : 'poor';
                     const varianceSign = variance >= 0 ? '+' : '';
+                    if (projection.isPast) {
+                        return `
+                            <div class="projection-cell">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                <div class="projection-value">${projectedTickets.toLocaleString()}</div>
+                                <div class="projection-variance projection-${status}">${varianceSign}${variance.toLocaleString()}</div>
+                            </div>
+                        `;
+                    }
 
                     return `
                         <div class="projection-cell">
@@ -368,6 +396,15 @@ class DataTable {
 
                     // Check if target comp ATP is missing
                     if (projection.targetCompAtpMissing || projection.targetRevenue === null) {
+                        if (projection.isPast) {
+                            return `
+                                <div class="projection-cell">
+                                    <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                    <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
+                                    <div class="projection-variance" style="color: var(--text-muted); font-size: 0.75rem;">Comp ATP Missing</div>
+                                </div>
+                            `;
+                        }
                         return `
                             <div class="projection-cell">
                                 <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
@@ -380,6 +417,16 @@ class DataTable {
                     const variance = projectedRevenue - targetRevenue;
                     const status = variance >= 0 ? 'good' : variance >= -5000 ? 'warning' : 'poor';
                     const varianceSign = variance >= 0 ? '+' : '-';
+
+                    if (projection.isPast) {
+                        return `
+                            <div class="projection-cell">
+                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
+                                <div class="projection-variance projection-${status}">${varianceSign}$${Math.abs(variance).toLocaleString()}</div>
+                            </div>
+                        `;
+                    }
 
                     return `
                         <div class="projection-cell">
@@ -440,16 +487,10 @@ class DataTable {
     }
 
     async calculateProjection(row, comparisons = null) {
-        // Skip if performance has already occurred
         const today = new Date();
         const [perfYear, perfMonth, perfDay] = row.date.split('-');
         const performanceDate = new Date(perfYear, perfMonth - 1, perfDay);
-        if (performanceDate <= today) return { projection: null, reason: 'past_performance' };
-
-        // Calculate weeks to performance (exact decimal for accurate interpolation, same as tracking status box)
-        const daysToPerformance = Math.ceil((performanceDate - today) / (24 * 60 * 60 * 1000));
-        const weeksToPerformance = Math.max(0, daysToPerformance / 7); // Exact decimal weeks
-        if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
+        const isPast = performanceDate <= today;
 
         // Get target comp data from BigQuery (same as sales curve chart)
         // If comparisons not provided (e.g., called from modal), fetch individually
@@ -458,6 +499,43 @@ class DataTable {
             comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         }
         const targetComp = comparisons?.find(c => c.is_target === true);
+
+        // For past performances, show actual final vs target comp
+        if (isPast) {
+            if (!targetComp || !targetComp.weeksArray) return { projection: null, reason: 'no_target_comp' };
+
+            const singleTicketsSold = row.singleTicketsSold || 0;
+            const subscriptionSeats = row.subscriptionTicketsSold || 0;
+            const nonFixedTickets = row.nonFixedTicketsSold || 0;
+            const actualTotal = singleTicketsSold + subscriptionSeats + nonFixedTickets;
+
+            const targetCompFinal = targetComp.weeksArray[targetComp.weeksArray.length - 1];
+            const targetCompSubs = targetComp.subs || 0;
+            const targetFinalTotal = targetCompFinal + targetCompSubs;
+
+            const actualRevenue = Math.round(row.totalRevenue || 0);
+            const targetCompAtp = targetComp.atp ? parseFloat(targetComp.atp) : null;
+            const targetRevenue = targetCompAtp ? Math.round(targetFinalTotal * targetCompAtp) : null;
+
+            return {
+                projection: {
+                    projectedTickets: actualTotal,
+                    targetTickets: targetFinalTotal,
+                    projectedRevenue: actualRevenue,
+                    targetRevenue: targetRevenue,
+                    targetCompAtpMissing: !targetCompAtp,
+                    variance: singleTicketsSold - targetCompFinal,
+                    weeksToPerformance: 0,
+                    isPast: true
+                },
+                reason: 'success'
+            };
+        }
+
+        // Calculate weeks to performance (exact decimal for accurate interpolation, same as tracking status box)
+        const daysToPerformance = Math.ceil((performanceDate - today) / (24 * 60 * 60 * 1000));
+        const weeksToPerformance = Math.max(0, daysToPerformance / 7); // Exact decimal weeks
+        if (weeksToPerformance === 0) return { projection: null, reason: 'performance_today' };
 
         if (!targetComp || !targetComp.weeksArray) return { projection: null, reason: 'no_target_comp' };
 
@@ -2883,6 +2961,16 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             // Check if any performance in the group has missing ATP
             const hasAnyMissingAtp = perfs.some(p => p._projection && p._projection.targetCompAtpMissing);
 
+            // Check if ALL performances in the group are past
+            const allPast = perfs.every(p => {
+                const [y, m, d] = (p.date || '').split('-');
+                const perfDate = new Date(y, m - 1, d);
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                perfDate.setHours(0, 0, 0, 0);
+                return perfDate <= now;
+            });
+
             const aggregateProjection = hasAnyProjection ? perfs.reduce((acc, p) => {
                 if (p._projection) {
                     acc.projectedTickets += p._projection.projectedTickets || 0;
@@ -2896,7 +2984,8 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 targetTickets: 0,
                 projectedRevenue: 0,
                 targetRevenue: 0,
-                targetCompAtpMissing: hasAnyMissingAtp
+                targetCompAtpMissing: hasAnyMissingAtp,
+                isPast: allPast
             }) : null;
 
             // Use first performance's metadata

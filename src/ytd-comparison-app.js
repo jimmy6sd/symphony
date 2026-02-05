@@ -6,8 +6,8 @@ class YTDComparisonApp {
         this.chart = null;
         this.data = null;
         this.availableYears = [];
-        this.segmentCount = 4;  // Default to 4 segments
-        this.attributionMode = 'snapshot';  // Default to snapshot-based attribution
+        this.segmentCount = 6;  // Default to 6 segments
+        this.attributionMode = 'performance';  // Default to performance date attribution
 
         this.yearColors = {
             'FY23': '#8884d8',

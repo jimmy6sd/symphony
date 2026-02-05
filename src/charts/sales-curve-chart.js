@@ -945,6 +945,7 @@ class SalesCurveChart {
         if (comparisons && comparisons.length > 0) {
             comparisons.forEach(comp => {
                 const isTarget = comp.is_target === true;
+                const color = comp._displayColor || comp.line_color;
                 // Truncate long names on mobile
                 let label = comp.comparison_name;
                 if (label.length > 20) {
@@ -952,9 +953,9 @@ class SalesCurveChart {
                 }
                 legendItems.push({
                     label: isTarget ? `★ ${label}` : label,
-                    color: comp.line_color,
+                    color: color,
                     style: isTarget ? "solid" : comp.line_style,
-                    lineWidth: isTarget ? 3 : 2.5
+                    lineWidth: isTarget ? 3 : 1.5
                 });
             });
 
@@ -1073,6 +1074,18 @@ class SalesCurveChart {
         // Calculate max weeks from comparisons to potentially extend x-axis
         const maxComparisonWeeks = Math.max(...comparisons.map(c => c.weeksArray.length));
 
+        // Assign display colors: target=orange, then purple, then gray
+        const nonTargetColors = ['#9b59b6', '#999999'];
+        let nonTargetIndex = 0;
+        comparisons.forEach(comparison => {
+            if (comparison.is_target === true) {
+                comparison._displayColor = '#e67e22';
+            } else {
+                comparison._displayColor = nonTargetColors[nonTargetIndex] || '#999999';
+                nonTargetIndex++;
+            }
+        });
+
         // Render each comparison line
         comparisons.forEach(comparison => {
             this.renderSingleComparison(chartGroup, xScale, yScale, comparison);
@@ -1117,11 +1130,10 @@ class SalesCurveChart {
 
         // Determine styling based on is_target flag
         const isTarget = comparison.is_target === true;
-        console.log('🎨 Styling comp:', comparison.comparison_name, '| is_target:', comparison.is_target, '| isTarget:', isTarget);
-        const strokeWidth = isTarget ? 3 : 2.5;  // Target comp stroke width (thinner)
+        const color = comparison._displayColor || comparison.line_color;
+        const strokeWidth = isTarget ? 3 : 1.5;
         const strokeDasharray = isTarget ? 'none' : this.getStrokeDashArray(comparison.line_style);
-        const opacity = isTarget ? 1.0 : 0.7;  // Make others more transparent
-        console.log('   strokeWidth:', strokeWidth, '| dasharray:', strokeDasharray, '| opacity:', opacity);
+        const opacity = isTarget ? 1.0 : 0.35;
 
         // Draw comparison line
         chartGroup.append("path")
@@ -1129,13 +1141,13 @@ class SalesCurveChart {
             .attr("class", `comparison-line comparison-${comparison.comparison_id} ${isTarget ? 'target-comp' : ''}`)
             .attr("d", line)
             .attr("fill", "none")
-            .attr("stroke", comparison.line_color)
+            .attr("stroke", color)
             .attr("stroke-width", strokeWidth)
             .attr("stroke-dasharray", strokeDasharray)
             .attr("stroke-linecap", "round")
             .attr("stroke-linejoin", "round")
             .attr("opacity", opacity)
-            .style("filter", `drop-shadow(0 1px 2px ${comparison.line_color}40)`);
+            .style("filter", `drop-shadow(0 1px 2px ${color}40)`);
 
         // Add data points for comparison line
         const pointRadius = this.isMobile ? 5 : 3.5; // Larger on mobile for touch
@@ -1149,10 +1161,10 @@ class SalesCurveChart {
             .attr("cx", d => xScale(d.week))
             .attr("cy", d => yScale(d.sales))
             .attr("r", pointRadius)
-            .attr("fill", comparison.line_color)
+            .attr("fill", color)
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
-            .attr("opacity", 0.7)
+            .attr("opacity", isTarget ? 0.7 : 0.35)
             .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
                 d3.select(this)
@@ -1557,6 +1569,7 @@ class SalesCurveChart {
 
         comparisons.forEach((comp, i) => {
             const isTarget = comp.is_target === true;
+            const color = comp._displayColor || comp.line_color;
             const legendRow = legend.append("g")
                 .attr("transform", `translate(0, ${(startIndex + i) * 20})`);
 
@@ -1579,8 +1592,8 @@ class SalesCurveChart {
                 .attr("x2", 20 + xOffset)
                 .attr("y1", 10)
                 .attr("y2", 10)
-                .attr("stroke", comp.line_color)
-                .attr("stroke-width", isTarget ? 3 : 2.5)  // Thinner target line in legend
+                .attr("stroke", color)
+                .attr("stroke-width", isTarget ? 3 : 1.5)
                 .attr("stroke-dasharray", isTarget ? 'none' : this.getStrokeDashArray(comp.line_style));
 
             legendRow.append("text")
