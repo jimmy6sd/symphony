@@ -150,10 +150,10 @@
 }
 
 .year-toggle[data-year="FY24"] {
-    border-color: #82ca9d;
+    border-color: #8884d8;
 }
 .year-toggle[data-year="FY24"].active {
-    background: #82ca9d;
+    background: #8884d8;
 }
 
 .year-toggle[data-year="FY25"] {
@@ -432,7 +432,32 @@
 
 .segment-card-header .week-range {
     font-size: 0.8rem;
-    color: #888;
+    color: #666;
+    font-weight: 500;
+}
+
+.segment-card-header .week-numbers {
+    font-size: 0.7rem;
+    color: #999;
+    font-weight: 400;
+}
+
+/* Current segment indicator */
+.segment-card.current-segment {
+    border: 2px solid #3498db;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.current-badge {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
 }
 
 .segment-bars {

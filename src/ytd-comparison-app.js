@@ -44,9 +44,9 @@ class YTDComparisonApp {
 
     async loadData() {
         const weekType = document.getElementById('week-type-select')?.value || 'fiscal';
-        const attributionMode = document.getElementById('segment-attribution-select')?.value || 'snapshot';
 
-        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=${attributionMode}`);
+        // Main chart always uses snapshot mode (revenue by when collected)
+        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=snapshot`);
 
         if (!response.ok) {
             throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
@@ -60,7 +60,44 @@ class YTDComparisonApp {
 
         this.availableYears = Object.keys(this.data).filter(y => !y.includes('Projected') && y !== 'FY23');
 
+        // Also load segment data with current attribution mode
+        await this.loadSegmentData();
+
         console.log('Loaded YTD data:', this.availableYears, 'years');
+    }
+
+    async loadSegmentData() {
+        const weekType = document.getElementById('week-type-select')?.value || 'fiscal';
+        const attributionMode = document.getElementById('segment-attribution-select')?.value || 'snapshot';
+
+        // Load data with selected attribution mode for segments
+        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=${attributionMode}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to load segment data: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        this.segmentData = result.data;
+
+        // Merge FY26 data for segments
+        this.mergeFY26SegmentData();
+    }
+
+    mergeFY26SegmentData() {
+        if (!this.segmentData) return;
+
+        const fy26Excel = this.segmentData['FY26'] || [];
+        const fy26Current = this.segmentData['FY26 Current'] || [];
+
+        if (fy26Excel.length === 0 && fy26Current.length === 0) return;
+
+        const weekMap = new Map();
+        fy26Excel.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
+        fy26Current.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
+
+        this.segmentData['FY26'] = Array.from(weekMap.values()).sort((a, b) => a.fiscalWeek - b.fiscalWeek);
+        delete this.segmentData['FY26 Current'];
     }
 
     mergeFY26Data() {
@@ -135,12 +172,11 @@ class YTDComparisonApp {
             this.renderSegmentCards();
         });
 
-        // Attribution mode selector
+        // Attribution mode selector (only affects segments, not the main chart)
         const segmentAttributionSelect = document.getElementById('segment-attribution-select');
         segmentAttributionSelect?.addEventListener('change', async (e) => {
             this.attributionMode = e.target.value;
-            await this.loadData();
-            this.chart?.setData(this.data);
+            await this.loadSegmentData();
             this.renderSegmentCards();
         });
 
@@ -258,6 +294,25 @@ class YTDComparisonApp {
         return segments;
     }
 
+    // Convert fiscal week to approximate month (fiscal year starts July 1)
+    fiscalWeekToMonth(week) {
+        // Fiscal week 1 starts July 1
+        // ~4.33 weeks per month
+        const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const monthIndex = Math.min(Math.floor((week - 1) / 4.33), 11);
+        return months[monthIndex];
+    }
+
+    // Get month range string for a segment
+    getSegmentMonthRange(startWeek, endWeek) {
+        const startMonth = this.fiscalWeekToMonth(startWeek);
+        const endMonth = this.fiscalWeekToMonth(endWeek);
+        if (startMonth === endMonth) {
+            return startMonth;
+        }
+        return `${startMonth}-${endMonth}`;
+    }
+
     getCurrentWeek(weekType) {
         const today = new Date();
 
@@ -276,7 +331,7 @@ class YTDComparisonApp {
         }
     }
 
-    calculateSegmentTotal(yearData, segment, metric, weekType, isCurrent = false) {
+    calculateSegmentTotal(yearData, segment, metric, weekType, isCurrent = false, attributionMode = 'snapshot') {
         if (!yearData || yearData.length === 0) return { value: 0, incomplete: true };
 
         const weekKey = weekType === 'iso' ? 'isoWeek' : 'fiscalWeek';
@@ -298,25 +353,41 @@ class YTDComparisonApp {
         , weeksInSegment[0]);
 
         const firstWeekInSegment = firstInSegment[weekKey];
-        const lastValue = lastInSegment[metric] || 0;
+        const ytdAtEndOfSegment = lastInSegment[metric] || 0;
+
+        // Find the YTD value at the end of the PREVIOUS segment (to calculate delta)
+        const prevWeeks = yearData.filter(w => w[weekKey] < segment.start);
+        let ytdAtStartOfSegment = 0;
+        if (prevWeeks.length > 0) {
+            const lastPrevWeek = prevWeeks.reduce((max, w) =>
+                w[weekKey] > max[weekKey] ? w : max
+            , prevWeeks[0]);
+            ytdAtStartOfSegment = lastPrevWeek[metric] || 0;
+        }
+
+        // Segment value = YTD at end of segment - YTD at start of segment
+        const segmentValue = ytdAtEndOfSegment - ytdAtStartOfSegment;
 
         // Check if this is the current segment for the current year (still in progress)
+        // Only applies in snapshot mode - in performance mode, future segments show advance sales
         const currentWeek = this.getCurrentWeek(weekType);
-        const isCurrentSegment = isCurrent && currentWeek >= segment.start && currentWeek <= segment.end;
+        const isCurrentSegment = attributionMode === 'snapshot' && isCurrent && currentWeek >= segment.start && currentWeek <= segment.end;
 
-        // Check if we have data from before this segment
-        const prevWeeks = yearData.filter(w => w[weekKey] < segment.start);
-
-        // Return absolute YTD total at the end of this segment
-        // Check if segment is incomplete (missing early weeks or still in progress)
-        const incomplete = firstWeekInSegment > segment.start || isCurrentSegment;
-        return { value: lastValue, incomplete };
+        // Check if segment is incomplete:
+        // - In snapshot mode: missing early weeks OR current segment still in progress
+        // - In performance mode: only if there's literally no data (handled above with return)
+        //   Missing early weeks is normal (no concerts scheduled those weeks)
+        const missingEarlyWeeks = attributionMode === 'snapshot' && firstWeekInSegment > segment.start;
+        const incomplete = missingEarlyWeeks || isCurrentSegment;
+        return { value: segmentValue, incomplete };
     }
 
     renderSegmentCards() {
         const container = document.getElementById('segment-cards');
         const wrapper = document.getElementById('segment-comparison');
-        if (!container || !wrapper || !this.data) return;
+        // Use segmentData if available (for attribution modes), fallback to main data
+        const dataSource = this.segmentData || this.data;
+        if (!container || !wrapper || !dataSource) return;
 
         container.innerHTML = '';
         wrapper.style.display = 'block';
@@ -334,11 +405,12 @@ class YTDComparisonApp {
         visibleYears.sort();
 
         // Calculate totals for each segment and year
+        const attributionMode = document.getElementById('segment-attribution-select')?.value || 'snapshot';
         const segmentData = segments.map(segment => {
             const yearResults = {};
             visibleYears.forEach(year => {
                 const isCurrent = year === 'FY26'; // FY26 is the current season
-                yearResults[year] = this.calculateSegmentTotal(this.data[year], segment, metric, weekType, isCurrent);
+                yearResults[year] = this.calculateSegmentTotal(dataSource[year], segment, metric, weekType, isCurrent, attributionMode);
             });
             return { segment, yearResults };
         });
@@ -348,15 +420,22 @@ class YTDComparisonApp {
             Object.values(s.yearResults).map(r => r.value)
         ));
 
+        // Determine which segment contains the current week
+        const currentWeek = this.getCurrentWeek(weekType);
+
         // Create a card for each segment
         segmentData.forEach(({ segment, yearResults }) => {
-            const card = document.createElement('div');
-            card.className = 'segment-card';
+            const isCurrentSegment = currentWeek >= segment.start && currentWeek <= segment.end;
 
-            // Header with segment label
+            const card = document.createElement('div');
+            card.className = 'segment-card' + (isCurrentSegment ? ' current-segment' : '');
+
+            // Header with segment label and current indicator
             const header = document.createElement('div');
             header.className = 'segment-card-header';
-            header.innerHTML = `<h3>Segment ${segment.index}</h3><span class="week-range">W${segment.start}-W${segment.end}</span>`;
+            const currentBadge = isCurrentSegment ? `<span class="current-badge">Week ${currentWeek}</span>` : '';
+            const monthRange = this.getSegmentMonthRange(segment.start, segment.end);
+            header.innerHTML = `<h3>Segment ${segment.index}${currentBadge}</h3><span class="week-range">${monthRange} <span class="week-numbers">(W${segment.start}-W${segment.end})</span></span>`;
             card.appendChild(header);
 
             // Bar chart and values for each year
