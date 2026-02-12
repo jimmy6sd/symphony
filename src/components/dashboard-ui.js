@@ -105,6 +105,12 @@ class DashboardUI extends BaseComponent {
             this.log('debug', 'Route: Table view');
             // Already in table view by default
         });
+
+        // Annotations view: /annotations
+        window.router.register('/annotations', () => {
+            this.log('debug', 'Route: Annotations');
+            this.switchDashboardTab('annotations', false);
+        });
     }
 
     /**
@@ -967,13 +973,19 @@ DashboardUI.prototype.switchDashboardTab = function(tabName, updateUrl = true) {
 
     // Update URL without reload
     if (updateUrl) {
-        const url = tabName === 'subscriptions' ? '/subscriptions' : '/';
+        const urlMap = { subscriptions: '/subscriptions', annotations: '/annotations' };
+        const url = urlMap[tabName] || '/';
         window.history.pushState({ tab: tabName }, '', url);
     }
 
     // Initialize subscription table if switching to subscriptions tab (lazy load)
     if (tabName === 'subscriptions' && !window.subscriptionTable) {
         this.initializeSubscriptionTable();
+    }
+
+    // Initialize annotations manager if switching to annotations tab (lazy load)
+    if (tabName === 'annotations' && !window.annotationsManager) {
+        this.initializeAnnotationsManager();
     }
 };
 
@@ -986,11 +998,23 @@ DashboardUI.prototype.initializeSubscriptionTable = async function() {
     }
 };
 
+DashboardUI.prototype.initializeAnnotationsManager = async function() {
+    if (window.AnnotationsManager) {
+        this.log('info', 'Initializing Annotations Manager');
+        window.annotationsManager = new window.AnnotationsManager('annotations-manager');
+        await window.annotationsManager.init();
+        this.log('info', 'Annotations Manager initialized');
+    }
+};
+
 // Detect initial tab from URL path
 DashboardUI.prototype.detectInitialTab = function() {
     const path = window.location.pathname;
     if (path === '/subscriptions') {
         return 'subscriptions';
+    }
+    if (path === '/annotations') {
+        return 'annotations';
     }
     return 'single-tickets';
 };

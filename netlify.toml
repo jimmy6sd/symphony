@@ -77,6 +77,12 @@
   status = 200
 
 [[redirects]]
+  # Client-side routing for annotations
+  from = "/annotations"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
   # Year-to-date comparison page
   from = "/year-to-date"
   to = "/ytd-comparison.html"

@@ -30,6 +30,7 @@ const SCRIPTS_TO_LOAD = [
     '/src/charts/subscription-table.js',
     '/src/charts/subscription-sales-curve.js',
     '/src/admin-panel.js',
+    '/src/components/annotations-manager.js',
     '/src/components/pipeline-status.js',
     '/src/components/dashboard-ui.js',
     '/src/core/app.js'
