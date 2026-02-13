@@ -153,7 +153,7 @@ class DataTable {
             },
             {
                 key: 'totalSold',
-                label: 'Tickets Sold',
+                label: 'Sold',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -269,7 +269,7 @@ class DataTable {
             },
             {
                 key: 'totalRevenue',
-                label: 'Actual Revenue',
+                label: 'Revenue',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -323,7 +323,7 @@ class DataTable {
             },
             {
                 key: 'budgetPerformance',
-                label: 'Budget Goal',
+                label: 'Budget',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -349,7 +349,7 @@ class DataTable {
             },
             {
                 key: 'projectedTickets',
-                label: 'Projected Tickets',
+                label: 'Proj. Tickets',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -383,7 +383,7 @@ class DataTable {
             },
             {
                 key: 'projectedRevenue',
-                label: 'Projected Revenue',
+                label: 'Proj. Revenue',
                 sortable: true,
                 type: 'number',
                 align: 'center',
@@ -432,6 +432,37 @@ class DataTable {
                         <div class="projection-cell">
                             <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
                             <div class="projection-variance projection-${status}">${varianceSign}$${Math.abs(variance).toLocaleString()}</div>
+                        </div>
+                    `;
+                }
+            },
+            {
+                key: 'projectedOccupancy',
+                label: 'Proj. Occ.',
+                sortable: true,
+                type: 'number',
+                align: 'center',
+                info: 'Projected Tickets ÷ Capacity\nBased on target comp projection',
+                formatter: (value, row) => {
+                    const projection = row._projection;
+                    const capacity = row.capacity || 0;
+                    if (!projection || capacity === 0) return '<span style="color: var(--text-muted);">N/A</span>';
+
+                    const projectedOccupancy = (projection.projectedTickets / capacity) * 100;
+                    const targetOccupancy = (projection.targetTickets / capacity) * 100;
+                    const variance = projectedOccupancy - targetOccupancy;
+                    const status = variance >= 0 ? 'good' : variance >= -3 ? 'warning' : 'poor';
+                    const varianceSign = variance >= 0 ? '+' : '';
+
+                    const finalLabel = projection.isPast
+                        ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>'
+                        : '';
+
+                    return `
+                        <div class="projection-cell">
+                            ${finalLabel}
+                            <div class="projection-value">${projectedOccupancy.toFixed(1)}%</div>
+                            <div class="projection-variance projection-${status}">${varianceSign}${variance.toFixed(1)}%</div>
                         </div>
                     `;
                 }
@@ -2807,6 +2838,10 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             const goal = row.budgetGoal || 0;
             return revenue - goal;
         }
+        if (key === 'projectedOccupancy') {
+            if (!row._projection || !row.capacity) return -1;
+            return (row._projection.projectedTickets / row.capacity) * 100;
+        }
         return row[key] || '';
     }
 
@@ -3063,6 +3098,10 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             const revenue = group.totalRevenue || 0;
             const goal = group.budgetGoal || 0;
             return revenue - goal; // Sort by variance
+        }
+        if (key === 'projectedOccupancy') {
+            if (!group._projection || !group.capacity) return -1;
+            return (group._projection.projectedTickets / group.capacity) * 100;
         }
         return group[key] || '';
     }
