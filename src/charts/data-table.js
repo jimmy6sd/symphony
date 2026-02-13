@@ -1638,9 +1638,11 @@ class DataTable {
         const singleRevenue = performance.singleTicketRevenue || 0;
         const adjustedSingleAtp = paidSingleTickets > 0 ? singleRevenue / paidSingleTickets : 0;
 
+        const totalSingleIssued = singleTicketsSold + compTickets;
         createSection(salesDetails, 'Single Ticket Sales', [
-            { label: 'Tickets Sold', value: singleTicketsSold.toLocaleString(), isHighlight: true, info: 'Single tickets sold to date (Tessitura)' },
+            { label: 'Tickets Sold', value: singleTicketsSold.toLocaleString(), info: 'Single tickets sold to date (Tessitura)' },
             { label: 'Comp Tickets', value: compTickets.toLocaleString(), info: 'Complimentary tickets at $0 (Tessitura PTC report)' },
+            { label: 'Total Tickets Issued', value: totalSingleIssued.toLocaleString(), isHighlight: true, info: 'Tickets sold + complimentary tickets' },
             { label: 'Average Ticket Price', value: adjustedSingleAtp > 0 ? '$' + adjustedSingleAtp.toFixed(2) : 'N/A', info: 'Single revenue ÷ paid tickets (excludes comps)' }
         ]);
 

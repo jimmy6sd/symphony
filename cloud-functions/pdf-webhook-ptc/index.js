@@ -153,19 +153,27 @@ async function parsePtcPdf(base64Data) {
 
           const parseNum = (str) => parseInt((str || '0').replace(/,/g, '')) || 0;
 
-          // Skip Package (# and $)
+          // Package (# and $)
+          const packageCount = parseNum(allItems[idx]);
           idx += 2;
-          // Skip Single (# and $)
+          // Single (# and $)
+          const singleCount = parseNum(allItems[idx]);
           idx += 2;
-          // Skip Discount (# and $)
+          // Discount (# and $)
+          const discountCount = parseNum(allItems[idx]);
           idx += 2;
 
           // COMP COUNT
           const compCount = parseNum(allItems[idx]);
 
+          // Skip past performances where Tessitura reclassifies all tickets as "Comp"
+          // (Package + Single + Discount all zero, Comp = total tickets = reporting artifact)
+          const hasNormalBreakdown = packageCount > 0 || singleCount > 0 || discountCount > 0;
+          const actualComps = hasNormalBreakdown ? compCount : 0;
+
           performances.push({
             performance_code: performanceCode,
-            comp_tickets: compCount
+            comp_tickets: actualComps
           });
         }
       }

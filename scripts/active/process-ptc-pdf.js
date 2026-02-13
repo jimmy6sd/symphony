@@ -125,9 +125,14 @@ async function parsePTCPdf(pdfPath) {
           const otherRev = parseMoney(allItems[idx++]);
           const totalRev = parseMoney(allItems[idx++]);
 
+          // Skip past performances where Tessitura reclassifies all tickets as "Comp"
+          // (Package + Single + Discount all zero, Comp = total tickets = reporting artifact)
+          const hasNormalBreakdown = packageCount > 0 || singleCount > 0 || discountCount > 0;
+          const actualComps = hasNormalBreakdown ? compCount : 0;
+
           performances.push({
             performance_code: performanceCode,
-            comp_tickets: compCount,
+            comp_tickets: actualComps,
             // Also capture these for verification
             package_tickets: packageCount,
             single_tickets: singleCount,
