@@ -2282,3 +2282,104 @@ a.tab-btn.tab-link {
         display: none;
     }
 }
+
+.scorecard-toggle {
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    user-select: none;
+    line-height: 1;
+}
+
+.scorecard-toggle:hover {
+    opacity: 1;
+    color: var(--text-secondary);
+}
+
+/* Data Table Scorecard */
+.data-table-scorecard {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(102, 126, 234, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 12px;
+}
+
+.scorecard-card {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: var(--border-radius-sm);
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    min-width: 0;
+}
+
+.scorecard-card.projected {
+    background: rgba(102, 126, 234, 0.04);
+    border-color: rgba(102, 126, 234, 0.15);
+}
+
+.scorecard-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 4px;
+}
+
+.scorecard-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.scorecard-comparison {
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-top: 4px;
+    line-height: 1.2;
+}
+
+.scorecard-comparison.positive {
+    color: var(--success-color);
+}
+
+.scorecard-comparison.negative {
+    color: var(--danger-color);
+}
+
+.scorecard-comparison.neutral {
+    color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+    .data-table-scorecard {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .scorecard-card {
+        flex: 1 1 calc(33% - 6px);
+        min-width: calc(33% - 6px);
+        padding: 8px 4px;
+    }
+
+    .scorecard-value {
+        font-size: 1rem;
+    }
+
+    .scorecard-label {
+        font-size: 0.6rem;
+    }
+
+    .scorecard-comparison {
+        font-size: 0.6rem;
+    }
+}

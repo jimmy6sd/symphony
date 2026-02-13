@@ -13,6 +13,8 @@ class DataTable {
         this.expandedGroups = new Set();
         this.slugToGroupKey = new Map(); // Map URL slugs back to original group keys
         this.snapshotCache = new Map(); // Cache for BigQuery snapshot data (performance optimization)
+        this.ytdData = null; // YTD comparison data for scorecard
+        this.scorecardVisible = false;
 
         // Define columns and their properties
         // info: optional tooltip explaining calculation/data source (shown via ⓘ icon)
@@ -715,6 +717,9 @@ class DataTable {
         // Render the table
         this.render();
 
+        // Non-blocking: fetch YTD comparison data for scorecard
+        this.fetchYtdData();
+
         // ⚡ LAZY LOADING: Snapshots are fetched on-demand when modal opens
         // No prefetch needed - reduces initial page load overhead
 
@@ -845,6 +850,7 @@ class DataTable {
         // Create table structure
         this.createTableHeader();
         this.createFilterBar();
+        this.createScorecard();
         this.createTable();
     }
 
@@ -1026,6 +1032,154 @@ class DataTable {
         this.container.selectAll('.filter-select').property('value', 'all');
 
         this.renderTableRows();
+    }
+
+    async fetchYtdData() {
+        try {
+            const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&fiscalYears=FY25,FY26');
+            if (!response.ok) return;
+            const result = await response.json();
+            const data = result.data || {};
+
+            // Get latest data point from each series (last entry = most recent cumulative total)
+            const fy25 = data['FY25'];
+            const fy26 = data['FY26 Current'];
+
+            if (!fy25 || !fy26 || fy25.length === 0 || fy26.length === 0) return;
+
+            // FY26 latest point
+            const fy26Latest = fy26[fy26.length - 1];
+            const fy26Week = fy26Latest.fiscalWeek;
+
+            // Find FY25 at the same fiscal week for apples-to-apples comparison
+            const fy25AtSameWeek = fy25.find(d => d.fiscalWeek === fy26Week) || fy25[fy25.length - 1];
+
+            // FY25 full season total (last entry in FY25 array)
+            const fy25Final = fy25[fy25.length - 1];
+
+            // Pace-based season projection: FY25 full season * (FY26 current / FY25 at same week)
+            const fy25RevenueAtWeek = fy25AtSameWeek.revenue || 0;
+            const fy25FullRevenue = fy25Final.revenue || 0;
+            const fy25FullTickets = fy25Final.tickets || 0;
+            const projectedSeasonRevenue = fy25RevenueAtWeek > 0
+                ? fy25FullRevenue * ((fy26Latest.revenue || 0) / fy25RevenueAtWeek)
+                : 0;
+            const projectedSeasonTickets = (fy25AtSameWeek.tickets || 0) > 0
+                ? fy25FullTickets * ((fy26Latest.tickets || 0) / (fy25AtSameWeek.tickets || 1))
+                : 0;
+
+            this.ytdData = {
+                fy25Tickets: fy25AtSameWeek.tickets || 0,
+                fy25Revenue: fy25RevenueAtWeek,
+                fy25FullRevenue: fy25FullRevenue,
+                fy25FullTickets: fy25FullTickets,
+                fy26Tickets: fy26Latest.tickets || 0,
+                fy26Revenue: fy26Latest.revenue || 0,
+                fy26Week: fy26Week,
+                projectedSeasonRevenue,
+                projectedSeasonTickets
+            };
+
+            // Re-update scorecard now that YTD data is available
+            this.updateScorecard();
+        } catch (error) {
+            // Silently fail - scorecard works without YTD data
+        }
+    }
+
+    createScorecard() {
+        const scorecard = this.container
+            .append('div')
+            .attr('class', 'data-table-scorecard')
+            .style('display', this.scorecardVisible ? 'flex' : 'none');
+
+        const cards = [
+            { key: 'ticketsSold', label: 'Tickets Sold', comparison: 'tickets' },
+            { key: 'revenue', label: 'Total Revenue', comparison: 'revenue' },
+            { key: 'occupancy', label: 'Avg Occupancy' },
+            { key: 'budgetVariance', label: 'Budget Variance' },
+            { key: 'projRevenue', label: 'Proj. Revenue', comparison: 'revenue', projected: true }
+        ];
+
+        cards.forEach(card => {
+            const cardEl = scorecard.append('div')
+                .attr('class', `scorecard-card${card.projected ? ' projected' : ''}`)
+                .attr('data-key', card.key);
+
+            cardEl.append('div').attr('class', 'scorecard-label').text(card.label);
+            cardEl.append('div').attr('class', 'scorecard-value').text('—');
+
+            if (card.comparison) {
+                cardEl.append('div')
+                    .attr('class', 'scorecard-comparison neutral')
+                    .attr('data-comparison', card.comparison);
+            }
+        });
+    }
+
+    updateScorecard() {
+        if (!this.container) return;
+        const scorecardEl = this.container.select('.data-table-scorecard');
+        if (scorecardEl.empty()) return;
+
+        const filtered = this.getFilteredData();
+        const totals = {
+            capacity: filtered.reduce((sum, p) => sum + (p.capacity || 0), 0),
+            ticketsSold: filtered.reduce((sum, p) => sum + (p.singleTicketsSold || 0) + (p.subscriptionTicketsSold || 0) + (p.nonFixedTicketsSold || 0), 0),
+            revenue: filtered.reduce((sum, p) => sum + (p.totalRevenue || 0), 0),
+            budget: filtered.reduce((sum, p) => sum + (p.budgetGoal || 0), 0),
+        };
+        totals.occupancy = totals.capacity > 0 ? (totals.ticketsSold / totals.capacity * 100) : 0;
+        totals.budgetVariance = totals.revenue - totals.budget;
+
+        const fmt = (n) => n.toLocaleString('en-US');
+        const fmtCurrency = (n) => {
+            if (Math.abs(n) >= 1000000) return `$${(n / 1000000).toFixed(1)}M`;
+            if (Math.abs(n) >= 1000) return `$${(n / 1000).toFixed(0)}K`;
+            return `$${fmt(Math.round(n))}`;
+        };
+
+        // Proj. Revenue uses pace-based YTD projection (FY25 full season * FY26/FY25 pace)
+        const projRevenue = this.ytdData?.projectedSeasonRevenue || 0;
+
+        const updates = {
+            ticketsSold: fmt(totals.ticketsSold),
+            revenue: fmtCurrency(totals.revenue),
+            occupancy: `${totals.occupancy.toFixed(1)}%`,
+            budgetVariance: `${totals.budgetVariance >= 0 ? '+' : ''}${fmtCurrency(totals.budgetVariance)}`,
+            projRevenue: projRevenue > 0 ? fmtCurrency(projRevenue) : '—',
+        };
+
+        Object.entries(updates).forEach(([key, value]) => {
+            scorecardEl.select(`[data-key="${key}"] .scorecard-value`).text(value);
+        });
+
+        // Color-code budget variance
+        const varianceCard = scorecardEl.select('[data-key="budgetVariance"] .scorecard-value');
+        if (!varianceCard.empty()) {
+            varianceCard.style('color',
+                totals.budgetVariance >= 0 ? 'var(--success-color)' : 'var(--danger-color)'
+            );
+        }
+
+        // Update YTD comparisons if data available
+        if (this.ytdData) {
+            this.updateYtdComparison(scorecardEl, 'ticketsSold', this.ytdData.fy26Tickets, this.ytdData.fy25Tickets);
+            this.updateYtdComparison(scorecardEl, 'revenue', this.ytdData.fy26Revenue, this.ytdData.fy25Revenue);
+            if (projRevenue > 0) {
+                this.updateYtdComparison(scorecardEl, 'projRevenue', projRevenue, this.ytdData.fy25FullRevenue, 'vs FY25 Full');
+            }
+        }
+    }
+
+    updateYtdComparison(scorecardEl, cardKey, currentVal, previousVal, label = 'vs FY25 YTD') {
+        const compEl = scorecardEl.select(`[data-key="${cardKey}"] .scorecard-comparison`);
+        if (compEl.empty() || !previousVal) return;
+
+        const pctChange = ((currentVal - previousVal) / previousVal) * 100;
+        const sign = pctChange >= 0 ? '+' : '';
+        compEl.text(`${sign}${pctChange.toFixed(1)}% ${label}`)
+            .attr('class', `scorecard-comparison ${pctChange >= 0 ? 'positive' : 'negative'}`);
     }
 
     async showPerformanceDetails(performance) {
@@ -2550,7 +2704,24 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             .append('h3')
             .text('2026 Season Performance Details');
 
-        header
+        const headerRight = header
+            .append('div')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('gap', '12px');
+
+        headerRight
+            .append('span')
+            .attr('class', 'scorecard-toggle')
+            .attr('title', 'Toggle summary')
+            .text('▦')
+            .on('click', () => {
+                this.scorecardVisible = !this.scorecardVisible;
+                this.container.select('.data-table-scorecard')
+                    .style('display', this.scorecardVisible ? 'flex' : 'none');
+            });
+
+        headerRight
             .append('a')
             .attr('href', '/excel.html')
             .attr('class', 'nav-link excel-export-link')
@@ -2725,6 +2896,9 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
         // setTimeout(() => {
         //     this.renderSparklines(filteredData);
         // }, 10);
+
+        // Update scorecard with current filtered data
+        this.updateScorecard();
     }
 
     renderSparklines(data) {
