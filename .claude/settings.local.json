@@ -31,7 +31,14 @@
       "Bash(tasklist:*)",
       "Bash(bq query:*)",
       "mcp__puppeteer-real-browser__click",
-      "mcp__puppeteer-real-browser__wait"
+      "mcp__puppeteer-real-browser__wait",
+      "Bash(gcloud functions logs read:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(git log:*)",
+      "Bash(find:*)",
+      "Bash(gsutil ls:*)",
+      "Bash(gsutil cp:*)"
     ],
     "deny": [],
     "ask": []
