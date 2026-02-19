@@ -120,7 +120,7 @@ exports.handler = async (event, context) => {
 
 // GET - Fetch annotations
 async function getAnnotations(bigquery, params, headers) {
-  const { groupTitle, tags, allTags } = params || {};
+  const { groupTitle, tags, allTags, scope, includeGlobal } = params || {};
 
   // Return all distinct tags for autocomplete
   if (allTags === 'true') {
@@ -132,39 +132,81 @@ async function getAnnotations(bigquery, params, headers) {
     return await getAnnotationsByTags(bigquery, tags, headers);
   }
 
-  // Fetch annotations for a specific group
+  // Fetch only global annotations
+  if (scope === 'global') {
+    return await getGlobalAnnotations(bigquery, headers);
+  }
+
+  // Fetch annotations for a specific group (optionally including global)
   if (!groupTitle) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'groupTitle, tags, or allTags query parameter required' })
+      body: JSON.stringify({ error: 'groupTitle, tags, scope, or allTags query parameter required' })
     };
   }
 
-  const query = `
-    SELECT
-      annotation_id,
-      group_title,
-      annotation_type,
-      week_number,
-      start_week,
-      end_week,
-      label,
-      description,
-      color,
-      tags,
-      created_at,
-      updated_at
-    FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-    WHERE group_title = ?
-    ORDER BY COALESCE(week_number, start_week) DESC
-  `;
+  let query;
+  let queryParams;
+
+  if (includeGlobal === 'true') {
+    query = `
+      SELECT
+        annotation_id, group_title, annotation_type, week_number,
+        start_week, end_week, label, description, color, tags,
+        scope, annotation_date, annotation_end_date,
+        created_at, updated_at
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      WHERE group_title = ? OR scope = 'global'
+      ORDER BY COALESCE(week_number, start_week) DESC
+    `;
+    queryParams = [groupTitle];
+  } else {
+    query = `
+      SELECT
+        annotation_id, group_title, annotation_type, week_number,
+        start_week, end_week, label, description, color, tags,
+        scope, annotation_date, annotation_end_date,
+        created_at, updated_at
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      WHERE group_title = ?
+      ORDER BY COALESCE(week_number, start_week) DESC
+    `;
+    queryParams = [groupTitle];
+  }
 
   const [rows] = await bigquery.query({
     query,
-    params: [groupTitle],
+    params: queryParams,
     location: 'US'
   });
+
+  const annotations = rows.map(row => ({
+    ...row,
+    tags: parseTags(row.tags)
+  }));
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(annotations)
+  };
+}
+
+// GET - Fetch global annotations only
+async function getGlobalAnnotations(bigquery, headers) {
+  const query = `
+    SELECT
+      annotation_id, group_title, annotation_type, week_number,
+      start_week, end_week, label, description, color, tags,
+      scope, annotation_date, annotation_end_date,
+      created_at, updated_at
+    FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+    WHERE scope = 'global'
+    ORDER BY annotation_date DESC, created_at DESC
+  `;
+
+  const [rows] = await bigquery.query({ query, location: 'US' });
 
   const annotations = rows.map(row => ({
     ...row,
@@ -198,6 +240,7 @@ async function getAnnotationsByTags(bigquery, tagsParam, headers) {
     SELECT
       annotation_id, group_title, annotation_type, week_number,
       start_week, end_week, label, description, color, tags,
+      scope, annotation_date, annotation_end_date,
       created_at, updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
     WHERE ${conditions}
@@ -254,18 +297,31 @@ async function createAnnotation(bigquery, data, headers) {
     label,
     description = '',
     color = '#e74c3c',
-    tags = []
+    tags = [],
+    scope = 'production',
+    annotationDate,
+    annotationEndDate
   } = data;
 
+  const isGlobal = scope === 'global';
+
   // Validation
-  if (!groupTitle || !annotationType || !label) {
+  if (!annotationType || !label) {
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({
         error: 'Missing required fields',
-        required: ['groupTitle', 'annotationType', 'label']
+        required: ['annotationType', 'label']
       })
+    };
+  }
+
+  if (!isGlobal && !groupTitle) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'groupTitle is required for production-scoped annotations' })
     };
   }
 
@@ -277,20 +333,38 @@ async function createAnnotation(bigquery, data, headers) {
     };
   }
 
-  if (annotationType === 'point' && (weekNumber === undefined || weekNumber === null)) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: 'weekNumber is required for point annotations' })
-    };
-  }
-
-  if (annotationType === 'interval' && (startWeek === undefined || endWeek === undefined)) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: 'startWeek and endWeek are required for interval annotations' })
-    };
+  if (isGlobal) {
+    // Global annotations use calendar dates instead of week numbers
+    if (!annotationDate) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'annotationDate is required for global annotations' })
+      };
+    }
+    if (annotationType === 'interval' && !annotationEndDate) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'annotationEndDate is required for global interval annotations' })
+      };
+    }
+  } else {
+    // Production annotations use week numbers
+    if (annotationType === 'point' && (weekNumber === undefined || weekNumber === null)) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'weekNumber is required for production point annotations' })
+      };
+    }
+    if (annotationType === 'interval' && (startWeek === undefined || endWeek === undefined)) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'startWeek and endWeek are required for production interval annotations' })
+      };
+    }
   }
 
   const annotationId = uuidv4();
@@ -298,18 +372,35 @@ async function createAnnotation(bigquery, data, headers) {
   const tagsString = Array.isArray(tags) ? tags.join(',') : (tags || '');
 
   // Build INSERT dynamically to avoid null parameter type issues with BigQuery
-  const columns = ['annotation_id', 'group_title', 'annotation_type', 'label', 'description', 'color', 'tags', 'created_at', 'updated_at'];
+  const columns = ['annotation_id', 'annotation_type', 'label', 'description', 'color', 'tags', 'scope', 'created_at', 'updated_at'];
   const values = ['?', '?', '?', '?', '?', '?', '?', 'TIMESTAMP(?)', 'TIMESTAMP(?)'];
-  const params = [annotationId, groupTitle, annotationType, label, description, color, tagsString, now, now];
+  const params = [annotationId, annotationType, label, description, color, tagsString, scope || 'production', now, now];
 
-  if (annotationType === 'point') {
-    columns.push('week_number');
+  if (groupTitle) {
+    columns.push('group_title');
     values.push('?');
-    params.push(weekNumber);
+    params.push(groupTitle);
+  }
+
+  if (isGlobal) {
+    columns.push('annotation_date');
+    values.push('DATE(?)');
+    params.push(annotationDate);
+    if (annotationType === 'interval' && annotationEndDate) {
+      columns.push('annotation_end_date');
+      values.push('DATE(?)');
+      params.push(annotationEndDate);
+    }
   } else {
-    columns.push('start_week', 'end_week');
-    values.push('?', '?');
-    params.push(startWeek, endWeek);
+    if (annotationType === 'point') {
+      columns.push('week_number');
+      values.push('?');
+      params.push(weekNumber);
+    } else {
+      columns.push('start_week', 'end_week');
+      values.push('?', '?');
+      params.push(startWeek, endWeek);
+    }
   }
 
   const query = `
@@ -329,14 +420,17 @@ async function createAnnotation(bigquery, data, headers) {
     headers,
     body: JSON.stringify({
       annotation_id: annotationId,
-      group_title: groupTitle,
+      group_title: groupTitle || null,
       annotation_type: annotationType,
-      week_number: annotationType === 'point' ? weekNumber : null,
-      start_week: annotationType === 'interval' ? startWeek : null,
-      end_week: annotationType === 'interval' ? endWeek : null,
+      week_number: annotationType === 'point' && !isGlobal ? weekNumber : null,
+      start_week: annotationType === 'interval' && !isGlobal ? startWeek : null,
+      end_week: annotationType === 'interval' && !isGlobal ? endWeek : null,
       label,
       description,
       color,
+      scope: scope || 'production',
+      annotation_date: annotationDate || null,
+      annotation_end_date: annotationEndDate || null,
       tags: Array.isArray(tags) ? tags : parseTags(tags),
       created_at: now
     })
@@ -353,7 +447,10 @@ async function updateAnnotation(bigquery, annotationId, data, headers) {
     label,
     description,
     color,
-    tags
+    tags,
+    scope,
+    annotationDate,
+    annotationEndDate
   } = data;
 
   const updates = [];
@@ -390,6 +487,18 @@ async function updateAnnotation(bigquery, annotationId, data, headers) {
   if (tags !== undefined) {
     updates.push('tags = ?');
     params.push(Array.isArray(tags) ? tags.join(',') : tags);
+  }
+  if (scope !== undefined) {
+    updates.push('scope = ?');
+    params.push(scope);
+  }
+  if (annotationDate !== undefined) {
+    updates.push('annotation_date = DATE(?)');
+    params.push(annotationDate);
+  }
+  if (annotationEndDate !== undefined) {
+    updates.push('annotation_end_date = DATE(?)');
+    params.push(annotationEndDate);
   }
 
   if (updates.length === 0) {

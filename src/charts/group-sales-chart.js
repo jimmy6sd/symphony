@@ -41,11 +41,11 @@ class GroupSalesChart {
 
     getResponsiveMargins() {
         if (this.isMobile) {
-            return { top: 30, right: 15, bottom: 60, left: 50 };
+            return { top: 30, right: 15, bottom: 80, left: 50 };
         } else if (this.isTablet) {
-            return { top: 40, right: 30, bottom: 70, left: 60 };
+            return { top: 40, right: 30, bottom: 90, left: 60 };
         } else {
-            return { top: 40, right: 40, bottom: 75, left: 70 };
+            return { top: 40, right: 40, bottom: 95, left: 70 };
         }
     }
 
@@ -257,7 +257,7 @@ class GroupSalesChart {
 
         g.append('g')
             .attr('class', 'date-axis')
-            .attr('transform', `translate(0,${innerHeight + 32})`)
+            .attr('transform', `translate(0,${innerHeight + 52})`)
             .call(d3.axisBottom(dateScale).ticks(6).tickFormat(d3.timeFormat('%b %d')))
             .selectAll('text')
                 .style('font-size', '10px')
@@ -331,7 +331,7 @@ class GroupSalesChart {
                 .attr('class', 'aggregated-line')
                 .attr('d', aggLine)
                 .attr('fill', 'none')
-                .attr('stroke', '#2c3e50')
+                .attr('stroke', '#3498db')
                 .attr('stroke-width', 3)
                 .attr('stroke-linecap', 'round')
                 .style('filter', 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))');
@@ -345,13 +345,15 @@ class GroupSalesChart {
                 .attr('cx', d => xScale(d.week))
                 .attr('cy', d => yScale(d.tickets))
                 .attr('r', 2.5)
-                .attr('fill', '#2c3e50')
+                .attr('fill', '#3498db')
                 .attr('stroke', 'white')
                 .attr('stroke-width', 1);
         }
 
         // Aggregated target comp line
-        const targetCompData = await this.fetchAndAggregateTargetComps(maxWeeks);
+        const targetCompResult = await this.fetchAndAggregateTargetComps(maxWeeks);
+        const targetCompData = targetCompResult ? targetCompResult.points : null;
+        const targetCompName = targetCompResult ? targetCompResult.compName : null;
         if (targetCompData && targetCompData.length >= 2) {
             const compLine = d3.line()
                 .x(d => xScale(d.week))
@@ -386,9 +388,9 @@ class GroupSalesChart {
 
         // Legend
         const legendData = [
-            { label: `Total (${this.performances.length} perfs)`, color: '#2c3e50', thick: true, dash: false },
+            { label: `Total (${this.performances.length} perfs)`, color: '#3498db', thick: true, dash: false },
             ...(targetCompData && targetCompData.length >= 2
-                ? [{ label: 'Target Comp', color: '#f59e0b', thick: true, dash: true }]
+                ? [{ label: targetCompName ? `Target Comp: ${targetCompName}` : 'Target Comp', color: '#f59e0b', thick: true, dash: true }]
                 : []),
             ...individualLines.map((line, i) => ({
                 label: line.code,
@@ -402,9 +404,11 @@ class GroupSalesChart {
             .attr('class', 'chart-legend')
             .attr('transform', `translate(10, -10)`);
 
-        legendData.forEach((item, i) => {
+        let legendX = 0;
+        const legendGap = this.isMobile ? 12 : 18;
+        legendData.forEach((item) => {
             const row = legend.append('g')
-                .attr('transform', `translate(${i * (this.isMobile ? 80 : 110)}, 0)`);
+                .attr('transform', `translate(${legendX}, 0)`);
 
             row.append('line')
                 .attr('x1', 0).attr('x2', 16)
@@ -414,11 +418,15 @@ class GroupSalesChart {
                 .attr('stroke-dasharray', item.dash ? '4,3' : 'none')
                 .attr('opacity', item.thick ? 1 : 0.4);
 
-            row.append('text')
+            const textEl = row.append('text')
                 .attr('x', 20).attr('y', 4)
                 .style('font-size', '10px')
                 .style('fill', '#666')
                 .text(item.label);
+
+            // Advance by actual text width + line + gap
+            const textWidth = textEl.node().getComputedTextLength();
+            legendX += 20 + textWidth + legendGap;
         });
 
         // Tooltip
@@ -441,12 +449,15 @@ class GroupSalesChart {
             // For each performance, find its target comp and compute week-shifted data
             // relative to the group's earliest performance date
             const weekBuckets = {}; // week -> total tickets
+            const compNames = new Set();
 
             this.performances.forEach(p => {
                 const code = p.performanceCode || p.performance_code || p.code || p.id;
                 const comps = batchComps[code] || [];
                 const targetComp = comps.find(c => c.is_target === true);
                 if (!targetComp || !targetComp.weeksArray || targetComp.weeksArray.length === 0) return;
+
+                if (targetComp.comparison_name) compNames.add(targetComp.comparison_name);
 
                 // Calculate this performance's date offset from earliest perf date
                 const [py, pm, pd] = p.date.split('-');
@@ -458,7 +469,7 @@ class GroupSalesChart {
                 for (let i = 0; i < numWeeks; i++) {
                     const weekBeforePerf = numWeeks - 1 - i; // weeks before THIS performance
                     const weekBeforeEarliest = weekBeforePerf + offsetWeeks; // shift to group timeline
-                    const roundedWeek = Math.round(weekBeforeEarliest * 2) / 2; // round to nearest 0.5
+                    const roundedWeek = Math.round(weekBeforeEarliest); // round to nearest integer week
 
                     if (roundedWeek < 0 || roundedWeek > maxWeeks) continue;
 
@@ -472,7 +483,11 @@ class GroupSalesChart {
                 .map(([week, tickets]) => ({ week: parseFloat(week), tickets }))
                 .sort((a, b) => b.week - a.week);
 
-            return points.length >= 2 ? points : null;
+            if (points.length < 2) return null;
+            const compName = compNames.size === 1
+                ? [...compNames][0]
+                : [...compNames].join(', ');
+            return { points, compName };
         } catch (error) {
             console.warn('Could not fetch target comps for group:', error.message);
             return null;
@@ -524,7 +539,7 @@ class GroupSalesChart {
                 // Build tooltip content
                 let html = `<div style="font-weight:600;margin-bottom:4px;">${closest.snapshot_date}</div>`;
                 html += `<div style="margin-bottom:4px;">Week ${closest.week.toFixed(1)} before</div>`;
-                html += `<div style="font-weight:600;color:#2c3e50;">Total: ${closest.tickets.toLocaleString()}</div>`;
+                html += `<div style="font-weight:600;color:#3498db;">Total: ${closest.tickets.toLocaleString()}</div>`;
 
                 // Target comp value at this week (interpolated)
                 if (targetCompData && targetCompData.length >= 2) {
@@ -575,8 +590,28 @@ class GroupSalesChart {
             });
     }
 
+    convertDateToWeek(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        return (this.earliestPerfDate - d) / (7 * 24 * 60 * 60 * 1000);
+    }
+
     updateAnnotations(annotations) {
-        this.annotations = annotations;
+        // Preprocess global annotations: convert calendar dates to week numbers
+        this.annotations = annotations.map(ann => {
+            if ((ann.scope === 'global') && ann.annotation_date && this.earliestPerfDate) {
+                const processed = { ...ann, _isGlobal: true };
+                if (ann.annotation_type === 'point') {
+                    processed.week_number = this.convertDateToWeek(ann.annotation_date);
+                } else if (ann.annotation_type === 'interval') {
+                    processed.start_week = this.convertDateToWeek(ann.annotation_date);
+                    processed.end_week = ann.annotation_end_date
+                        ? this.convertDateToWeek(ann.annotation_end_date)
+                        : processed.start_week;
+                }
+                return processed;
+            }
+            return ann;
+        });
         this.renderAnnotations();
     }
 
@@ -608,6 +643,8 @@ class GroupSalesChart {
         const x = this.xScale(ann.week_number);
         if (x < 0 || x > this.innerWidth) return;
 
+        const isGlobal = ann._isGlobal;
+
         // Vertical dashed line
         group.append('line')
             .attr('x1', x).attr('x2', x)
@@ -626,6 +663,7 @@ class GroupSalesChart {
             .attr('y', -8)
             .style('font-size', '10px')
             .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
             .style('fill', ann.color || '#e74c3c')
             .text(ann.label);
 
@@ -649,6 +687,8 @@ class GroupSalesChart {
         const rectWidth = Math.abs(x2 - x1);
 
         if (left + rectWidth < 0 || left > this.innerWidth) return;
+
+        const isGlobal = ann._isGlobal;
 
         // Shaded rectangle
         group.append('rect')
@@ -677,6 +717,7 @@ class GroupSalesChart {
             .attr('text-anchor', 'middle')
             .style('font-size', '10px')
             .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
             .style('fill', ann.color || '#e74c3c')
             .text(ann.label);
 

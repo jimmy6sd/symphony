@@ -2114,7 +2114,7 @@ class DataTable {
         let annotations = [];
         let activeTags = [];
         try {
-            annotations = await window.dataService.getGroupAnnotations(groupTitle);
+            annotations = await window.dataService.getAnnotationsForChart(groupTitle);
             chart.updateAnnotations(annotations);
         } catch (e) {
             console.warn('Could not load annotations:', e.message);
@@ -2187,14 +2187,22 @@ class DataTable {
                         .text(ann.description);
                 }
 
-                const weekInfo = ann.annotation_type === 'point'
-                    ? `Week ${ann.week_number}`
-                    : `Weeks ${ann.start_week} - ${ann.end_week}`;
+                const isGlobal = ann.scope === 'global';
+                let weekInfo;
+                if (isGlobal && ann.annotation_date) {
+                    weekInfo = ann.annotation_type === 'interval' && ann.annotation_end_date
+                        ? `${ann.annotation_date} - ${ann.annotation_end_date}`
+                        : ann.annotation_date;
+                } else {
+                    weekInfo = ann.annotation_type === 'point'
+                        ? `Week ${ann.week_number}`
+                        : `Weeks ${ann.start_week} - ${ann.end_week}`;
+                }
                 content.append('div')
                     .style('font-size', '10px')
                     .style('color', '#999')
                     .style('margin-top', '2px')
-                    .text(weekInfo);
+                    .text((isGlobal ? 'Global: ' : '') + weekInfo);
 
                 // Tag pills
                 const tags = Array.isArray(ann.tags) ? ann.tags : [];

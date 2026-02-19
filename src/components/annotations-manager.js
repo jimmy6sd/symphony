@@ -7,6 +7,7 @@ class AnnotationsManager {
         this.groupTitles = []; // production names for auto-tagging
         this.activeTagFilters = [];
         this.activeGroupFilter = '';
+        this.activeScopeFilter = ''; // '', 'production', or 'global'
         this.editingId = null;
     }
 
@@ -70,17 +71,18 @@ class AnnotationsManager {
 
     async loadData() {
         try {
-            console.log('[AnnotationsMgr] groupTitles count:', this.groupTitles.length, this.groupTitles.slice(0, 3));
-
-            // Fetch annotations for all groups in parallel
-            const results = await Promise.allSettled(
-                this.groupTitles.map(title =>
-                    window.dataService.getGroupAnnotations(title)
-                )
-            );
+            // Fetch production annotations and global annotations in parallel
+            const [groupResults, globalAnnotations] = await Promise.all([
+                Promise.allSettled(
+                    this.groupTitles.map(title =>
+                        window.dataService.getGroupAnnotations(title)
+                    )
+                ),
+                window.dataService.getGlobalAnnotations()
+            ]);
 
             const allAnnotations = [];
-            results.forEach((result, i) => {
+            groupResults.forEach((result, i) => {
                 if (result.status === 'fulfilled' && Array.isArray(result.value)) {
                     allAnnotations.push(...result.value);
                 } else {
@@ -88,10 +90,16 @@ class AnnotationsManager {
                 }
             });
 
-            console.log('[AnnotationsMgr] loaded annotations:', allAnnotations.length);
+            // Add global annotations (avoid duplicates by annotation_id)
+            const existingIds = new Set(allAnnotations.map(a => a.annotation_id));
+            globalAnnotations.forEach(ann => {
+                if (!existingIds.has(ann.annotation_id)) {
+                    allAnnotations.push(ann);
+                }
+            });
+
             this.annotations = allAnnotations;
             this.allTags = await window.dataService.getAllAnnotationTags();
-            console.log('[AnnotationsMgr] loaded tags:', this.allTags);
         } catch (e) {
             console.warn('Error loading annotations:', e.message);
         }
@@ -146,6 +154,24 @@ class AnnotationsManager {
         if (!filtersEl) return;
         filtersEl.innerHTML = '';
 
+        // Scope filter pills
+        const scopeBar = document.createElement('div');
+        scopeBar.className = 'anno-mgr-scope-bar';
+
+        ['', 'production', 'global'].forEach(scopeVal => {
+            const label = scopeVal === '' ? 'All' : scopeVal === 'production' ? 'Production' : 'Global';
+            const pill = document.createElement('span');
+            pill.className = `anno-mgr-scope-pill ${this.activeScopeFilter === scopeVal ? 'active' : ''}`;
+            pill.textContent = label;
+            pill.addEventListener('click', () => {
+                this.activeScopeFilter = scopeVal;
+                this.renderFilters();
+                this.renderTableRows();
+            });
+            scopeBar.appendChild(pill);
+        });
+        filtersEl.appendChild(scopeBar);
+
         // Group filter dropdown
         const groupSelect = document.createElement('select');
         groupSelect.className = 'anno-mgr-group-filter';
@@ -178,7 +204,6 @@ class AnnotationsManager {
                 const pill = document.createElement('span');
                 const isActive = this.activeTagFilters.includes(tag);
                 pill.className = `anno-mgr-tag-pill ${isActive ? 'active' : ''}`;
-                // Highlight production tags differently
                 if (this.groupTitles.includes(tag)) {
                     pill.classList.add('production-tag');
                 }
@@ -201,6 +226,13 @@ class AnnotationsManager {
 
     getFilteredAnnotations() {
         let filtered = this.annotations;
+
+        if (this.activeScopeFilter) {
+            filtered = filtered.filter(a => {
+                const annScope = a.scope || 'production';
+                return annScope === this.activeScopeFilter;
+            });
+        }
 
         if (this.activeGroupFilter) {
             filtered = filtered.filter(a => a.group_title === this.activeGroupFilter);
@@ -231,9 +263,22 @@ class AnnotationsManager {
         filtered.forEach(ann => {
             const tr = document.createElement('tr');
             const tags = Array.isArray(ann.tags) ? ann.tags : [];
-            const position = ann.annotation_type === 'point'
-                ? `Week ${ann.week_number}`
-                : `Weeks ${ann.start_week}-${ann.end_week}`;
+            const isGlobal = ann.scope === 'global';
+
+            let position;
+            if (isGlobal && ann.annotation_date) {
+                position = ann.annotation_type === 'interval' && ann.annotation_end_date
+                    ? `${ann.annotation_date} - ${ann.annotation_end_date}`
+                    : ann.annotation_date;
+            } else {
+                position = ann.annotation_type === 'point'
+                    ? `Week ${ann.week_number}`
+                    : `Weeks ${ann.start_week}-${ann.end_week}`;
+            }
+
+            const groupDisplay = isGlobal
+                ? '<span class="anno-scope-badge anno-scope-global">Global</span>'
+                : this.escapeHtml(ann.group_title || '');
 
             const tagPills = tags.map(t => {
                 const isProd = this.groupTitles.includes(t);
@@ -241,7 +286,7 @@ class AnnotationsManager {
             }).join(' ');
 
             tr.innerHTML = `
-                <td class="anno-cell-group">${this.escapeHtml(ann.group_title)}</td>
+                <td class="anno-cell-group">${groupDisplay}</td>
                 <td><span class="anno-type-badge anno-type-${ann.annotation_type}">${ann.annotation_type}</span></td>
                 <td>${position}</td>
                 <td class="anno-cell-label">${this.escapeHtml(ann.label)}</td>
@@ -293,15 +338,39 @@ class AnnotationsManager {
         form.className = 'anno-mgr-form';
 
         const currentType = existing ? existing.annotation_type : 'point';
+        const currentScope = existing ? (existing.scope || 'production') : 'production';
+        const isGlobal = currentScope === 'global';
         const existingTags = existing && Array.isArray(existing.tags) ? existing.tags : [];
+
+        // Format date values for input fields
+        const fmtDate = (val) => {
+            if (!val) return '';
+            // Handle BigQuery date objects or strings
+            if (typeof val === 'object' && val.value) return val.value;
+            return String(val).split('T')[0];
+        };
 
         form.innerHTML = `
             <h3>${isEdit ? 'Edit' : 'New'} Annotation</h3>
             <div class="anno-form-grid">
                 <div class="anno-form-field">
+                    <label>Scope</label>
+                    <div class="anno-form-radios">
+                        <label><input type="radio" name="anno-mgr-scope" value="production" ${!isGlobal ? 'checked' : ''}> Production</label>
+                        <label><input type="radio" name="anno-mgr-scope" value="global" ${isGlobal ? 'checked' : ''}> Global</label>
+                    </div>
+                </div>
+                <div class="anno-form-field anno-production-group-field" style="display:${isGlobal ? 'none' : 'block'}">
                     <label>Production</label>
                     <select class="anno-form-group">
                         <option value="">Select production...</option>
+                        ${this.groupTitles.map(t => `<option value="${this.escapeHtml(t)}" ${existing && existing.group_title === t ? 'selected' : ''}>${this.escapeHtml(t)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="anno-form-field anno-global-group-field" style="display:${isGlobal ? 'block' : 'none'}">
+                    <label>Production (optional)</label>
+                    <select class="anno-form-group-optional">
+                        <option value="">All productions</option>
                         ${this.groupTitles.map(t => `<option value="${this.escapeHtml(t)}" ${existing && existing.group_title === t ? 'selected' : ''}>${this.escapeHtml(t)}</option>`).join('')}
                     </select>
                 </div>
@@ -312,13 +381,21 @@ class AnnotationsManager {
                         <label><input type="radio" name="anno-mgr-type" value="interval" ${currentType === 'interval' ? 'checked' : ''}> Interval</label>
                     </div>
                 </div>
-                <div class="anno-form-field anno-point-fields" style="display:${currentType === 'point' ? 'block' : 'none'}">
+                <div class="anno-form-field anno-point-fields anno-week-input" style="display:${currentType === 'point' && !isGlobal ? 'block' : 'none'}">
                     <label>Week</label>
                     <input type="number" step="0.5" min="0" class="anno-form-week" value="${existing ? (existing.week_number || '') : ''}">
                 </div>
-                <div class="anno-form-field anno-interval-fields" style="display:${currentType === 'interval' ? 'flex' : 'none'};gap:8px;">
+                <div class="anno-form-field anno-interval-fields anno-week-input" style="display:${currentType === 'interval' && !isGlobal ? 'flex' : 'none'};gap:8px;">
                     <div><label>Start Week</label><input type="number" step="0.5" min="0" class="anno-form-start" value="${existing ? (existing.start_week || '') : ''}"></div>
                     <div><label>End Week</label><input type="number" step="0.5" min="0" class="anno-form-end" value="${existing ? (existing.end_week || '') : ''}"></div>
+                </div>
+                <div class="anno-form-field anno-date-point-field anno-date-input" style="display:${currentType === 'point' && isGlobal ? 'block' : 'none'}">
+                    <label>Date</label>
+                    <input type="date" class="anno-form-date" value="${fmtDate(existing ? existing.annotation_date : '')}">
+                </div>
+                <div class="anno-form-field anno-date-interval-field anno-date-input" style="display:${currentType === 'interval' && isGlobal ? 'flex' : 'none'};gap:8px;">
+                    <div><label>Start Date</label><input type="date" class="anno-form-date-start" value="${fmtDate(existing ? existing.annotation_date : '')}"></div>
+                    <div><label>End Date</label><input type="date" class="anno-form-date-end" value="${fmtDate(existing ? existing.annotation_end_date : '')}"></div>
                 </div>
                 <div class="anno-form-field">
                     <label>Label</label>
@@ -346,13 +423,34 @@ class AnnotationsManager {
 
         formArea.appendChild(form);
 
+        // Helper to update position field visibility based on scope + type
+        const updatePositionFields = () => {
+            const scopeVal = form.querySelector('input[name="anno-mgr-scope"]:checked').value;
+            const typeVal = form.querySelector('input[name="anno-mgr-type"]:checked').value;
+            const isG = scopeVal === 'global';
+            const isP = typeVal === 'point';
+
+            // Show/hide production fields
+            form.querySelector('.anno-production-group-field').style.display = isG ? 'none' : 'block';
+            form.querySelector('.anno-global-group-field').style.display = isG ? 'block' : 'none';
+
+            // Week inputs (production scope)
+            form.querySelector('.anno-point-fields.anno-week-input').style.display = (!isG && isP) ? 'block' : 'none';
+            form.querySelector('.anno-interval-fields.anno-week-input').style.display = (!isG && !isP) ? 'flex' : 'none';
+
+            // Date inputs (global scope)
+            form.querySelector('.anno-date-point-field').style.display = (isG && isP) ? 'block' : 'none';
+            form.querySelector('.anno-date-interval-field').style.display = (isG && !isP) ? 'flex' : 'none';
+        };
+
+        // Scope radio toggle
+        form.querySelectorAll('input[name="anno-mgr-scope"]').forEach(radio => {
+            radio.addEventListener('change', updatePositionFields);
+        });
+
         // Type radio toggle
         form.querySelectorAll('input[name="anno-mgr-type"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                const isPoint = radio.value === 'point';
-                form.querySelector('.anno-point-fields').style.display = isPoint ? 'block' : 'none';
-                form.querySelector('.anno-interval-fields').style.display = isPoint ? 'none' : 'flex';
-            });
+            radio.addEventListener('change', updatePositionFields);
         });
 
         // Auto-add production tag when group selected
@@ -411,8 +509,16 @@ class AnnotationsManager {
 
         // Save
         form.querySelector('.anno-form-save').addEventListener('click', async () => {
-            const groupTitle = groupSelect.value;
-            if (!groupTitle) { alert('Please select a production.'); return; }
+            const scopeVal = form.querySelector('input[name="anno-mgr-scope"]:checked').value;
+            const isG = scopeVal === 'global';
+
+            let groupTitle;
+            if (isG) {
+                groupTitle = form.querySelector('.anno-form-group-optional').value || null;
+            } else {
+                groupTitle = groupSelect.value;
+                if (!groupTitle) { alert('Please select a production.'); return; }
+            }
 
             const type = form.querySelector('input[name="anno-mgr-type"]:checked').value;
             const label = form.querySelector('.anno-form-label').value.trim();
@@ -425,16 +531,30 @@ class AnnotationsManager {
                 label,
                 description: form.querySelector('.anno-form-desc').value.trim(),
                 color: form.querySelector('.anno-form-color').value,
-                tags: tagsArr
+                tags: tagsArr,
+                scope: scopeVal
             };
 
-            if (type === 'point') {
-                payload.weekNumber = parseFloat(form.querySelector('.anno-form-week').value);
-                if (isNaN(payload.weekNumber)) { alert('Enter a valid week number.'); return; }
+            if (isG) {
+                // Global: use date fields
+                if (type === 'point') {
+                    payload.annotationDate = form.querySelector('.anno-form-date').value;
+                    if (!payload.annotationDate) { alert('Please select a date.'); return; }
+                } else {
+                    payload.annotationDate = form.querySelector('.anno-form-date-start').value;
+                    payload.annotationEndDate = form.querySelector('.anno-form-date-end').value;
+                    if (!payload.annotationDate || !payload.annotationEndDate) { alert('Please select start and end dates.'); return; }
+                }
             } else {
-                payload.startWeek = parseFloat(form.querySelector('.anno-form-start').value);
-                payload.endWeek = parseFloat(form.querySelector('.anno-form-end').value);
-                if (isNaN(payload.startWeek) || isNaN(payload.endWeek)) { alert('Enter valid start/end weeks.'); return; }
+                // Production: use week fields
+                if (type === 'point') {
+                    payload.weekNumber = parseFloat(form.querySelector('.anno-form-week').value);
+                    if (isNaN(payload.weekNumber)) { alert('Enter a valid week number.'); return; }
+                } else {
+                    payload.startWeek = parseFloat(form.querySelector('.anno-form-start').value);
+                    payload.endWeek = parseFloat(form.querySelector('.anno-form-end').value);
+                    if (isNaN(payload.startWeek) || isNaN(payload.endWeek)) { alert('Enter valid start/end weeks.'); return; }
+                }
             }
 
             try {
@@ -546,6 +666,49 @@ class AnnotationsManager {
     background: #667eea;
     color: white;
     border-color: #667eea;
+}
+
+.anno-mgr-scope-bar {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.anno-mgr-scope-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: white;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.anno-mgr-scope-pill:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.anno-mgr-scope-pill.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.anno-scope-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.anno-scope-global {
+    background: #e8f5e9;
+    color: #2e7d32;
 }
 
 .anno-mgr-tag-pill.production-tag {
@@ -713,6 +876,7 @@ class AnnotationsManager {
 
 .anno-form-field input[type="text"],
 .anno-form-field input[type="number"],
+.anno-form-field input[type="date"],
 .anno-form-field select {
     width: 100%;
     padding: 6px 8px;
