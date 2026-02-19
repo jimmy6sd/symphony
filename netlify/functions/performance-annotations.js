@@ -333,38 +333,25 @@ async function createAnnotation(bigquery, data, headers) {
     };
   }
 
-  if (isGlobal) {
-    // Global annotations use calendar dates instead of week numbers
-    if (!annotationDate) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'annotationDate is required for global annotations' })
-      };
-    }
-    if (annotationType === 'interval' && !annotationEndDate) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'annotationEndDate is required for global interval annotations' })
-      };
-    }
-  } else {
-    // Production annotations use week numbers
-    if (annotationType === 'point' && (weekNumber === undefined || weekNumber === null)) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'weekNumber is required for production point annotations' })
-      };
-    }
-    if (annotationType === 'interval' && (startWeek === undefined || endWeek === undefined)) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'startWeek and endWeek are required for production interval annotations' })
-      };
-    }
+  // Annotations can use calendar dates or week numbers for positioning
+  const hasDate = !!annotationDate;
+  const hasWeek = (annotationType === 'point' && weekNumber !== undefined && weekNumber !== null) ||
+                  (annotationType === 'interval' && startWeek !== undefined && endWeek !== undefined);
+
+  if (!hasDate && !hasWeek) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'Either annotationDate or weekNumber/startWeek+endWeek is required' })
+    };
+  }
+
+  if (hasDate && annotationType === 'interval' && !annotationEndDate) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'annotationEndDate is required for interval annotations using dates' })
+    };
   }
 
   const annotationId = uuidv4();
@@ -382,7 +369,7 @@ async function createAnnotation(bigquery, data, headers) {
     params.push(groupTitle);
   }
 
-  if (isGlobal) {
+  if (annotationDate) {
     columns.push('annotation_date');
     values.push('DATE(?)');
     params.push(annotationDate);
@@ -391,16 +378,22 @@ async function createAnnotation(bigquery, data, headers) {
       values.push('DATE(?)');
       params.push(annotationEndDate);
     }
-  } else {
-    if (annotationType === 'point') {
-      columns.push('week_number');
-      values.push('?');
-      params.push(weekNumber);
-    } else {
-      columns.push('start_week', 'end_week');
-      values.push('?', '?');
-      params.push(startWeek, endWeek);
-    }
+  }
+
+  if (weekNumber !== undefined && weekNumber !== null) {
+    columns.push('week_number');
+    values.push('?');
+    params.push(weekNumber);
+  }
+  if (startWeek !== undefined) {
+    columns.push('start_week');
+    values.push('?');
+    params.push(startWeek);
+  }
+  if (endWeek !== undefined) {
+    columns.push('end_week');
+    values.push('?');
+    params.push(endWeek);
   }
 
   const query = `

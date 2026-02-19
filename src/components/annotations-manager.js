@@ -266,10 +266,10 @@ class AnnotationsManager {
             const isGlobal = ann.scope === 'global';
 
             let position;
-            if (isGlobal && ann.annotation_date) {
+            if (ann.annotation_date) {
                 position = ann.annotation_type === 'interval' && ann.annotation_end_date
-                    ? `${ann.annotation_date} - ${ann.annotation_end_date}`
-                    : ann.annotation_date;
+                    ? `${this.fmtDate(ann.annotation_date)} - ${this.fmtDate(ann.annotation_end_date)}`
+                    : this.fmtDate(ann.annotation_date);
             } else {
                 position = ann.annotation_type === 'point'
                     ? `Week ${ann.week_number}`
@@ -381,19 +381,11 @@ class AnnotationsManager {
                         <label><input type="radio" name="anno-mgr-type" value="interval" ${currentType === 'interval' ? 'checked' : ''}> Interval</label>
                     </div>
                 </div>
-                <div class="anno-form-field anno-point-fields anno-week-input" style="display:${currentType === 'point' && !isGlobal ? 'block' : 'none'}">
-                    <label>Week</label>
-                    <input type="number" step="0.5" min="0" class="anno-form-week" value="${existing ? (existing.week_number || '') : ''}">
-                </div>
-                <div class="anno-form-field anno-interval-fields anno-week-input" style="display:${currentType === 'interval' && !isGlobal ? 'flex' : 'none'};gap:8px;">
-                    <div><label>Start Week</label><input type="number" step="0.5" min="0" class="anno-form-start" value="${existing ? (existing.start_week || '') : ''}"></div>
-                    <div><label>End Week</label><input type="number" step="0.5" min="0" class="anno-form-end" value="${existing ? (existing.end_week || '') : ''}"></div>
-                </div>
-                <div class="anno-form-field anno-date-point-field anno-date-input" style="display:${currentType === 'point' && isGlobal ? 'block' : 'none'}">
+                <div class="anno-form-field anno-date-point-field" style="display:${currentType === 'point' ? 'block' : 'none'}">
                     <label>Date</label>
                     <input type="date" class="anno-form-date" value="${fmtDate(existing ? existing.annotation_date : '')}">
                 </div>
-                <div class="anno-form-field anno-date-interval-field anno-date-input" style="display:${currentType === 'interval' && isGlobal ? 'flex' : 'none'};gap:8px;">
+                <div class="anno-form-field anno-date-interval-field" style="display:${currentType === 'interval' ? 'flex' : 'none'};gap:8px;">
                     <div><label>Start Date</label><input type="date" class="anno-form-date-start" value="${fmtDate(existing ? existing.annotation_date : '')}"></div>
                     <div><label>End Date</label><input type="date" class="anno-form-date-end" value="${fmtDate(existing ? existing.annotation_end_date : '')}"></div>
                 </div>
@@ -423,7 +415,7 @@ class AnnotationsManager {
 
         formArea.appendChild(form);
 
-        // Helper to update position field visibility based on scope + type
+        // Helper to update field visibility based on scope + type
         const updatePositionFields = () => {
             const scopeVal = form.querySelector('input[name="anno-mgr-scope"]:checked').value;
             const typeVal = form.querySelector('input[name="anno-mgr-type"]:checked').value;
@@ -434,13 +426,9 @@ class AnnotationsManager {
             form.querySelector('.anno-production-group-field').style.display = isG ? 'none' : 'block';
             form.querySelector('.anno-global-group-field').style.display = isG ? 'block' : 'none';
 
-            // Week inputs (production scope)
-            form.querySelector('.anno-point-fields.anno-week-input').style.display = (!isG && isP) ? 'block' : 'none';
-            form.querySelector('.anno-interval-fields.anno-week-input').style.display = (!isG && !isP) ? 'flex' : 'none';
-
-            // Date inputs (global scope)
-            form.querySelector('.anno-date-point-field').style.display = (isG && isP) ? 'block' : 'none';
-            form.querySelector('.anno-date-interval-field').style.display = (isG && !isP) ? 'flex' : 'none';
+            // Date inputs (always used for both scopes)
+            form.querySelector('.anno-date-point-field').style.display = isP ? 'block' : 'none';
+            form.querySelector('.anno-date-interval-field').style.display = isP ? 'none' : 'flex';
         };
 
         // Scope radio toggle
@@ -535,26 +523,13 @@ class AnnotationsManager {
                 scope: scopeVal
             };
 
-            if (isG) {
-                // Global: use date fields
-                if (type === 'point') {
-                    payload.annotationDate = form.querySelector('.anno-form-date').value;
-                    if (!payload.annotationDate) { alert('Please select a date.'); return; }
-                } else {
-                    payload.annotationDate = form.querySelector('.anno-form-date-start').value;
-                    payload.annotationEndDate = form.querySelector('.anno-form-date-end').value;
-                    if (!payload.annotationDate || !payload.annotationEndDate) { alert('Please select start and end dates.'); return; }
-                }
+            if (type === 'point') {
+                payload.annotationDate = form.querySelector('.anno-form-date').value;
+                if (!payload.annotationDate) { alert('Please select a date.'); return; }
             } else {
-                // Production: use week fields
-                if (type === 'point') {
-                    payload.weekNumber = parseFloat(form.querySelector('.anno-form-week').value);
-                    if (isNaN(payload.weekNumber)) { alert('Enter a valid week number.'); return; }
-                } else {
-                    payload.startWeek = parseFloat(form.querySelector('.anno-form-start').value);
-                    payload.endWeek = parseFloat(form.querySelector('.anno-form-end').value);
-                    if (isNaN(payload.startWeek) || isNaN(payload.endWeek)) { alert('Enter valid start/end weeks.'); return; }
-                }
+                payload.annotationDate = form.querySelector('.anno-form-date-start').value;
+                payload.annotationEndDate = form.querySelector('.anno-form-date-end').value;
+                if (!payload.annotationDate || !payload.annotationEndDate) { alert('Please select start and end dates.'); return; }
             }
 
             try {
@@ -576,6 +551,12 @@ class AnnotationsManager {
                 alert('Error saving: ' + e.message);
             }
         });
+    }
+
+    fmtDate(val) {
+        if (!val) return '';
+        if (typeof val === 'object' && val.value) return val.value;
+        return String(val).split('T')[0];
     }
 
     escapeHtml(str) {

@@ -590,16 +590,18 @@ class GroupSalesChart {
             });
     }
 
-    convertDateToWeek(dateStr) {
-        const d = new Date(dateStr + 'T00:00:00');
+    convertDateToWeek(dateVal) {
+        const str = dateVal && typeof dateVal === 'object' && dateVal.value ? dateVal.value : String(dateVal).split('T')[0];
+        const d = new Date(str + 'T00:00:00');
         return (this.earliestPerfDate - d) / (7 * 24 * 60 * 60 * 1000);
     }
 
     updateAnnotations(annotations) {
-        // Preprocess global annotations: convert calendar dates to week numbers
+        // Preprocess annotations with calendar dates: convert to week numbers
         this.annotations = annotations.map(ann => {
-            if ((ann.scope === 'global') && ann.annotation_date && this.earliestPerfDate) {
-                const processed = { ...ann, _isGlobal: true };
+            const isGlobal = ann.scope === 'global';
+            if (ann.annotation_date && this.earliestPerfDate) {
+                const processed = { ...ann, _isGlobal: isGlobal };
                 if (ann.annotation_type === 'point') {
                     processed.week_number = this.convertDateToWeek(ann.annotation_date);
                 } else if (ann.annotation_type === 'interval') {
@@ -609,6 +611,9 @@ class GroupSalesChart {
                         : processed.start_week;
                 }
                 return processed;
+            }
+            if (isGlobal) {
+                return { ...ann, _isGlobal: true };
             }
             return ann;
         });
@@ -630,11 +635,13 @@ class GroupSalesChart {
 
         const annoGroup = this.g.append('g').attr('class', 'annotation-overlay');
 
+        let intervalLane = 0;
         annotationsToShow.forEach(ann => {
             if (ann.annotation_type === 'point') {
                 this.renderPointAnnotation(annoGroup, ann);
             } else if (ann.annotation_type === 'interval') {
-                this.renderIntervalAnnotation(annoGroup, ann);
+                this.renderIntervalAnnotation(annoGroup, ann, intervalLane);
+                intervalLane++;
             }
         });
     }
@@ -666,21 +673,9 @@ class GroupSalesChart {
             .style('font-style', isGlobal ? 'italic' : 'normal')
             .style('fill', ann.color || '#e74c3c')
             .text(ann.label);
-
-        // Tag pills
-        const tags = Array.isArray(ann.tags) ? ann.tags : [];
-        if (tags.length > 0) {
-            const tagText = tags.slice(0, 2).join(', ');
-            labelG.append('text')
-                .attr('text-anchor', 'middle')
-                .attr('y', -20)
-                .style('font-size', '8px')
-                .style('fill', '#999')
-                .text(tagText);
-        }
     }
 
-    renderIntervalAnnotation(group, ann) {
+    renderIntervalAnnotation(group, ann, lane = 0) {
         const x1 = this.xScale(ann.start_week);
         const x2 = this.xScale(ann.end_week);
         const left = Math.min(x1, x2);
@@ -689,49 +684,40 @@ class GroupSalesChart {
         if (left + rectWidth < 0 || left > this.innerWidth) return;
 
         const isGlobal = ann._isGlobal;
+        const color = ann.color || '#e74c3c';
+        const bandHeight = 18;
+        const bandY = 4 + lane * (bandHeight + 4);
 
-        // Shaded rectangle
+        // Horizontal band
         group.append('rect')
             .attr('x', left)
-            .attr('y', 0)
+            .attr('y', bandY)
             .attr('width', rectWidth)
-            .attr('height', this.innerHeight)
-            .attr('fill', ann.color || '#e74c3c')
-            .attr('opacity', 0.08);
+            .attr('height', bandHeight)
+            .attr('rx', 3)
+            .attr('fill', color)
+            .attr('opacity', 0.15);
 
-        // Border lines
+        // Left and right edge marks
         [left, left + rectWidth].forEach(bx => {
             group.append('line')
                 .attr('x1', bx).attr('x2', bx)
-                .attr('y1', 0).attr('y2', this.innerHeight)
-                .attr('stroke', ann.color || '#e74c3c')
-                .attr('stroke-width', 1)
-                .attr('stroke-dasharray', '3,3')
-                .attr('opacity', 0.4);
+                .attr('y1', bandY).attr('y2', bandY + bandHeight)
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('opacity', 0.7);
         });
 
-        // Centered label
+        // Label centered in band
         group.append('text')
             .attr('x', left + rectWidth / 2)
-            .attr('y', 14)
+            .attr('y', bandY + bandHeight / 2 + 4)
             .attr('text-anchor', 'middle')
             .style('font-size', '10px')
             .style('font-weight', '600')
             .style('font-style', isGlobal ? 'italic' : 'normal')
-            .style('fill', ann.color || '#e74c3c')
+            .style('fill', color)
             .text(ann.label);
-
-        // Tags
-        const tags = Array.isArray(ann.tags) ? ann.tags : [];
-        if (tags.length > 0) {
-            group.append('text')
-                .attr('x', left + rectWidth / 2)
-                .attr('y', 26)
-                .attr('text-anchor', 'middle')
-                .style('font-size', '8px')
-                .style('fill', '#999')
-                .text(tags.slice(0, 2).join(', '));
-        }
     }
 
     setTagFilter(tags) {

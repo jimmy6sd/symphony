@@ -2189,10 +2189,11 @@ class DataTable {
 
                 const isGlobal = ann.scope === 'global';
                 let weekInfo;
-                if (isGlobal && ann.annotation_date) {
+                const fmtD = (v) => v && typeof v === 'object' && v.value ? v.value : String(v || '').split('T')[0];
+                if (ann.annotation_date) {
                     weekInfo = ann.annotation_type === 'interval' && ann.annotation_end_date
-                        ? `${ann.annotation_date} - ${ann.annotation_end_date}`
-                        : ann.annotation_date;
+                        ? `${fmtD(ann.annotation_date)} - ${fmtD(ann.annotation_end_date)}`
+                        : fmtD(ann.annotation_date);
                 } else {
                     weekInfo = ann.annotation_type === 'point'
                         ? `Week ${ann.week_number}`
@@ -2683,9 +2684,9 @@ class DataTable {
                         if (onSave) onSave(result);
                     } else {
                         result = await window.dataService.createAnnotation(groupTitle, payload);
-                        // Reload all annotations for this group
-                        window.dataService.annotationCache.delete(groupTitle);
-                        const updated = await window.dataService.getGroupAnnotations(groupTitle);
+                        // Reload all annotations for this group (including global)
+                        window.dataService.annotationCache.delete(`chart:${groupTitle}`);
+                        const updated = await window.dataService.getAnnotationsForChart(groupTitle);
                         if (this._groupChart) {
                             this._groupChart.updateAnnotations(updated);
                         }
