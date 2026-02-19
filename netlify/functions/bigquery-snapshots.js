@@ -271,7 +271,7 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       COALESCE(s.overall_atp, 0) as overall_atp,
       COALESCE(s.fixed_atp, 0) as fixed_atp,
       COALESCE(s.non_fixed_atp, 0) as non_fixed_atp,
-      COALESCE(s.comp_tickets, 0) as comp_tickets,
+      COALESCE(c.comp_tickets, s.comp_tickets, 0) as comp_tickets,
       s.snapshot_date as last_updated,
       p.updated_at as metadata_updated_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performances\` p
@@ -298,6 +298,13 @@ async function getPerformancesWithLatestSnapshots(bigquery, params, headers) {
       QUALIFY ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) = 1
     ) s
       ON p.performance_code = s.performance_code
+    LEFT JOIN (
+      SELECT performance_code, comp_tickets
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+      WHERE comp_tickets IS NOT NULL AND comp_tickets > 0
+      QUALIFY ROW_NUMBER() OVER (PARTITION BY performance_code ORDER BY snapshot_date DESC, created_at DESC) = 1
+    ) c
+      ON p.performance_code = c.performance_code
     WHERE (p.cancelled = FALSE OR p.cancelled IS NULL)
   `;
 
@@ -395,6 +402,7 @@ async function getPerformanceHistory(bigquery, params, headers) {
       overall_atp,
       fixed_atp,
       non_fixed_atp,
+      comp_tickets,
       source,
       created_at
     FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
