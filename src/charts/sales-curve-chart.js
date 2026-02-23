@@ -489,7 +489,7 @@ class SalesCurveChart {
                     week: Math.max(0, exactWeeksOut),
                     tickets: snapshot.single_tickets_sold || 0
                 };
-            }).filter(d => d.week >= 0 && d.week <= 10)
+            }).filter(d => d.week >= 0 && d.week <= numWeeks)
               .sort((a, b) => b.week - a.week);
 
             if (historicalPoints.length > 0) {
@@ -511,10 +511,14 @@ class SalesCurveChart {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        // Handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
+        // Handle out-of-range weeks
         let targetCompSales;
-        if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
-            // Use final sales value as baseline when weeks data is sparse or out of range
+        if (lowerWeekIndex < 0 || upperWeekIndex < 0) {
+            // Beyond comp range (performance further out than comp data covers)
+            // Use earliest available comp data point as baseline
+            targetCompSales = targetComp.weeksArray[0];
+        } else if (upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+            // Before comp range (past performance or sparse data)
             targetCompSales = targetComp.weeksArray[numWeeks - 1];
         } else if (lowerWeek === upperWeek) {
             targetCompSales = targetComp.weeksArray[lowerWeekIndex];
@@ -1277,7 +1281,7 @@ class SalesCurveChart {
                     tickets: snapshot.single_tickets_sold || 0,
                     snapshot_date: snapshot.snapshot_date
                 };
-            }).filter(d => d.week >= 0 && d.week <= 10)
+            }).filter(d => d.week >= 0 && d.week <= numWeeks)
               .sort((a, b) => b.week - a.week); // Sort by week descending (oldest first)
 
             if (historicalPoints.length > 0) {
@@ -1316,10 +1320,14 @@ class SalesCurveChart {
         const lowerWeekIndex = numWeeks - 1 - lowerWeek;
         const upperWeekIndex = numWeeks - 1 - upperWeek;
 
-        // Handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
+        // Handle out-of-range weeks
         let targetCompAtActualWeek;
-        if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
-            // Use final sales value as baseline when weeks data is sparse or out of range
+        if (lowerWeekIndex < 0 || upperWeekIndex < 0) {
+            // Beyond comp range (performance further out than comp data covers)
+            // Use earliest available comp data point as baseline
+            targetCompAtActualWeek = targetComp.weeksArray[0];
+        } else if (upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+            // Before comp range (past performance or sparse data)
             targetCompAtActualWeek = targetComp.weeksArray[numWeeks - 1];
         } else if (lowerWeek === upperWeek) {
             // actualWeek is an integer, use direct value

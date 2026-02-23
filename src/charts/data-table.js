@@ -601,10 +601,13 @@ class DataTable {
 
         let targetCompAtActualWeek;
 
-        // Handle cases where performance is further out than target comp has data for
-        // Also handle sparse weeksArray (e.g. ",,,,,,,,,,,672" -> [672] with only 1 element)
-        if (lowerWeekIndex < 0 || upperWeekIndex < 0 || upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
-            // Use final sales value as baseline when weeks data is sparse or out of range
+        // Handle out-of-range weeks
+        if (lowerWeekIndex < 0 || upperWeekIndex < 0) {
+            // Beyond comp range (performance further out than comp data covers)
+            // Use earliest available comp data point as baseline
+            targetCompAtActualWeek = targetComp.weeksArray[0];
+        } else if (upperWeekIndex >= numWeeks || lowerWeekIndex >= numWeeks) {
+            // Before comp range (past performance or sparse data)
             targetCompAtActualWeek = targetComp.weeksArray[numWeeks - 1];
         } else if (lowerWeek === upperWeek) {
             targetCompAtActualWeek = targetComp.weeksArray[lowerWeekIndex];
