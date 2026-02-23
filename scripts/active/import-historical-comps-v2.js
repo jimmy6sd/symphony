@@ -97,11 +97,11 @@ function parseDate(val) {
 }
 
 async function clearExistingComps(bigquery) {
-  console.log('🗑️  Clearing existing comp data...');
+  console.log('🗑️  Clearing imported comp data (preserving manual comparisons)...');
 
   const deleteQuery = `
     DELETE FROM \`kcsymphony.symphony_dashboard.performance_sales_comparisons\`
-    WHERE TRUE
+    WHERE source = 'excel_import' OR source IS NULL
   `;
 
   await bigquery.query({
@@ -109,7 +109,7 @@ async function clearExistingComps(bigquery) {
     location: 'US'
   });
 
-  console.log('✅ Existing comp data cleared!\n');
+  console.log('✅ Imported comp data cleared!\n');
 }
 
 async function importHistoricalComps() {
@@ -125,6 +125,8 @@ async function importHistoricalComps() {
     // Check flags
     const shouldClear = process.argv.includes('--clear') || process.env.CLEAR_BEFORE_IMPORT === 'true';
     const isDryRun = process.argv.includes('--dry-run');
+    const fileArg = process.argv.find(a => a.startsWith('--file='));
+    const fileName = fileArg ? fileArg.split('=').slice(1).join('=') : 'Comps for 25-26 Performances.xlsx';
 
     if (isDryRun) {
       console.log('🔍 DRY RUN MODE - No data will be written to BigQuery\n');
@@ -135,7 +137,7 @@ async function importHistoricalComps() {
     }
 
     // Read Excel file from root
-    const excelPath = path.join(__dirname, '..', '..', 'Comps for 25-26 Performances (4).xlsx');
+    const excelPath = path.join(__dirname, '..', '..', fileName);
     console.log(`📄 Loading Excel file: ${excelPath}`);
 
     const workbook = XLSX.readFile(excelPath);
@@ -280,8 +282,8 @@ async function importHistoricalComps() {
       const insertQuery = `
         INSERT INTO \`kcsymphony.symphony_dashboard.performance_sales_comparisons\`
         (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target,
-         comp_date, atp, subs, capacity, occupancy_percent, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
+         comp_date, atp, subs, capacity, occupancy_percent, source, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
       `;
 
       const targetMarker = isTarget ? '🎯 [TARGET]' : '  ';
@@ -304,11 +306,12 @@ async function importHistoricalComps() {
               isTarget ? '#ff6b35' : '#4285f4', // Orange for target, blue for others
               isTarget ? 'solid' : 'dashed',
               isTarget,
-              compDate, // NEW
-              atp, // NEW
-              subs, // NEW
-              capacity, // NEW
-              occPercent, // NEW
+              compDate,
+              atp,
+              subs,
+              capacity,
+              occPercent,
+              'excel_import', // source
               now,
               now
             ],
@@ -325,6 +328,7 @@ async function importHistoricalComps() {
               'INT64',   // subs
               'INT64',   // capacity
               'FLOAT64', // occupancy_percent
+              'STRING',  // source
               'STRING',  // created_at
               'STRING'   // updated_at
             ],

@@ -150,6 +150,7 @@ async function getComparisons(bigquery, params, headers) {
       subs,
       capacity,
       occupancy_percent,
+      source,
       created_at,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
@@ -204,6 +205,7 @@ async function getBatchComparisons(bigquery, performanceIdsParam, headers) {
       subs,
       capacity,
       occupancy_percent,
+      source,
       created_at,
       updated_at
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
@@ -299,8 +301,8 @@ async function createComparison(bigquery, data, headers) {
 
   const query = `
     INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
+    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, source, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
   `;
 
   await bigquery.query({
@@ -313,6 +315,7 @@ async function createComparison(bigquery, data, headers) {
       lineColor,
       lineStyle,
       isTarget,
+      'manual',
       now,
       now
     ],
