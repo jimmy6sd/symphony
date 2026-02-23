@@ -45,6 +45,9 @@ class DataTable {
                     // Only show meta div if there's content
                     const metaHtml = infoDisplay ? `<div class="performance-meta">${infoDisplay}</div>` : '';
 
+                    // Chart icon for group rows
+                    const chartBtn = row.isGroup ? `<button class="group-chart-btn" title="View group sales chart" data-group-key="${(row.groupKey || '').replace(/"/g, '&quot;')}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14L5.5 8L8.5 11L14 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : '';
+
                     return `
                         <div class="performance-cell">
                             ${chevron}${indent}
@@ -52,6 +55,7 @@ class DataTable {
                                 <div class="performance-title">${value}</div>
                                 ${metaHtml}
                             </div>
+                            ${chartBtn}
                         </div>
                     `;
                 }
@@ -2135,7 +2139,765 @@ class DataTable {
         }
     }
 
-// Patch for data-table.js - add after line 1211
+    // ==================== ANNOTATIONS MANAGER ====================
+
+    openAnnotationsManager() {
+        // Use the existing dashboard tab switching to show annotations view
+        if (window.dashboardUI) {
+            window.dashboardUI.switchDashboardTab('annotations', true);
+        } else {
+            // Fallback: navigate to the annotations route
+            window.location.href = '/annotations';
+        }
+    }
+
+    // ==================== GROUP SALES CHART MODAL ====================
+
+    async showGroupDetails(group) {
+        const performances = group.performances || [];
+        if (performances.length === 0) return;
+
+        const groupTitle = group.groupKey || group.title;
+
+        // Create modal overlay
+        const modalOverlay = d3.select('body')
+            .append('div')
+            .attr('class', 'modal-overlay')
+            .style('position', 'fixed')
+            .style('top', '0')
+            .style('left', '0')
+            .style('width', '100%')
+            .style('height', '100%')
+            .style('background', 'rgba(0, 0, 0, 0.5)')
+            .style('z-index', '1000')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('justify-content', 'center');
+
+        // Modal content - wider than individual modal
+        const modal = modalOverlay.append('div')
+            .attr('class', 'performance-modal group-modal')
+            .style('background', 'white')
+            .style('border-radius', '8px')
+            .style('width', '1400px')
+            .style('max-width', '95vw')
+            .style('max-height', '95vh')
+            .style('overflow', 'hidden')
+            .style('box-shadow', '0 4px 20px rgba(0, 0, 0, 0.3)')
+            .style('display', 'flex')
+            .style('flex-direction', 'column');
+
+        // Header
+        const header = modal.append('div')
+            .style('flex', '0 0 auto')
+            .style('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)')
+            .style('border-radius', '8px 8px 0 0')
+            .style('padding', '14px 20px')
+            .style('display', 'flex')
+            .style('justify-content', 'space-between')
+            .style('align-items', 'center');
+
+        const headerLeft = header.append('div');
+
+        headerLeft.append('h2')
+            .style('margin', '0 0 4px 0')
+            .style('color', 'white')
+            .style('font-size', '18px')
+            .style('font-weight', '700')
+            .text(groupTitle);
+
+        const totalCapacity = performances.reduce((s, p) => s + (p.capacity || 0), 0);
+        headerLeft.append('div')
+            .style('color', 'rgba(255,255,255,0.85)')
+            .style('font-size', '12px')
+            .text(`${performances.length} performances | Capacity: ${totalCapacity.toLocaleString()}`);
+
+        header.append('button')
+            .style('background', 'rgba(255,255,255,0.2)')
+            .style('border', 'none')
+            .style('color', 'white')
+            .style('font-size', '18px')
+            .style('cursor', 'pointer')
+            .style('width', '28px')
+            .style('height', '28px')
+            .style('border-radius', '50%')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('justify-content', 'center')
+            .style('transition', 'all 0.2s')
+            .text('\u00d7')
+            .on('mouseover', function() { d3.select(this).style('background', 'rgba(231,76,60,0.9)'); })
+            .on('mouseout', function() { d3.select(this).style('background', 'rgba(255,255,255,0.2)'); })
+            .on('click', () => {
+                if (this._groupChart) this._groupChart.destroy();
+                modalOverlay.remove();
+            });
+
+        // Modal body (scrollable)
+        const body = modal.append('div')
+            .style('flex', '1 1 auto')
+            .style('overflow-y', 'auto')
+            .style('padding', '16px 20px 20px');
+
+        // Tag filter bar
+        const tagFilterBar = body.append('div')
+            .attr('class', 'tag-filter-bar')
+            .style('display', 'flex')
+            .style('flex-wrap', 'wrap')
+            .style('gap', '6px')
+            .style('margin-bottom', '12px')
+            .style('min-height', '28px')
+            .style('align-items', 'center');
+
+        tagFilterBar.append('span')
+            .style('font-size', '11px')
+            .style('color', '#666')
+            .style('margin-right', '4px')
+            .text('Filter by tag:');
+
+        // Chart container
+        const chartContainer = body.append('div')
+            .attr('id', 'group-sales-chart-container')
+            .style('background', '#f8f9fa')
+            .style('border-radius', '6px')
+            .style('padding', '12px')
+            .style('min-height', '400px')
+            .style('margin-bottom', '16px');
+
+        // Annotation panel
+        const annoPanel = body.append('div')
+            .attr('class', 'annotation-panel');
+
+        annoPanel.append('div')
+            .style('display', 'flex')
+            .style('justify-content', 'space-between')
+            .style('align-items', 'center')
+            .style('margin-bottom', '10px')
+            .html(`<h3 style="margin:0;font-size:14px;color:#333;">Annotations</h3>`)
+            .append('button')
+            .attr('class', 'add-annotation-btn')
+            .style('background', '#667eea')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '5px 12px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-size', '12px')
+            .text('+ Add Annotation')
+            .on('click', () => this.showAnnotationForm(annoPanel, groupTitle, null));
+
+        const annoList = annoPanel.append('div')
+            .attr('class', 'annotation-list');
+
+        // Render chart
+        const chart = new GroupSalesChart('group-sales-chart-container', {
+            performances,
+            groupTitle
+        });
+        this._groupChart = chart;
+        await chart.render();
+
+        // Load annotations
+        let annotations = [];
+        let activeTags = [];
+        try {
+            annotations = await window.dataService.getAnnotationsForChart(groupTitle);
+            chart.updateAnnotations(annotations);
+        } catch (e) {
+            console.warn('Could not load annotations:', e.message);
+        }
+
+        // Render annotation list and tag filter
+        const renderAnnoList = () => {
+            annoList.selectAll('*').remove();
+
+            const filtered = activeTags.length > 0
+                ? annotations.filter(a => {
+                    const tags = Array.isArray(a.tags) ? a.tags : [];
+                    return tags.some(t => activeTags.includes(t));
+                })
+                : annotations;
+
+            if (filtered.length === 0) {
+                annoList.append('div')
+                    .style('color', '#999')
+                    .style('font-size', '12px')
+                    .style('padding', '10px 0')
+                    .text(annotations.length === 0 ? 'No annotations yet. Click "+ Add Annotation" to create one.' : 'No annotations match the selected tags.');
+                return;
+            }
+
+            filtered.forEach(ann => {
+                const item = annoList.append('div')
+                    .attr('class', 'annotation-item')
+                    .style('display', 'flex')
+                    .style('align-items', 'flex-start')
+                    .style('gap', '10px')
+                    .style('padding', '8px 0')
+                    .style('border-bottom', '1px solid #eee');
+
+                // Color dot + type badge
+                const left = item.append('div')
+                    .style('display', 'flex')
+                    .style('align-items', 'center')
+                    .style('gap', '6px')
+                    .style('min-width', '80px');
+
+                left.append('span')
+                    .style('width', '10px')
+                    .style('height', '10px')
+                    .style('border-radius', '50%')
+                    .style('background', ann.color || '#e74c3c')
+                    .style('display', 'inline-block');
+
+                left.append('span')
+                    .style('font-size', '10px')
+                    .style('background', ann.annotation_type === 'point' ? '#e3f2fd' : '#f3e5f5')
+                    .style('color', ann.annotation_type === 'point' ? '#1565c0' : '#7b1fa2')
+                    .style('padding', '2px 6px')
+                    .style('border-radius', '3px')
+                    .text(ann.annotation_type);
+
+                // Content
+                const content = item.append('div').style('flex', '1');
+
+                content.append('div')
+                    .style('font-weight', '600')
+                    .style('font-size', '13px')
+                    .text(ann.label);
+
+                if (ann.description) {
+                    content.append('div')
+                        .style('font-size', '11px')
+                        .style('color', '#666')
+                        .style('margin-top', '2px')
+                        .text(ann.description);
+                }
+
+                const isGlobal = ann.scope === 'global';
+                let weekInfo;
+                const fmtD = (v) => v && typeof v === 'object' && v.value ? v.value : String(v || '').split('T')[0];
+                if (ann.annotation_date) {
+                    weekInfo = ann.annotation_type === 'interval' && ann.annotation_end_date
+                        ? `${fmtD(ann.annotation_date)} - ${fmtD(ann.annotation_end_date)}`
+                        : fmtD(ann.annotation_date);
+                } else {
+                    weekInfo = ann.annotation_type === 'point'
+                        ? `Week ${ann.week_number}`
+                        : `Weeks ${ann.start_week} - ${ann.end_week}`;
+                }
+                content.append('div')
+                    .style('font-size', '10px')
+                    .style('color', '#999')
+                    .style('margin-top', '2px')
+                    .text((isGlobal ? 'Global: ' : '') + weekInfo);
+
+                // Tag pills
+                const tags = Array.isArray(ann.tags) ? ann.tags : [];
+                if (tags.length > 0) {
+                    const tagDiv = content.append('div')
+                        .style('display', 'flex')
+                        .style('gap', '4px')
+                        .style('flex-wrap', 'wrap')
+                        .style('margin-top', '4px');
+
+                    tags.forEach(tag => {
+                        tagDiv.append('span')
+                            .attr('class', 'tag-pill')
+                            .text(tag);
+                    });
+                }
+
+                // Edit/Delete buttons
+                const actions = item.append('div')
+                    .style('display', 'flex')
+                    .style('gap', '4px');
+
+                actions.append('button')
+                    .style('background', 'none')
+                    .style('border', '1px solid #ddd')
+                    .style('padding', '3px 8px')
+                    .style('border-radius', '3px')
+                    .style('cursor', 'pointer')
+                    .style('font-size', '11px')
+                    .style('color', '#666')
+                    .text('Edit')
+                    .on('click', () => {
+                        this.showAnnotationForm(annoPanel, groupTitle, ann, async (updated) => {
+                            const idx = annotations.findIndex(a => a.annotation_id === updated.annotation_id);
+                            if (idx >= 0) annotations[idx] = updated;
+                            chart.updateAnnotations(annotations);
+                            renderTagFilter();
+                            renderAnnoList();
+                        });
+                    });
+
+                actions.append('button')
+                    .style('background', 'none')
+                    .style('border', '1px solid #f5c6cb')
+                    .style('padding', '3px 8px')
+                    .style('border-radius', '3px')
+                    .style('cursor', 'pointer')
+                    .style('font-size', '11px')
+                    .style('color', '#dc3545')
+                    .text('Del')
+                    .on('click', async () => {
+                        if (!confirm('Delete this annotation?')) return;
+                        try {
+                            await window.dataService.deleteAnnotation(ann.annotation_id);
+                            annotations = annotations.filter(a => a.annotation_id !== ann.annotation_id);
+                            chart.updateAnnotations(annotations);
+                            renderTagFilter();
+                            renderAnnoList();
+                        } catch (e) {
+                            alert('Error deleting annotation: ' + e.message);
+                        }
+                    });
+            });
+        };
+
+        const renderTagFilter = () => {
+            tagFilterBar.selectAll('.tag-pill-filter, .tag-pill-all').remove();
+
+            // Collect all unique tags from annotations
+            const allTags = new Set();
+            annotations.forEach(a => {
+                (Array.isArray(a.tags) ? a.tags : []).forEach(t => allTags.add(t));
+            });
+
+            if (allTags.size === 0) return;
+
+            tagFilterBar.append('span')
+                .attr('class', 'tag-pill-all')
+                .style('display', 'inline-block')
+                .style('padding', '3px 10px')
+                .style('border-radius', '12px')
+                .style('font-size', '11px')
+                .style('cursor', 'pointer')
+                .style('border', '1px solid #ddd')
+                .style('background', activeTags.length === 0 ? '#667eea' : 'white')
+                .style('color', activeTags.length === 0 ? 'white' : '#666')
+                .text('All')
+                .on('click', () => {
+                    activeTags = [];
+                    chart.setTagFilter(null);
+                    renderTagFilter();
+                    renderAnnoList();
+                });
+
+            Array.from(allTags).sort().forEach(tag => {
+                const isActive = activeTags.includes(tag);
+                tagFilterBar.append('span')
+                    .attr('class', 'tag-pill-filter')
+                    .style('display', 'inline-block')
+                    .style('padding', '3px 10px')
+                    .style('border-radius', '12px')
+                    .style('font-size', '11px')
+                    .style('cursor', 'pointer')
+                    .style('border', `1px solid ${isActive ? '#667eea' : '#ddd'}`)
+                    .style('background', isActive ? '#667eea' : 'white')
+                    .style('color', isActive ? 'white' : '#666')
+                    .text(tag)
+                    .on('click', () => {
+                        if (isActive) {
+                            activeTags = activeTags.filter(t => t !== tag);
+                        } else {
+                            activeTags.push(tag);
+                        }
+                        chart.setTagFilter(activeTags.length > 0 ? activeTags : null);
+                        renderTagFilter();
+                        renderAnnoList();
+                    });
+            });
+        };
+
+        renderTagFilter();
+        renderAnnoList();
+
+        // Close handlers
+        const handleKeyPress = (event) => {
+            if (event.key === 'Escape') {
+                document.removeEventListener('keydown', handleKeyPress);
+                if (this._groupChart) this._groupChart.destroy();
+                modalOverlay.remove();
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+
+        modalOverlay.on('click', function(event) {
+            if (event.target === this) {
+                document.removeEventListener('keydown', handleKeyPress);
+                if (window.dataTable && window.dataTable._groupChart) window.dataTable._groupChart.destroy();
+                d3.select(this).remove();
+            }
+        });
+    }
+
+    showAnnotationForm(panel, groupTitle, existing, onSave) {
+        // Remove existing form if any
+        panel.selectAll('.annotation-form').remove();
+
+        const isEdit = !!existing;
+        const form = panel.append('div')
+            .attr('class', 'annotation-form')
+            .style('background', '#f8f9fa')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '6px')
+            .style('padding', '14px')
+            .style('margin-top', '10px');
+
+        form.append('div')
+            .style('font-weight', '600')
+            .style('font-size', '13px')
+            .style('margin-bottom', '10px')
+            .text(isEdit ? 'Edit Annotation' : 'Add Annotation');
+
+        // Type radio
+        const typeRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '16px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center');
+
+        typeRow.append('label')
+            .style('font-size', '12px')
+            .style('font-weight', '500')
+            .text('Type:');
+
+        const currentType = existing ? existing.annotation_type : 'point';
+
+        ['point', 'interval'].forEach(type => {
+            const lbl = typeRow.append('label')
+                .style('font-size', '12px')
+                .style('display', 'flex')
+                .style('align-items', 'center')
+                .style('gap', '4px')
+                .style('cursor', 'pointer');
+
+            lbl.append('input')
+                .attr('type', 'radio')
+                .attr('name', 'anno-type')
+                .attr('value', type)
+                .property('checked', type === currentType)
+                .on('change', () => {
+                    // Toggle week inputs
+                    pointWeekRow.style('display', type === 'point' ? 'flex' : 'none');
+                    intervalWeekRow.style('display', type === 'interval' ? 'flex' : 'none');
+                });
+
+            lbl.append('span').text(type.charAt(0).toUpperCase() + type.slice(1));
+        });
+
+        // Week input for point
+        const pointWeekRow = form.append('div')
+            .style('display', currentType === 'point' ? 'flex' : 'none')
+            .style('gap', '8px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center');
+
+        pointWeekRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Week:');
+
+        const weekInput = pointWeekRow.append('input')
+            .attr('type', 'number')
+            .attr('step', '0.5')
+            .attr('min', '0')
+            .style('width', '80px')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .property('value', existing ? (existing.week_number || '') : '');
+
+        // Week inputs for interval
+        const intervalWeekRow = form.append('div')
+            .style('display', currentType === 'interval' ? 'flex' : 'none')
+            .style('gap', '8px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center');
+
+        intervalWeekRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Start:');
+
+        const startWeekInput = intervalWeekRow.append('input')
+            .attr('type', 'number')
+            .attr('step', '0.5')
+            .attr('min', '0')
+            .style('width', '70px')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .property('value', existing ? (existing.start_week || '') : '');
+
+        intervalWeekRow.append('label')
+            .style('font-size', '12px')
+            .text('End:');
+
+        const endWeekInput = intervalWeekRow.append('input')
+            .attr('type', 'number')
+            .attr('step', '0.5')
+            .attr('min', '0')
+            .style('width', '70px')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .property('value', existing ? (existing.end_week || '') : '');
+
+        // Label
+        const labelRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '8px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center');
+
+        labelRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Label:');
+
+        const labelInput = labelRow.append('input')
+            .attr('type', 'text')
+            .attr('placeholder', 'e.g. Email campaign')
+            .style('flex', '1')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .property('value', existing ? (existing.label || '') : '');
+
+        // Description
+        const descRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '8px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center');
+
+        descRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Notes:');
+
+        const descInput = descRow.append('input')
+            .attr('type', 'text')
+            .attr('placeholder', 'Optional description')
+            .style('flex', '1')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .property('value', existing ? (existing.description || '') : '');
+
+        // Tags input with autocomplete
+        const tagsRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '8px')
+            .style('margin-bottom', '8px')
+            .style('align-items', 'center')
+            .style('position', 'relative');
+
+        tagsRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Tags:');
+
+        const tagsInputContainer = tagsRow.append('div')
+            .style('flex', '1')
+            .style('position', 'relative');
+
+        const existingTags = existing && Array.isArray(existing.tags) ? existing.tags.join(', ') : '';
+        const tagsInput = tagsInputContainer.append('input')
+            .attr('type', 'text')
+            .attr('placeholder', 'Comma-separated tags')
+            .style('width', '100%')
+            .style('padding', '4px 8px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('font-size', '12px')
+            .style('box-sizing', 'border-box')
+            .property('value', existingTags);
+
+        const autocompleteDropdown = tagsInputContainer.append('div')
+            .attr('class', 'tag-autocomplete')
+            .style('position', 'absolute')
+            .style('top', '100%')
+            .style('left', '0')
+            .style('right', '0')
+            .style('background', 'white')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '0 0 4px 4px')
+            .style('max-height', '120px')
+            .style('overflow-y', 'auto')
+            .style('z-index', '10')
+            .style('display', 'none')
+            .style('box-shadow', '0 2px 6px rgba(0,0,0,0.1)');
+
+        // Fetch all tags for autocomplete
+        let allKnownTags = [];
+        window.dataService.getAllAnnotationTags().then(tags => {
+            allKnownTags = tags;
+        });
+
+        tagsInput.on('input', function() {
+            const val = this.value;
+            const parts = val.split(',');
+            const currentPart = parts[parts.length - 1].trim().toLowerCase();
+
+            if (currentPart.length === 0) {
+                autocompleteDropdown.style('display', 'none');
+                return;
+            }
+
+            const matches = allKnownTags.filter(t => t.toLowerCase().includes(currentPart));
+            if (matches.length === 0) {
+                autocompleteDropdown.style('display', 'none');
+                return;
+            }
+
+            autocompleteDropdown.style('display', 'block').selectAll('*').remove();
+
+            matches.slice(0, 8).forEach(match => {
+                autocompleteDropdown.append('div')
+                    .style('padding', '4px 8px')
+                    .style('cursor', 'pointer')
+                    .style('font-size', '12px')
+                    .style('border-bottom', '1px solid #f0f0f0')
+                    .text(match)
+                    .on('mouseover', function() { d3.select(this).style('background', '#f0f0f0'); })
+                    .on('mouseout', function() { d3.select(this).style('background', 'white'); })
+                    .on('mousedown', () => {
+                        // Replace current part with selected tag
+                        parts[parts.length - 1] = ' ' + match;
+                        tagsInput.property('value', parts.join(',').replace(/^[\s,]+/, '') + ', ');
+                        autocompleteDropdown.style('display', 'none');
+                        tagsInput.node().focus();
+                    });
+            });
+        });
+
+        tagsInput.on('blur', () => {
+            setTimeout(() => autocompleteDropdown.style('display', 'none'), 200);
+        });
+
+        // Color picker
+        const colorRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '8px')
+            .style('margin-bottom', '12px')
+            .style('align-items', 'center');
+
+        colorRow.append('label')
+            .style('font-size', '12px')
+            .style('min-width', '60px')
+            .text('Color:');
+
+        const colorInput = colorRow.append('input')
+            .attr('type', 'color')
+            .style('width', '40px')
+            .style('height', '28px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .property('value', existing ? (existing.color || '#e74c3c') : '#e74c3c');
+
+        // Buttons
+        const btnRow = form.append('div')
+            .style('display', 'flex')
+            .style('gap', '8px')
+            .style('justify-content', 'flex-end');
+
+        btnRow.append('button')
+            .style('background', '#e9ecef')
+            .style('border', 'none')
+            .style('padding', '6px 14px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-size', '12px')
+            .text('Cancel')
+            .on('click', () => form.remove());
+
+        btnRow.append('button')
+            .style('background', '#667eea')
+            .style('color', 'white')
+            .style('border', 'none')
+            .style('padding', '6px 14px')
+            .style('border-radius', '4px')
+            .style('cursor', 'pointer')
+            .style('font-size', '12px')
+            .style('font-weight', '600')
+            .text(isEdit ? 'Update' : 'Save')
+            .on('click', async () => {
+                const selectedType = form.select('input[name="anno-type"]:checked').property('value');
+                const tagsStr = tagsInput.property('value');
+                const tagsArr = tagsStr.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+                const payload = {
+                    annotationType: selectedType,
+                    label: labelInput.property('value'),
+                    description: descInput.property('value'),
+                    color: colorInput.property('value'),
+                    tags: tagsArr
+                };
+
+                if (selectedType === 'point') {
+                    payload.weekNumber = parseFloat(weekInput.property('value'));
+                    if (isNaN(payload.weekNumber)) {
+                        alert('Please enter a valid week number.');
+                        return;
+                    }
+                } else {
+                    payload.startWeek = parseFloat(startWeekInput.property('value'));
+                    payload.endWeek = parseFloat(endWeekInput.property('value'));
+                    if (isNaN(payload.startWeek) || isNaN(payload.endWeek)) {
+                        alert('Please enter valid start and end weeks.');
+                        return;
+                    }
+                }
+
+                if (!payload.label) {
+                    alert('Please enter a label.');
+                    return;
+                }
+
+                try {
+                    let result;
+                    if (isEdit) {
+                        result = await window.dataService.updateAnnotation(existing.annotation_id, payload);
+                        if (onSave) onSave(result);
+                    } else {
+                        result = await window.dataService.createAnnotation(groupTitle, payload);
+                        // Reload all annotations for this group (including global)
+                        window.dataService.annotationCache.delete(`chart:${groupTitle}`);
+                        const updated = await window.dataService.getAnnotationsForChart(groupTitle);
+                        if (this._groupChart) {
+                            this._groupChart.updateAnnotations(updated);
+                        }
+                        // Trigger re-render of annotation list by dispatching a custom event
+                        panel.node().dispatchEvent(new CustomEvent('annotations-updated', { detail: updated }));
+                    }
+                    form.remove();
+
+                    // If not editing (new annotation), reload the entire modal content
+                    if (!isEdit) {
+                        // Find the modal and re-trigger showGroupDetails
+                        const groupRow = (this.filteredData || this.data || []).find(d => d.isGroup && d.groupKey === groupTitle);
+                        if (groupRow) {
+                            const overlay = d3.select('.modal-overlay');
+                            if (this._groupChart) this._groupChart.destroy();
+                            overlay.remove();
+                            await this.showGroupDetails(groupRow);
+                        }
+                    }
+                } catch (e) {
+                    alert('Error saving annotation: ' + e.message);
+                }
+            });
+    }
 
     async renderSalesChart(container, performance) {
         // Get historical snapshots for this performance (lazy-loaded on demand)
@@ -2708,6 +3470,7 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         const headerRight = header
             .append('div')
+            .attr('class', 'header-links')
             .style('display', 'flex')
             .style('align-items', 'center')
             .style('gap', '12px');
@@ -2724,10 +3487,16 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             });
 
         headerRight
+            .append('button')
+            .attr('class', 'nav-link annotations-btn')
+            .html('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Annotations')
+            .on('click', () => this.openAnnotationsManager());
+
+        headerRight
             .append('a')
             .attr('href', '/excel.html')
             .attr('class', 'nav-link excel-export-link')
-            .text('Excel Export');
+            .html('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Excel Export');
     }
 
     createTable() {
@@ -2901,6 +3670,18 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
 
         // Update scorecard with current filtered data
         this.updateScorecard();
+
+        // Delegated click handler for group chart buttons
+        this.tbody.node().querySelectorAll('.group-chart-btn').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const groupKey = btn.getAttribute('data-group-key');
+                const groupRow = displayData.find(d => d.isGroup && d.groupKey === groupKey);
+                if (groupRow) {
+                    this.showGroupDetails(groupRow);
+                }
+            });
+        });
     }
 
     renderSparklines(data) {
@@ -4087,6 +4868,76 @@ const tableStyles = `
     .modal-header [style*="📍"],
     .modal-header [style*="🎵"] {
         display: none !important;
+    }
+}
+
+/* Group Chart Button */
+.group-chart-btn {
+    background: none;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 3px 5px;
+    cursor: pointer;
+    color: #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.group-chart-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.group-chart-btn svg {
+    display: block;
+}
+
+/* Group Modal */
+.group-modal {
+    width: 1400px !important;
+    max-width: 95vw !important;
+}
+
+/* Tag Pills */
+.tag-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    background: #e9ecef;
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* Annotation Panel */
+.annotation-panel h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.annotation-form input[type="text"],
+.annotation-form input[type="number"] {
+    outline: none;
+}
+
+.annotation-form input[type="text"]:focus,
+.annotation-form input[type="number"]:focus {
+    border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+    .group-modal {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
     }
 }
 `;

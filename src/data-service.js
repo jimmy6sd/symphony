@@ -7,6 +7,11 @@ class DataService {
 
         // ⚡ IN-FLIGHT REQUESTS: Track promises to deduplicate simultaneous requests
         this.comparisonInFlight = new Map();  // performanceId -> promise
+
+        // Annotation caches
+        this.annotationCache = new Map();  // groupTitle -> annotations array
+        this.annotationInFlight = new Map();  // groupTitle -> promise
+        this.allTagsCache = null;  // cached list of all known tags
     }
 
     // REMOVED: loadRealData() - no longer needed, using BigQuery only
@@ -524,6 +529,203 @@ class DataService {
             return result;
         } catch (error) {
             console.error('Error deleting comparison:', error);
+            throw error;
+        }
+    }
+
+    // ==================== ANNOTATION API METHODS ====================
+
+    // Get annotations for a group
+    async getGroupAnnotations(groupTitle) {
+        try {
+            if (this.annotationCache.has(groupTitle)) {
+                return this.annotationCache.get(groupTitle);
+            }
+
+            if (this.annotationInFlight.has(groupTitle)) {
+                return await this.annotationInFlight.get(groupTitle);
+            }
+
+            const fetchPromise = (async () => {
+                const response = await fetch(`/.netlify/functions/performance-annotations?groupTitle=${encodeURIComponent(groupTitle)}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch annotations: ${response.status}`);
+                }
+                const data = await response.json();
+                this.annotationCache.set(groupTitle, data);
+                return data;
+            })();
+
+            this.annotationInFlight.set(groupTitle, fetchPromise);
+            const data = await fetchPromise;
+            this.annotationInFlight.delete(groupTitle);
+            return data;
+        } catch (error) {
+            console.error('Error fetching annotations:', error);
+            this.annotationInFlight.delete(groupTitle);
+            return [];
+        }
+    }
+
+    // Get global annotations only (for manager view)
+    async getGlobalAnnotations() {
+        try {
+            const cacheKey = '__global__';
+            if (this.annotationCache.has(cacheKey)) {
+                return this.annotationCache.get(cacheKey);
+            }
+
+            if (this.annotationInFlight.has(cacheKey)) {
+                return await this.annotationInFlight.get(cacheKey);
+            }
+
+            const fetchPromise = (async () => {
+                const response = await fetch('/.netlify/functions/performance-annotations?scope=global');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch global annotations: ${response.status}`);
+                }
+                const data = await response.json();
+                this.annotationCache.set(cacheKey, data);
+                return data;
+            })();
+
+            this.annotationInFlight.set(cacheKey, fetchPromise);
+            const data = await fetchPromise;
+            this.annotationInFlight.delete(cacheKey);
+            return data;
+        } catch (error) {
+            console.error('Error fetching global annotations:', error);
+            this.annotationInFlight.delete('__global__');
+            return [];
+        }
+    }
+
+    // Get annotations for chart rendering (production + global in one call)
+    async getAnnotationsForChart(groupTitle) {
+        try {
+            const cacheKey = `chart:${groupTitle}`;
+            if (this.annotationCache.has(cacheKey)) {
+                return this.annotationCache.get(cacheKey);
+            }
+
+            if (this.annotationInFlight.has(cacheKey)) {
+                return await this.annotationInFlight.get(cacheKey);
+            }
+
+            const fetchPromise = (async () => {
+                const response = await fetch(`/.netlify/functions/performance-annotations?groupTitle=${encodeURIComponent(groupTitle)}&includeGlobal=true`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch annotations for chart: ${response.status}`);
+                }
+                const data = await response.json();
+                this.annotationCache.set(cacheKey, data);
+                return data;
+            })();
+
+            this.annotationInFlight.set(cacheKey, fetchPromise);
+            const data = await fetchPromise;
+            this.annotationInFlight.delete(cacheKey);
+            return data;
+        } catch (error) {
+            console.error('Error fetching chart annotations:', error);
+            this.annotationInFlight.delete(`chart:${groupTitle}`);
+            return [];
+        }
+    }
+
+    // Get all distinct tags for autocomplete
+    async getAllAnnotationTags() {
+        try {
+            if (this.allTagsCache) {
+                return this.allTagsCache;
+            }
+            const response = await fetch('/.netlify/functions/performance-annotations?allTags=true');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch tags: ${response.status}`);
+            }
+            this.allTagsCache = await response.json();
+            return this.allTagsCache;
+        } catch (error) {
+            console.error('Error fetching annotation tags:', error);
+            return [];
+        }
+    }
+
+    // Create a new annotation
+    async createAnnotation(groupTitle, data) {
+        try {
+            const payload = { ...data };
+            if (groupTitle) payload.groupTitle = groupTitle;
+
+            const response = await fetch('/.netlify/functions/performance-annotations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create annotation');
+            }
+            const result = await response.json();
+
+            // Global annotations affect all charts, so clear entire cache
+            if (data.scope === 'global') {
+                this.annotationCache.clear();
+                this.annotationInFlight.clear();
+            } else {
+                this.annotationCache.delete(groupTitle);
+                this.annotationCache.delete(`chart:${groupTitle}`);
+            }
+            this.allTagsCache = null;
+            return result;
+        } catch (error) {
+            console.error('Error creating annotation:', error);
+            throw error;
+        }
+    }
+
+    // Update an annotation
+    async updateAnnotation(annotationId, updates) {
+        try {
+            const response = await fetch(`/.netlify/functions/performance-annotations/${annotationId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to update annotation');
+            }
+            const result = await response.json();
+            // Clear all annotation caches (scope may have changed)
+            this.annotationCache.clear();
+            this.annotationInFlight.clear();
+            this.allTagsCache = null;
+            return result;
+        } catch (error) {
+            console.error('Error updating annotation:', error);
+            throw error;
+        }
+    }
+
+    // Delete an annotation
+    async deleteAnnotation(annotationId) {
+        try {
+            const response = await fetch(`/.netlify/functions/performance-annotations/${annotationId}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to delete annotation');
+            }
+            const result = await response.json();
+            // Clear all annotation caches
+            this.annotationCache.clear();
+            this.annotationInFlight.clear();
+            this.allTagsCache = null;
+            return result;
+        } catch (error) {
+            console.error('Error deleting annotation:', error);
             throw error;
         }
     }

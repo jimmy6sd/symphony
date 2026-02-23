@@ -575,16 +575,30 @@ body {
     color: var(--text-primary);
 }
 
+.table-header .header-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-header .annotations-btn,
 .table-header .excel-export-link {
     font-size: var(--font-size-sm);
     color: var(--primary-color);
     text-decoration: none;
+    background: none;
+    cursor: pointer;
     padding: 6px 14px;
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius-md);
     transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+    box-sizing: border-box;
 }
 
+.table-header .annotations-btn:hover,
 .table-header .excel-export-link:hover {
     background: var(--primary-color);
     color: white;

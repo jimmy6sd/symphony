@@ -24,11 +24,13 @@ const SCRIPTS_TO_LOAD = [
     '/src/utils/sales-projections.js',
     '/src/charts/performance-chart.js',
     '/src/charts/sales-curve-chart.js',
+    '/src/charts/group-sales-chart.js',
     '/src/charts/ticket-type-chart.js',
     '/src/charts/data-table.js',
     '/src/charts/subscription-table.js',
     '/src/charts/subscription-sales-curve.js',
     '/src/admin-panel.js',
+    '/src/components/annotations-manager.js',
     '/src/components/pipeline-status.js',
     '/src/components/dashboard-ui.js',
     '/src/core/app.js'
