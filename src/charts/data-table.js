@@ -36,17 +36,17 @@ class DataTable {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
 
+                    // Chart icon for group rows
+                    const chartBtn = row.isGroup ? `<button class="group-chart-btn" title="View group sales chart" data-group-key="${(row.groupKey || '').replace(/"/g, '&quot;')}"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 14L5.5 8L8.5 11L14 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : '';
+
                     if (row.isGroup && row.performances) {
-                        // Group row: "X performances"
+                        // Group row: "X performances" with chart button inline
                         const count = row.performances.length;
-                        infoDisplay = `<span class="perf-meta-simple">${count} performance${count > 1 ? 's' : ''}</span>`;
+                        infoDisplay = `<span class="perf-meta-simple">${count} performance${count > 1 ? 's' : ''}</span>${chartBtn}`;
                     }
 
                     // Only show meta div if there's content
                     const metaHtml = infoDisplay ? `<div class="performance-meta">${infoDisplay}</div>` : '';
-
-                    // Chart icon for group rows
-                    const chartBtn = row.isGroup ? `<button class="group-chart-btn" title="View group sales chart" data-group-key="${(row.groupKey || '').replace(/"/g, '&quot;')}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14L5.5 8L8.5 11L14 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : '';
 
                     return `
                         <div class="performance-cell">
@@ -55,7 +55,6 @@ class DataTable {
                                 <div class="performance-title">${value}</div>
                                 ${metaHtml}
                             </div>
-                            ${chartBtn}
                         </div>
                     `;
                 }
@@ -87,7 +86,7 @@ class DataTable {
                         isPast = perfDate <= today;
                     }
 
-                    const finalLabel = isPast ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>' : '';
+                    const finalLabel = isPast ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-bottom: 2px;">Final</div>' : '';
                     return `<div class="date-cell">${finalLabel}${date.toLocaleDateString()}</div>`;
                 }
             },
@@ -372,7 +371,7 @@ class DataTable {
                     if (projection.isPast) {
                         return `
                             <div class="projection-cell">
-                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-bottom: 2px;">Final</div>
                                 <div class="projection-value">${projectedTickets.toLocaleString()}</div>
                                 <div class="projection-variance projection-${status}">${varianceSign}${variance.toLocaleString()}</div>
                             </div>
@@ -405,7 +404,7 @@ class DataTable {
                         if (projection.isPast) {
                             return `
                                 <div class="projection-cell">
-                                    <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                    <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-bottom: 2px;">Final</div>
                                     <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
                                     <div class="projection-variance" style="color: var(--text-muted); font-size: 0.75rem;">Comp ATP Missing</div>
                                 </div>
@@ -427,7 +426,7 @@ class DataTable {
                     if (projection.isPast) {
                         return `
                             <div class="projection-cell">
-                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>
+                                <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-bottom: 2px;">Final</div>
                                 <div class="projection-value">$${projectedRevenue.toLocaleString()}</div>
                                 <div class="projection-variance projection-${status}">${varianceSign}$${Math.abs(variance).toLocaleString()}</div>
                             </div>
@@ -461,7 +460,7 @@ class DataTable {
                     const varianceSign = variance >= 0 ? '+' : '';
 
                     const finalLabel = projection.isPast
-                        ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1;">Final</div>'
+                        ? '<div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1; margin-bottom: 2px;">Final</div>'
                         : '';
 
                     return `
@@ -4438,7 +4437,8 @@ const tableStyles = `
     min-width: 200px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    overflow: hidden;
 }
 
 .chevron {
@@ -4500,11 +4500,21 @@ const tableStyles = `
 .performance-info {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .performance-title {
     font-weight: 500;
     color: #212529;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.performance-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
 }
 
 .performance-code {
@@ -4878,15 +4888,14 @@ const tableStyles = `
 .group-chart-btn {
     background: none;
     border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 3px 5px;
+    border-radius: 3px;
+    padding: 2px 4px;
     cursor: pointer;
     color: #667eea;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    margin-left: auto;
     flex-shrink: 0;
 }
 
@@ -4895,6 +4904,7 @@ const tableStyles = `
     color: white;
     border-color: #667eea;
 }
+
 
 .group-chart-btn svg {
     display: block;
