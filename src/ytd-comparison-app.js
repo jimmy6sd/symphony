@@ -8,6 +8,8 @@ class YTDComparisonApp {
         this.availableYears = [];
         this.segmentCount = 6;  // Default to 6 segments
         this.attributionMode = 'performance';  // Default to performance date attribution
+        this.availableSeries = [];   // Populated from API _meta
+        this.selectedSeries = null;  // null = All, otherwise a single series name
 
         this.yearColors = {
             'FY23': '#8884d8',
@@ -42,11 +44,17 @@ class YTDComparisonApp {
         }
     }
 
+    getSeriesParam() {
+        if (!this.selectedSeries) return '';
+        return `&series=${encodeURIComponent(this.selectedSeries)}`;
+    }
+
     async loadData() {
         const weekType = document.getElementById('week-type-select')?.value || 'fiscal';
+        const seriesParam = this.getSeriesParam();
 
         // Main chart always uses snapshot mode (revenue by when collected)
-        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=snapshot`);
+        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=snapshot${seriesParam}`);
 
         if (!response.ok) {
             throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
@@ -54,6 +62,11 @@ class YTDComparisonApp {
 
         const result = await response.json();
         this.data = result.data;
+
+        // Update available series from API response (only on first load or when empty)
+        if (result._meta?.availableSeries?.length && this.availableSeries.length === 0) {
+            this.availableSeries = result._meta.availableSeries;
+        }
 
         // Merge FY26 and FY26 Current into a single FY26 series
         this.mergeFY26Data();
@@ -69,9 +82,10 @@ class YTDComparisonApp {
     async loadSegmentData() {
         const weekType = document.getElementById('week-type-select')?.value || 'fiscal';
         const attributionMode = document.getElementById('segment-attribution-select')?.value || 'snapshot';
+        const seriesParam = this.getSeriesParam();
 
         // Load data with selected attribution mode for segments
-        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=${attributionMode}`);
+        const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&weekType=${weekType}&attributionMode=${attributionMode}${seriesParam}`);
 
         if (!response.ok) {
             throw new Error(`Failed to load segment data: ${response.status} ${response.statusText}`);
@@ -182,6 +196,9 @@ class YTDComparisonApp {
 
         // Year toggles
         this.renderYearToggles();
+
+        // Series toggles
+        this.renderSeriesToggles();
     }
 
     renderYearToggles() {
@@ -215,6 +232,115 @@ class YTDComparisonApp {
 
             container.appendChild(toggle);
         });
+    }
+
+    renderSeriesToggles() {
+        if (this.availableSeries.length === 0) return;
+
+        const containers = [
+            document.getElementById('series-toggles'),
+            document.getElementById('segment-series-toggles')
+        ].filter(Boolean);
+
+        if (containers.length === 0) return;
+
+        const options = ['All', ...this.availableSeries];
+
+        containers.forEach(container => {
+            container.innerHTML = '';
+
+            const label = document.createElement('span');
+            label.style.cssText = 'font-weight: 500; color: #555; font-size: 0.8rem; margin-right: 2px;';
+            label.textContent = 'Series:';
+            container.appendChild(label);
+
+            options.forEach(name => {
+                const isAll = name === 'All';
+                const isActive = isAll ? !this.selectedSeries : this.selectedSeries === name;
+
+                const btn = document.createElement('span');
+                btn.className = `series-toggle${isActive ? ' active' : ''}`;
+                btn.dataset.series = name;
+                btn.textContent = name;
+
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.selectSeries(isAll ? null : name);
+                });
+
+                container.appendChild(btn);
+            });
+
+            // Add info icon
+            const infoBtn = document.createElement('span');
+            infoBtn.className = 'series-info-btn';
+            infoBtn.textContent = '?';
+            infoBtn.title = 'Series mapping info';
+            infoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showSeriesMappingPopover(infoBtn);
+            });
+            container.appendChild(infoBtn);
+        });
+    }
+
+    async selectSeries(seriesName) {
+        if (seriesName === this.selectedSeries) return;
+        this.selectedSeries = seriesName;
+
+        // Update all toggle buttons across both containers
+        document.querySelectorAll('.series-toggle').forEach(btn => {
+            const btnSeries = btn.dataset.series;
+            const shouldBeActive = seriesName === null ? btnSeries === 'All' : btnSeries === seriesName;
+            btn.classList.toggle('active', shouldBeActive);
+        });
+
+        // Reload data with new series filter
+        this.showLoading();
+        try {
+            await this.loadData();
+            this.showChart();
+            this.chart?.setData(this.data);
+            this.renderSummary();
+            this.renderSegmentCards();
+        } catch (error) {
+            console.error('Error reloading with series filter:', error);
+            this.showError(error.message);
+        }
+    }
+
+    showSeriesMappingPopover(anchor) {
+        // Close any existing popover
+        document.querySelector('.series-mapping-popover')?.remove();
+
+        const popover = document.createElement('div');
+        popover.className = 'series-mapping-popover';
+        popover.innerHTML = `
+            <div class="mapping-header">
+                <strong>Series Mapping</strong>
+                <span class="mapping-close">&times;</span>
+            </div>
+            <table class="mapping-table">
+                <tr><td class="mapping-category">Classical</td><td>Classical, Piazza, Special, CS01–CS14, Chamber Music, Series-01/03/04/05/10/12</td></tr>
+                <tr><td class="mapping-category">Pops</td><td>Pops, PS1–PS5, Happy Hour</td></tr>
+                <tr><td class="mapping-category">Family</td><td>Family, FS1–FS4, Christmas Festival, Education</td></tr>
+                <tr><td class="mapping-category">Film</td><td>Film, FM1–FM3</td></tr>
+                <tr><td class="mapping-category">Specials</td><td>Everything else (guest artists, special events, one-off concerts)</td></tr>
+            </table>
+        `;
+
+        // Position near the anchor
+        document.body.appendChild(popover);
+        const rect = anchor.getBoundingClientRect();
+        popover.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+        popover.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 340) + 'px';
+
+        // Close handlers
+        const close = () => popover.remove();
+        popover.querySelector('.mapping-close').addEventListener('click', close);
+        setTimeout(() => {
+            document.addEventListener('click', close, { once: true });
+        }, 0);
     }
 
     renderChart() {

@@ -970,8 +970,10 @@ async function getSubscriptionHistory(bigquery, params, headers) {
 
 // Get YTD comparison data for year-over-year analysis
 // Returns weekly YTD totals grouped by fiscal year
+// Optional series filter: when provided, uses ytd_performance_snapshots for FY24/FY25
+// and filters by series on FY26 live data. When absent, uses existing pre-aggregated tables.
 async function getYTDComparison(bigquery, params, headers) {
-  const { fiscalYears, weekType = 'fiscal', attributionMode = 'snapshot' } = params;
+  const { fiscalYears, weekType = 'fiscal', attributionMode = 'snapshot', series } = params;
 
   // Default to all available years
   const yearsFilter = fiscalYears
@@ -981,13 +983,150 @@ async function getYTDComparison(bigquery, params, headers) {
   // Select week column based on weekType parameter
   const weekColumn = weekType === 'iso' ? 'iso_week' : 'fiscal_week';
 
+  // Canonical series categories (consolidates granular FY26 codes)
+  // FY24/FY25 snapshot table already uses these names
+  // FY26 performances table uses granular codes (CS01, PS2, FS1, etc.) that need mapping
+  // Maps granular series values to 5 canonical categories
+  // Used in both FY26 live queries (performances table) and FY24/FY25 snapshot queries
+  const SERIES_MAP_SQL = `
+    CASE
+      WHEN series IN ('Classical', 'Piazza', 'Special', 'CS01','CS02','CS03','CS04','CS05','CS06','CS07','CS08','CS09','CS10','CS11','CS12','CS13','CS14','Chamber Music','Series-01','Series-03','Series-04','Series-05','Series-10','Series-12') THEN 'Classical'
+      WHEN series IN ('Pops', 'PS1','PS2','PS3','PS4','PS5','Happy Hour') THEN 'Pops'
+      WHEN series IN ('Family', 'FS1','FS2','FS3','FS4','Christmas Festival','Education') THEN 'Family'
+      WHEN series IN ('Film', 'FM1','FM2','FM3') THEN 'Film'
+      WHEN series IN ('Special Event', 'On Stage') THEN 'Specials'
+      ELSE 'Specials'
+    END`;
+
+  // Parse series filter (comma-separated list)
+  const seriesFilter = series
+    ? series.split(',').map(s => s.trim()).filter(Boolean)
+    : null;
+  const seriesSQL = seriesFilter
+    ? seriesFilter.map(s => `'${s}'`).join(',')
+    : null;
+
   // Query historical data (FY23-FY25)
-  // Two modes: snapshot (from ytd_weekly_totals) or performance (from ytd_historical_performances)
+  // When series filter is active: use ytd_performance_snapshots (per-performance data)
+  // When no filter: use existing pre-aggregated tables (zero risk to current behavior)
   let histQuery;
 
-  if (attributionMode === 'performance') {
-    // Performance attribution: Revenue attributed to when concerts occurred
-    // Use ytd_historical_performances table with performance dates and actual revenue
+  if (seriesFilter) {
+    // Series-filtered mode: query ytd_performance_snapshots for FY24/FY25
+    if (attributionMode === 'performance') {
+      // Performance attribution with series filter:
+      // Take latest snapshot per performance, filter by series, group by performance week
+      histQuery = `
+        WITH latest_per_perf AS (
+          SELECT
+            fiscal_year,
+            performance_code,
+            series,
+            performance_fiscal_week as perf_fw,
+            performance_iso_week as perf_iw,
+            COALESCE(single_revenue, 0) as single_revenue,
+            COALESCE(CAST(single_tickets AS FLOAT64), 0) as single_tickets,
+            COALESCE(subscription_revenue, 0) as subscription_revenue,
+            COALESCE(CAST(subscription_tickets AS FLOAT64), 0) as subscription_tickets,
+            COALESCE(total_revenue, 0) as total_revenue,
+            COALESCE(CAST(total_tickets AS FLOAT64), 0) as total_tickets,
+            ROW_NUMBER() OVER (
+              PARTITION BY fiscal_year, performance_code
+              ORDER BY snapshot_date DESC
+            ) as rn
+          FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_performance_snapshots\`
+          WHERE fiscal_year IN (${yearsFilter})
+            AND (${SERIES_MAP_SQL}) IN (${seriesSQL})
+        ),
+        weekly_totals AS (
+          SELECT
+            fiscal_year,
+            ${weekType === 'iso' ? 'perf_iw' : 'perf_fw'} as week,
+            perf_fw as fiscal_week,
+            perf_iw as iso_week,
+            SUM(total_revenue) as week_revenue,
+            SUM(total_tickets) as week_tickets,
+            SUM(single_revenue) as week_single_revenue,
+            SUM(single_tickets) as week_single_tickets,
+            SUM(subscription_revenue) as week_subscription_revenue,
+            SUM(subscription_tickets) as week_subscription_tickets,
+            COUNT(*) as performance_count
+          FROM latest_per_perf
+          WHERE rn = 1
+          GROUP BY fiscal_year, week, fiscal_week, iso_week
+        ),
+        ytd_running AS (
+          SELECT
+            fiscal_year, week, fiscal_week, iso_week,
+            SUM(week_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_revenue,
+            SUM(week_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_tickets,
+            SUM(week_single_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_single_revenue,
+            SUM(week_single_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_single_tickets,
+            SUM(week_subscription_revenue) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_subscription_revenue,
+            SUM(week_subscription_tickets) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_subscription_tickets,
+            SUM(performance_count) OVER (PARTITION BY fiscal_year ORDER BY week) as ytd_performance_count
+          FROM weekly_totals
+        )
+        SELECT fiscal_year, week, fiscal_week, iso_week, NULL as week_end_date,
+          ytd_tickets as ytd_tickets_sold, ytd_single_tickets, ytd_subscription_tickets,
+          ytd_revenue, ytd_single_revenue, ytd_subscription_revenue,
+          ytd_performance_count as performance_count
+        FROM ytd_running
+        ORDER BY fiscal_year, week
+      `;
+    } else {
+      // Snapshot attribution with series filter:
+      // SUM across filtered performances at each snapshot date.
+      // Values in ytd_performance_snapshots are already CUMULATIVE per performance,
+      // so SUM across performances at a snapshot = YTD total. No running SUM needed.
+      histQuery = `
+        WITH snapshot_totals AS (
+          SELECT
+            fiscal_year,
+            snapshot_fiscal_week,
+            snapshot_iso_week,
+            snapshot_date,
+            SUM(COALESCE(single_revenue, 0)) as single_revenue,
+            SUM(COALESCE(CAST(single_tickets AS FLOAT64), 0)) as single_tickets,
+            SUM(COALESCE(subscription_revenue, 0)) as subscription_revenue,
+            SUM(COALESCE(CAST(subscription_tickets AS FLOAT64), 0)) as subscription_tickets,
+            SUM(COALESCE(total_revenue, 0)) as total_revenue,
+            SUM(COALESCE(CAST(total_tickets AS FLOAT64), 0)) as total_tickets,
+            COUNT(DISTINCT performance_code) as performance_count
+          FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_performance_snapshots\`
+          WHERE fiscal_year IN (${yearsFilter})
+            AND (${SERIES_MAP_SQL}) IN (${seriesSQL})
+          GROUP BY fiscal_year, snapshot_fiscal_week, snapshot_iso_week, snapshot_date
+        ),
+        deduped AS (
+          SELECT *,
+            ROW_NUMBER() OVER (
+              PARTITION BY fiscal_year, snapshot_fiscal_week
+              ORDER BY snapshot_date DESC
+            ) as rn
+          FROM snapshot_totals
+        )
+        SELECT fiscal_year,
+          ${weekType === 'iso' ? 'snapshot_iso_week' : 'snapshot_fiscal_week'} as week,
+          snapshot_fiscal_week as fiscal_week,
+          snapshot_iso_week as iso_week,
+          CAST(snapshot_date AS STRING) as week_end_date,
+          -- Running MAX smooths dips from mid-season source format changes
+          MAX(total_tickets) OVER w as ytd_tickets_sold,
+          MAX(single_tickets) OVER w as ytd_single_tickets,
+          MAX(subscription_tickets) OVER w as ytd_subscription_tickets,
+          MAX(total_revenue) OVER w as ytd_revenue,
+          MAX(single_revenue) OVER w as ytd_single_revenue,
+          MAX(subscription_revenue) OVER w as ytd_subscription_revenue,
+          performance_count
+        FROM deduped
+        WHERE rn = 1
+        WINDOW w AS (PARTITION BY fiscal_year ORDER BY snapshot_fiscal_week)
+        ORDER BY fiscal_year, week
+      `;
+    }
+  } else if (attributionMode === 'performance') {
+    // Performance attribution (no series filter): existing behavior
     histQuery = `
       WITH performance_data AS (
         SELECT
@@ -1059,9 +1198,7 @@ async function getYTDComparison(bigquery, params, headers) {
       ORDER BY fiscal_year, week
     `;
   } else {
-    // Snapshot attribution: Revenue attributed to when sales data was captured (current behavior)
-    // Filter to excel-validated-json source only (verified accurate data)
-    // Deduplicate by taking the latest entry per fiscal_year + fiscal_week
+    // Snapshot attribution (no series filter): existing behavior
     histQuery = `
       WITH ranked AS (
         SELECT
@@ -1094,7 +1231,11 @@ async function getYTDComparison(bigquery, params, headers) {
 
   // Query live FY26 data from snapshots (current YTD by week)
   // FY26 = season starting with '25-26' (July 2025 - June 2026)
-  // Two modes: snapshot (when sales captured) or performance (when concerts occurred)
+  // When series filter is active, filter using mapped series categories
+  const fy26SeriesCondition = seriesFilter
+    ? `AND (${SERIES_MAP_SQL}) IN (${seriesSQL})`
+    : '';
+
   let liveQuery;
 
   if (attributionMode === 'performance') {
@@ -1118,6 +1259,7 @@ async function getYTDComparison(bigquery, params, headers) {
           ON p.performance_code = s.performance_code
         WHERE p.season LIKE '25-26%'
           AND (p.cancelled IS NULL OR p.cancelled = false)
+          ${fy26SeriesCondition}
       ),
       weekly_totals AS (
         SELECT
@@ -1182,6 +1324,7 @@ async function getYTDComparison(bigquery, params, headers) {
           ON p.performance_code = s.performance_code
         WHERE p.season LIKE '25-26%'
           AND (p.cancelled IS NULL OR p.cancelled = false)
+          ${fy26SeriesCondition}
       ),
       weekly_totals AS (
         SELECT
@@ -1216,11 +1359,30 @@ async function getYTDComparison(bigquery, params, headers) {
     `;
   }
 
-  // Run both queries in parallel
-  const [[histRows], [liveRows]] = await Promise.all([
+  // Query available series for the filter UI
+  // Returns canonical categories only (Classical, Pops, Family, Film, Other)
+  const seriesQuery = `
+    SELECT DISTINCT canonical_series as series FROM (
+      SELECT DISTINCT ${SERIES_MAP_SQL} as canonical_series
+      FROM \`${PROJECT_ID}.${DATASET_ID}.ytd_performance_snapshots\`
+      WHERE series IS NOT NULL AND series != ''
+      UNION DISTINCT
+      SELECT DISTINCT ${SERIES_MAP_SQL} as canonical_series
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performances\`
+      WHERE season LIKE '25-26%'
+        AND (cancelled IS NULL OR cancelled = false)
+    )
+    ORDER BY series
+  `;
+
+  // Run all queries in parallel
+  const [[histRows], [liveRows], [seriesRows]] = await Promise.all([
     bigquery.query({ query: histQuery, location: 'US' }),
-    bigquery.query({ query: liveQuery, location: 'US' })
+    bigquery.query({ query: liveQuery, location: 'US' }),
+    bigquery.query({ query: seriesQuery, location: 'US' })
   ]);
+
+  const availableSeries = seriesRows.map(r => r.series);
 
   // Transform historical data to frontend-friendly format grouped by year
   const byYear = {};
@@ -1297,6 +1459,8 @@ async function getYTDComparison(bigquery, params, headers) {
         fiscalYears: Object.keys(byYear).sort(),
         weekType: weekType,
         attributionMode: attributionMode,
+        availableSeries: availableSeries,
+        seriesFilter: seriesFilter || null,
         attributionModeSupport: {
           'FY23': ['snapshot', 'performance'],
           'FY24': ['snapshot', 'performance'],

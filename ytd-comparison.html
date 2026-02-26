@@ -71,6 +71,9 @@
                 <div class="control-group year-toggles" id="year-toggles">
                     <!-- Dynamically populated -->
                 </div>
+                <div class="control-group series-toggles" id="series-toggles">
+                    <!-- Dynamically populated after data load -->
+                </div>
             </div>
 
             <!-- Loading State -->
@@ -98,7 +101,12 @@
             <!-- Segment Comparison -->
             <div id="segment-comparison" class="segment-comparison" style="display: none;">
                 <div class="segment-controls">
-                    <h2 class="segment-section-title">Segment Comparison</h2>
+                    <div class="segment-controls-left">
+                        <h2 class="segment-section-title">Segment Comparison</h2>
+                        <div class="control-group series-toggles" id="segment-series-toggles">
+                            <!-- Dynamically populated, mirrors main series toggles -->
+                        </div>
+                    </div>
                     <div class="segment-controls-right">
                         <div class="control-group">
                             <label>Metric:</label>
