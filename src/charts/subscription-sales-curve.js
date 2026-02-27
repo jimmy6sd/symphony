@@ -157,7 +157,14 @@ class SubscriptionSalesCurve {
 
         // Calculate scales - day of year (1-365)
         const maxDay = 365;
-        const maxUnits = Math.max(...seasonData.flatMap(s => s.points.map(p => p.total_units)));
+        let maxUnits = Math.max(...seasonData.flatMap(s => s.points.map(p => p.total_units)));
+
+        // Pre-compute projection to include in y-axis range
+        const projectionPoints = this.computeProjectionPoints(seasonData);
+        if (projectionPoints.length > 0) {
+            const maxProjected = Math.max(...projectionPoints.map(p => p.units));
+            maxUnits = Math.max(maxUnits, maxProjected);
+        }
 
         const xScale = d3.scaleLinear()
             .domain([1, maxDay])
@@ -179,7 +186,7 @@ class SubscriptionSalesCurve {
         });
 
         // Add projection line for current season
-        this.drawProjectionLine(g, seasonData, xScale, yScale);
+        this.drawProjectionLine(g, seasonData, xScale, yScale, projectionPoints);
 
         // Add legend
         this.addLegend(g, seasonData, innerWidth);
@@ -345,48 +352,52 @@ class SubscriptionSalesCurve {
             .attr('data-units', d => d.total_units);
     }
 
-    drawProjectionLine(g, seasonData, xScale, yScale) {
+    computeProjectionPoints(seasonData) {
         const currentSeason = seasonData.find(s => s.isCurrent);
         const targetSeason = seasonData.find(s => s.isProjectionBase);
 
         if (!currentSeason || !targetSeason || currentSeason.points.length === 0 || targetSeason.points.length === 0) {
-            return;
+            return [];
         }
 
-        // Get last point of current season
         const lastCurrentPoint = currentSeason.points[currentSeason.points.length - 1];
         const currentDay = lastCurrentPoint.day;
         const currentUnits = lastCurrentPoint.total_units;
 
-        // Find target season value at current day (interpolate if needed)
         const targetAtCurrentDay = this.interpolateAtDay(targetSeason.points, currentDay);
-
         if (targetAtCurrentDay === null) {
-            return;
+            return [];
         }
 
-        // Calculate variance
         const variance = currentUnits - targetAtCurrentDay;
 
-        // Generate projection points from current day to day 365, weekly steps
-        const projectionPoints = [];
-        projectionPoints.push({ day: currentDay, units: currentUnits });
+        const points = [];
+        points.push({ day: currentDay, units: currentUnits });
 
         for (let day = currentDay + 7; day <= 365; day += 7) {
             const targetAtDay = this.interpolateAtDay(targetSeason.points, day);
             if (targetAtDay !== null) {
                 const projected = Math.max(currentUnits, targetAtDay + variance);
-                projectionPoints.push({ day, units: projected });
+                points.push({ day, units: projected });
             }
         }
 
-        // Add final target if available
         if (targetSeason.final) {
             const projectedFinal = Math.max(currentUnits, targetSeason.final.total_units + variance);
-            projectionPoints.push({ day: 365, units: projectedFinal });
+            points.push({ day: 365, units: projectedFinal });
         }
 
-        if (projectionPoints.length < 2) {
+        this.projectionData = {
+            points,
+            variance,
+            targetSeason: targetSeason.season
+        };
+
+        return points;
+    }
+
+    drawProjectionLine(g, seasonData, xScale, yScale, projectionPoints) {
+        if (!projectionPoints || projectionPoints.length < 2) {
             return;
         }
 
@@ -405,13 +416,6 @@ class SubscriptionSalesCurve {
             .attr('stroke-width', 2.5)
             .attr('stroke-dasharray', '8,4')
             .attr('opacity', 0.8);
-
-        // Store projection data for tooltip
-        this.projectionData = {
-            points: projectionPoints,
-            variance,
-            targetSeason: targetSeason.season
-        };
     }
 
     interpolateAtDay(points, day) {
