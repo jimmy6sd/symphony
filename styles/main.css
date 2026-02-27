@@ -2230,6 +2230,11 @@ a.tab-btn.tab-link {
     color: white;
 }
 
+.category-badge.specials {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+}
+
 /* D/D change styling for subscriptions */
 .dd-change {
     display: inline-block;

@@ -12,7 +12,7 @@ class SubscriptionTable {
         this.initialized = false;
 
         // Category order for display
-        this.categoryOrder = ['Classical', 'Pops', 'Flex', 'Family'];
+        this.categoryOrder = ['Classical', 'Pops', 'Flex', 'Family', 'Specials'];
 
         // Categories that support sales curve charts
         this.chartCategories = ['Classical', 'Pops'];

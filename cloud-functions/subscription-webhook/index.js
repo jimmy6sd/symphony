@@ -1,6 +1,6 @@
 // Google Cloud Function: Subscription Webhook - Package Sales PDF Processor
 // Accepts Tessitura Package Sales Report PDFs from Make.com
-// Handles all 4 categories: Classical, Pops, Flex, Family
+// Handles all 5 categories: Classical, Pops, Flex, Family, Specials
 // Inserts into subscription_sales_snapshots table
 
 const { BigQuery } = require('@google-cloud/bigquery');
@@ -16,7 +16,8 @@ const CATEGORY_PATTERNS = [
   { category: 'Classical', pattern: /classical/i },
   { category: 'Pops', pattern: /pops/i },
   { category: 'Flex', pattern: /flex/i },
-  { category: 'Family', pattern: /family/i }
+  { category: 'Family', pattern: /family/i },
+  { category: 'Specials', pattern: /special/i }
 ];
 
 // Initialize credentials (same pattern as other webhooks)
@@ -443,7 +444,7 @@ functions.http('subscriptionWebhook', async (req, res) => {
     console.log(`Detected category: ${category}`);
 
     if (category === 'Unknown') {
-      console.log('WARNING: Could not detect category from filename/subject. Include "Classical", "Pops", "Flex", or "Family" in the filename or email_subject metadata field.');
+      console.log('WARNING: Could not detect category from filename/subject. Include "Classical", "Pops", "Flex", "Family", or "Special" in the filename or email_subject metadata field.');
     }
 
     // Backup PDF

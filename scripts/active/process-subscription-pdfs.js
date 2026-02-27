@@ -31,7 +31,8 @@ const CATEGORY_PATTERNS = {
   'Classical': /classical/i,
   'Pops': /pops/i,
   'Flex': /flex/i,
-  'Family': /family/i
+  'Family': /family/i,
+  'Specials': /special/i
 };
 
 // Extract category from filename
