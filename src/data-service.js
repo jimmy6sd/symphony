@@ -601,9 +601,9 @@ class DataService {
     }
 
     // Get annotations for chart rendering (production + global in one call)
-    async getAnnotationsForChart(groupTitle) {
+    async getAnnotationsForChart(groupTitle, context = 'performance') {
         try {
-            const cacheKey = `chart:${groupTitle}`;
+            const cacheKey = `chart:${context}:${groupTitle}`;
             if (this.annotationCache.has(cacheKey)) {
                 return this.annotationCache.get(cacheKey);
             }
@@ -613,7 +613,7 @@ class DataService {
             }
 
             const fetchPromise = (async () => {
-                const response = await fetch(`/.netlify/functions/performance-annotations?groupTitle=${encodeURIComponent(groupTitle)}&includeGlobal=true`);
+                const response = await fetch(`/.netlify/functions/performance-annotations?groupTitle=${encodeURIComponent(groupTitle)}&includeGlobal=true&context=${encodeURIComponent(context)}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch annotations for chart: ${response.status}`);
                 }
@@ -628,7 +628,7 @@ class DataService {
             return data;
         } catch (error) {
             console.error('Error fetching chart annotations:', error);
-            this.annotationInFlight.delete(`chart:${groupTitle}`);
+            this.annotationInFlight.delete(`chart:${context}:${groupTitle}`);
             return [];
         }
     }
@@ -674,7 +674,8 @@ class DataService {
                 this.annotationInFlight.clear();
             } else {
                 this.annotationCache.delete(groupTitle);
-                this.annotationCache.delete(`chart:${groupTitle}`);
+                this.annotationCache.delete(`chart:performance:${groupTitle}`);
+                this.annotationCache.delete(`chart:subscription:${groupTitle}`);
             }
             this.allTagsCache = null;
             return result;

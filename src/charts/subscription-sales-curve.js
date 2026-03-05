@@ -10,8 +10,14 @@ class SubscriptionSalesCurve {
         this.series = options.series || 'Classical';
         this.data = null;
         this.svg = null;
+        this.g = null;
+        this.xScale = null;
+        this.innerWidth = 0;
+        this.innerHeight = 0;
         this.width = 0;
         this.height = 0;
+        this.annotations = [];
+        this.activeTagFilter = null;
 
         // Initialize responsive state
         this.updateResponsiveState();
@@ -143,9 +149,14 @@ class SubscriptionSalesCurve {
             .attr('width', this.width)
             .attr('height', this.height);
 
+        this.innerWidth = innerWidth;
+        this.innerHeight = innerHeight;
+
         const g = this.svg
             .append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
+
+        this.g = g;
 
         // Prepare data for plotting
         const seasonData = this.prepareSeasonData();
@@ -170,6 +181,8 @@ class SubscriptionSalesCurve {
             .domain([1, maxDay])
             .range([0, innerWidth]);
 
+        this.xScale = xScale;
+
         const yScale = d3.scaleLinear()
             .domain([0, maxUnits * 1.1])
             .range([innerHeight, 0]);
@@ -193,6 +206,9 @@ class SubscriptionSalesCurve {
 
         // Add tooltip
         this.addTooltip(seasonData);
+
+        // Render annotations if loaded
+        this.renderAnnotations();
     }
 
     prepareSeasonData() {
@@ -552,6 +568,131 @@ class SubscriptionSalesCurve {
 
                 tooltip.style('visibility', 'hidden');
             });
+    }
+    // Convert annotation_date string to day-of-year for positioning
+    dateToDayOfYear(dateVal) {
+        const str = dateVal && typeof dateVal === 'object' && dateVal.value ? dateVal.value : String(dateVal).split('T')[0];
+        const parts = str.split('-');
+        const d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        const start = new Date(d.getFullYear(), 0, 0);
+        return Math.floor((d - start) / 86400000);
+    }
+
+    updateAnnotations(annotations) {
+        this.annotations = annotations.map(ann => {
+            if (!ann.annotation_date) return ann;
+            const processed = { ...ann };
+            processed._dayOfYear = this.dateToDayOfYear(ann.annotation_date);
+            if (ann.annotation_type === 'interval' && ann.annotation_end_date) {
+                processed._endDayOfYear = this.dateToDayOfYear(ann.annotation_end_date);
+            }
+            return processed;
+        });
+        this.renderAnnotations();
+    }
+
+    renderAnnotations() {
+        if (!this.g || !this.xScale) return;
+
+        this.g.selectAll('.annotation-overlay').remove();
+
+        const annotationsToShow = this.activeTagFilter
+            ? this.annotations.filter(a => {
+                const tags = Array.isArray(a.tags) ? a.tags : [];
+                return tags.some(t => this.activeTagFilter.includes(t));
+            })
+            : this.annotations;
+
+        const annoGroup = this.g.append('g').attr('class', 'annotation-overlay');
+
+        let intervalLane = 0;
+        annotationsToShow.forEach(ann => {
+            if (ann.annotation_type === 'point') {
+                this.renderPointAnnotation(annoGroup, ann);
+            } else if (ann.annotation_type === 'interval') {
+                this.renderIntervalAnnotation(annoGroup, ann, intervalLane);
+                intervalLane++;
+            }
+        });
+    }
+
+    renderPointAnnotation(group, ann) {
+        const day = ann._dayOfYear;
+        if (day === undefined) return;
+        const x = this.xScale(day);
+        if (x < 0 || x > this.innerWidth) return;
+
+        group.append('line')
+            .attr('x1', x).attr('x2', x)
+            .attr('y1', 0).attr('y2', this.innerHeight)
+            .attr('stroke', ann.color || '#e74c3c')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '4,3')
+            .attr('opacity', 0.7);
+
+        const labelG = group.append('g')
+            .attr('transform', `translate(${x}, -4)`);
+
+        const isGlobal = ann.scope === 'global';
+        labelG.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', -8)
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
+            .style('fill', ann.color || '#e74c3c')
+            .text(ann.label);
+    }
+
+    renderIntervalAnnotation(group, ann, lane = 0) {
+        const startDay = ann._dayOfYear;
+        const endDay = ann._endDayOfYear;
+        if (startDay === undefined || endDay === undefined) return;
+
+        const x1 = this.xScale(startDay);
+        const x2 = this.xScale(endDay);
+        const left = Math.min(x1, x2);
+        const rectWidth = Math.abs(x2 - x1);
+
+        if (left + rectWidth < 0 || left > this.innerWidth) return;
+
+        const color = ann.color || '#e74c3c';
+        const bandHeight = 18;
+        const bandY = 4 + lane * (bandHeight + 4);
+
+        group.append('rect')
+            .attr('x', left)
+            .attr('y', bandY)
+            .attr('width', rectWidth)
+            .attr('height', bandHeight)
+            .attr('rx', 3)
+            .attr('fill', color)
+            .attr('opacity', 0.15);
+
+        [left, left + rectWidth].forEach(bx => {
+            group.append('line')
+                .attr('x1', bx).attr('x2', bx)
+                .attr('y1', bandY).attr('y2', bandY + bandHeight)
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('opacity', 0.7);
+        });
+
+        const isGlobal = ann.scope === 'global';
+        group.append('text')
+            .attr('x', left + rectWidth / 2)
+            .attr('y', bandY + bandHeight / 2 + 4)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
+            .style('fill', color)
+            .text(ann.label);
+    }
+
+    setTagFilter(tags) {
+        this.activeTagFilter = tags;
+        this.renderAnnotations();
     }
 }
 

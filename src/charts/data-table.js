@@ -2884,7 +2884,7 @@ class DataTable {
                     } else {
                         result = await window.dataService.createAnnotation(groupTitle, payload);
                         // Reload all annotations for this group (including global)
-                        window.dataService.annotationCache.delete(`chart:${groupTitle}`);
+                        window.dataService.annotationCache.delete(`chart:performance:${groupTitle}`);
                         const updated = await window.dataService.getAnnotationsForChart(groupTitle);
                         if (this._groupChart) {
                             this._groupChart.updateAnnotations(updated);

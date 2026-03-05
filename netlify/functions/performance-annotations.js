@@ -120,7 +120,7 @@ exports.handler = async (event, context) => {
 
 // GET - Fetch annotations
 async function getAnnotations(bigquery, params, headers) {
-  const { groupTitle, tags, allTags, scope, includeGlobal } = params || {};
+  const { groupTitle, tags, allTags, scope, includeGlobal, context } = params || {};
 
   // Return all distinct tags for autocomplete
   if (allTags === 'true') {
@@ -149,30 +149,33 @@ async function getAnnotations(bigquery, params, headers) {
   let query;
   let queryParams;
 
+  // Default context filter: 'performance' for backward compat, 'subscription' for subscription charts
+  const contextFilter = context || 'performance';
+
   if (includeGlobal === 'true') {
     query = `
       SELECT
         annotation_id, group_title, annotation_type, week_number,
         start_week, end_week, label, description, color, tags,
-        scope, annotation_date, annotation_end_date,
+        scope, annotation_date, annotation_end_date, context,
         created_at, updated_at
       FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-      WHERE group_title = ? OR scope = 'global'
-      ORDER BY COALESCE(week_number, start_week) DESC
+      WHERE (group_title = ? OR scope = 'global') AND COALESCE(context, 'performance') = ?
+      ORDER BY CAST(annotation_date AS STRING) DESC, COALESCE(week_number, start_week) DESC
     `;
-    queryParams = [groupTitle];
+    queryParams = [groupTitle, contextFilter];
   } else {
     query = `
       SELECT
         annotation_id, group_title, annotation_type, week_number,
         start_week, end_week, label, description, color, tags,
-        scope, annotation_date, annotation_end_date,
+        scope, annotation_date, annotation_end_date, context,
         created_at, updated_at
       FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-      WHERE group_title = ?
-      ORDER BY COALESCE(week_number, start_week) DESC
+      WHERE group_title = ? AND COALESCE(context, 'performance') = ?
+      ORDER BY CAST(annotation_date AS STRING) DESC, COALESCE(week_number, start_week) DESC
     `;
-    queryParams = [groupTitle];
+    queryParams = [groupTitle, contextFilter];
   }
 
   const [rows] = await bigquery.query({
@@ -300,7 +303,8 @@ async function createAnnotation(bigquery, data, headers) {
     tags = [],
     scope = 'production',
     annotationDate,
-    annotationEndDate
+    annotationEndDate,
+    context: annotationContext = 'performance'
   } = data;
 
   const isGlobal = scope === 'global';
@@ -359,9 +363,9 @@ async function createAnnotation(bigquery, data, headers) {
   const tagsString = Array.isArray(tags) ? tags.join(',') : (tags || '');
 
   // Build INSERT dynamically to avoid null parameter type issues with BigQuery
-  const columns = ['annotation_id', 'annotation_type', 'label', 'description', 'color', 'tags', 'scope', 'created_at', 'updated_at'];
-  const values = ['?', '?', '?', '?', '?', '?', '?', 'TIMESTAMP(?)', 'TIMESTAMP(?)'];
-  const params = [annotationId, annotationType, label, description, color, tagsString, scope || 'production', now, now];
+  const columns = ['annotation_id', 'annotation_type', 'label', 'description', 'color', 'tags', 'scope', 'context', 'created_at', 'updated_at'];
+  const values = ['?', '?', '?', '?', '?', '?', '?', '?', 'TIMESTAMP(?)', 'TIMESTAMP(?)'];
+  const params = [annotationId, annotationType, label, description, color, tagsString, scope || 'production', annotationContext, now, now];
 
   if (groupTitle) {
     columns.push('group_title');
@@ -422,6 +426,7 @@ async function createAnnotation(bigquery, data, headers) {
       description,
       color,
       scope: scope || 'production',
+      context: annotationContext,
       annotation_date: annotationDate || null,
       annotation_end_date: annotationEndDate || null,
       tags: Array.isArray(tags) ? tags : parseTags(tags),
@@ -492,6 +497,10 @@ async function updateAnnotation(bigquery, annotationId, data, headers) {
   if (annotationEndDate !== undefined) {
     updates.push('annotation_end_date = DATE(?)');
     params.push(annotationEndDate);
+  }
+  if (data.context !== undefined) {
+    updates.push('context = ?');
+    params.push(data.context);
   }
 
   if (updates.length === 0) {
