@@ -12,7 +12,9 @@ class YTDComparisonApp {
         this.selectedSeries = null;  // null = All, otherwise a single series name
 
         this.yearColors = {
-            'FY23': '#8884d8',
+            'FY19': '#5d6d7e',  // Dark slate (historical summary)
+            'FY22': '#a3b1c2',  // Medium gray-blue (historical summary)
+            'FY23': '#d4a0d0',  // Soft purple (historical summary)
             'FY24': '#8884d8',  // Purple (was FY23's color)
             'FY25': '#ff7c43',  // Orange (target comp)
             'FY26': '#3498db',  // Blue (current year - merged)
@@ -71,7 +73,13 @@ class YTDComparisonApp {
         // Merge FY26 and FY26 Current into a single FY26 series
         this.mergeFY26Data();
 
-        this.availableYears = Object.keys(this.data).filter(y => !y.includes('Projected') && y !== 'FY23');
+        this.summaryYears = Object.keys(this.data).filter(y => {
+            const d = this.data[y];
+            return d.length === 1 && d[0].summaryOnly;
+        });
+        this.availableYears = Object.keys(this.data).filter(y =>
+            !y.includes('Projected') && !this.summaryYears.includes(y)
+        ).sort();
 
         // Also load segment data with current attribution mode
         await this.loadSegmentData();
@@ -208,13 +216,14 @@ class YTDComparisonApp {
         container.innerHTML = '';
 
         this.availableYears.forEach(year => {
+            const isVisible = this.chart ? this.chart.visibleYears.has(year) : ['FY24', 'FY25', 'FY26'].includes(year);
             const toggle = document.createElement('label');
-            toggle.className = 'year-toggle active';
+            toggle.className = 'year-toggle' + (isVisible ? ' active' : '');
             toggle.dataset.year = year;
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.checked = true;
+            checkbox.checked = isVisible;
 
             const text = document.createTextNode(year);
 
@@ -349,6 +358,9 @@ class YTDComparisonApp {
             weekType: document.getElementById('week-type-select')?.value || 'fiscal'
         });
 
+        // Summary-only years are always visible (not toggleable)
+        this.summaryYears.forEach(y => this.chart.visibleYears.add(y));
+
         this.chart.setData(this.data);
     }
 
@@ -361,8 +373,9 @@ class YTDComparisonApp {
 
         const metric = document.getElementById('metric-select')?.value || 'revenue';
 
-        // Get visible years from chart
-        const visibleYears = this.chart ? Array.from(this.chart.visibleYears) : this.availableYears;
+        // Get visible years from chart (exclude summary-only years from cards)
+        const visibleYears = (this.chart ? Array.from(this.chart.visibleYears) : this.availableYears)
+            .filter(y => !this.summaryYears.includes(y));
 
         visibleYears.sort().forEach(year => {
             const yearData = this.data[year];
@@ -389,7 +402,8 @@ class YTDComparisonApp {
             card.className = 'summary-card';
 
             const isCurrent = year === 'FY26';
-            const statusLabel = isCurrent ? 'YTD' : 'FINAL';
+            const isSingleOnly = latestWeek.data.singleTicketOnly;
+            const statusLabel = isCurrent ? 'YTD' : (isSingleOnly ? 'FINAL · Singles Only' : 'FINAL');
 
             card.style.borderLeft = `4px solid ${this.yearColors[year]}`;
             if (isCurrent) {
@@ -523,9 +537,9 @@ class YTDComparisonApp {
         const weekType = document.getElementById('segment-week-type-select')?.value || 'fiscal';
         const segments = this.getSegmentBoundaries(this.segmentCount);
 
-        // Get visible years (exclude projected for segment comparison)
+        // Get visible years (exclude projected and summary-only for segment comparison)
         const visibleYears = this.chart
-            ? Array.from(this.chart.visibleYears).filter(y => !y.includes('Projected'))
+            ? Array.from(this.chart.visibleYears).filter(y => !y.includes('Projected') && !this.summaryYears.includes(y))
             : this.availableYears.filter(y => !y.includes('Projected'));
 
         visibleYears.sort();

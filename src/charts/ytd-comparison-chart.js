@@ -11,7 +11,9 @@ class YTDComparisonChart {
 
         // Year colors (FY25 is target comp in orange, FY26 is current in blue)
         this.yearColors = {
-            'FY23': '#8884d8',  // Purple
+            'FY19': '#5d6d7e',  // Dark slate (historical summary)
+            'FY22': '#a3b1c2',  // Medium gray-blue (historical summary)
+            'FY23': '#d4a0d0',  // Soft purple (historical summary)
             'FY24': '#8884d8',  // Purple (was FY23's color)
             'FY25': '#ff7c43',  // Orange (target comp)
             'FY26': '#3498db',  // Blue (current year - merged Excel + live)
@@ -154,8 +156,14 @@ class YTDComparisonChart {
         let maxWeek = 0;
         let maxValue = 0;
 
+        const isSingleMetric = ['singleTickets', 'singleRevenue'].includes(this.metric);
+
         Object.entries(this.data).forEach(([year, weeks]) => {
             if (this.visibleYears.has(year)) {
+                // Summary-only years only show for single ticket metrics
+                const isSummary = weeks.length === 1 && weeks[0].summaryOnly;
+                if (isSummary && !isSingleMetric) return;
+
                 visibleData[year] = weeks;
                 weeks.forEach(w => {
                     const weekNum = this.weekType === 'iso' ? w.isoWeek : w.fiscalWeek;
@@ -333,19 +341,24 @@ class YTDComparisonChart {
                     return weekA - weekB;
                 });
 
-            // Draw line
-            g.append('path')
-                .datum(yearData)
-                .attr('class', `year-line year-${year}`)
-                .attr('d', line)
-                .attr('fill', 'none')
-                .attr('stroke', this.yearColors[year])
-                .attr('stroke-width', year === 'FY26' ? 3 : 2.5)
-                .attr('stroke-linecap', 'round')
-                .attr('stroke-linejoin', 'round')
-                .attr('opacity', year === 'FY26' ? 1 : 0.8);
+            const isSummaryOnly = yearData.length === 1 && yearData[0].summaryOnly;
 
-            // Draw points
+            // Draw line (skip for summary-only single points)
+            if (!isSummaryOnly) {
+                g.append('path')
+                    .datum(yearData)
+                    .attr('class', `year-line year-${year}`)
+                    .attr('d', line)
+                    .attr('fill', 'none')
+                    .attr('stroke', this.yearColors[year])
+                    .attr('stroke-width', year === 'FY26' ? 3 : 2.5)
+                    .attr('stroke-linecap', 'round')
+                    .attr('stroke-linejoin', 'round')
+                    .attr('opacity', year === 'FY26' ? 1 : 0.8);
+            }
+
+            // Draw points (larger for summary-only years)
+            const pointRadius = isSummaryOnly ? (this.isMobile ? 7 : 6) : (this.isMobile ? 5 : 4);
             g.selectAll(`.point-${year}`)
                 .data(yearData)
                 .enter()
@@ -353,11 +366,11 @@ class YTDComparisonChart {
                 .attr('class', `year-point point-${year}`)
                 .attr('cx', d => xScale(this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek))
                 .attr('cy', d => yScale(this.getValue(d)))
-                .attr('r', this.isMobile ? 5 : 4)
+                .attr('r', pointRadius)
                 .attr('fill', this.yearColors[year])
-                .attr('stroke', 'white')
-                .attr('stroke-width', 1.5)
-                .attr('opacity', 0.8)
+                .attr('stroke', isSummaryOnly ? 'white' : 'white')
+                .attr('stroke-width', isSummaryOnly ? 2 : 1.5)
+                .attr('opacity', isSummaryOnly ? 0.9 : 0.8)
                 .style('cursor', 'pointer');
         });
 
@@ -534,8 +547,12 @@ class YTDComparisonChart {
             .attr('class', 'chart-legend')
             .attr('transform', `translate(${innerWidth + 20}, 10)`);
 
+        // Separate regular years from summary-only years
+        const regularYears = years.filter(y => !(this.data[y]?.length === 1 && this.data[y][0].summaryOnly));
+        const summaryYears = years.filter(y => this.data[y]?.length === 1 && this.data[y][0].summaryOnly).sort();
+
         // Add regular year entries
-        years.forEach((year, i) => {
+        regularYears.forEach((year, i) => {
             const row = legend.append('g')
                 .attr('transform', `translate(0, ${i * 24})`);
 
@@ -567,10 +584,14 @@ class YTDComparisonChart {
                 .text(label);
         });
 
+        let nextY = regularYears.length * 24;
+
         // Add projection legend entry if FY25 and FY26 are visible
         if (this.visibleYears.has('FY25') && this.visibleYears.has('FY26')) {
+            const projY = nextY;
+            nextY += 24;
             const projRow = legend.append('g')
-                .attr('transform', `translate(0, ${years.length * 24})`);
+                .attr('transform', `translate(0, ${projY})`);
 
             projRow.append('line')
                 .attr('x1', 0)
@@ -594,6 +615,37 @@ class YTDComparisonChart {
                 .style('font-weight', '400')
                 .style('font-style', 'italic')
                 .text('FY26 Projected');
+        }
+
+        // Add summary years as a compact group below everything
+        if (summaryYears.length > 0) {
+            const summaryGroup = legend.append('g')
+                .attr('transform', `translate(0, ${nextY + 8})`);
+
+            summaryGroup.append('text')
+                .attr('x', 0)
+                .attr('y', 10)
+                .style('font-size', '10px')
+                .style('fill', '#999')
+                .text('Year-end finals:');
+
+            summaryYears.forEach((year, i) => {
+                const xOff = i * 46;
+                summaryGroup.append('circle')
+                    .attr('cx', xOff + 6)
+                    .attr('cy', 26)
+                    .attr('r', 5)
+                    .attr('fill', this.yearColors[year])
+                    .attr('stroke', 'white')
+                    .attr('stroke-width', 1.5);
+
+                summaryGroup.append('text')
+                    .attr('x', xOff + 14)
+                    .attr('y', 30)
+                    .style('font-size', '10px')
+                    .style('fill', '#777')
+                    .text(year);
+            });
         }
     }
 
@@ -638,7 +690,9 @@ class YTDComparisonChart {
                         weekValues.push({
                             year,
                             value: self.getValue(match),
-                            date: match.date
+                            date: match.date,
+                            singleTicketOnly: match.singleTicketOnly,
+                            summaryOnly: match.summaryOnly
                         });
                     }
                 });
@@ -666,16 +720,18 @@ class YTDComparisonChart {
                         ? '$' + Math.round(v.value).toLocaleString()
                         : v.value.toLocaleString() + ' tickets';
                     const dateStr = v.date ? new Date(v.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                    const italicStyle = v.isProjected ? 'font-style: italic;' : '';
-                    const labelStyle = v.isProjected ? 'font-weight: 400; font-style: italic;' : 'font-weight: 500;';
+                    const italicStyle = v.isProjected || v.summaryOnly ? 'font-style: italic;' : '';
+                    const labelStyle = v.isProjected || v.summaryOnly ? 'font-weight: 400; font-style: italic;' : 'font-weight: 500;';
+                    const singleNote = v.singleTicketOnly ? '<div style="font-size: 10px; color: #aaa; margin-top: 2px;">Singles only (no sub data)</div>' : '';
                     html += `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 3px 0; ${italicStyle}">
                             <span>
                                 <span style="width: 10px; height: 10px; border-radius: 50%; background: ${self.yearColors[v.year]}; display: inline-block; margin-right: 6px;"></span>
-                                <span style="${labelStyle}">${v.year}</span>
+                                <span style="${labelStyle}">${v.year}${v.summaryOnly ? ' (Final)' : ''}</span>
                             </span>
                             <span style="font-weight: 600; margin-left: 12px;">${formattedValue}</span>
                         </div>
+                        ${singleNote}
                     `;
                 });
 

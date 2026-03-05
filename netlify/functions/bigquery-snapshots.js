@@ -978,7 +978,7 @@ async function getYTDComparison(bigquery, params, headers) {
   // Default to all available years
   const yearsFilter = fiscalYears
     ? fiscalYears.split(',').map(y => `'${y.trim()}'`).join(',')
-    : "'FY23','FY24','FY25','FY26'";
+    : "'FY24','FY25','FY26'";
 
   // Select week column based on weekType parameter
   const weekColumn = weekType === 'iso' ? 'iso_week' : 'fiscal_week';
@@ -1412,6 +1412,35 @@ async function getYTDComparison(bigquery, params, headers) {
       performanceCount: row.performance_count || 0
     });
   });
+
+  // Add summary-only historical years (end-of-year totals from Final Ticket Sales Reports)
+  // These years only have single ticket data (no subscription breakdown available)
+  if (!seriesFilter) {
+    const summaryYears = {
+      'FY19': { singleRevenue: 3865010.5, singleTickets: 66649 },
+      'FY22': { singleRevenue: 3383191, singleTickets: 51782 },
+      'FY23': { singleRevenue: 4002200, singleTickets: 60528 }
+    };
+    for (const [fy, totals] of Object.entries(summaryYears)) {
+      if (!byYear[fy]) {
+        byYear[fy] = [{
+          week: 52,
+          fiscalWeek: 52,
+          isoWeek: 26,
+          date: null,
+          tickets: totals.singleTickets,
+          singleTickets: totals.singleTickets,
+          subscriptionTickets: 0,
+          revenue: totals.singleRevenue,
+          singleRevenue: totals.singleRevenue,
+          subscriptionRevenue: 0,
+          performanceCount: 0,
+          summaryOnly: true,
+          singleTicketOnly: true
+        }];
+      }
+    }
+  }
 
   // Add live FY26 data as "FY26 Current" series
   if (liveRows && liveRows.length > 0) {
