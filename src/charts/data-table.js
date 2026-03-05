@@ -1100,11 +1100,16 @@ class DataTable {
             .style('display', this.scorecardVisible ? 'flex' : 'none');
 
         const cards = [
-            { key: 'ticketsSold', label: 'Tickets Sold', comparison: 'tickets' },
-            { key: 'revenue', label: 'Total Revenue', comparison: 'revenue' },
-            { key: 'occupancy', label: 'Avg Occupancy' },
-            { key: 'budgetVariance', label: 'Budget Variance' },
-            { key: 'projRevenue', label: 'Proj. Revenue', comparison: 'revenue', projected: true }
+            { key: 'ticketsSold', label: 'Tickets Sold', comparison: 'tickets',
+              tooltip: 'Sum of single + subscription + non-fixed tickets sold across all non-cancelled performances this season.' },
+            { key: 'revenue', label: 'Total Revenue', comparison: 'revenue',
+              tooltip: 'Sum of totalRevenue across all non-cancelled performances this season.' },
+            { key: 'occupancy', label: 'Avg Occupancy',
+              tooltip: 'Weighted average: total tickets sold ÷ total venue capacity across all non-cancelled performances. Not a simple average of each show.' },
+            { key: 'budgetVariance', label: 'Budget Variance',
+              tooltip: 'Total Revenue minus sum of all budget goals for non-cancelled performances. Green = above budget, red = below budget.' },
+            { key: 'projRevenue', label: 'Proj. Revenue', comparison: 'revenue', projected: true,
+              tooltip: 'FY25 full-season revenue × (FY26 YTD revenue ÷ FY25 YTD revenue). Projects what the full season will look like based on current sales pace.' }
         ];
 
         cards.forEach(card => {
@@ -1112,7 +1117,12 @@ class DataTable {
                 .attr('class', `scorecard-card${card.projected ? ' projected' : ''}`)
                 .attr('data-key', card.key);
 
-            cardEl.append('div').attr('class', 'scorecard-label').text(card.label);
+            const label = cardEl.append('div').attr('class', 'scorecard-label');
+            label.append('span').text(card.label);
+            if (card.tooltip) {
+                label.node().insertAdjacentHTML('beforeend',
+                    ` <span class="scorecard-info-icon" data-tooltip="${card.tooltip}">ⓘ</span>`);
+            }
             cardEl.append('div').attr('class', 'scorecard-value').text('—');
 
             if (card.comparison) {
@@ -1128,12 +1138,12 @@ class DataTable {
         const scorecardEl = this.container.select('.data-table-scorecard');
         if (scorecardEl.empty()) return;
 
-        const filtered = this.getFilteredData();
+        const allPerformances = this.data.filter(row => row.cancelled !== true && row.cancelled !== 'true');
         const totals = {
-            capacity: filtered.reduce((sum, p) => sum + (p.capacity || 0), 0),
-            ticketsSold: filtered.reduce((sum, p) => sum + (p.singleTicketsSold || 0) + (p.subscriptionTicketsSold || 0) + (p.nonFixedTicketsSold || 0), 0),
-            revenue: filtered.reduce((sum, p) => sum + (p.totalRevenue || 0), 0),
-            budget: filtered.reduce((sum, p) => sum + (p.budgetGoal || 0), 0),
+            capacity: allPerformances.reduce((sum, p) => sum + (p.capacity || 0), 0),
+            ticketsSold: allPerformances.reduce((sum, p) => sum + (p.singleTicketsSold || 0) + (p.subscriptionTicketsSold || 0) + (p.nonFixedTicketsSold || 0), 0),
+            revenue: allPerformances.reduce((sum, p) => sum + (p.totalRevenue || 0), 0),
+            budget: allPerformances.reduce((sum, p) => sum + (p.budgetGoal || 0), 0),
         };
         totals.occupancy = totals.capacity > 0 ? (totals.ticketsSold / totals.capacity * 100) : 0;
         totals.budgetVariance = totals.revenue - totals.budget;

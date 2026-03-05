@@ -2351,6 +2351,57 @@ a.tab-btn.tab-link {
     margin-bottom: 4px;
 }
 
+.scorecard-info-icon {
+    display: inline-block;
+    margin-left: 3px;
+    font-size: 0.85em;
+    text-transform: none;
+    color: var(--text-secondary);
+    cursor: help;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+    position: relative;
+}
+
+.scorecard-info-icon:hover {
+    opacity: 1;
+    color: var(--primary-color);
+}
+
+.scorecard-info-icon:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--border-radius-md);
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    line-height: 1.4;
+    white-space: normal;
+    width: max-content;
+    max-width: 220px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.scorecard-info-icon:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+    pointer-events: none;
+}
+
 .scorecard-value {
     font-size: 1.3rem;
     font-weight: 700;
