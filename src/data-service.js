@@ -248,13 +248,28 @@ class DataService {
     }
 
     // ⚡ OPTIMIZATION: Load dashboard data from BigQuery via combined API (performances + W/W in one call)
-    // This reduces 2 separate requests to 1 parallel request (~2.2s → ~1.0s)
+    // Uses prefetched data from main.js when available (saves ~2.5s on initial load)
     async loadDashboardData() {
-        const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-initial-load');
-        if (!response.ok) {
-            throw new Error(`BigQuery API request failed: ${response.status} ${response.statusText}`);
+        let data = null;
+
+        // Check for prefetched data (started in main.js before scripts loaded)
+        if (window.__initialDataPromise) {
+            const prefetched = await window.__initialDataPromise;
+            window.__initialDataPromise = null; // consume once
+            if (prefetched && prefetched.performances) {
+                data = prefetched;
+            }
         }
-        const data = await response.json();
+
+        // Fallback: fetch normally if prefetch missed or failed
+        if (!data) {
+            const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-initial-load');
+            if (!response.ok) {
+                throw new Error(`BigQuery API request failed: ${response.status} ${response.statusText}`);
+            }
+            data = await response.json();
+        }
+
         this.updateRefreshTimestamp();
 
         if (!data.performances || data.performances.length === 0) {

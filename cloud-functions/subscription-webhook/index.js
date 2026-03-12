@@ -439,12 +439,27 @@ functions.http('subscriptionWebhook', async (req, res) => {
     console.log(`PDF size: ${Math.round(pdf_base64.length * 0.75 / 1024)}KB`);
     console.log(`Metadata: ${JSON.stringify(metadata || {})}`);
 
-    // Detect category from metadata
-    const category = detectCategory(metadata);
+    // Detect category from metadata (check all available fields)
+    console.log(`Category detection sources: filename="${metadata?.filename}", email_subject="${metadata?.email_subject}", category="${metadata?.category}"`);
+    let category = detectCategory(metadata);
+
+    // Fallback: check ALL metadata fields if primary detection fails
+    if (category === 'Unknown' && metadata) {
+      const allValues = Object.values(metadata).filter(v => typeof v === 'string').join(' ');
+      for (const { category: cat, pattern } of CATEGORY_PATTERNS) {
+        if (pattern.test(allValues)) {
+          console.log(`Category detected from extended metadata scan: ${cat}`);
+          category = cat;
+          break;
+        }
+      }
+    }
+
     console.log(`Detected category: ${category}`);
 
     if (category === 'Unknown') {
-      console.log('WARNING: Could not detect category from filename/subject. Include "Classical", "Pops", "Flex", "Family", or "Special" in the filename or email_subject metadata field.');
+      console.log('WARNING: Could not detect category from any metadata field. Include "Classical", "Pops", "Flex", "Family", or "Special" in the filename or email_subject metadata field.');
+      console.log(`Full metadata: ${JSON.stringify(metadata)}`);
     }
 
     // Backup PDF

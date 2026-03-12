@@ -3,6 +3,18 @@
  * Simplified loader with parallel script loading
  */
 
+// ⚡ PREFETCH: Start BigQuery API call immediately, before scripts load.
+// By the time data-service.js needs the data, the response is already in-flight (or done).
+window.__initialDataPromise = fetch('/.netlify/functions/bigquery-snapshots?action=get-initial-load')
+    .then(r => {
+        if (!r.ok) throw new Error(`BigQuery API request failed: ${r.status} ${r.statusText}`);
+        return r.json();
+    })
+    .catch(err => {
+        console.error('Prefetch failed, will retry normally:', err);
+        return null; // data-service.js will fall back to a fresh fetch
+    });
+
 // Import ES6 utilities (loaded in parallel by browser)
 import logger from './utils/logger.js';
 import errorHandler from './utils/error-handler.js';
