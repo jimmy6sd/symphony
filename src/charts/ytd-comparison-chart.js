@@ -386,6 +386,25 @@ class YTDComparisonChart {
         this.setupTooltip(g, xScale, yScale, visibleData, innerHeight);
     }
 
+    // Find FY25 data point at given week, falling back to nearest preceding week
+    findFY25AtWeek(fy25Data, targetWeek) {
+        const weekKey = this.weekType === 'iso' ? 'isoWeek' : 'fiscalWeek';
+        // Exact match first
+        const exact = fy25Data.find(d => d[weekKey] === targetWeek);
+        if (exact) return exact;
+        // Fall back to nearest preceding week
+        let best = null;
+        let bestWeek = -1;
+        for (const d of fy25Data) {
+            const w = d[weekKey];
+            if (w < targetWeek && w > bestWeek) {
+                best = d;
+                bestWeek = w;
+            }
+        }
+        return best;
+    }
+
     calculateProjectedMax(visibleData) {
         // Calculate the max projected value so Y scale can accommodate it
         const fy25Data = visibleData['FY25'];
@@ -405,17 +424,14 @@ class YTDComparisonChart {
         const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
         const lastFY26Value = this.getValue(lastFY26Point);
 
-        // Find FY25 value at the same week
-        const fy25AtSameWeek = fy25Data.find(d => {
-            const week = this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek;
-            return week === lastFY26Week;
-        });
+        // Find FY25 value at the same week (or nearest preceding)
+        const fy25AtWeek = this.findFY25AtWeek(fy25Data, lastFY26Week);
 
-        if (!fy25AtSameWeek) {
+        if (!fy25AtWeek) {
             return 0;
         }
 
-        const fy25ValueAtWeek = this.getValue(fy25AtSameWeek);
+        const fy25ValueAtWeek = this.getValue(fy25AtWeek);
         const variance = lastFY26Value - fy25ValueAtWeek;
 
         // Find max FY25 value and add variance
@@ -445,17 +461,14 @@ class YTDComparisonChart {
         const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
         const lastFY26Value = this.getValue(lastFY26Point);
 
-        // Find FY25 value at the same week
-        const fy25AtSameWeek = fy25Data.find(d => {
-            const week = this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek;
-            return week === lastFY26Week;
-        });
+        // Find FY25 value at the same week (or nearest preceding)
+        const fy25AtWeek = this.findFY25AtWeek(fy25Data, lastFY26Week);
 
-        if (!fy25AtSameWeek) {
+        if (!fy25AtWeek) {
             return; // Can't calculate variance without matching week
         }
 
-        const fy25ValueAtWeek = this.getValue(fy25AtSameWeek);
+        const fy25ValueAtWeek = this.getValue(fy25AtWeek);
         const variance = lastFY26Value - fy25ValueAtWeek;
 
         // Get FY25 data points AFTER the current FY26 week
@@ -477,12 +490,12 @@ class YTDComparisonChart {
         // Build projection data: FY25 future values + variance (applied to current metric)
         // Calculate variance for each metric type
         const varianceByMetric = {
-            tickets: lastFY26Point.tickets - (fy25AtSameWeek.tickets || 0),
-            revenue: lastFY26Point.revenue - (fy25AtSameWeek.revenue || 0),
-            singleTickets: (lastFY26Point.singleTickets || 0) - (fy25AtSameWeek.singleTickets || 0),
-            singleRevenue: (lastFY26Point.singleRevenue || 0) - (fy25AtSameWeek.singleRevenue || 0),
-            subscriptionTickets: (lastFY26Point.subscriptionTickets || 0) - (fy25AtSameWeek.subscriptionTickets || 0),
-            subscriptionRevenue: (lastFY26Point.subscriptionRevenue || 0) - (fy25AtSameWeek.subscriptionRevenue || 0)
+            tickets: lastFY26Point.tickets - (fy25AtWeek.tickets || 0),
+            revenue: lastFY26Point.revenue - (fy25AtWeek.revenue || 0),
+            singleTickets: (lastFY26Point.singleTickets || 0) - (fy25AtWeek.singleTickets || 0),
+            singleRevenue: (lastFY26Point.singleRevenue || 0) - (fy25AtWeek.singleRevenue || 0),
+            subscriptionTickets: (lastFY26Point.subscriptionTickets || 0) - (fy25AtWeek.subscriptionTickets || 0),
+            subscriptionRevenue: (lastFY26Point.subscriptionRevenue || 0) - (fy25AtWeek.subscriptionRevenue || 0)
         };
 
         const projectionData = [
