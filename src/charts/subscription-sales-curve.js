@@ -232,7 +232,9 @@ class SubscriptionSalesCurve {
                         total_units: s.total_units,
                         total_revenue: s.total_revenue,
                         new_units: s.new_units,
+                        new_revenue: s.new_revenue,
                         renewal_units: s.renewal_units,
+                        renewal_revenue: s.renewal_revenue,
                         snapshot_date: s.snapshot_date
                     })).sort((a, b) => a.day - b.day),
                     final: season.final
@@ -542,13 +544,14 @@ class SubscriptionSalesCurve {
                 let html = `
                     <strong style="color: ${self.seasonColors[season] || '#fff'}">${season} Season</strong><br/>
                     ${dateLabel}<br/>
-                    Total Orders: ${units.toLocaleString()}<br/>
+                    Total Pkgs: ${units.toLocaleString()}<br/>
                 `;
 
                 if (point) {
                     html += `Revenue: $${(point.total_revenue || 0).toLocaleString()}`;
-                    if (!seasonObj?.isCurrent && (point.new_units || point.renewal_units)) {
-                        html += `<br/>New: ${point.new_units?.toLocaleString() || 0} | Renewal: ${point.renewal_units?.toLocaleString() || 0}`;
+                    if (point.new_units || point.renewal_units) {
+                        html += `<br/><span style="opacity:0.8">New: ${(point.new_units || 0).toLocaleString()} ($${(point.new_revenue || 0).toLocaleString()})</span>`;
+                        html += `<br/><span style="opacity:0.8">Renewed: ${(point.renewal_units || 0).toLocaleString()} ($${(point.renewal_revenue || 0).toLocaleString()})</span>`;
                     }
                 }
 

@@ -83,10 +83,10 @@ class SubscriptionTable {
 
         // Calculate totals
         const totals = this.data && this.data.length > 0 ? this.calculateTotals(this.data) : {
-            totalPackages: 0,
-            totalPerf: 0,
-            totalRevenue: 0,
-            totalOrders: 0
+            newSeats: 0,
+            renewedSeats: 0,
+            totalSeats: 0,
+            totalRevenue: 0
         };
 
         // Always show chart categories even if no package data
@@ -101,20 +101,20 @@ class SubscriptionTable {
                 <!-- Summary Header -->
                 <div class="subscription-summary">
                     <div class="subscription-summary-item">
-                        <div class="subscription-summary-value">${totals.totalPackages.toLocaleString()}</div>
-                        <div class="subscription-summary-label">Package Seats</div>
+                        <div class="subscription-summary-value">${totals.totalSeats.toLocaleString()}</div>
+                        <div class="subscription-summary-label">Total Seats</div>
                     </div>
                     <div class="subscription-summary-item">
-                        <div class="subscription-summary-value">${totals.totalPerf.toLocaleString()}</div>
-                        <div class="subscription-summary-label">Perf Seats</div>
+                        <div class="subscription-summary-value">${totals.newSeats.toLocaleString()}</div>
+                        <div class="subscription-summary-label">New</div>
+                    </div>
+                    <div class="subscription-summary-item">
+                        <div class="subscription-summary-value">${totals.renewedSeats.toLocaleString()}</div>
+                        <div class="subscription-summary-label">Renewed</div>
                     </div>
                     <div class="subscription-summary-item">
                         <div class="subscription-summary-value">$${this.formatCurrency(totals.totalRevenue)}</div>
                         <div class="subscription-summary-label">Total Revenue</div>
-                    </div>
-                    <div class="subscription-summary-item">
-                        <div class="subscription-summary-value">${totals.totalOrders.toLocaleString()}</div>
-                        <div class="subscription-summary-label">Orders</div>
                     </div>
                 </div>
 
@@ -126,7 +126,7 @@ class SubscriptionTable {
                     // Skip categories with no data AND no chart
                     if (categoryData.length === 0 && !hasChart) return '';
 
-                    const categoryTotals = categoryData.length > 0 ? this.calculateTotals(categoryData) : { totalPackages: 0, totalRevenue: 0 };
+                    const categoryTotals = categoryData.length > 0 ? this.calculateTotals(categoryData) : { totalSeats: 0, totalRevenue: 0 };
                     const isCollapsed = this.collapsedCategories.has(category);
                     const projection = this.categoryProjections?.categories?.[category];
 
@@ -168,10 +168,12 @@ class SubscriptionTable {
                                         <tr>
                                             <th>Package</th>
                                             <th>Type</th>
-                                            <th>Pkg Seats</th>
-                                            <th>Perf Seats</th>
-                                            <th>Revenue</th>
-                                            <th>Orders</th>
+                                            <th>New Seats</th>
+                                            <th>New Rev</th>
+                                            <th>Renewed Seats</th>
+                                            <th>Renewed Rev</th>
+                                            <th>Total Seats</th>
+                                            <th>Total Rev</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -225,15 +227,19 @@ class SubscriptionTable {
 
     renderPackageRow(pkg) {
         const ddData = this.dayOverDayData[pkg.package_name] || {};
+        const isSubLine = pkg.is_sub_line;
+        const rowStyle = isSubLine ? ' style="opacity: 0.6;"' : '';
 
         return `
-            <tr>
-                <td>${pkg.package_name.trim()}</td>
+            <tr${rowStyle}>
+                <td>${pkg.package_name.trim()}${isSubLine ? ' <span class="sub-badge" style="font-size:0.7em;color:var(--text-secondary);background:var(--bg-tertiary);padding:1px 4px;border-radius:3px;margin-left:4px;">Sub</span>' : ''}</td>
                 <td class="package-type">${pkg.package_type}</td>
-                <td>${pkg.package_seats.toLocaleString()}${this.renderDDChange(ddData.package_seats_change)}</td>
-                <td>${pkg.perf_seats.toLocaleString()}</td>
-                <td>$${this.formatCurrency(pkg.total_amount)}${this.renderDDChange(ddData.revenue_change, true)}</td>
-                <td>${pkg.orders.toLocaleString()}</td>
+                <td>${(pkg.new_pkg_seats || 0).toLocaleString()}</td>
+                <td>$${this.formatCurrency(pkg.new_amount || 0)}</td>
+                <td>${(pkg.renewed_pkg_seats || 0).toLocaleString()}</td>
+                <td>$${this.formatCurrency(pkg.renewed_amount || 0)}</td>
+                <td>${(pkg.total_pkg_seats || 0).toLocaleString()}${this.renderDDChange(ddData.seats_change)}</td>
+                <td>$${this.formatCurrency(pkg.total_amount || 0)}${this.renderDDChange(ddData.revenue_change, true)}</td>
             </tr>
         `;
     }
@@ -266,18 +272,18 @@ class SubscriptionTable {
         // Only show metrics for Classical and Pops (they have projections)
         if (!projection) {
             // Fallback to simple stats for Flex/Family
-            if (categoryTotals.totalPackages > 0) {
+            if (categoryTotals.totalSeats > 0) {
                 return `
                     <table class="subscription-rollup-table simple">
                         <thead>
                             <tr>
-                                <th>Packages Sold</th>
+                                <th>Total Seats</th>
                                 <th>Actual Revenue</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr class="rollup-row">
-                                <td>${categoryTotals.totalPackages.toLocaleString()}</td>
+                                <td>${categoryTotals.totalSeats.toLocaleString()}</td>
                                 <td>$${this.formatCurrency(categoryTotals.totalRevenue)}</td>
                             </tr>
                         </tbody>
@@ -371,10 +377,10 @@ class SubscriptionTable {
 
     calculateTotals(data) {
         return {
-            totalPackages: data.reduce((sum, p) => sum + (p.package_seats || 0), 0),
-            totalPerf: data.reduce((sum, p) => sum + (p.perf_seats || 0), 0),
-            totalRevenue: data.reduce((sum, p) => sum + (p.total_amount || 0), 0),
-            totalOrders: data.reduce((sum, p) => sum + (p.orders || 0), 0)
+            newSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.new_pkg_seats || 0)), 0),
+            renewedSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.renewed_pkg_seats || 0)), 0),
+            totalSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.total_pkg_seats || 0)), 0),
+            totalRevenue: data.reduce((sum, p) => sum + (p.total_amount || 0), 0)
         };
     }
 
