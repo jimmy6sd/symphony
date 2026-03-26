@@ -1,7 +1,8 @@
 // Google Cloud Function: Subscription Webhook - Package Sales PDF Processor
-// Accepts Tessitura Package Sales Report PDFs from Make.com
-// Handles all 5 categories: Classical, Pops, Flex, Family, Specials
-// Inserts into subscription_sales_snapshots table
+// Accepts both legacy per-category PDFs and combined renewal report PDFs from Make.com
+// Format auto-detected from attachment filename:
+//   Legacy: "12.04.25 Classical Package Sales.pdf" → subscription_sales_snapshots
+//   Renewal: "03.01.2026.pdf" → subscription_renewal_snapshots
 
 const { BigQuery } = require('@google-cloud/bigquery');
 const { Storage } = require('@google-cloud/storage');
@@ -9,9 +10,10 @@ const crypto = require('crypto');
 const functions = require('@google-cloud/functions-framework');
 
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
-const TABLE_ID = 'subscription_sales_snapshots';
+const LEGACY_TABLE_ID = 'subscription_sales_snapshots';
+const RENEWAL_TABLE_ID = 'subscription_renewal_snapshots';
 
-// Category detection patterns
+// Legacy: category detection from filename/subject
 const CATEGORY_PATTERNS = [
   { category: 'Classical', pattern: /classical/i },
   { category: 'Pops', pattern: /pops/i },
@@ -19,6 +21,17 @@ const CATEGORY_PATTERNS = [
   { category: 'Family', pattern: /family/i },
   { category: 'Specials', pattern: /special/i }
 ];
+
+// Renewal: category mapping from PDF section headers
+const CATEGORY_MAP = {
+  'Classical': 'Classical',
+  'Pops': 'Pops',
+  'Family': 'Family',
+  'Special': 'Specials',
+  'Flex/CYO': 'Flex',
+  'Flex': 'Flex',
+  'Student Pass': 'Student Pass'
+};
 
 // Initialize credentials (same pattern as other webhooks)
 const initializeCredentials = () => {
@@ -104,7 +117,19 @@ async function backupPdfToStorage(base64Data, executionId, metadata) {
   }
 }
 
-// Detect category from filename, email subject, or metadata
+// Detect report format from filename
+// Legacy: "12.04.25 Classical Package Sales.pdf" (category in name)
+// Renewal: "27 SY-Package Sales Renewal Report_1174278.pdf" (no category, has "Renewal")
+function detectFormat(filename) {
+  if (!filename) return 'renewal';
+  if (/renewal/i.test(filename)) return 'renewal';
+  for (const { pattern } of CATEGORY_PATTERNS) {
+    if (pattern.test(filename)) return 'legacy';
+  }
+  return 'renewal';
+}
+
+// Legacy: detect category from filename, email subject, or metadata
 function detectCategory(metadata) {
   const sources = [
     metadata?.filename || '',
@@ -123,7 +148,7 @@ function detectCategory(metadata) {
   return 'Unknown';
 }
 
-// Extract season from PDF text items
+// Legacy: extract season from PDF text items
 function extractSeason(items) {
   for (const item of items) {
     const seasonMatch = item.match(/Season:\s*(\d{2}-\d{2})/);
@@ -134,7 +159,7 @@ function extractSeason(items) {
   return '25-26';
 }
 
-// Extract report date from PDF text items
+// Legacy: extract report date from PDF text items
 function extractReportDate(items) {
   for (const item of items) {
     const runByMatch = item.match(/on\s+(\d{1,2})\/(\d{1,2})\/(\d{4})/);
@@ -146,9 +171,16 @@ function extractReportDate(items) {
   return null;
 }
 
-// Extract snapshot date from filename (e.g., "12.04.25 Classical Package Sales.pdf")
+// Extract snapshot date from filename (supports both MM.DD.YYYY and MM.DD.YY)
 function extractDateFromFilename(filename) {
   if (!filename) return null;
+  // Try 4-digit year first: MM.DD.YYYY
+  const mmddyyyyMatch = filename.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if (mmddyyyyMatch) {
+    const [_, month, day, year] = mmddyyyyMatch;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  // Fallback: 2-digit year MM.DD.YY
   const mmddyyMatch = filename.match(/(\d{1,2})\.(\d{1,2})\.(\d{2})/);
   if (mmddyyMatch) {
     const [_, month, day, year] = mmddyyMatch;
@@ -160,8 +192,128 @@ function extractDateFromFilename(filename) {
   return null;
 }
 
-// Parse subscription PDF and extract package data
-async function parseSubscriptionPdf(base64Data) {
+function parseNumeric(text) {
+  return parseFloat(text.replace(/[$,]/g, '')) || 0;
+}
+
+// Parse renewal PDF using coordinate-based extraction
+// One PDF contains all categories with New/Renewed/Total breakdown
+async function parseRenewalPdf(base64Data) {
+  const PDFParser = require('pdf2json');
+  const pdfBuffer = Buffer.from(base64Data, 'base64');
+
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser();
+
+    pdfParser.on('pdfParser_dataError', errData => reject(errData.parserError));
+
+    pdfParser.on('pdfParser_dataReady', pdfData => {
+      const packages = [];
+      let currentCategory = null;
+      let currentSeason = null;
+      let reportDate = null;
+
+      for (const page of pdfData.Pages) {
+        const items = page.Texts.map(t => ({
+          x: t.x,
+          y: t.y,
+          text: decodeURIComponent(t.R[0].T)
+        }));
+
+        // Extract report date from PDF header (e.g., "3/1/2026" near top of page 1)
+        if (!reportDate) {
+          for (const item of items) {
+            const dateMatch = item.text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (dateMatch && item.y < 5) {
+              const [_, month, day, year] = dateMatch;
+              reportDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+              break;
+            }
+          }
+        }
+
+        // Group into rows by y-coordinate
+        const sortedByY = [...items].sort((a, b) => a.y - b.y);
+        const rows = [];
+        let currentRow = [];
+
+        for (const item of sortedByY) {
+          if (currentRow.length === 0 || item.y - currentRow[0].y < 0.5) {
+            currentRow.push(item);
+          } else {
+            rows.push(currentRow.sort((a, b) => a.x - b.x));
+            currentRow = [item];
+          }
+        }
+        if (currentRow.length > 0) {
+          rows.push(currentRow.sort((a, b) => a.x - b.x));
+        }
+
+        for (const row of rows) {
+          const firstText = row[0]?.text || '';
+
+          // Detect category header: "26-27 SY Classical"
+          const catMatch = firstText.match(/^(\d{2}-\d{2})\s+SY\s+(.+)$/);
+          if (catMatch) {
+            currentSeason = catMatch[1];
+            const rawCat = catMatch[2].trim();
+            currentCategory = CATEGORY_MAP[rawCat] || rawCat;
+            continue;
+          }
+
+          if (firstText === 'SubTotal' || firstText === 'Total') continue;
+          if (!currentCategory) continue;
+          if (!firstText.match(/^\d{2}\s+.+/)) continue;
+
+          const packageName = firstText;
+          const typeItem = row.find(r => /^SY-/.test(r.text));
+          const packageType = typeItem ? typeItem.text : 'SY-Full';
+
+          // Collect numeric items in data columns (x > 15), sorted by x
+          const numericItems = row.filter(r =>
+            r.x > 15 && (
+              /^\$[\d,]+\.?\d*$/.test(r.text) ||
+              /^[\d,]+$/.test(r.text)
+            )
+          ).sort((a, b) => a.x - b.x);
+
+          if (numericItems.length < 6) continue;
+
+          // Column order: new_seats, new_amount, renewed_seats, renewed_amount, total_seats, total_amount
+          const newSeats = parseInt(numericItems[0].text.replace(/[$,]/g, '')) || 0;
+          const newAmount = parseNumeric(numericItems[1].text);
+          const renewedSeats = parseInt(numericItems[2].text.replace(/[$,]/g, '')) || 0;
+          const renewedAmount = parseNumeric(numericItems[3].text);
+          const totalSeats = parseInt(numericItems[4].text.replace(/[$,]/g, '')) || 0;
+          const totalAmount = parseNumeric(numericItems[5].text);
+
+          const isSubLine = /\bsub\b/i.test(packageName);
+
+          packages.push({
+            season: currentSeason,
+            category: currentCategory,
+            package_type: packageType,
+            package_name: packageName,
+            new_pkg_seats: isSubLine ? 0 : newSeats,
+            new_amount: newAmount,
+            renewed_pkg_seats: isSubLine ? 0 : renewedSeats,
+            renewed_amount: renewedAmount,
+            total_pkg_seats: isSubLine ? 0 : totalSeats,
+            total_amount: totalAmount,
+            is_sub_line: isSubLine
+          });
+        }
+      }
+
+      resolve({ packages, season: currentSeason, reportDate });
+    });
+
+    pdfParser.parseBuffer(pdfBuffer);
+  });
+}
+
+// Legacy: parse subscription PDF (per-category format)
+async function parseLegacyPdf(base64Data) {
   const PDFParser = require('pdf2json');
   const pdfBuffer = Buffer.from(base64Data, 'base64');
 
@@ -182,46 +334,23 @@ async function parseSubscriptionPdf(base64Data) {
           allItems.push(content);
         }
 
-        // Extract season from header
-        if (!season) {
-          season = extractSeason(allItems);
-        }
+        if (!season) season = extractSeason(allItems);
+        if (!reportDate) reportDate = extractReportDate(allItems);
 
-        // Extract report date
-        if (!reportDate) {
-          reportDate = extractReportDate(allItems);
-        }
-
-        // Parse table rows - look for package types and their data
         let currentPackageType = null;
 
         for (let i = 0; i < allItems.length; i++) {
           const item = allItems[i];
 
-          // Detect package type headers
-          if (item.match(/^SY-Full/i)) {
-            currentPackageType = 'SY-Full';
-            continue;
-          }
-          if (item.match(/^SY-Mini/i)) {
-            currentPackageType = 'SY-Mini';
-            continue;
-          }
-          if (item.match(/^SY-FlexPass/i)) {
-            currentPackageType = 'SY-FlexPass';
-            continue;
-          }
+          if (item.match(/^SY-Full/i)) { currentPackageType = 'SY-Full'; continue; }
+          if (item.match(/^SY-Mini/i)) { currentPackageType = 'SY-Mini'; continue; }
+          if (item.match(/^SY-FlexPass/i)) { currentPackageType = 'SY-FlexPass'; continue; }
 
-          // Look for package name patterns (e.g., "26 Friday Masterworks", "26 CYO 5+")
-          // Package names typically start with "26 " or "25 " followed by the name
           const packageNameMatch = item.match(/^(25|26|27)\s+(.+)$/);
           if (packageNameMatch && currentPackageType) {
             const packageName = item;
-
-            // Next items should be: Pkg seats, Perf seats, Total Amount, Paid Amount, Orders
             let idx = i + 1;
 
-            // Collect numeric values after package name
             const numericValues = [];
             while (idx < allItems.length && numericValues.length < 5) {
               const val = allItems[idx];
@@ -234,20 +363,14 @@ async function parseSubscriptionPdf(base64Data) {
             }
 
             if (numericValues.length >= 5) {
-              const pkgSeats = parseInt(numericValues[0].replace(/,/g, '')) || 0;
-              const perfSeats = parseInt(numericValues[1].replace(/,/g, '')) || 0;
-              const totalAmount = parseFloat(numericValues[2].replace(/,/g, '')) || 0;
-              const paidAmount = parseFloat(numericValues[3].replace(/,/g, '')) || 0;
-              const orders = parseInt(numericValues[4].replace(/,/g, '')) || 0;
-
               packages.push({
                 package_type: currentPackageType,
                 package_name: packageName,
-                package_seats: pkgSeats,
-                perf_seats: perfSeats,
-                total_amount: totalAmount,
-                paid_amount: paidAmount,
-                orders: orders
+                package_seats: parseInt(numericValues[0].replace(/,/g, '')) || 0,
+                perf_seats: parseInt(numericValues[1].replace(/,/g, '')) || 0,
+                total_amount: parseFloat(numericValues[2].replace(/,/g, '')) || 0,
+                paid_amount: parseFloat(numericValues[3].replace(/,/g, '')) || 0,
+                orders: parseInt(numericValues[4].replace(/,/g, '')) || 0
               });
             }
           }
@@ -261,8 +384,8 @@ async function parseSubscriptionPdf(base64Data) {
   });
 }
 
-// Insert snapshots into BigQuery
-async function insertSnapshots(bigquery, snapshots) {
+// Insert snapshots into BigQuery (works for both table formats)
+async function insertSnapshots(bigquery, snapshots, tableId) {
   if (snapshots.length === 0) {
     return { inserted: 0, skipped: 0 };
   }
@@ -277,7 +400,7 @@ async function insertSnapshots(bigquery, snapshots) {
   try {
     const checkQuery = `
       SELECT DISTINCT snapshot_date, category, package_name
-      FROM \`${projectId}.${DATASET_ID}.${TABLE_ID}\`
+      FROM \`${projectId}.${DATASET_ID}.${tableId}\`
       WHERE snapshot_date IN (${dates})
         AND category IN (${categories})
     `;
@@ -290,46 +413,28 @@ async function insertSnapshots(bigquery, snapshots) {
     console.log('Could not check for existing records (table may be empty)');
   }
 
-  // Filter to only new snapshots
   const newSnapshots = snapshots.filter(s =>
     !existingSet.has(`${s.snapshot_date}_${s.category}_${s.package_name}`)
   );
 
   const skipped = snapshots.length - newSnapshots.length;
-  if (skipped > 0) {
-    console.log(`Skipping ${skipped} existing snapshot(s)`);
-  }
+  if (skipped > 0) console.log(`Skipping ${skipped} existing snapshot(s)`);
 
   if (newSnapshots.length === 0) {
     console.log('All snapshots already exist');
     return { inserted: 0, skipped };
   }
 
-  console.log(`Inserting ${newSnapshots.length} new snapshot(s)...`);
+  console.log(`Inserting ${newSnapshots.length} new snapshot(s) into ${tableId}...`);
 
-  const table = bigquery.dataset(DATASET_ID).table(TABLE_ID);
-  const rows = newSnapshots.map(s => ({
-    snapshot_date: s.snapshot_date,
-    season: s.season,
-    category: s.category,
-    package_type: s.package_type,
-    package_name: s.package_name,
-    package_seats: s.package_seats,
-    perf_seats: s.perf_seats,
-    total_amount: s.total_amount,
-    paid_amount: s.paid_amount,
-    orders: s.orders
-  }));
-
-  await table.insert(rows);
-  console.log(`Inserted ${rows.length} snapshots`);
-  return { inserted: rows.length, skipped };
+  const table = bigquery.dataset(DATASET_ID).table(tableId);
+  await table.insert(newSnapshots);
+  console.log(`Inserted ${newSnapshots.length} snapshots`);
+  return { inserted: newSnapshots.length, skipped };
 }
 
 // Update subscription_historical_data with daily totals for the sales curve chart
-// This upserts a row for the current category (series) + season + snapshot_date
-async function updateHistoricalData(bigquery, category, season, snapshotDate, snapshots) {
-  // Only track Classical and Pops (matches existing historical data)
+async function updateHistoricalData(bigquery, category, season, snapshotDate, snapshots, format) {
   if (category !== 'Classical' && category !== 'Pops') {
     console.log(`Skipping historical data update for ${category} (only Classical/Pops tracked)`);
     return;
@@ -339,21 +444,36 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
 
   const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
 
-  // Calculate ISO week number (kept for reference/compatibility)
+  // Calculate ISO week number
   const d = new Date(snapshotDate);
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   const weekNumber = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 
-  // Aggregate totals from all packages in this category
-  const totalUnits = snapshots.reduce((sum, s) => sum + (s.package_seats || 0), 0);
-  const totalRevenue = snapshots.reduce((sum, s) => sum + (s.total_amount || 0), 0);
+  let newUnits, newRevenue, renewalUnits, renewalRevenue, totalUnits, totalRevenue;
+
+  if (format === 'renewal') {
+    // Renewal format: actual new/renewed breakdown available
+    newUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.new_pkg_seats || 0)), 0);
+    newRevenue = snapshots.reduce((sum, s) => sum + (s.new_amount || 0), 0);
+    renewalUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.renewed_pkg_seats || 0)), 0);
+    renewalRevenue = snapshots.reduce((sum, s) => sum + (s.renewed_amount || 0), 0);
+    totalUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.total_pkg_seats || 0)), 0);
+    totalRevenue = snapshots.reduce((sum, s) => sum + (s.total_amount || 0), 0);
+  } else {
+    // Legacy format: no new/renewed breakdown
+    newUnits = 0;
+    newRevenue = 0;
+    renewalUnits = 0;
+    renewalRevenue = 0;
+    totalUnits = snapshots.reduce((sum, s) => sum + (s.package_seats || 0), 0);
+    totalRevenue = snapshots.reduce((sum, s) => sum + (s.total_amount || 0), 0);
+  }
 
   console.log(`Updating historical data: ${category} ${season} ${snapshotDate} (week ${weekNumber}) - ${totalUnits} units, $${totalRevenue}`);
 
   try {
-    // MERGE upsert keyed on snapshot_date for daily granularity
     const mergeQuery = `
       MERGE \`${projectId}.${DATASET_ID}.subscription_historical_data\` target
       USING (SELECT '${category}' as series, '${season}' as season, DATE('${snapshotDate}') as snapshot_date) source
@@ -364,14 +484,17 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
       WHEN MATCHED THEN
         UPDATE SET
           week_number = ${weekNumber},
+          new_units = ${newUnits},
+          new_revenue = ${newRevenue},
+          renewal_units = ${renewalUnits},
+          renewal_revenue = ${renewalRevenue},
           total_units = ${totalUnits},
           total_revenue = ${totalRevenue}
       WHEN NOT MATCHED THEN
         INSERT (series, season, snapshot_date, week_number, new_units, new_revenue, renewal_units, renewal_revenue, total_units, total_revenue, is_final)
-        VALUES ('${category}', '${season}', '${snapshotDate}', ${weekNumber}, 0, 0, 0, 0, ${totalUnits}, ${totalRevenue}, FALSE)
+        VALUES ('${category}', '${season}', '${snapshotDate}', ${weekNumber}, ${newUnits}, ${newRevenue}, ${renewalUnits}, ${renewalRevenue}, ${totalUnits}, ${totalRevenue}, FALSE)
     `;
     await bigquery.query({ query: mergeQuery, location: 'US' });
-
     console.log(`Historical data updated: ${category} ${snapshotDate}`);
   } catch (error) {
     console.error(`Historical data update failed for ${category}:`, error.message);
@@ -439,78 +562,116 @@ functions.http('subscriptionWebhook', async (req, res) => {
     console.log(`PDF size: ${Math.round(pdf_base64.length * 0.75 / 1024)}KB`);
     console.log(`Metadata: ${JSON.stringify(metadata || {})}`);
 
-    // Detect category from metadata (check all available fields)
-    console.log(`Category detection sources: filename="${metadata?.filename}", email_subject="${metadata?.email_subject}", category="${metadata?.category}"`);
-    let category = detectCategory(metadata);
-
-    // Fallback: check ALL metadata fields if primary detection fails
-    if (category === 'Unknown' && metadata) {
-      const allValues = Object.values(metadata).filter(v => typeof v === 'string').join(' ');
-      for (const { category: cat, pattern } of CATEGORY_PATTERNS) {
-        if (pattern.test(allValues)) {
-          console.log(`Category detected from extended metadata scan: ${cat}`);
-          category = cat;
-          break;
-        }
-      }
-    }
-
-    console.log(`Detected category: ${category}`);
-
-    if (category === 'Unknown') {
-      console.log('WARNING: Could not detect category from any metadata field. Include "Classical", "Pops", "Flex", "Family", or "Special" in the filename or email_subject metadata field.');
-      console.log(`Full metadata: ${JSON.stringify(metadata)}`);
-    }
+    // Detect format from filename
+    const format = detectFormat(metadata?.filename);
+    console.log(`Detected format: ${format}`);
 
     // Backup PDF
     const backupResult = await backupPdfToStorage(pdf_base64, executionId, metadata);
 
-    // Parse subscription PDF
-    console.log('Parsing subscription PDF...');
-    const { packages, reportDate, season } = await parseSubscriptionPdf(pdf_base64);
-
-    // Determine snapshot date: PDF report date > filename date > today
-    const snapshotDate = reportDate
-      || extractDateFromFilename(metadata?.filename)
-      || new Date().toISOString().split('T')[0];
-
-    console.log(`Report date: ${reportDate}`);
-    console.log(`Snapshot date: ${snapshotDate}`);
-    console.log(`Season: ${season}`);
-    console.log(`Packages found: ${packages.length}`);
-
-    if (packages.length > 0) {
-      packages.forEach(pkg => {
-        console.log(`  ${pkg.package_type} | ${pkg.package_name}: ${pkg.package_seats} pkg, ${pkg.perf_seats} perf, $${pkg.total_amount.toLocaleString()}, ${pkg.orders} orders`);
-      });
-    }
-
-    // Build snapshot rows
-    const snapshots = packages.map(pkg => ({
-      snapshot_date: snapshotDate,
-      season: season,
-      category: category,
-      package_type: pkg.package_type,
-      package_name: pkg.package_name,
-      package_seats: pkg.package_seats,
-      perf_seats: pkg.perf_seats,
-      total_amount: pkg.total_amount,
-      paid_amount: pkg.paid_amount,
-      orders: pkg.orders
-    }));
-
-    // Insert into BigQuery
     const bigquery = initializeBigQuery();
-    const result = await insertSnapshots(bigquery, snapshots);
+    let result;
+    let summary;
 
-    // Update historical data for sales curve chart
-    await updateHistoricalData(bigquery, category, season, snapshotDate, snapshots);
+    if (format === 'renewal') {
+      // ── Renewal format: combined PDF with all categories ──
+      console.log('Parsing renewal PDF...');
+      const { packages, season, reportDate } = await parseRenewalPdf(pdf_base64);
+
+      // Date priority: PDF report date > email date from Make.com > today
+      const snapshotDate = reportDate
+        || metadata?.email_date
+        || new Date().toISOString().split('T')[0];
+
+      console.log(`Snapshot date: ${snapshotDate}, Season: ${season}, Packages: ${packages.length}`);
+
+      const subLines = packages.filter(p => p.is_sub_line);
+      const categories = [...new Set(packages.map(p => p.category))];
+      console.log(`Categories: ${categories.join(', ')}, Sub lines: ${subLines.length}`);
+
+      packages.forEach(pkg => {
+        console.log(`  ${pkg.category} | ${pkg.package_name}: ${pkg.total_pkg_seats} seats, $${pkg.total_amount}${pkg.is_sub_line ? ' [SUB]' : ''}`);
+      });
+
+      // Build snapshots with date
+      const snapshots = packages.map(pkg => ({ ...pkg, snapshot_date: snapshotDate }));
+
+      // Insert into renewal table
+      result = await insertSnapshots(bigquery, snapshots, RENEWAL_TABLE_ID);
+
+      // Update historical data for each tracked category
+      for (const cat of ['Classical', 'Pops']) {
+        const catSnapshots = snapshots.filter(s => s.category === cat);
+        if (catSnapshots.length > 0) {
+          await updateHistoricalData(bigquery, cat, season, snapshotDate, catSnapshots, 'renewal');
+        }
+      }
+
+      summary = {
+        format: 'renewal',
+        snapshot_date: snapshotDate,
+        season: season,
+        categories: categories,
+        packages_found: packages.length,
+        sub_lines: subLines.length,
+        inserted: result.inserted,
+        skipped: result.skipped
+      };
+
+    } else {
+      // ── Legacy format: one category per PDF ──
+      const category = detectCategory(metadata);
+      console.log(`Detected category: ${category}`);
+
+      if (category === 'Unknown') {
+        console.log('WARNING: Could not detect category. Include category name in filename or email_subject.');
+      }
+
+      console.log('Parsing legacy subscription PDF...');
+      const { packages, reportDate, season } = await parseLegacyPdf(pdf_base64);
+
+      const snapshotDate = reportDate
+        || extractDateFromFilename(metadata?.filename)
+        || new Date().toISOString().split('T')[0];
+
+      console.log(`Report date: ${reportDate}, Snapshot date: ${snapshotDate}, Season: ${season}, Packages: ${packages.length}`);
+
+      packages.forEach(pkg => {
+        console.log(`  ${pkg.package_type} | ${pkg.package_name}: ${pkg.package_seats} pkg, ${pkg.perf_seats} perf, $${pkg.total_amount}, ${pkg.orders} orders`);
+      });
+
+      const snapshots = packages.map(pkg => ({
+        snapshot_date: snapshotDate,
+        season: season,
+        category: category,
+        package_type: pkg.package_type,
+        package_name: pkg.package_name,
+        package_seats: pkg.package_seats,
+        perf_seats: pkg.perf_seats,
+        total_amount: pkg.total_amount,
+        paid_amount: pkg.paid_amount,
+        orders: pkg.orders
+      }));
+
+      result = await insertSnapshots(bigquery, snapshots, LEGACY_TABLE_ID);
+      await updateHistoricalData(bigquery, category, season, snapshotDate, snapshots, 'legacy');
+
+      summary = {
+        format: 'legacy',
+        category: category,
+        snapshot_date: snapshotDate,
+        season: season,
+        packages_found: packages.length,
+        inserted: result.inserted,
+        skipped: result.skipped
+      };
+    }
 
     // Log execution
     await logPipelineExecution(bigquery, executionId, 'completed', {
       start_time: startTime,
       source_file: metadata?.filename || 'unknown',
-      records_processed: packages.length,
+      records_processed: summary.packages_found,
       records_inserted: result.inserted,
       end_time: new Date().toISOString()
     });
@@ -521,15 +682,8 @@ functions.http('subscriptionWebhook', async (req, res) => {
       success: true,
       execution_id: executionId,
       backup: backupResult,
-      summary: {
-        category: category,
-        snapshot_date: snapshotDate,
-        season: season,
-        packages_found: packages.length,
-        inserted: result.inserted,
-        skipped: result.skipped
-      },
-      message: `Subscription PDF processed: ${category} - ${packages.length} packages`
+      summary,
+      message: `Subscription PDF processed (${format}): ${summary.packages_found} packages`
     });
 
   } catch (error) {

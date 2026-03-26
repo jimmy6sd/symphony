@@ -592,6 +592,7 @@ async function getAllWeekOverWeek(bigquery, params, headers) {
 }
 
 // Get subscription package sales data with day-over-day changes and category projections
+// Uses subscription_renewal_snapshots table (new/renewed breakdown format)
 async function getSubscriptionData(bigquery, params, headers) {
   const { category, season = '26-27' } = params;
 
@@ -601,24 +602,23 @@ async function getSubscriptionData(bigquery, params, headers) {
   if (season) filterConditions.push(`season = '${season}'`);
   const filterClause = filterConditions.length > 0 ? `AND ${filterConditions.join(' AND ')}` : '';
 
-  // Get latest subscription snapshot data
-  // Note: Using CTEs to materialize data before JOIN (BigQuery doesn't support subqueries in JOIN predicates)
+  // Get latest renewal snapshot data with day-over-day changes
   const query = `
     WITH SnapshotDates AS (
       SELECT
         MAX(snapshot_date) as latest_date,
-        MAX(CASE WHEN snapshot_date < (SELECT MAX(snapshot_date) FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`) THEN snapshot_date END) as prev_date
-      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+        MAX(CASE WHEN snapshot_date < (SELECT MAX(snapshot_date) FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`) THEN snapshot_date END) as prev_date
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
     ),
     LatestData AS (
       SELECT *
-      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
       WHERE snapshot_date = (SELECT latest_date FROM SnapshotDates)
       ${filterClause}
     ),
     PreviousData AS (
       SELECT *
-      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_sales_snapshots\`
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
       WHERE snapshot_date = (SELECT prev_date FROM SnapshotDates)
     )
     SELECT
@@ -627,15 +627,16 @@ async function getSubscriptionData(bigquery, params, headers) {
       l.category,
       l.package_type,
       l.package_name,
-      l.package_seats,
-      l.perf_seats,
+      l.new_pkg_seats,
+      l.new_amount,
+      l.renewed_pkg_seats,
+      l.renewed_amount,
+      l.total_pkg_seats,
       l.total_amount,
-      l.paid_amount,
-      l.orders,
-      -- Day-over-day changes
-      l.package_seats - COALESCE(p.package_seats, l.package_seats) as package_seats_change,
-      l.total_amount - COALESCE(p.total_amount, l.total_amount) as revenue_change,
-      l.orders - COALESCE(p.orders, l.orders) as orders_change
+      l.is_sub_line,
+      -- Day-over-day changes on total columns
+      l.total_pkg_seats - COALESCE(p.total_pkg_seats, l.total_pkg_seats) as seats_change,
+      l.total_amount - COALESCE(p.total_amount, l.total_amount) as revenue_change
     FROM LatestData l
     LEFT JOIN PreviousData p
       ON l.package_name = p.package_name
@@ -655,20 +656,21 @@ async function getSubscriptionData(bigquery, params, headers) {
     category: row.category,
     package_type: row.package_type,
     package_name: row.package_name,
-    package_seats: row.package_seats,
-    perf_seats: row.perf_seats,
+    new_pkg_seats: row.new_pkg_seats,
+    new_amount: row.new_amount,
+    renewed_pkg_seats: row.renewed_pkg_seats,
+    renewed_amount: row.renewed_amount,
+    total_pkg_seats: row.total_pkg_seats,
     total_amount: row.total_amount,
-    paid_amount: row.paid_amount,
-    orders: row.orders
+    is_sub_line: row.is_sub_line
   }));
 
   // Build day-over-day lookup
   const dayOverDay = {};
   rows.forEach(row => {
     dayOverDay[row.package_name] = {
-      package_seats_change: row.package_seats_change || 0,
-      revenue_change: row.revenue_change || 0,
-      orders_change: row.orders_change || 0
+      seats_change: row.seats_change || 0,
+      revenue_change: row.revenue_change || 0
     };
   });
 
@@ -714,15 +716,17 @@ async function calculateCategoryProjections(bigquery, currentData, currentSeason
   }
 
   // Calculate current totals by category
+  // Exclude is_sub_line rows from seat counts (duplicative), keep revenue
   const currentByCategory = {};
   currentData.forEach(pkg => {
     const cat = pkg.category;
     if (!currentByCategory[cat]) {
-      currentByCategory[cat] = { packages: 0, revenue: 0, orders: 0 };
+      currentByCategory[cat] = { packages: 0, revenue: 0 };
     }
-    currentByCategory[cat].packages += pkg.package_seats || 0;
+    if (!pkg.is_sub_line) {
+      currentByCategory[cat].packages += pkg.total_pkg_seats || 0;
+    }
     currentByCategory[cat].revenue += pkg.total_amount || 0;
-    currentByCategory[cat].orders += pkg.orders || 0;
   });
 
   // Get current snapshot date
@@ -738,7 +742,7 @@ async function calculateCategoryProjections(bigquery, currentData, currentSeason
   const projections = {};
 
   for (const cat of categories) {
-    const current = currentByCategory[cat] || { packages: 0, revenue: 0, orders: 0 };
+    const current = currentByCategory[cat] || { packages: 0, revenue: 0 };
     const targetAtDate = targetCompData[cat] || { packages: 0, revenue: 0 };
     const targetFinal = targetFinalData[cat] || { packages: 0, revenue: 0 };
 
@@ -759,7 +763,6 @@ async function calculateCategoryProjections(bigquery, currentData, currentSeason
       current: {
         packages: current.packages,
         revenue: current.revenue,
-        orders: current.orders,
         snapshotDate: currentSnapshotDate
       },
       targetAtDate: {
@@ -882,7 +885,9 @@ async function getTargetCompFinals(bigquery, targetSeason) {
 }
 
 // Get subscription historical data for sales curve charts
-// Returns weekly snapshots grouped by season for comparison
+// Returns daily/weekly snapshots grouped by season for comparison
+// 26-27 season: sourced from subscription_renewal_snapshots (authoritative, with new/renewed breakdown)
+// Older seasons: sourced from subscription_historical_data
 async function getSubscriptionHistory(bigquery, params, headers) {
   const { series } = params;
 
@@ -894,41 +899,50 @@ async function getSubscriptionHistory(bigquery, params, headers) {
     };
   }
 
-  // Query all historical data for this series
-  const query = `
-    SELECT
-      series,
-      season,
-      snapshot_date,
-      week_number,
-      new_units,
-      new_revenue,
-      renewal_units,
-      renewal_revenue,
-      total_units,
-      total_revenue,
-      is_final
-    FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
-    WHERE series = @series
-    ORDER BY season DESC, week_number ASC
-  `;
+  // Run both queries in parallel
+  const [historicalRows, currentRows] = await Promise.all([
+    // Historical seasons from subscription_historical_data (excludes 26-27)
+    bigquery.query({
+      query: `
+        SELECT series, season, snapshot_date, week_number,
+               new_units, new_revenue, renewal_units, renewal_revenue,
+               total_units, total_revenue, is_final
+        FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
+        WHERE series = @series AND season != '26-27'
+        ORDER BY season DESC, week_number ASC
+      `,
+      params: { series },
+      location: 'US'
+    }).then(r => r[0]),
+    // Current season (26-27) aggregated from subscription_renewal_snapshots
+    bigquery.query({
+      query: `
+        SELECT
+          snapshot_date,
+          EXTRACT(ISOWEEK FROM snapshot_date) as week_number,
+          SUM(CASE WHEN NOT is_sub_line THEN new_pkg_seats ELSE 0 END) as new_units,
+          SUM(new_amount) as new_revenue,
+          SUM(CASE WHEN NOT is_sub_line THEN renewed_pkg_seats ELSE 0 END) as renewal_units,
+          SUM(renewed_amount) as renewal_revenue,
+          SUM(CASE WHEN NOT is_sub_line THEN total_pkg_seats ELSE 0 END) as total_units,
+          SUM(total_amount) as total_revenue
+        FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
+        WHERE category = @series AND season = '26-27'
+        GROUP BY snapshot_date
+        ORDER BY snapshot_date
+      `,
+      params: { series },
+      location: 'US'
+    }).then(r => r[0])
+  ]);
 
-  const [rows] = await bigquery.query({
-    query,
-    params: { series },
-    location: 'US'
-  });
-
-  // Group by season
+  // Group historical by season
   const seasons = {};
-  rows.forEach(row => {
+
+  historicalRows.forEach(row => {
     const season = row.season;
     if (!seasons[season]) {
-      seasons[season] = {
-        season,
-        snapshots: [],
-        final: null
-      };
+      seasons[season] = { season, snapshots: [], final: null };
     }
 
     const snapshot = {
@@ -948,6 +962,23 @@ async function getSubscriptionHistory(bigquery, params, headers) {
       seasons[season].snapshots.push(snapshot);
     }
   });
+
+  // Add 26-27 season from renewal snapshots
+  if (currentRows.length > 0) {
+    seasons['26-27'] = { season: '26-27', snapshots: [], final: null };
+    currentRows.forEach(row => {
+      seasons['26-27'].snapshots.push({
+        snapshot_date: row.snapshot_date ? (typeof row.snapshot_date === 'object' ? row.snapshot_date.value : row.snapshot_date) : null,
+        week_number: row.week_number,
+        new_units: row.new_units,
+        new_revenue: row.new_revenue,
+        renewal_units: row.renewal_units,
+        renewal_revenue: row.renewal_revenue,
+        total_units: row.total_units,
+        total_revenue: row.total_revenue
+      });
+    });
+  }
 
   // Sort snapshots within each season by week_number
   Object.values(seasons).forEach(s => {
