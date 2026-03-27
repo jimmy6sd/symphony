@@ -95,8 +95,13 @@ class SubscriptionTable {
         // Build HTML
         let html = `
             <div class="subscription-table-wrapper">
-                <!-- Season Label -->
-                <div class="subscription-season-label">2026-27 Season</div>
+                <!-- Season Header (matches single tickets style) -->
+                <div class="table-header">
+                    <div class="table-title-group">
+                        <h3>2026-27 Subscription Season</h3>
+                        <div class="last-update-label" id="sub-last-update" style="padding-left: 8px;"></div>
+                    </div>
+                </div>
 
                 <!-- Summary Header -->
                 <div class="subscription-summary">
@@ -189,6 +194,17 @@ class SubscriptionTable {
         `;
 
         this.container.innerHTML = html;
+
+        // Populate subscription last update date
+        const subUpdate = document.getElementById('sub-last-update');
+        const freshness = window.dataService?.dataFreshness;
+        if (subUpdate && freshness?.subscriptions) {
+            const info = window.dataService.formatFreshnessDate(freshness.subscriptions);
+            subUpdate.textContent = `Updated: ${info.text}`;
+            if (info.veryStale) subUpdate.classList.add('freshness-error');
+            else if (info.stale) subUpdate.classList.add('freshness-stale');
+            if (info.stale) subUpdate.title = `${info.diffDays} days since last import`;
+        }
 
         // Initialize charts for expanded categories
         this.initializeCharts();

@@ -1784,6 +1784,26 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
+/* Data Freshness Inline Labels */
+.table-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.last-update-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-muted);
+}
+
+.last-update-label.freshness-stale {
+    color: var(--warning-color);
+}
+
+.last-update-label.freshness-error {
+    color: var(--danger-color);
+}
+
 .dashboard-tabs-container {
     display: flex;
     background: #e9ecf2;

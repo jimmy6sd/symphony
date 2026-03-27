@@ -271,6 +271,7 @@ class DataService {
         }
 
         this.updateRefreshTimestamp();
+        this.updateDataFreshness(data._meta?.dataFreshness);
 
         if (!data.performances || data.performances.length === 0) {
             throw new Error('BigQuery returned empty dataset');
@@ -317,6 +318,29 @@ class DataService {
             const timeString = now.toLocaleString();
             refreshElement.textContent = `Last refreshed: ${timeString}`;
         }
+    }
+
+    // Store data freshness dates globally for components to use
+    updateDataFreshness(freshness) {
+        if (!freshness) return;
+        this.dataFreshness = freshness;
+    }
+
+    // Format a freshness date for display
+    // Snapshot dates represent data "as of" that date; the import happens the next day
+    formatFreshnessDate(dateStr) {
+        if (!dateStr) return { text: 'Unknown', stale: false, veryStale: false };
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + 1);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+        const formatted = date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+        return {
+            text: formatted,
+            stale: diffDays > 2,
+            veryStale: diffDays > 5,
+            diffDays
+        };
     }
 
     // Get live sales data for a specific performance

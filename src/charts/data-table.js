@@ -3476,9 +3476,25 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
             .append('div')
             .attr('class', 'table-header');
 
-        header
+        const titleGroup = header
+            .append('div')
+            .attr('class', 'table-title-group');
+
+        titleGroup
             .append('h3')
             .text('2026 Season Performance Details');
+
+        // Last update date from data freshness
+        const freshness = window.dataService?.dataFreshness;
+        if (freshness?.single_tickets) {
+            const info = window.dataService.formatFreshnessDate(freshness.single_tickets);
+            const label = titleGroup
+                .append('div')
+                .attr('class', `last-update-label${info.veryStale ? ' freshness-error' : info.stale ? ' freshness-stale' : ''}`)
+                .style('padding-left', '8px')
+                .text(`Updated: ${info.text}`);
+            if (info.stale) label.attr('title', `${info.diffDays} days since last import`);
+        }
 
         const headerRight = header
             .append('div')

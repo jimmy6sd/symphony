@@ -186,10 +186,11 @@ async function getInitialLoad(bigquery, params, headers) {
     console.log(`🔄 Fetching fresh data (cache ${bypassCache ? 'bypassed' : 'miss'})`);
     console.time('get-initial-load');
 
-    // Run both queries in parallel
-    const [performancesResult, wowResult] = await Promise.all([
+    // Run queries in parallel (including data freshness check)
+    const [performancesResult, wowResult, freshnessResult] = await Promise.all([
       getPerformancesWithLatestSnapshots(bigquery, params, headers),
-      getAllWeekOverWeek(bigquery, params, headers)
+      getAllWeekOverWeek(bigquery, params, headers),
+      getDataFreshness(bigquery)
     ]);
 
     console.timeEnd('get-initial-load');
@@ -206,7 +207,8 @@ async function getInitialLoad(bigquery, params, headers) {
         performanceCount: performances.length,
         wowCount: Object.keys(weekOverWeek).length,
         cached: false,
-        cacheTTL: cache.TTL / 1000 // TTL in seconds
+        cacheTTL: cache.TTL / 1000, // TTL in seconds
+        dataFreshness: freshnessResult
       }
     };
 
@@ -504,6 +506,37 @@ async function getSalesProgression(bigquery, params, headers) {
       progression: weeklyData
     })
   };
+}
+
+// Get latest snapshot dates for each data source (for freshness indicator)
+async function getDataFreshness(bigquery) {
+  try {
+    const query = `
+      SELECT
+        'single_tickets' as source,
+        MAX(DATE(created_at)) as latest_date
+      FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
+      UNION ALL
+      SELECT
+        'subscriptions' as source,
+        MAX(snapshot_date) as latest_date
+      FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
+    `;
+
+    const [rows] = await bigquery.query({ query, location: 'US' });
+
+    const result = {};
+    for (const row of rows) {
+      const date = row.latest_date
+        ? (typeof row.latest_date === 'object' ? row.latest_date.value : row.latest_date)
+        : null;
+      result[row.source] = date;
+    }
+    return result;
+  } catch (error) {
+    console.error('Data freshness query failed:', error.message);
+    return {};
+  }
 }
 
 // Get week-over-week changes for all performances in one efficient query
