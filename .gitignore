@@ -24,6 +24,7 @@ data/temp/
 *~
 
 # OS generated files
+bash.exe.stackdump
 .DS_Store
 .DS_Store?
 ._*
@@ -44,6 +45,7 @@ pids/
 
 # Netlify
 .netlify/
+deno.lock
 
 # Build output
 dist/
