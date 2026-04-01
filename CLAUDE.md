@@ -1,323 +1,148 @@
 # Symphony Dashboard - Project Instructions
 
-Production analytics dashboard for Kansas City Symphony ticket sales with BigQuery integration.
+KC Symphony ticket sales analytics dashboard. Netlify-hosted, BigQuery-backed, vanilla JS + D3.js frontend.
 
----
+## CRITICAL RULES
 
-## 🌐 **DEPLOYMENT**
+- **NEVER push to git without explicit user permission**
+- **NEVER commit without user permission**
+- When running `bq` CLI commands, ALWAYS use full table path: `kcsymphony.symphony_dashboard.<table>`
+- Do not add unnecessary console logging
+- Prefer editing existing files over creating new ones
+- Use environment variables for all secrets
+- Follow existing code style and patterns
 
-### **URLs**
-- **Production**: https://kcsdashboard.netlify.app (main branch)
-- **Preview/Staging**: https://next--kcsdashboard.netlify.app (next branch)
-- **Local Development**: http://localhost:8888
+## DEPLOYMENT
 
-### **Netlify Deploy Contexts**
-- `main` branch → Production
-- `next` branch → Preview/Staging
-- `feature/*` branches → Deploy previews
+- **Production**: https://kcsdashboard.netlify.app (`main` branch)
+- **Staging**: https://next--kcsdashboard.netlify.app (`next` branch)
+- **Local**: http://localhost:8888 (`npm run dev`)
+- `feature/*` branches get Netlify deploy previews
+- No build step — publish directory is `./`
 
----
+## AUTHENTICATION
 
-## 🔒 **AUTHENTICATION**
+JWT-based auth via `/.netlify/functions/auth` with `login.html`.
 
-### **Basic HTTP Authentication**
-- **Method**: Netlify Basic Auth via `_headers` file
-- **Protected**: All dashboard pages (`/*`)
-- **Open**: Function endpoints (`/.netlify/functions/*`)
-- **Credentials**: Username: `kcsdashboard`, Password: in Netlify env var `SITE_PASSWORD`
+- User submits credentials → auth function validates → returns JWT (24hr expiry)
+- Token stored in sessionStorage, verified by `/.netlify/functions/verify-token`
+- Protected routes configured via redirect rules in `netlify.toml`
+- Local dev: no auth required
 
-### **Why Basic Auth?**
-- ✅ Dashboard protected with HTTP authentication
-- ✅ Functions remain accessible for API integrations
-- ✅ Scheduled tasks and webhooks work without auth
-- ✅ Simple to implement and maintain
+## PAGES & ROUTING
 
-### **Local Development**
-- No authentication required for `npm run dev`
-- Makes development faster and easier
+Routes defined in `netlify.toml`:
 
----
+| Route | File | Purpose |
+|---|---|---|
+| `/` | `index.html` | Main dashboard (single tickets, subscriptions, annotations tabs) |
+| `/login` | `login.html` | Auth gate |
+| `/dashboard` | `dashboard.html` | Board presentation view (protected) |
+| `/admin/edit/*` | `admin-edit.html` | Performance metadata editor |
+| `/year-to-date` | `ytd-comparison.html` | YTD fiscal year comparison |
+| `/excel.html` | `excel.html` | Excel export view |
 
-## 🚀 **DEVELOPMENT WORKFLOW**
+`index.html` also handles client-side routes: `/subscriptions`, `/annotations`, `/performance/*`, `/p/*`, `/charts/*`, `/table/*`
 
-### **⚠️ CRITICAL RULES**
-**NEVER push to git without explicit user permission**
-- Always ask before running `git push` on ANY branch
-- Show what will be pushed and get confirmation
-- User must explicitly approve each push operation
+## DATA FLOW
 
-### **Git Branch Strategy**
 ```
-main         → Production (live site)
-next         → Preview/staging for testing
-feature/*    → Individual feature branches
+Tessitura PDF reports → Make.com automations → GCP Cloud Functions → BigQuery
+                                                                        ↓
+                                                        Netlify Functions (API layer)
+                                                                        ↓
+                                                          Frontend (D3.js dashboards)
 ```
 
-### **Daily Development**
+### Cloud Functions (`cloud-functions/`)
+
+Three GCP Cloud Functions receive webhooks from Make.com. Each has its own `package.json` and deploys independently:
+
+- `pdf-webhook/` — Parses daily Tessitura PDF sales reports, backs up to GCS, inserts into BigQuery
+- `subscription-webhook/` — Parses subscription/renewal PDFs (auto-detects legacy vs renewal format)
+- `pdf-webhook-ptc/` — Processes Parker Ticket Center PDFs
+
+### Netlify Functions (`netlify/functions/`)
+
+| Function | Purpose |
+|---|---|
+| `auth.js` | JWT login (POST credentials → token) |
+| `verify-token.js` | JWT validation |
+| `bigquery-snapshots.js` | Main read API (initial load, performances, history, week-over-week, subscriptions) |
+| `bigquery-data.js` | Performance data queries |
+| `performance-annotations.js` | CRUD for performance annotations |
+| `performance-comparisons.js` | Year-over-year comparison data |
+| `update-performance-metadata.js` | Update title, series, venue, capacity, cancelled status |
+| `update-metadata.js` | Legacy metadata updates |
+| `performance-update.js` | Update performance records |
+| `refresh-data.js` | Trigger data refresh |
+
+## BIGQUERY
+
+- **Project**: `kcsymphony`
+- **Dataset**: `symphony_dashboard`
+
+Key tables:
+- `performances` — Performance metadata (title, date, venue, capacity, budget)
+- `performance_sales_snapshots` — Daily single-ticket sales snapshots
+- `subscription_sales_snapshots` — Subscription sales snapshots (legacy format)
+- `subscription_renewal_snapshots` — Subscription renewal data (current format)
+- `performance_comparisons` — User-created comparisons
+- `performance_annotations` — User annotations on performances
+
+## ENVIRONMENT VARIABLES
+
 ```bash
-# Start new feature
-npm run feature:start feature/your-feature-name
-
-# Develop locally
-npm run dev  # Runs at http://localhost:8888
-
-# Test & commit
-git add .
-git commit -m "feat: description"
-git push origin HEAD  # (with user approval)
-
-# Deploy preview
-git checkout next
-git merge feature/your-feature-name
-git push origin next  # (with user approval)
-
-# Deploy production (after testing)
-git checkout main
-git merge next
-git push origin main  # (with user approval)
-```
-
-### **Commit Conventions**
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `refactor:` - Code restructuring
-- `docs:` - Documentation
-- `style:` - Formatting
-
----
-
-## 🏗️ **ARCHITECTURE**
-
-### **Current Stack**
-- **Frontend**: Vanilla JavaScript, D3.js visualizations
-- **Backend**: Netlify Serverless Functions
-- **Database**: Google BigQuery
-- **Deployment**: Netlify (auto-deploy on push)
-- **Authentication**: Basic HTTP Auth via Netlify
-
-### **Data Flow**
-```
-Source PDFs/Excel → scripts/active/ → BigQuery
-                                          ↓
-                            Netlify Functions (bigquery-snapshots.js)
-                                          ↓
-                          Frontend (index.html + src/)
-```
-
-### **Key Components**
-- `index.html` - Main dashboard page
-- `src/data-service.js` - Frontend data fetching
-- `netlify/functions/bigquery-snapshots.js` - Main API (queries BigQuery)
-- `scripts/active/` - Data processing scripts (PDF → BigQuery)
-- `data/source-files/` - Original source documents (PDFs, Excel, CSV)
-
-### **No Local Data Caching**
-- ✅ All runtime data pulled from BigQuery via API
-- ✅ No local JSON files loaded at runtime
-- ✅ 2-hour in-memory cache in serverless function (acceptable)
-- ✅ Source files preserved for re-processing only
-
----
-
-## 📊 **DATA PIPELINE**
-
-### **Source Data**
-1. **PDFs**: Tessitura Performance Sales Summary reports
-2. **Excel**: Weekly sales reports from staff
-3. **CSV**: BigQuery exports and manual tracking
-
-### **Processing Scripts**
-Located in `scripts/active/`:
-- `process-pdf-bucket.js` - Import PDFs to BigQuery
-- `parse-csv-and-populate-metadata.js` - Process CSV data
-- `extract-bigquery-data.js` - Query and extract BigQuery data
-
-See `scripts/README.md` for full script documentation.
-
-### **BigQuery Tables**
-- `performances` - Performance metadata (title, date, venue, capacity, budget)
-- `performance_sales_snapshots` - Historical sales snapshots (daily imports)
-- `performance_comparisons` - User-created performance comparisons
-
-### **API Endpoints**
-Main endpoint: `/.netlify/functions/bigquery-snapshots`
-
-Actions:
-- `get-initial-load` - Dashboard initial load (performances + week-over-week)
-- `get-performances` - Get all performances with latest snapshot
-- `get-performance-history` - Get full history for one performance
-- `get-all-week-over-week` - Get W/W changes for all performances
-
----
-
-## 🔧 **ENVIRONMENT SETUP**
-
-### **Required Environment Variables**
-```bash
-# BigQuery - ALWAYS use kcsymphony project
-GOOGLE_APPLICATION_CREDENTIALS=./symphony-bigquery-key.json  # (or JSON string)
+# BigQuery (JSON key file path OR inline JSON string)
+GOOGLE_APPLICATION_CREDENTIALS=./symphony-bigquery-key.json
 GOOGLE_CLOUD_PROJECT_ID=kcsymphony
 BIGQUERY_DATASET=symphony_dashboard
 
-# ⚠️ CRITICAL: When running bq commands, ALWAYS specify the full table path:
-# `kcsymphony.symphony_dashboard.table_name`
-
-# Authentication
-SITE_PASSWORD=<secure-password>  # For Basic Auth
-
-# JWT (if using token-based endpoints)
-JWT_SECRET=<random-secret>
+# Auth
+JWT_SECRET=<secret>
+DASHBOARD_AUTH_USERNAME=<username>
+DASHBOARD_AUTH_PASSWORD=<password>
 ```
 
-### **Local Setup**
-1. Clone repository
-2. `npm install`
-3. Create `.env` file with variables above
-4. Place `symphony-bigquery-key.json` in project root
-5. `npm run dev`
+## FRONTEND ARCHITECTURE
 
-### **Netlify Setup**
-1. Set environment variables in Netlify dashboard
-2. Set deploy contexts (Production, Deploy Previews, Branch deploys)
-3. Configure build command: `# no build needed`
-4. Configure publish directory: `./`
+Vanilla JS with ES6 modules, no build step, no framework.
 
----
+- `src/main.js` — Entry point, parallel script loading
+- `src/data-service.js` — Central data fetching with request deduplication
+- `src/config.js` — Colors, goals, API endpoints
+- `src/components/` — UI components (dashboard-ui, annotations-manager, pipeline-status)
+- `src/charts/` — D3.js visualizations (sales curves, data tables, subscription charts, YTD)
+- `src/utils/` — Router, error handling, logging, sales projections
+- `src/core/` — App framework and base component
+- `lib/xlsx.full.min.js` — Vendored xlsx library for Excel export
 
-## 📁 **PROJECT STRUCTURE**
+## DEVELOPMENT
 
-```
-symphony-dashboard/
-├── index.html                      # Main dashboard page
-├── login.html                      # Authentication page
-├── src/                            # Frontend source code
-│   ├── data-service.js            # Data fetching service
-│   ├── components/                # UI components
-│   └── charts/                    # D3.js chart components
-├── styles/main.css                 # Styling
-├── netlify/functions/              # Serverless backend
-│   ├── bigquery-snapshots.js      # Main API (BigQuery queries)
-│   ├── performance-comparisons.js # Comparisons API
-│   └── auth.js                    # Authentication
-├── scripts/                        # Data processing scripts
-│   ├── active/                    # Currently used scripts
-│   ├── archive/                   # Deprecated scripts
-│   ├── diagnostic/                # Debugging tools
-│   └── README.md                  # Script documentation
-├── data/                           # Data storage
-│   ├── source-files/              # Original PDFs, Excel, CSV
-│   │   ├── pdfs/
-│   │   ├── excel/
-│   │   └── csv/
-│   └── archive/                   # Archived runtime cache
-├── docs/                           # Documentation
-│   ├── ARCHITECTURE.md            # System architecture
-│   ├── DEPLOYMENT.md              # Deployment guide
-│   ├── DATA-FLOW-EXPLANATION.md   # Data flow details
-│   └── archive/                   # Historical docs
-├── CLAUDE.md                       # This file
-└── README.md                       # Project README
-```
-
----
-
-## 🧪 **TESTING & DEBUGGING**
-
-### **Test Dashboard Locally**
 ```bash
-npm run dev
-# Open http://localhost:8888
-# Login with credentials (check with team)
+npm run dev                # Local dev server (port 8888)
 ```
 
-### **Test BigQuery Connection**
-```bash
-node scripts/diagnostic/check-bigquery-status.js
-```
+### Commit conventions
+`feat:` / `fix:` / `refactor:` / `docs:` / `style:`
 
-### **Verify Data Quality**
-```bash
-node scripts/diagnostic/verify-all-snapshots.js
-```
+### Branch strategy
+`main` → production, `next` → staging, `feature/*` → dev branches
 
-### **Common Issues**
-1. **Dashboard not loading data** → Check BigQuery credentials in `.env`
-2. **API errors** → Check Netlify function logs
-3. **Missing performances** → Run `process-pdf-bucket.js` to import PDFs
-4. **Stale data** → Call API with `?nocache=true` to bypass cache
+### Data processing scripts
+Located in `scripts/active/` — see `scripts/README.md` for usage.
+Key scripts: `process-pdf-bucket.js`, `import-comps.js`, `process-subscription-pdfs.js`
 
----
+## DOCUMENTATION
 
-## 📖 **ADDITIONAL DOCUMENTATION**
-
-### **Active Documentation**
-- `README.md` - Project overview and quick start
-- `docs/ARCHITECTURE.md` - Detailed system architecture
-- `docs/DEPLOYMENT.md` - Deployment procedures
-- `docs/DATA-FLOW-EXPLANATION.md` - How data flows through system
-- `docs/BIGQUERY-DATA-STRATEGY.md` - BigQuery design and strategy
-- `docs/LONGITUDINAL-SALES-TRACKING.md` - Sales tracking implementation
-- `docs/METADATA-MANAGEMENT.md` - Performance metadata management
-- `docs/HISTORICAL-PDF-IMPORT-GUIDE.md` - How to import historical PDFs
-- `scripts/README.md` - Script usage guide
-
-### **Archived Documentation**
-- `docs/archive/CLAUDE-historical-2024-11.md` - Historical project instructions
-- `docs/archive/` - Implementation completion docs, bug fixes, planning docs
-
----
-
-## 🎯 **QUICK REFERENCE**
-
-### **Start Development**
-```bash
-npm run dev
-```
-
-### **Import New PDF Data**
-```bash
-node scripts/active/process-pdf-bucket.js
-```
-
-### **Check Data Status**
-```bash
-node scripts/diagnostic/check-bigquery-status.js
-```
-
-### **Deploy to Preview**
-```bash
-git checkout next
-git merge feature/your-feature
-git push origin next  # (with user approval)
-```
-
-### **Deploy to Production**
-```bash
-git checkout main
-git merge next
-git push origin main  # (with user approval)
-```
-
----
-
-## 💡 **CODING GUIDELINES**
-
-- Do not add extra console logging unless absolutely necessary
-- Always prefer editing existing files over creating new ones
-- NEVER commit without user permission
-- Use environment variables for all secrets
-- Follow existing code style and patterns
-- Add comments only where logic isn't self-evident
-- Keep solutions simple and focused
-
----
-
-## 📞 **SUPPORT**
-
-For issues or questions:
-1. Check `docs/` directory for detailed documentation
-2. Review `scripts/README.md` for script usage
-3. Check Netlify function logs for API errors
-4. Review BigQuery console for data issues
-
----
+See `docs/` for detailed guides:
+- `ARCHITECTURE.md` — System design
+- `DEPLOYMENT.md` — Deploy procedures
+- `DATA-FLOW-EXPLANATION.md` — Full data pipeline
+- `BIGQUERY-DATA-STRATEGY.md` — BigQuery design decisions
+- `PDF-PARSING-RULES.md` — How PDFs are parsed (critical for webhook functions)
+- `COMP-IMPORT-GUIDE.md` — Comp ticket import process
+- `EXCEL-VIEW-COLUMNS.md` — Excel export column definitions
+- `METADATA-MANAGEMENT.md` — Performance metadata workflows
+- `HISTORICAL-PDF-IMPORT-GUIDE.md` — Historical PDF backfill
+- `scripts/README.md` — Script usage guide
