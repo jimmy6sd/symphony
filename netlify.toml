@@ -83,6 +83,18 @@
   status = 200
 
 [[redirects]]
+  # Studio planning view
+  from = "/studio"
+  to = "/studio.html"
+  status = 200
+
+[[redirects]]
+  # Studio sub-routes
+  from = "/studio/*"
+  to = "/studio.html"
+  status = 200
+
+[[redirects]]
   # Year-to-date comparison page
   from = "/year-to-date"
   to = "/ytd-comparison.html"

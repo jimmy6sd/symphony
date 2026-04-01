@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Studio - Kansas City Symphony Dashboard</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/studio.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Studio Top Bar -->
+        <nav class="studio-topbar">
+            <div class="studio-topbar-left">
+                <a href="/" class="studio-back" title="Back to Dashboard">&larr;</a>
+                <span class="studio-brand">STUDIO</span>
+                <span class="studio-plan-info" id="plan-header" style="display: none;">
+                    <span class="studio-plan-divider">/</span>
+                    <span class="studio-plan-name" id="plan-title"></span>
+                    <span class="studio-plan-meta">
+                        <span id="plan-series"></span>
+                        <span class="meta-dot">&middot;</span>
+                        <span id="plan-venue"></span>
+                        <span class="meta-dot">&middot;</span>
+                        <span>Cap: <strong id="plan-capacity"></strong></span>
+                        <span class="meta-dot">&middot;</span>
+                        <span>Budget: <strong id="plan-budget"></strong></span>
+                    </span>
+                </span>
+            </div>
+            <div class="studio-topbar-right">
+                <button class="studio-nav-btn" id="btn-my-plans">My Plans</button>
+                <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan">+ New Plan</button>
+                <button class="studio-nav-btn studio-btn-danger" id="btn-delete-plan" style="display:none;">Delete</button>
+            </div>
+        </nav>
+
+        <!-- Loading State -->
+        <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- My Plans Grid (default view) -->
+        <div class="studio-plans-grid" id="plans-view">
+            <div class="plans-grid-header">
+                <h2>My Plans</h2>
+                <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan-grid">+ New Plan</button>
+            </div>
+            <div class="plans-grid" id="plans-grid">
+                <!-- Plan cards rendered here -->
+            </div>
+            <div class="plans-empty" id="plans-empty" style="display: none;">
+                <p>No plans yet. Create your first plan to get started.</p>
+                <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan-empty">+ New Plan</button>
+            </div>
+        </div>
+
+        <!-- Studio Workspace (chart + sidebar) -->
+        <main class="studio-workspace" id="studio-workspace" style="display: none;">
+            <div class="studio-chart-area">
+                <h3 class="studio-chart-title" id="chart-title"></h3>
+                <div class="studio-chart-legend" id="chart-legend">
+                    <!-- Legend items rendered by chart -->
+                </div>
+                <div id="studio-chart" class="studio-chart">
+                    <!-- D3 chart rendered here -->
+                </div>
+            </div>
+
+            <aside class="studio-sidebar">
+                <!-- Current Performance -->
+                <div class="studio-panel" id="current-perf-panel">
+                    <div class="panel-header">
+                        <h3>CURRENT PERFORMANCE</h3>
+                    </div>
+                    <div id="current-perf-info" class="current-perf-info">
+                        <p class="current-perf-empty">No target performance set</p>
+                    </div>
+                </div>
+
+                <!-- Comp Library -->
+                <div class="studio-panel" id="comp-library">
+                    <div class="panel-header">
+                        <h3>COMP LIBRARY</h3>
+                        <span class="panel-count" id="comp-count"></span>
+                    </div>
+                    <div class="panel-filters">
+                        <select id="filter-series" class="studio-select">
+                            <option value="">All Series</option>
+                        </select>
+                        <select id="filter-season" class="studio-select">
+                            <option value="">All Seasons</option>
+                        </select>
+                    </div>
+                    <div class="comp-list" id="comp-list">
+                        <!-- Comp cards rendered here -->
+                    </div>
+                    <div class="panel-subheader" id="historical-comps-header" style="display:none;">
+                        <h4>HISTORICAL COMPS</h4>
+                    </div>
+                    <div class="comp-list" id="historical-comp-list">
+                        <!-- Historical comp cards rendered here -->
+                    </div>
+                </div>
+
+                <!-- Marketing Activities -->
+                <div class="studio-panel" id="activity-panel">
+                    <div class="panel-header">
+                        <h3>ANNOTATIONS</h3>
+                    </div>
+                    <button class="studio-add-btn" id="btn-add-activity">+ Add Annotation</button>
+                    <div class="activity-form" id="activity-form" style="display: none;">
+                        <div class="form-row">
+                            <label>Style</label>
+                            <div class="activity-style-toggle">
+                                <button class="style-btn active" data-style="point" id="style-point">Point</button>
+                                <button class="style-btn" data-style="range" id="style-range">Range</button>
+                            </div>
+                        </div>
+                        <div class="form-row-group">
+                            <div class="form-row">
+                                <label id="week-label">Week</label>
+                                <select id="activity-week" class="studio-select">
+                                    <!-- -1 to -24 -->
+                                </select>
+                            </div>
+                            <div class="form-row" id="end-week-row" style="display: none;">
+                                <label>End Week</label>
+                                <select id="activity-end-week" class="studio-select">
+                                    <!-- -1 to -24 -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <label>Name</label>
+                            <input type="text" id="activity-name" class="studio-input" placeholder="e.g., Email Campaign #1">
+                        </div>
+                        <div class="form-row">
+                            <label>Type</label>
+                            <select id="activity-type" class="studio-select">
+                                <option value="EMAIL">Email</option>
+                                <option value="SOCIAL">Social</option>
+                                <option value="GROUPS">Groups</option>
+                                <option value="RADIO">Radio</option>
+                                <option value="PR">PR</option>
+                                <option value="EVENT">Event</option>
+                                <option value="SALE">Sale</option>
+                                <option value="NOTE">Note</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-row-group">
+                            <div class="form-row">
+                                <label>Ticket Impact <span style="color:var(--text-muted);font-weight:normal;">(optional)</span></label>
+                                <input type="number" id="activity-ticket-delta" class="studio-input" placeholder="e.g., +50">
+                            </div>
+                            <div class="form-row">
+                                <label>Spread (weeks)</label>
+                                <input type="number" id="activity-spread-weeks" class="studio-input" placeholder="1" value="1" min="1" max="12">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="studio-btn studio-btn-primary" id="btn-save-activity">Add</button>
+                            <button class="studio-btn" id="btn-cancel-activity">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="activity-list" id="activity-list">
+                        <!-- Activity items rendered here -->
+                    </div>
+                    <button class="studio-template-btn" id="btn-apply-template">Apply Template...</button>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer Stats -->
+        <footer class="studio-footer" id="studio-footer" style="display: none;">
+            <div class="studio-footer-stats">
+                <span id="stat-comps">0 comps selected</span>
+                <span id="stat-avg-tickets">0 avg final tickets</span>
+                <span id="stat-avg-occupancy">0% avg occupancy</span>
+                <span id="stat-activities">0 annotations</span>
+            </div>
+            <div class="studio-footer-actions">
+                <button class="studio-btn studio-btn-primary" id="btn-save-plan">Save Plan</button>
+                <button class="studio-btn" id="btn-export-pdf">Export PDF</button>
+            </div>
+        </footer>
+
+        <!-- New Plan Modal -->
+        <div class="studio-modal-overlay" id="new-plan-modal" style="display: none;">
+            <div class="studio-modal">
+                <div class="studio-modal-header">
+                    <h3>New Plan</h3>
+                    <button class="modal-close" id="modal-close">&times;</button>
+                </div>
+                <div class="studio-modal-body">
+                    <div class="form-row">
+                        <label>Series</label>
+                        <select id="new-plan-series" class="studio-select">
+                            <option value="">All Series</option>
+                            <option value="Classical">Classical</option>
+                            <option value="Pops">Pops</option>
+                            <option value="Family">Family</option>
+                            <option value="Specials">Specials</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Target Comp <span style="color:var(--text-muted);font-weight:normal;">(past performance to model after)</span></label>
+                        <input type="text" id="new-plan-comp-search" class="studio-input" placeholder="Type to search..." autocomplete="off">
+                        <select id="new-plan-target-comp" class="studio-select" required style="margin-top:4px;">
+                            <option value="">Select a comp...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Link to Upcoming Performance <span style="color:var(--text-muted);font-weight:normal;">(optional — enables live sales tracking)</span></label>
+                        <select id="new-plan-perf-code" class="studio-select">
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Plan Name</label>
+                        <input type="text" id="new-plan-name" class="studio-input" placeholder="Auto-generated from selections">
+                    </div>
+                    <div class="form-row-group">
+                        <div class="form-row">
+                            <label>Venue</label>
+                            <input type="text" id="new-plan-venue" class="studio-input" placeholder="e.g., Helzberg Hall" value="Helzberg Hall">
+                        </div>
+                        <div class="form-row">
+                            <label>Capacity</label>
+                            <input type="number" id="new-plan-capacity" class="studio-input" placeholder="e.g., 1607" value="1607">
+                        </div>
+                        <div class="form-row">
+                            <label>Budget Goal ($)</label>
+                            <input type="number" id="new-plan-budget" class="studio-input" placeholder="e.g., 45000">
+                        </div>
+                    </div>
+                </div>
+                <div class="studio-modal-footer">
+                    <button class="studio-btn" id="modal-cancel">Cancel</button>
+                    <button class="studio-btn studio-btn-primary" id="modal-create">Create Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/src/data-service.js"></script>
+    <script src="/src/studio/studio-app.js"></script>
+</body>
+</html>

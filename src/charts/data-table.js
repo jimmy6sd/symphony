@@ -2986,6 +2986,71 @@ class DataTable {
             this.overlayHistoricalData(container, performance, historicalData, salesChart);
         }
 
+        // Add annotations toggle (off by default)
+        const perfCode = performance.performanceCode || performance.performance_code || performance.id;
+        const groupTitle = performance.title;
+
+        const toggleRow = container.append('div')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('justify-content', 'flex-end')
+            .style('gap', '8px')
+            .style('margin-top', '6px')
+            .style('font-size', '12px')
+            .style('color', '#666');
+
+        toggleRow.append('span').text('Annotations');
+
+        const toggleLabel = toggleRow.append('label')
+            .attr('class', 'toggle-switch');
+
+        // Placement toggle (top/bottom for interval bands) — hidden until annotations are on
+        const placementRow = container.append('div')
+            .attr('class', 'anno-placement-toggle')
+            .style('display', 'none')
+            .style('align-items', 'center')
+            .style('justify-content', 'flex-end')
+            .style('gap', '8px')
+            .style('margin-top', '4px')
+            .style('font-size', '12px')
+            .style('color', '#666');
+
+        placementRow.append('span').text('Bands');
+
+        const placementSwitch = placementRow.append('label')
+            .attr('class', 'toggle-switch');
+
+        placementSwitch.append('input')
+            .attr('type', 'checkbox')
+            .on('change', function () {
+                const bottom = this.checked;
+                salesChart.labelsAtBottom = bottom;
+                salesChart.renderAnnotations();
+                placementRow.select('.anno-placement-label').text(bottom ? 'Bottom' : 'Top');
+            });
+
+        placementSwitch.append('span').attr('class', 'toggle-slider');
+
+        placementRow.append('span')
+            .attr('class', 'anno-placement-label')
+            .style('min-width', '38px')
+            .text('Top');
+
+        // Annotations toggle — also shows/hides placement toggle
+        const annoCheckbox = toggleLabel.append('input')
+            .attr('type', 'checkbox')
+            .on('change', async function () {
+                const checked = this.checked;
+                if (checked && salesChart.annotations.length === 0) {
+                    const annotations = await window.dataService.getAnnotationsForChart(groupTitle);
+                    salesChart.updateAnnotations(annotations);
+                }
+                salesChart.toggleAnnotations(checked);
+                placementRow.style('display', checked ? 'flex' : 'none');
+            });
+
+        toggleLabel.append('span').attr('class', 'toggle-slider');
+
         console.log('✅ renderSalesChart complete');
     }
 

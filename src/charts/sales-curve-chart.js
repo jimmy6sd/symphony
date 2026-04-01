@@ -17,6 +17,11 @@ class SalesCurveChart {
         this.showSelector = options.showSelector !== false; // Default to true unless explicitly false
         this.historicalData = options.historicalData || []; // Store historical snapshots for projection alignment
 
+        // Annotation state
+        this.annotations = [];
+        this.annotationsVisible = false;
+        this.labelsAtBottom = null; // null = auto (smart placement), true/false = manual override
+
         // Debounced resize handler to prevent excessive re-renders
         this.resizeTimeout = null;
         this.boundResizeHandler = this.handleResize.bind(this);
@@ -283,11 +288,15 @@ class SalesCurveChart {
             .domain([0, maxSales])
             .range([innerHeight, 0]);
 
-        // Store scales for use by overlayHistoricalData
+        // Store scales and chart state for use by overlayHistoricalData and annotations
         this.xScale = xScale;
         this.yScale = yScale;
         this.maxWeeks = maxWeeks;
         this.maxSales = maxSales;
+        this.performanceDate = performanceDate;
+        this.chartInnerWidth = innerWidth;
+        this.chartInnerHeight = innerHeight;
+        this.chartGroup = chartGroup;
 
         // Add subtle grid lines FIRST (so they're in the back)
         chartGroup.append("g")
@@ -472,6 +481,157 @@ class SalesCurveChart {
 
         // Add tooltips for the single current sales point
         this.addTooltips(currentSales, weeksToPerformance, performance);
+
+        // Render annotations if visible
+        if (this.annotationsVisible) {
+            this.renderAnnotations();
+        }
+    }
+
+    // Convert a calendar date to weeks-before-performance for x-axis positioning
+    convertDateToWeeksBeforePerformance(dateVal) {
+        if (!this.performanceDate) return 0;
+        const str = dateVal && typeof dateVal === 'object' && dateVal.value ? dateVal.value : String(dateVal).split('T')[0];
+        const date = new Date(str + 'T00:00:00');
+        return (this.performanceDate - date) / (7 * 24 * 60 * 60 * 1000);
+    }
+
+    // Store annotations, converting calendar dates to week positions
+    updateAnnotations(annotations) {
+        this.annotations = annotations.map(ann => {
+            const isGlobal = ann.scope === 'global';
+            const processed = { ...ann, _isGlobal: isGlobal };
+            if (ann.annotation_date && this.performanceDate) {
+                if (ann.annotation_type === 'point') {
+                    processed.week_number = this.convertDateToWeeksBeforePerformance(ann.annotation_date);
+                } else if (ann.annotation_type === 'interval') {
+                    processed.start_week = this.convertDateToWeeksBeforePerformance(ann.annotation_date);
+                    processed.end_week = ann.annotation_end_date
+                        ? this.convertDateToWeeksBeforePerformance(ann.annotation_end_date)
+                        : processed.start_week;
+                }
+            }
+            return processed;
+        });
+        if (this.annotationsVisible) {
+            this.renderAnnotations();
+        }
+    }
+
+    renderAnnotations() {
+        if (!this.chartGroup || !this.xScale) return;
+
+        // Remove existing annotation overlay
+        this.chartGroup.selectAll('.annotation-overlay').remove();
+
+        if (!this.annotationsVisible || !this.annotations || this.annotations.length === 0) return;
+
+        // Manual override if set, otherwise smart placement based on projected final
+        const labelsAtBottom = this.labelsAtBottom !== null
+            ? this.labelsAtBottom
+            : (this.projectedFinal || 0) > (this.maxSales / 2);
+
+        const annoGroup = this.chartGroup.append('g').attr('class', 'annotation-overlay');
+
+        let intervalLane = 0;
+        this.annotations.forEach(ann => {
+            if (ann.annotation_type === 'point') {
+                this.renderPointAnnotation(annoGroup, ann, labelsAtBottom);
+            } else if (ann.annotation_type === 'interval') {
+                this.renderIntervalAnnotation(annoGroup, ann, intervalLane, labelsAtBottom);
+                intervalLane++;
+            }
+        });
+    }
+
+    renderPointAnnotation(group, ann, labelsAtBottom) {
+        const x = this.xScale(ann.week_number);
+        if (x < 0 || x > this.chartInnerWidth) return;
+
+        const isGlobal = ann._isGlobal;
+        const color = ann.color || '#e74c3c';
+
+        // Vertical dashed line (full chart height)
+        group.append('line')
+            .attr('x1', x).attr('x2', x)
+            .attr('y1', 0).attr('y2', this.chartInnerHeight)
+            .attr('stroke', color)
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '4,3')
+            .attr('opacity', 0.7);
+
+        // Label at bottom or top edge based on smart placement
+        const labelY = labelsAtBottom ? this.chartInnerHeight + 12 : -8;
+        const labelG = group.append('g')
+            .attr('transform', `translate(${x}, ${labelY})`);
+
+        labelG.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', 0)
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
+            .style('fill', color)
+            .text(ann.label);
+    }
+
+    renderIntervalAnnotation(group, ann, lane, labelsAtBottom) {
+        const x1 = this.xScale(ann.start_week);
+        const x2 = this.xScale(ann.end_week);
+        const left = Math.min(x1, x2);
+        const rectWidth = Math.abs(x2 - x1);
+
+        if (left + rectWidth < 0 || left > this.chartInnerWidth) return;
+
+        const isGlobal = ann._isGlobal;
+        const color = ann.color || '#e74c3c';
+        const bandHeight = 18;
+        const bandSpacing = bandHeight + 4;
+
+        // Position bands at bottom or top of chart
+        const bandY = labelsAtBottom
+            ? this.chartInnerHeight - 4 - (lane + 1) * bandSpacing
+            : 4 + lane * bandSpacing;
+
+        // Semi-transparent band
+        group.append('rect')
+            .attr('x', left)
+            .attr('y', bandY)
+            .attr('width', rectWidth)
+            .attr('height', bandHeight)
+            .attr('rx', 3)
+            .attr('fill', color)
+            .attr('opacity', 0.15);
+
+        // Edge lines
+        [left, left + rectWidth].forEach(bx => {
+            group.append('line')
+                .attr('x1', bx).attr('x2', bx)
+                .attr('y1', bandY).attr('y2', bandY + bandHeight)
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('opacity', 0.7);
+        });
+
+        // Label centered in band
+        group.append('text')
+            .attr('x', left + rectWidth / 2)
+            .attr('y', bandY + bandHeight / 2 + 4)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '10px')
+            .style('font-weight', '600')
+            .style('font-style', isGlobal ? 'italic' : 'normal')
+            .style('fill', color)
+            .text(ann.label);
+    }
+
+    toggleAnnotations(visible) {
+        this.annotationsVisible = visible;
+        if (visible) {
+            this.renderAnnotations();
+        } else if (this.chartGroup) {
+            this.chartGroup.selectAll('.annotation-overlay').remove();
+        }
     }
 
     calculateTrackingMetrics(targetComp, performance, singleTicketsSold, weeksToPerformance, performanceDate) {
@@ -582,7 +742,14 @@ class SalesCurveChart {
         const comparisons = await window.dataService.getPerformanceComparisons(performanceCode);
         const targetComp = comparisons?.find(c => c.is_target === true);
 
-        if (!targetComp || !targetComp.weeksArray) return; // No target comp set
+        if (!targetComp || !targetComp.weeksArray) {
+            this.projectedFinal = 0;
+            return;
+        }
+
+        // Calculate and store projected final for annotation placement
+        const metrics = this.calculateTrackingMetrics(targetComp, performance, singleTicketsSold, weeksToPerformance, performanceDate);
+        this.projectedFinal = metrics ? metrics.projectedFinal : 0;
 
         // Route to appropriate rendering method
         if (this.isMobile) {

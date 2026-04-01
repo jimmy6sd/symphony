@@ -615,6 +615,43 @@ class DataService {
         }
     }
 
+    // Get annotations for a specific performance (performance-scoped + production + global)
+    async getAnnotationsForPerformance(performanceCode, groupTitle) {
+        try {
+            const cacheKey = `perf:${performanceCode}`;
+            if (this.annotationCache.has(cacheKey)) {
+                return this.annotationCache.get(cacheKey);
+            }
+
+            if (this.annotationInFlight.has(cacheKey)) {
+                return await this.annotationInFlight.get(cacheKey);
+            }
+
+            const fetchPromise = (async () => {
+                let url = `/.netlify/functions/performance-annotations?performanceCode=${encodeURIComponent(performanceCode)}&includeGlobal=true`;
+                if (groupTitle) {
+                    url += `&groupTitle=${encodeURIComponent(groupTitle)}`;
+                }
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch performance annotations: ${response.status}`);
+                }
+                const data = await response.json();
+                this.annotationCache.set(cacheKey, data);
+                return data;
+            })();
+
+            this.annotationInFlight.set(cacheKey, fetchPromise);
+            const data = await fetchPromise;
+            this.annotationInFlight.delete(cacheKey);
+            return data;
+        } catch (error) {
+            console.error('Error fetching performance annotations:', error);
+            this.annotationInFlight.delete(`perf:${performanceCode}`);
+            return [];
+        }
+    }
+
     // Get annotations for chart rendering (production + global in one call)
     async getAnnotationsForChart(groupTitle, context = 'performance') {
         try {
@@ -683,8 +720,9 @@ class DataService {
             }
             const result = await response.json();
 
-            // Global annotations affect all charts, so clear entire cache
-            if (data.scope === 'global') {
+            // Clear relevant caches
+            if (data.scope === 'global' || data.scope === 'performance') {
+                // Global and performance annotations can affect multiple views, clear all
                 this.annotationCache.clear();
                 this.annotationInFlight.clear();
             } else {
