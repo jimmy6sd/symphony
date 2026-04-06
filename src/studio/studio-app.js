@@ -29,9 +29,10 @@ class StudioApp {
         // Check URL for direct plan link: /studio?plan=<planId>
         const params = new URLSearchParams(window.location.search);
         const planId = params.get('plan');
-        if (planId) {
+        if (planId && planId !== 'undefined' && planId !== 'null') {
             await this.openPlan(planId);
         } else {
+            if (planId) history.replaceState(null, '', '/studio'); // clean up bad URL
             await this.loadPlans();
         }
     }
@@ -71,6 +72,36 @@ class StudioApp {
         // Activity style toggle (point vs range)
         document.getElementById('style-point')?.addEventListener('click', () => this.setActivityStyle('point'));
         document.getElementById('style-range')?.addEventListener('click', () => this.setActivityStyle('range'));
+
+        // Tags autocomplete
+        const tagsInput = document.getElementById('activity-tags');
+        const autocomplete = document.getElementById('activity-tags-autocomplete');
+        const tagSuggestions = ['Email', 'Social', 'Groups', 'Radio', 'PR', 'Event', 'Sale', 'Note'];
+
+        tagsInput?.addEventListener('input', () => {
+            const parts = tagsInput.value.split(',');
+            const current = parts[parts.length - 1].trim().toLowerCase();
+            if (!current) { autocomplete.style.display = 'none'; return; }
+
+            const existing = parts.slice(0, -1).map(t => t.trim().toLowerCase());
+            const matches = tagSuggestions.filter(t => t.toLowerCase().includes(current) && !existing.includes(t.toLowerCase()));
+            if (matches.length === 0) { autocomplete.style.display = 'none'; return; }
+
+            autocomplete.style.display = 'block';
+            autocomplete.innerHTML = matches.map(m => `<div class="studio-autocomplete-option">${m}</div>`).join('');
+            autocomplete.querySelectorAll('.studio-autocomplete-option').forEach(opt => {
+                opt.addEventListener('mousedown', () => {
+                    parts[parts.length - 1] = ' ' + opt.textContent;
+                    tagsInput.value = parts.join(',').replace(/^[\s,]+/, '') + ', ';
+                    autocomplete.style.display = 'none';
+                    tagsInput.focus();
+                });
+            });
+        });
+
+        tagsInput?.addEventListener('blur', () => {
+            setTimeout(() => { autocomplete.style.display = 'none'; }, 200);
+        });
 
         // Footer
         document.getElementById('btn-save-plan')?.addEventListener('click', () => this.savePlan());
@@ -203,9 +234,16 @@ class StudioApp {
 
     async openPlan(planId) {
         this.showLoading(true);
-        history.replaceState(null, '', `/studio?plan=${planId}`);
         try {
             const plan = await this.api('get-plan', { planId });
+            if (!plan || plan.error) {
+                console.error('Plan not found:', planId);
+                history.replaceState(null, '', '/studio');
+                this.showLoading(false);
+                await this.loadPlans();
+                return;
+            }
+            history.replaceState(null, '', `/studio?plan=${planId}`);
             this.currentPlan = plan;
             this.activities = plan.activities || [];
 
@@ -270,6 +308,8 @@ class StudioApp {
             this.renderChart();
         } catch (err) {
             console.error('Failed to open plan:', err);
+            history.replaceState(null, '', '/studio');
+            await this.loadPlans();
         }
         this.showLoading(false);
     }
@@ -771,7 +811,9 @@ class StudioApp {
             `;
         } else {
             // No linked show — show target comp as reference
-            const modifiedTickets = Math.round(finalTickets * (1 + this.projectionModifier / 100));
+            const modifiedTickets = capacity > 0
+                ? Math.min(capacity, Math.round(finalTickets * (1 + this.projectionModifier / 100)))
+                : Math.round(finalTickets * (1 + this.projectionModifier / 100));
             container.innerHTML = `
                 <div class="current-perf-box">
                     <div class="current-perf-box-header">${this.escapeHtml(title)}</div>
@@ -807,6 +849,9 @@ class StudioApp {
     }
 
     _renderModificationsSection() {
+        const activitiesWithDelta = this.activities.filter(a => a.ticket_delta && a.ticket_delta !== 0);
+        const totalDelta = activitiesWithDelta.reduce((sum, a) => sum + (a.ticket_delta || 0), 0);
+
         return `
             <div class="current-perf-modifications">
                 <div class="modifications-header">MODIFICATIONS</div>
@@ -819,6 +864,22 @@ class StudioApp {
                     </div>
                 </div>
             </div>
+            ${activitiesWithDelta.length > 0 ? `
+                <div class="current-perf-modifications">
+                    <div class="modifications-header">ACTIVITY IMPACTS</div>
+                    ${activitiesWithDelta.map(a => `
+                        <div class="modifications-row activity-impact-row">
+                            <span class="activity-impact-dot" style="background:${a.color || '#95a5a6'}"></span>
+                            <span class="activity-impact-label">${this.escapeHtml(a.label)}</span>
+                            <span class="activity-impact-delta ${a.ticket_delta > 0 ? 'positive' : 'negative'}">${a.ticket_delta > 0 ? '+' : ''}${a.ticket_delta.toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                    <div class="modifications-row activity-impact-total">
+                        <span class="activity-impact-label">Net impact</span>
+                        <span class="activity-impact-delta ${totalDelta >= 0 ? 'positive' : 'negative'}">${totalDelta >= 0 ? '+' : ''}${totalDelta.toLocaleString()}</span>
+                    </div>
+                </div>
+            ` : ''}
         `;
     }
 
@@ -1093,19 +1154,20 @@ class StudioApp {
                 const variance = lastActual.ticketsSold - targetAtLastWeek;
 
                 const mod = 1 + (this.projectionModifier || 0) / 100;
+                const cap = capacity > 0 ? capacity : Infinity;
                 const projectionData = [{ weeksOut: lastActual.weeksOut, ticketsSold: lastActual.ticketsSold }];
                 const futureTargetWeeks = targetData.filter(d => d.weeksOut < lastActual.weeksOut);
                 for (const d of futureTargetWeeks) {
                     projectionData.push({
                         weeksOut: d.weeksOut,
-                        ticketsSold: Math.round(Math.max(lastActual.ticketsSold, (d.ticketsSold + variance) * mod))
+                        ticketsSold: Math.min(cap, Math.round(Math.max(lastActual.ticketsSold, (d.ticketsSold + variance) * mod + this._activityDeltaAtWeek(d.weeksOut))))
                     });
                 }
                 if (projectionData[projectionData.length - 1]?.weeksOut > 0) {
                     const targetAtZero = this._interpolateTargetAtWeek(targetData, 0);
                     projectionData.push({
                         weeksOut: 0,
-                        ticketsSold: Math.round(Math.max(lastActual.ticketsSold, (targetAtZero + variance) * mod))
+                        ticketsSold: Math.min(cap, Math.round(Math.max(lastActual.ticketsSold, (targetAtZero + variance) * mod + this._activityDeltaAtWeek(0))))
                     });
                 }
 
@@ -1127,8 +1189,9 @@ class StudioApp {
         } else if (!currentEntry && targetEntryForProjection?.smoothedWeekly?.length > 0) {
             // No linked performance: draw target comp's curve as green dashed "projection/plan" line
             const mod = 1 + (this.projectionModifier || 0) / 100;
+            const cap = capacity > 0 ? capacity : Infinity;
             const projectionData = targetEntryForProjection.smoothedWeekly.map(d => ({
-                ...d, ticketsSold: Math.round(d.ticketsSold * mod)
+                ...d, ticketsSold: Math.min(cap, Math.round(d.ticketsSold * mod + this._activityDeltaAtWeek(d.weeksOut)))
             }));
             this._hasProjection = true;
             this._projectionData = projectionData;
@@ -1141,39 +1204,6 @@ class StudioApp {
                 .attr('stroke-width', 2.5)
                 .attr('stroke-dasharray', '8,5')
                 .attr('opacity', 0.85);
-        }
-
-        // Adjusted target line (aspiration modeling)
-        const targetEntry = sortedEntries.find(e => e.isTarget);
-        if (targetEntry && targetEntry.smoothedWeekly) {
-            const adjustedData = this.computeAdjustedTarget(targetEntry.smoothedWeekly);
-            if (adjustedData) {
-                // Shaded area between target and adjusted
-                const area = d3.area()
-                    .x(d => xScale(d.weeksOut))
-                    .y0((d, i) => yScale(Math.min(targetEntry.smoothedWeekly[i]?.ticketsSold || d.ticketsSold, maxTickets)))
-                    .y1(d => yScale(Math.min(d.ticketsSold, maxTickets)))
-                    .curve(d3.curveMonotoneX);
-
-                g.append('path')
-                    .datum(adjustedData)
-                    .attr('d', area)
-                    .attr('fill', StudioApp.TARGET_COLOR)
-                    .attr('opacity', 0.1);
-
-                // Adjusted line (dotted orange)
-                g.append('path')
-                    .datum(adjustedData)
-                    .attr('d', line)
-                    .attr('fill', 'none')
-                    .attr('stroke', StudioApp.TARGET_COLOR)
-                    .attr('stroke-width', 2.5)
-                    .attr('stroke-dasharray', '6,3')
-                    .attr('opacity', 0.9);
-
-                // Store for tooltip
-                this._adjustedTargetData = adjustedData;
-            }
         }
 
         // Annotation markers (points and ranges)
@@ -1295,14 +1325,6 @@ class StudioApp {
             }
         }
 
-        // Add adjusted target to tooltip
-        if (this._adjustedTargetData) {
-            for (const d of this._adjustedTargetData) {
-                if (!weekLookup.has(d.weeksOut)) weekLookup.set(d.weeksOut, []);
-                weekLookup.get(d.weeksOut).push({ name: 'Adjusted Target', color: StudioApp.TARGET_COLOR, tickets: Math.round(d.ticketsSold), isTarget: false });
-            }
-        }
-
         const availableWeeks = [...weekLookup.keys()].sort((a, b) => a - b);
 
         // Tooltip elements
@@ -1413,17 +1435,6 @@ class StudioApp {
             `;
         }).join('');
 
-        // Adjusted target legend entry
-        if (this._adjustedTargetData) {
-            const dottedStyle = `background: repeating-linear-gradient(to right, ${StudioApp.TARGET_COLOR} 0, ${StudioApp.TARGET_COLOR} 4px, transparent 4px, transparent 7px); width:24px; height:2px;`;
-            legend.innerHTML += `
-                <div class="legend-item">
-                    <span style="${dottedStyle} display:inline-block;"></span>
-                    <span>Adjusted Target</span>
-                </div>
-            `;
-        }
-
         // Projection legend entry
         if (this._hasProjection) {
             const projStyle = `background: repeating-linear-gradient(to right, #27ae60 0, #27ae60 6px, transparent 6px, transparent 10px); width:24px; height:2px;`;
@@ -1466,28 +1477,31 @@ class StudioApp {
     // Adjustments (Aspiration Modeling)
     // ═══════════════════════════════════════════
 
+    _activityDeltaAtWeek(weeksOut) {
+        let totalAdj = 0;
+        for (const activity of this.activities) {
+            if (!activity.ticket_delta || activity.ticket_delta === 0) continue;
+            const startWeek = Math.abs(activity.week_number);
+            const spread = Math.max(1, activity.spread_weeks || 1);
+            if (weeksOut <= startWeek) {
+                const endWeek = startWeek - spread;
+                const weeksElapsed = Math.min(spread, startWeek - Math.max(weeksOut, endWeek));
+                totalAdj += (activity.ticket_delta / spread) * weeksElapsed;
+            }
+        }
+        return totalAdj;
+    }
+
     computeAdjustedTarget(targetWeeklyData) {
         const activitiesWithDelta = this.activities.filter(a => a.ticket_delta && a.ticket_delta !== 0);
         if (activitiesWithDelta.length === 0 || !targetWeeklyData || targetWeeklyData.length === 0) {
             return null;
         }
 
+        const cap = (this.currentPlan?.capacity || 0) > 0 ? this.currentPlan.capacity : Infinity;
         return targetWeeklyData.map(d => {
-            let totalAdj = 0;
-            for (const activity of activitiesWithDelta) {
-                const startWeek = Math.abs(activity.week_number);
-                const spread = Math.max(1, activity.spread_weeks || 1);
-
-                // Impact spreads from startWeek toward week 0 (show day)
-                // At d.weeksOut, calculate how many weeks of this activity have elapsed
-                if (d.weeksOut <= startWeek) {
-                    const endWeek = startWeek - spread;
-                    const weeksElapsed = Math.min(spread, startWeek - Math.max(d.weeksOut, endWeek));
-                    const perWeek = activity.ticket_delta / spread;
-                    totalAdj += perWeek * weeksElapsed;
-                }
-            }
-            return { weeksOut: d.weeksOut, ticketsSold: Math.max(0, d.ticketsSold + totalAdj) };
+            const delta = this._activityDeltaAtWeek(d.weeksOut);
+            return { weeksOut: d.weeksOut, ticketsSold: Math.min(cap, Math.max(0, d.ticketsSold + delta)) };
         });
     }
 
@@ -1495,16 +1509,39 @@ class StudioApp {
     // Annotations
     // ═══════════════════════════════════════════
 
-    showActivityForm() {
+    showActivityForm(activity = null) {
+        this._editingActivityId = activity ? activity.activity_id : null;
         document.getElementById('activity-form').style.display = 'block';
         document.getElementById('btn-add-activity').style.display = 'none';
+
+        const saveBtn = document.getElementById('btn-save-activity');
+        saveBtn.textContent = activity ? 'Update' : 'Add';
+
+        if (activity) {
+            document.getElementById('activity-week').value = activity.week_number;
+            document.getElementById('activity-name').value = activity.label || '';
+            document.getElementById('activity-tags').value = activity.activity_type || '';
+            document.getElementById('activity-ticket-delta').value = activity.ticket_delta || '';
+            document.getElementById('activity-spread-weeks').value = activity.spread_weeks || '1';
+
+            const isRange = activity.end_week != null;
+            this.activityStyle = isRange ? 'range' : 'point';
+            document.getElementById('style-point').classList.toggle('active', !isRange);
+            document.getElementById('style-range').classList.toggle('active', isRange);
+            document.getElementById('end-week-row').style.display = isRange ? '' : 'none';
+            if (isRange) document.getElementById('activity-end-week').value = activity.end_week;
+        }
+
         document.getElementById('activity-name').focus();
     }
 
     hideActivityForm() {
+        this._editingActivityId = null;
         document.getElementById('activity-form').style.display = 'none';
         document.getElementById('btn-add-activity').style.display = 'block';
+        document.getElementById('btn-save-activity').textContent = 'Add';
         document.getElementById('activity-name').value = '';
+        document.getElementById('activity-tags').value = '';
         document.getElementById('activity-ticket-delta').value = '';
         document.getElementById('activity-spread-weeks').value = '1';
     }
@@ -1512,7 +1549,7 @@ class StudioApp {
     async saveActivity() {
         const weekNumber = parseInt(document.getElementById('activity-week').value);
         const label = document.getElementById('activity-name').value.trim();
-        const activityType = document.getElementById('activity-type').value;
+        const activityType = document.getElementById('activity-tags').value.split(',').map(t => t.trim()).filter(t => t).join(', ') || 'Other';
         const endWeek = this.activityStyle === 'range'
             ? parseInt(document.getElementById('activity-end-week').value)
             : null;
@@ -1523,34 +1560,58 @@ class StudioApp {
 
         if (!label) return;
 
-        const defaultColors = { EMAIL: '#3498db', SOCIAL: '#e74c3c', GROUPS: '#f39c12', RADIO: '#9b59b6', PR: '#1abc9c', EVENT: '#e84393', SALE: '#00b894', NOTE: '#636e72', OTHER: '#95a5a6' };
+        const defaultColors = { email: '#3498db', social: '#e74c3c', groups: '#f39c12', radio: '#9b59b6', pr: '#1abc9c', event: '#e84393', sale: '#00b894', note: '#636e72', other: '#95a5a6' };
+        const firstTag = activityType.split(',')[0].trim().toLowerCase();
 
         try {
-            const result = await this.api('add-activity', {}, {
-                planId: this.currentPlan.plan_id,
-                weekNumber,
-                endWeek,
-                label,
-                activityType,
-                color: defaultColors[activityType],
-                ticketDelta,
-                spreadWeeks
-            });
+            if (this._editingActivityId) {
+                // Update existing activity
+                const existing = this.activities.find(a => a.activity_id === this._editingActivityId);
+                await this.api('update-activity', { activityId: this._editingActivityId }, {
+                    weekNumber,
+                    endWeek,
+                    label,
+                    activityType,
+                    ticketDelta,
+                    spreadWeeks
+                });
+                if (existing) {
+                    existing.week_number = weekNumber;
+                    existing.end_week = endWeek;
+                    existing.label = label;
+                    existing.activity_type = activityType;
+                    existing.ticket_delta = ticketDelta;
+                    existing.spread_weeks = spreadWeeks;
+                }
+            } else {
+                // Create new activity
+                const result = await this.api('add-activity', {}, {
+                    planId: this.currentPlan.plan_id,
+                    weekNumber,
+                    endWeek,
+                    label,
+                    activityType,
+                    color: defaultColors[firstTag] || '#95a5a6',
+                    ticketDelta,
+                    spreadWeeks
+                });
 
-            this.activities.push({
-                activity_id: result.activityId,
-                plan_id: this.currentPlan.plan_id,
-                week_number: weekNumber,
-                end_week: endWeek,
-                label,
-                activity_type: activityType,
-                color: defaultColors[activityType],
-                ticket_delta: ticketDelta,
-                spread_weeks: spreadWeeks
-            });
+                this.activities.push({
+                    activity_id: result.activityId,
+                    plan_id: this.currentPlan.plan_id,
+                    week_number: weekNumber,
+                    end_week: endWeek,
+                    label,
+                    activity_type: activityType,
+                    color: defaultColors[firstTag] || '#95a5a6',
+                    ticket_delta: ticketDelta,
+                    spread_weeks: spreadWeeks
+                });
+            }
 
             this.hideActivityForm();
             this.renderActivities();
+            this.renderCurrentPerfPanel();
             this.renderChart();
             this.updateFooterStats();
         } catch (err) {
@@ -1574,11 +1635,15 @@ class StudioApp {
                         <input type="color" class="color-input" data-id="${a.activity_id}" value="${color}">
                         <span class="activity-dot${isRange ? ' activity-bar' : ''}" style="background:${color}"></span>
                     </label>
-                    <span class="activity-week">${weekLabel}</span>
-                    <span class="activity-label">${this.escapeHtml(a.label)}</span>
-                    <span class="activity-type-badge">${a.activity_type || 'OTHER'}</span>
-                    ${a.ticket_delta ? `<span class="activity-delta">${a.ticket_delta > 0 ? '+' : ''}${a.ticket_delta} / ${a.spread_weeks || 1}wk</span>` : ''}
-                    <button class="activity-delete" title="Remove">&times;</button>
+                    <div class="activity-content">
+                        <div class="activity-row-top">
+                            <span class="activity-week">${weekLabel}</span>
+                            <span class="activity-label">${this.escapeHtml(a.label)}</span>
+                            ${a.ticket_delta ? `<span class="activity-delta">${a.ticket_delta > 0 ? '+' : ''}${a.ticket_delta} / ${a.spread_weeks || 1}wk</span>` : ''}
+                            <button class="activity-delete" title="Remove">&times;</button>
+                        </div>
+                        <div class="activity-row-tags">${(a.activity_type || '').split(',').map(t => t.trim()).filter(t => t).map(t => `<span class="activity-tag-pill">${this.escapeHtml(t)}</span>`).join('')}</div>
+                    </div>
                 </div>
             `;
         }).join('');
@@ -1610,18 +1675,27 @@ class StudioApp {
                 this.api('update-activity', { activityId: id }, { color: e.target.value }).catch(() => {});
             });
         });
+
+        // Click-to-edit
+        list.querySelectorAll('.activity-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.activity-delete') || e.target.closest('.activity-color-picker')) return;
+                const activity = this.activities.find(a => a.activity_id === item.dataset.id);
+                if (activity) this.showActivityForm(activity);
+            });
+        });
     }
 
-    async deleteActivity(activityId) {
-        try {
-            await this.api('delete-activity', { activityId });
-            this.activities = this.activities.filter(a => a.activity_id !== activityId);
-            this.renderActivities();
-            this.renderChart();
-            this.updateFooterStats();
-        } catch (err) {
+    deleteActivity(activityId) {
+        // Update UI immediately, delete from BigQuery in background
+        this.activities = this.activities.filter(a => a.activity_id !== activityId);
+        this.renderActivities();
+        this.renderCurrentPerfPanel();
+        this.renderChart();
+        this.updateFooterStats();
+        this.api('delete-activity', { activityId }).catch(err => {
             console.error('Failed to delete activity:', err);
-        }
+        });
     }
 
     // ═══════════════════════════════════════════
@@ -1819,9 +1893,13 @@ class StudioApp {
         const isHistorical = targetCompVal.startsWith('hist:');
 
         try {
-            // Create plan via API (fire-and-forget — we'll build state client-side)
+            // Create plan via API — we'll build state client-side to avoid BigQuery read latency
             const result = await this.api('create-plan', {}, { planName, series, venue, capacity, budgetGoal, targetPerfCode });
             const planId = result.planId;
+            if (!planId) {
+                alert('Failed to create plan. Please try again.');
+                return;
+            }
 
             // Also save the comp (fire-and-forget)
             if (!isHistorical) {

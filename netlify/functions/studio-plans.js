@@ -174,6 +174,7 @@ async function createPlan(bigquery, data) {
             (plan_id, plan_name, target_perf_code, series, venue, capacity, budget_goal, is_template, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))`,
     params: [planId, planName, targetPerfCode || null, series || null, venue || null, capacity || null, budgetGoal || null, isTemplate || false, now, now],
+    types: ['STRING', 'STRING', 'STRING', 'STRING', 'STRING', 'INT64', 'FLOAT64', 'BOOL', 'STRING', 'STRING'],
     location: 'US'
   });
 
@@ -185,12 +186,18 @@ async function updatePlan(bigquery, planId, data) {
 
   const updates = [];
   const params = [];
-  const fields = { plan_name: 'planName', series: 'series', venue: 'venue', capacity: 'capacity', budget_goal: 'budgetGoal', is_template: 'isTemplate', target_perf_code: 'targetPerfCode' };
+  const types = [];
+  const fields = {
+    plan_name: { key: 'planName', type: 'STRING' }, series: { key: 'series', type: 'STRING' }, venue: { key: 'venue', type: 'STRING' },
+    capacity: { key: 'capacity', type: 'INT64' }, budget_goal: { key: 'budgetGoal', type: 'FLOAT64' },
+    is_template: { key: 'isTemplate', type: 'BOOL' }, target_perf_code: { key: 'targetPerfCode', type: 'STRING' }
+  };
 
-  for (const [col, key] of Object.entries(fields)) {
+  for (const [col, { key, type }] of Object.entries(fields)) {
     if (data[key] !== undefined) {
       updates.push(`${col} = ?`);
       params.push(data[key]);
+      types.push(type);
     }
   }
 
@@ -198,10 +205,12 @@ async function updatePlan(bigquery, planId, data) {
 
   updates.push('updated_at = CURRENT_TIMESTAMP()');
   params.push(planId);
+  types.push('STRING');
 
   await bigquery.query({
     query: `UPDATE ${table('studio_plans')} SET ${updates.join(', ')} WHERE plan_id = ?`,
     params,
+    types,
     location: 'US'
   });
 
@@ -323,21 +332,26 @@ async function addActivity(bigquery, data) {
   if (!planId || weekNumber === undefined || !label) return respond(400, { error: 'planId, weekNumber, and label required' });
 
   const activityId = uuidv4();
-  const type = activityType || 'OTHER';
+  const type = activityType || 'Other';
+  const safeEndWeek = endWeek != null ? endWeek : null;
+  const safeDelta = ticketDelta != null ? ticketDelta : null;
+  const safeSpread = spreadWeeks != null ? spreadWeeks : null;
 
-  // Default colors by type
-  const defaultColors = { EMAIL: '#3498db', SOCIAL: '#e74c3c', GROUPS: '#f39c12', RADIO: '#9b59b6', PR: '#1abc9c', EVENT: '#e84393', SALE: '#00b894', NOTE: '#636e72', OTHER: '#95a5a6' };
-  const finalColor = color || defaultColors[type] || '#95a5a6';
+  // Default colors by first tag
+  const defaultColors = { email: '#3498db', social: '#e74c3c', groups: '#f39c12', radio: '#9b59b6', pr: '#1abc9c', event: '#e84393', sale: '#00b894', note: '#636e72', other: '#95a5a6' };
+  const firstTag = type.split(',')[0].trim().toLowerCase();
+  const finalColor = color || defaultColors[firstTag] || '#95a5a6';
 
   await bigquery.query({
     query: `INSERT INTO ${table('studio_plan_activities')}
             (activity_id, plan_id, week_number, end_week, label, activity_type, color, ticket_delta, spread_weeks, sort_order, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())`,
-    params: [activityId, planId, weekNumber, endWeek || null, label, type, finalColor, ticketDelta || null, spreadWeeks || null],
+    params: [activityId, planId, weekNumber, safeEndWeek, label, type, finalColor, safeDelta, safeSpread],
+    types: ['STRING', 'STRING', 'INT64', 'INT64', 'STRING', 'STRING', 'STRING', 'INT64', 'INT64'],
     location: 'US'
   });
 
-  return respond(201, { activityId, planId, weekNumber, endWeek: endWeek || null, label, activityType: type, color: finalColor, ticketDelta: ticketDelta || null, spreadWeeks: spreadWeeks || null });
+  return respond(201, { activityId, planId, weekNumber, endWeek: safeEndWeek, label, activityType: type, color: finalColor, ticketDelta: safeDelta, spreadWeeks: safeSpread });
 }
 
 async function updateActivity(bigquery, activityId, data) {
@@ -345,12 +359,19 @@ async function updateActivity(bigquery, activityId, data) {
 
   const updates = [];
   const params = [];
-  const fields = { week_number: 'weekNumber', end_week: 'endWeek', label: 'label', activity_type: 'activityType', color: 'color', ticket_delta: 'ticketDelta', spread_weeks: 'spreadWeeks', sort_order: 'sortOrder' };
+  const types = [];
+  const fields = {
+    week_number: { key: 'weekNumber', type: 'INT64' }, end_week: { key: 'endWeek', type: 'INT64' },
+    label: { key: 'label', type: 'STRING' }, activity_type: { key: 'activityType', type: 'STRING' },
+    color: { key: 'color', type: 'STRING' }, ticket_delta: { key: 'ticketDelta', type: 'INT64' },
+    spread_weeks: { key: 'spreadWeeks', type: 'INT64' }, sort_order: { key: 'sortOrder', type: 'INT64' }
+  };
 
-  for (const [col, key] of Object.entries(fields)) {
+  for (const [col, { key, type }] of Object.entries(fields)) {
     if (data[key] !== undefined) {
       updates.push(`${col} = ?`);
       params.push(data[key]);
+      types.push(type);
     }
   }
 
@@ -358,10 +379,12 @@ async function updateActivity(bigquery, activityId, data) {
 
   updates.push('updated_at = CURRENT_TIMESTAMP()');
   params.push(activityId);
+  types.push('STRING');
 
   await bigquery.query({
     query: `UPDATE ${table('studio_plan_activities')} SET ${updates.join(', ')} WHERE activity_id = ?`,
     params,
+    types,
     location: 'US'
   });
 

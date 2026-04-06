@@ -138,19 +138,10 @@
                             <label>Name</label>
                             <input type="text" id="activity-name" class="studio-input" placeholder="e.g., Email Campaign #1">
                         </div>
-                        <div class="form-row">
-                            <label>Type</label>
-                            <select id="activity-type" class="studio-select">
-                                <option value="EMAIL">Email</option>
-                                <option value="SOCIAL">Social</option>
-                                <option value="GROUPS">Groups</option>
-                                <option value="RADIO">Radio</option>
-                                <option value="PR">PR</option>
-                                <option value="EVENT">Event</option>
-                                <option value="SALE">Sale</option>
-                                <option value="NOTE">Note</option>
-                                <option value="OTHER">Other</option>
-                            </select>
+                        <div class="form-row" style="position:relative;">
+                            <label>Tags</label>
+                            <input type="text" id="activity-tags" class="studio-input" placeholder="e.g., Email, Groups">
+                            <div id="activity-tags-autocomplete" class="studio-autocomplete"></div>
                         </div>
                         <div class="form-row-group">
                             <div class="form-row">
