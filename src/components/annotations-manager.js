@@ -5,9 +5,10 @@ class AnnotationsManager {
         this.annotations = [];
         this.allTags = [];
         this.groupTitles = []; // production names for auto-tagging
+        this.performances = []; // individual performances for performance-scoped annotations
         this.activeTagFilters = [];
         this.activeGroupFilter = '';
-        this.activeScopeFilter = ''; // '', 'production', or 'global'
+        this.activeScopeFilter = ''; // '', 'production', 'performance', or 'global'
         this.editingId = null;
     }
 
@@ -48,10 +49,13 @@ class AnnotationsManager {
 
     async loadGroupTitles() {
         const titles = new Set();
+        let perfList = [];
+
         // Try data table first (if already loaded)
         if (window.dataTable && window.dataTable.data && window.dataTable.data.length > 0) {
             window.dataTable.data.forEach(p => {
                 if (p.title) titles.add(p.title);
+                perfList.push(p);
             });
         } else {
             // Fetch directly from data service
@@ -60,6 +64,7 @@ class AnnotationsManager {
                 if (result && result.performances) {
                     result.performances.forEach(p => {
                         if (p.title) titles.add(p.title);
+                        perfList.push(p);
                     });
                 }
             } catch (e) {
@@ -67,6 +72,7 @@ class AnnotationsManager {
             }
         }
         this.groupTitles = Array.from(titles).sort();
+        this.performances = perfList;
     }
 
     async loadData() {
@@ -158,8 +164,8 @@ class AnnotationsManager {
         const scopeBar = document.createElement('div');
         scopeBar.className = 'anno-mgr-scope-bar';
 
-        ['', 'production', 'global'].forEach(scopeVal => {
-            const label = scopeVal === '' ? 'All' : scopeVal === 'production' ? 'Production' : 'Global';
+        ['', 'production', 'performance', 'global'].forEach(scopeVal => {
+            const label = scopeVal === '' ? 'All' : scopeVal === 'production' ? 'Production' : scopeVal === 'performance' ? 'Performance' : 'Global';
             const pill = document.createElement('span');
             pill.className = `anno-mgr-scope-pill ${this.activeScopeFilter === scopeVal ? 'active' : ''}`;
             pill.textContent = label;
@@ -276,9 +282,15 @@ class AnnotationsManager {
                     : `Weeks ${ann.start_week}-${ann.end_week}`;
             }
 
-            const groupDisplay = isGlobal
-                ? '<span class="anno-scope-badge anno-scope-global">Global</span>'
-                : this.escapeHtml(ann.group_title || '');
+            const isPerformanceScope = ann.scope === 'performance';
+            let groupDisplay;
+            if (isGlobal) {
+                groupDisplay = '<span class="anno-scope-badge anno-scope-global">Global</span>';
+            } else if (isPerformanceScope) {
+                groupDisplay = `<span class="anno-scope-badge anno-scope-performance">Perf</span> ${this.escapeHtml(ann.performance_code || '')}`;
+            } else {
+                groupDisplay = this.escapeHtml(ann.group_title || '');
+            }
 
             const tagPills = tags.map(t => {
                 const isProd = this.groupTitles.includes(t);
@@ -340,7 +352,17 @@ class AnnotationsManager {
         const currentType = existing ? existing.annotation_type : 'point';
         const currentScope = existing ? (existing.scope || 'production') : 'production';
         const isGlobal = currentScope === 'global';
+        const isPerformanceScope = currentScope === 'performance';
         const existingTags = existing && Array.isArray(existing.tags) ? existing.tags : [];
+
+        // Detect positioning mode: weeks-out if annotation has week values but no dates
+        const hasWeekValues = existing && (
+            (existing.annotation_type === 'point' && existing.week_number !== null && existing.week_number !== undefined) ||
+            (existing.annotation_type === 'interval' && existing.start_week !== null && existing.start_week !== undefined)
+        );
+        const hasDateValues = existing && existing.annotation_date;
+        // Default to 'date' for new annotations; for existing, prefer weeks if they have week data without dates
+        const currentPositionMode = existing ? (hasWeekValues && !hasDateValues ? 'weeks' : 'date') : 'date';
 
         // Format date values for input fields
         const fmtDate = (val) => {
@@ -350,17 +372,36 @@ class AnnotationsManager {
             return String(val).split('T')[0];
         };
 
+        // Format week values (handle 0 correctly)
+        const fmtWeek = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val);
+        };
+
         form.innerHTML = `
             <h3>${isEdit ? 'Edit' : 'New'} Annotation</h3>
             <div class="anno-form-grid">
                 <div class="anno-form-field">
                     <label>Scope</label>
                     <div class="anno-form-radios">
-                        <label><input type="radio" name="anno-mgr-scope" value="production" ${!isGlobal ? 'checked' : ''}> Production</label>
+                        <label><input type="radio" name="anno-mgr-scope" value="production" ${!isGlobal && !isPerformanceScope ? 'checked' : ''}> Production</label>
+                        <label><input type="radio" name="anno-mgr-scope" value="performance" ${isPerformanceScope ? 'checked' : ''}> Performance</label>
                         <label><input type="radio" name="anno-mgr-scope" value="global" ${isGlobal ? 'checked' : ''}> Global</label>
                     </div>
                 </div>
-                <div class="anno-form-field anno-production-group-field" style="display:${isGlobal ? 'none' : 'block'}">
+                <div class="anno-form-field anno-performance-select-field" style="display:${isPerformanceScope ? 'block' : 'none'}">
+                    <label>Performance</label>
+                    <select class="anno-form-performance">
+                        <option value="">Select performance...</option>
+                        ${this.performances.map(p => {
+                            const code = p.performanceCode || p.performance_code || p.id;
+                            const label = `${this.escapeHtml(p.title)} (${p.date})`;
+                            const selected = existing && existing.performance_code === code ? 'selected' : '';
+                            return `<option value="${this.escapeHtml(code)}" ${selected}>${label}</option>`;
+                        }).join('')}
+                    </select>
+                </div>
+                <div class="anno-form-field anno-production-group-field" style="display:${isGlobal || isPerformanceScope ? 'none' : 'block'}">
                     <label>Production</label>
                     <select class="anno-form-group">
                         <option value="">Select production...</option>
@@ -381,13 +422,28 @@ class AnnotationsManager {
                         <label><input type="radio" name="anno-mgr-type" value="interval" ${currentType === 'interval' ? 'checked' : ''}> Interval</label>
                     </div>
                 </div>
-                <div class="anno-form-field anno-date-point-field" style="display:${currentType === 'point' ? 'block' : 'none'}">
+                <div class="anno-form-field">
+                    <label>Position by</label>
+                    <div class="anno-form-radios">
+                        <label><input type="radio" name="anno-mgr-pos-mode" value="date" ${currentPositionMode === 'date' ? 'checked' : ''}> Calendar Date</label>
+                        <label><input type="radio" name="anno-mgr-pos-mode" value="weeks" ${currentPositionMode === 'weeks' ? 'checked' : ''}> Weeks Out</label>
+                    </div>
+                </div>
+                <div class="anno-form-field anno-date-point-field" style="display:${currentPositionMode === 'date' && currentType === 'point' ? 'block' : 'none'}">
                     <label>Date</label>
                     <input type="date" class="anno-form-date" value="${fmtDate(existing ? existing.annotation_date : '')}">
                 </div>
-                <div class="anno-form-field anno-date-interval-field" style="display:${currentType === 'interval' ? 'flex' : 'none'};gap:8px;">
+                <div class="anno-form-field anno-date-interval-field" style="display:${currentPositionMode === 'date' && currentType === 'interval' ? 'flex' : 'none'};gap:8px;">
                     <div><label>Start Date</label><input type="date" class="anno-form-date-start" value="${fmtDate(existing ? existing.annotation_date : '')}"></div>
                     <div><label>End Date</label><input type="date" class="anno-form-date-end" value="${fmtDate(existing ? existing.annotation_end_date : '')}"></div>
+                </div>
+                <div class="anno-form-field anno-week-point-field" style="display:${currentPositionMode === 'weeks' && currentType === 'point' ? 'block' : 'none'}">
+                    <label>Weeks before performance</label>
+                    <input type="number" class="anno-form-week" step="0.1" min="0" placeholder="e.g. 4" value="${fmtWeek(existing ? existing.week_number : '')}">
+                </div>
+                <div class="anno-form-field anno-week-interval-field" style="display:${currentPositionMode === 'weeks' && currentType === 'interval' ? 'flex' : 'none'};gap:8px;">
+                    <div><label>Start (weeks out)</label><input type="number" class="anno-form-week-start" step="0.1" min="0" placeholder="e.g. 6" value="${fmtWeek(existing ? existing.start_week : '')}"></div>
+                    <div><label>End (weeks out)</label><input type="number" class="anno-form-week-end" step="0.1" min="0" placeholder="e.g. 0" value="${fmtWeek(existing ? existing.end_week : '')}"></div>
                 </div>
                 <div class="anno-form-field">
                     <label>Label</label>
@@ -415,20 +471,28 @@ class AnnotationsManager {
 
         formArea.appendChild(form);
 
-        // Helper to update field visibility based on scope + type
+        // Helper to update field visibility based on scope + type + position mode
         const updatePositionFields = () => {
             const scopeVal = form.querySelector('input[name="anno-mgr-scope"]:checked').value;
             const typeVal = form.querySelector('input[name="anno-mgr-type"]:checked').value;
+            const posMode = form.querySelector('input[name="anno-mgr-pos-mode"]:checked').value;
             const isG = scopeVal === 'global';
+            const isPerfScope = scopeVal === 'performance';
             const isP = typeVal === 'point';
+            const isDateMode = posMode === 'date';
 
             // Show/hide production fields
-            form.querySelector('.anno-production-group-field').style.display = isG ? 'none' : 'block';
+            form.querySelector('.anno-production-group-field').style.display = (isG || isPerfScope) ? 'none' : 'block';
             form.querySelector('.anno-global-group-field').style.display = isG ? 'block' : 'none';
+            form.querySelector('.anno-performance-select-field').style.display = isPerfScope ? 'block' : 'none';
 
-            // Date inputs (always used for both scopes)
-            form.querySelector('.anno-date-point-field').style.display = isP ? 'block' : 'none';
-            form.querySelector('.anno-date-interval-field').style.display = isP ? 'none' : 'flex';
+            // Date inputs (only in date mode)
+            form.querySelector('.anno-date-point-field').style.display = (isDateMode && isP) ? 'block' : 'none';
+            form.querySelector('.anno-date-interval-field').style.display = (isDateMode && !isP) ? 'flex' : 'none';
+
+            // Week inputs (only in weeks mode)
+            form.querySelector('.anno-week-point-field').style.display = (!isDateMode && isP) ? 'block' : 'none';
+            form.querySelector('.anno-week-interval-field').style.display = (!isDateMode && !isP) ? 'flex' : 'none';
         };
 
         // Scope radio toggle
@@ -438,6 +502,11 @@ class AnnotationsManager {
 
         // Type radio toggle
         form.querySelectorAll('input[name="anno-mgr-type"]').forEach(radio => {
+            radio.addEventListener('change', updatePositionFields);
+        });
+
+        // Position mode toggle
+        form.querySelectorAll('input[name="anno-mgr-pos-mode"]').forEach(radio => {
             radio.addEventListener('change', updatePositionFields);
         });
 
@@ -499,10 +568,18 @@ class AnnotationsManager {
         form.querySelector('.anno-form-save').addEventListener('click', async () => {
             const scopeVal = form.querySelector('input[name="anno-mgr-scope"]:checked').value;
             const isG = scopeVal === 'global';
+            const isPerfScope = scopeVal === 'performance';
 
             let groupTitle;
+            let performanceCode;
             if (isG) {
                 groupTitle = form.querySelector('.anno-form-group-optional').value || null;
+            } else if (isPerfScope) {
+                performanceCode = form.querySelector('.anno-form-performance').value;
+                if (!performanceCode) { alert('Please select a performance.'); return; }
+                // Find the group title from the selected performance
+                const perfMatch = this.performances.find(p => (p.performanceCode || p.performance_code || p.id) === performanceCode);
+                groupTitle = perfMatch ? perfMatch.title : null;
             } else {
                 groupTitle = groupSelect.value;
                 if (!groupTitle) { alert('Please select a production.'); return; }
@@ -514,6 +591,8 @@ class AnnotationsManager {
 
             const tagsArr = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
 
+            const posMode = form.querySelector('input[name="anno-mgr-pos-mode"]:checked').value;
+
             const payload = {
                 annotationType: type,
                 label,
@@ -523,13 +602,33 @@ class AnnotationsManager {
                 scope: scopeVal
             };
 
-            if (type === 'point') {
-                payload.annotationDate = form.querySelector('.anno-form-date').value;
-                if (!payload.annotationDate) { alert('Please select a date.'); return; }
+            if (isPerfScope && performanceCode) {
+                payload.performanceCode = performanceCode;
+            }
+
+            if (posMode === 'date') {
+                // Calendar date mode
+                if (type === 'point') {
+                    payload.annotationDate = form.querySelector('.anno-form-date').value;
+                    if (!payload.annotationDate) { alert('Please select a date.'); return; }
+                } else {
+                    payload.annotationDate = form.querySelector('.anno-form-date-start').value;
+                    payload.annotationEndDate = form.querySelector('.anno-form-date-end').value;
+                    if (!payload.annotationDate || !payload.annotationEndDate) { alert('Please select start and end dates.'); return; }
+                }
             } else {
-                payload.annotationDate = form.querySelector('.anno-form-date-start').value;
-                payload.annotationEndDate = form.querySelector('.anno-form-date-end').value;
-                if (!payload.annotationDate || !payload.annotationEndDate) { alert('Please select start and end dates.'); return; }
+                // Weeks-out mode
+                if (type === 'point') {
+                    const weekVal = form.querySelector('.anno-form-week').value;
+                    if (weekVal === '') { alert('Please enter weeks before performance.'); return; }
+                    payload.weekNumber = parseFloat(weekVal);
+                } else {
+                    const startVal = form.querySelector('.anno-form-week-start').value;
+                    const endVal = form.querySelector('.anno-form-week-end').value;
+                    if (startVal === '' || endVal === '') { alert('Please enter start and end weeks.'); return; }
+                    payload.startWeek = parseFloat(startVal);
+                    payload.endWeek = parseFloat(endVal);
+                }
             }
 
             try {
@@ -690,6 +789,11 @@ class AnnotationsManager {
 .anno-scope-global {
     background: #e8f5e9;
     color: #2e7d32;
+}
+
+.anno-scope-performance {
+    background: #e3f2fd;
+    color: #1565c0;
 }
 
 .anno-mgr-tag-pill.production-tag {

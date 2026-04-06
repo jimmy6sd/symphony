@@ -127,6 +127,11 @@ async function getComparisons(bigquery, params, headers) {
     return await getBatchComparisons(bigquery, performanceIds, headers);
   }
 
+  // List all comparisons (for Studio comp library)
+  if (params.all === 'true') {
+    return await getAllComparisons(bigquery, headers);
+  }
+
   // Single performance request
   if (!performanceId) {
     return {
@@ -165,6 +170,31 @@ async function getComparisons(bigquery, params, headers) {
   });
 
   // Parse weeks_data CSV into array for convenience
+  const comparisons = rows.map(row => ({
+    ...row,
+    weeksArray: parseWeeksData(row.weeks_data)
+  }));
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(comparisons)
+  };
+}
+
+// GET (All) - Fetch all comparisons for Studio comp library
+async function getAllComparisons(bigquery, headers) {
+  const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
+  const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT_ID;
+  const query = `
+    SELECT comparison_id, performance_id, comparison_name, weeks_data,
+           line_color, line_style, is_target, atp, capacity, occupancy_percent, source
+    FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_comparisons\`
+    ORDER BY comparison_name
+  `;
+
+  const [rows] = await bigquery.query({ query, location: 'US' });
+
   const comparisons = rows.map(row => ({
     ...row,
     weeksArray: parseWeeksData(row.weeks_data)

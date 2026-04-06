@@ -120,7 +120,7 @@ exports.handler = async (event, context) => {
 
 // GET - Fetch annotations
 async function getAnnotations(bigquery, params, headers) {
-  const { groupTitle, tags, allTags, scope, includeGlobal, context } = params || {};
+  const { groupTitle, performanceCode, tags, allTags, scope, includeGlobal, context } = params || {};
 
   // Return all distinct tags for autocomplete
   if (allTags === 'true') {
@@ -128,7 +128,7 @@ async function getAnnotations(bigquery, params, headers) {
   }
 
   // Filter by tags across all groups
-  if (tags && !groupTitle) {
+  if (tags && !groupTitle && !performanceCode) {
     return await getAnnotationsByTags(bigquery, tags, headers);
   }
 
@@ -137,12 +137,17 @@ async function getAnnotations(bigquery, params, headers) {
     return await getGlobalAnnotations(bigquery, headers);
   }
 
+  // Fetch annotations for a specific performance (optionally including production + global)
+  if (performanceCode) {
+    return await getPerformanceAnnotations(bigquery, performanceCode, groupTitle, includeGlobal, context, headers);
+  }
+
   // Fetch annotations for a specific group (optionally including global)
   if (!groupTitle) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'groupTitle, tags, scope, or allTags query parameter required' })
+      body: JSON.stringify({ error: 'groupTitle, performanceCode, tags, scope, or allTags query parameter required' })
     };
   }
 
@@ -176,6 +181,65 @@ async function getAnnotations(bigquery, params, headers) {
       ORDER BY CAST(annotation_date AS STRING) DESC, COALESCE(week_number, start_week) DESC
     `;
     queryParams = [groupTitle, contextFilter];
+  }
+
+  const [rows] = await bigquery.query({
+    query,
+    params: queryParams,
+    location: 'US'
+  });
+
+  const annotations = rows.map(row => ({
+    ...row,
+    tags: parseTags(row.tags)
+  }));
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify(annotations)
+  };
+}
+
+// GET - Fetch annotations for a specific performance code (optionally including production + global)
+async function getPerformanceAnnotations(bigquery, performanceCode, groupTitle, includeGlobal, context, headers) {
+  const contextFilter = context || 'performance';
+
+  let query;
+  let queryParams;
+
+  if (includeGlobal === 'true' && groupTitle) {
+    // Include performance-scoped + production-scoped (matching group_title) + global
+    query = `
+      SELECT
+        annotation_id, group_title, annotation_type, week_number,
+        start_week, end_week, label, description, color, tags,
+        scope, annotation_date, annotation_end_date, context,
+        performance_code,
+        created_at, updated_at
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      WHERE (
+        performance_code = ?
+        OR (scope = 'production' AND group_title = ?)
+        OR scope = 'global'
+      ) AND COALESCE(context, 'performance') = ?
+      ORDER BY CAST(annotation_date AS STRING) DESC, COALESCE(week_number, start_week) DESC
+    `;
+    queryParams = [performanceCode, groupTitle, contextFilter];
+  } else {
+    // Only performance-scoped annotations
+    query = `
+      SELECT
+        annotation_id, group_title, annotation_type, week_number,
+        start_week, end_week, label, description, color, tags,
+        scope, annotation_date, annotation_end_date, context,
+        performance_code,
+        created_at, updated_at
+      FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
+      WHERE performance_code = ? AND COALESCE(context, 'performance') = ?
+      ORDER BY CAST(annotation_date AS STRING) DESC, COALESCE(week_number, start_week) DESC
+    `;
+    queryParams = [performanceCode, contextFilter];
   }
 
   const [rows] = await bigquery.query({
@@ -293,6 +357,7 @@ async function getAllTags(bigquery, headers) {
 async function createAnnotation(bigquery, data, headers) {
   const {
     groupTitle,
+    performanceCode,
     annotationType,
     weekNumber,
     startWeek,
@@ -308,6 +373,7 @@ async function createAnnotation(bigquery, data, headers) {
   } = data;
 
   const isGlobal = scope === 'global';
+  const isPerformance = scope === 'performance';
 
   // Validation
   if (!annotationType || !label) {
@@ -321,7 +387,15 @@ async function createAnnotation(bigquery, data, headers) {
     };
   }
 
-  if (!isGlobal && !groupTitle) {
+  if (isPerformance && !performanceCode) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: 'performanceCode is required for performance-scoped annotations' })
+    };
+  }
+
+  if (!isGlobal && !isPerformance && !groupTitle) {
     return {
       statusCode: 400,
       headers,
@@ -340,7 +414,7 @@ async function createAnnotation(bigquery, data, headers) {
   // Annotations can use calendar dates or week numbers for positioning
   const hasDate = !!annotationDate;
   const hasWeek = (annotationType === 'point' && weekNumber !== undefined && weekNumber !== null) ||
-                  (annotationType === 'interval' && startWeek !== undefined && endWeek !== undefined);
+                  (annotationType === 'interval' && startWeek !== undefined && startWeek !== null && endWeek !== undefined && endWeek !== null);
 
   if (!hasDate && !hasWeek) {
     return {
@@ -373,6 +447,12 @@ async function createAnnotation(bigquery, data, headers) {
     params.push(groupTitle);
   }
 
+  if (performanceCode) {
+    columns.push('performance_code');
+    values.push('?');
+    params.push(performanceCode);
+  }
+
   if (annotationDate) {
     columns.push('annotation_date');
     values.push('DATE(?)');
@@ -389,12 +469,12 @@ async function createAnnotation(bigquery, data, headers) {
     values.push('?');
     params.push(weekNumber);
   }
-  if (startWeek !== undefined) {
+  if (startWeek !== undefined && startWeek !== null) {
     columns.push('start_week');
     values.push('?');
     params.push(startWeek);
   }
-  if (endWeek !== undefined) {
+  if (endWeek !== undefined && endWeek !== null) {
     columns.push('end_week');
     values.push('?');
     params.push(endWeek);
@@ -418,6 +498,7 @@ async function createAnnotation(bigquery, data, headers) {
     body: JSON.stringify({
       annotation_id: annotationId,
       group_title: groupTitle || null,
+      performance_code: performanceCode || null,
       annotation_type: annotationType,
       week_number: annotationType === 'point' && !isGlobal ? weekNumber : null,
       start_week: annotationType === 'interval' && !isGlobal ? startWeek : null,
@@ -489,6 +570,10 @@ async function updateAnnotation(bigquery, annotationId, data, headers) {
   if (scope !== undefined) {
     updates.push('scope = ?');
     params.push(scope);
+  }
+  if (data.performanceCode !== undefined) {
+    updates.push('performance_code = ?');
+    params.push(data.performanceCode);
   }
   if (annotationDate !== undefined) {
     updates.push('annotation_date = DATE(?)');

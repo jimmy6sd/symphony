@@ -444,52 +444,40 @@ async function getSalesProgression(bigquery, params, headers) {
     };
   }
 
-  // Get performance date first
-  const perfQuery = `
-    SELECT performance_date
-    FROM \`${PROJECT_ID}.${DATASET_ID}.performances\`
-    WHERE performance_code = ?
+  // Single query: JOIN performance date and calculate weeks in one pass
+  const query = `
+    SELECT
+      s.snapshot_date,
+      s.total_tickets_sold,
+      s.total_revenue,
+      s.capacity_percent,
+      p.performance_date,
+      DATE_DIFF(p.performance_date, s.snapshot_date, DAY) as days_before_performance
+    FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
+    JOIN \`${PROJECT_ID}.${DATASET_ID}.performances\` p ON s.performance_code = p.performance_code
+    WHERE s.performance_code = ?
+    ORDER BY s.snapshot_date ASC
   `;
 
-  const [perfRows] = await bigquery.query({
-    query: perfQuery,
+  const [rows] = await bigquery.query({
+    query,
     params: [performanceCode],
     location: 'US'
   });
 
-  if (perfRows.length === 0) {
+  if (rows.length === 0) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Performance not found' })
+      body: JSON.stringify({ error: 'Performance not found or no snapshots' })
     };
   }
 
-  const performanceDate = typeof perfRows[0].performance_date === 'object'
-    ? perfRows[0].performance_date.value
-    : perfRows[0].performance_date;
+  const performanceDate = typeof rows[0].performance_date === 'object'
+    ? rows[0].performance_date.value
+    : rows[0].performance_date;
 
-  // Get all snapshots and calculate weeks before performance
-  const snapshotQuery = `
-    SELECT
-      snapshot_date,
-      total_tickets_sold,
-      total_revenue,
-      capacity_percent,
-      DATE_DIFF('${performanceDate}', snapshot_date, DAY) as days_before_performance
-    FROM \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\`
-    WHERE performance_code = ?
-    ORDER BY snapshot_date ASC
-  `;
-
-  const [snapshots] = await bigquery.query({
-    query: snapshotQuery,
-    params: [performanceCode],
-    location: 'US'
-  });
-
-  // Convert to weekly progression
-  const weeklyData = snapshots.map(snap => ({
+  const weeklyData = rows.map(snap => ({
     date: typeof snap.snapshot_date === 'object' ? snap.snapshot_date.value : snap.snapshot_date,
     weeksOut: Math.ceil(snap.days_before_performance / 7),
     ticketsSold: snap.total_tickets_sold,
