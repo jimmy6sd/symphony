@@ -1,3 +1,16 @@
+const ANNOTATION_COLORS = [
+    { name: 'Programmatic', label: 'Red', hex: '#e74c3c' },
+    { name: 'Meta', label: 'Blue', hex: '#007bb3' },
+    { name: 'TV', label: 'Purple', hex: '#bb2ce2' },
+    { name: 'OOH', label: 'Charcoal', hex: '#2c2627' },
+    { name: 'Organic', label: 'Green', hex: '#46bc96' },
+    { name: 'Radio', label: 'Orange', hex: '#f68504' },
+    { name: 'Point', label: 'Pink', hex: '#fb13f4' },
+    { name: 'Print', label: 'Royal Blue', hex: '#1607e9' },
+    { name: 'Referral', label: 'Teal', hex: '#40e7dc' },
+    { name: 'Google Ads', label: 'Light Pink', hex: '#f3a9f4' },
+];
+
 class AnnotationsManager {
     constructor(containerId) {
         this.containerId = containerId;
@@ -404,7 +417,11 @@ class AnnotationsManager {
                 </div>
                 <div class="anno-form-field">
                     <label>Color</label>
-                    <input type="color" class="anno-form-color" value="${existing ? (existing.color || '#e74c3c') : '#e74c3c'}">
+                    <select class="anno-form-color">
+                        ${ANNOTATION_COLORS.map(c =>
+                            `<option value="${c.hex}" ${(existing ? (existing.color || '#e74c3c') : '#e74c3c') === c.hex ? 'selected' : ''} style="color:${c.hex}">&#9679; ${c.name} (${c.label})</option>`
+                        ).join('')}
+                    </select>
                 </div>
             </div>
             <div class="anno-form-actions">
@@ -924,13 +941,14 @@ class AnnotationsManager {
     margin-left: 4px;
 }
 
-.anno-form-field input[type="color"] {
-    width: 50px;
-    height: 30px;
-    padding: 2px;
+.anno-form-field select.anno-form-color {
+    width: 220px;
+    height: 34px;
+    padding: 4px 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 13px;
 }
 
 .anno-form-actions {

@@ -2808,14 +2808,35 @@ class DataTable {
             .style('min-width', '60px')
             .text('Color:');
 
-        const colorInput = colorRow.append('input')
-            .attr('type', 'color')
-            .style('width', '40px')
+        const colorInput = colorRow.append('select')
+            .style('width', '200px')
             .style('height', '28px')
+            .style('padding', '2px 6px')
             .style('border', '1px solid #ddd')
             .style('border-radius', '4px')
             .style('cursor', 'pointer')
-            .property('value', existing ? (existing.color || '#e74c3c') : '#e74c3c');
+            .style('font-size', '12px');
+
+        const existingColor = existing ? (existing.color || '#e74c3c') : '#e74c3c';
+        const ANNO_COLORS = [
+            { name: 'Programmatic', label: 'Red', hex: '#e74c3c' },
+            { name: 'Meta', label: 'Blue', hex: '#007bb3' },
+            { name: 'TV', label: 'Purple', hex: '#bb2ce2' },
+            { name: 'OOH', label: 'Charcoal', hex: '#2c2627' },
+            { name: 'Organic', label: 'Green', hex: '#46bc96' },
+            { name: 'Radio', label: 'Orange', hex: '#f68504' },
+            { name: 'Point', label: 'Pink', hex: '#fb13f4' },
+            { name: 'Print', label: 'Royal Blue', hex: '#1607e9' },
+            { name: 'Referral', label: 'Teal', hex: '#40e7dc' },
+            { name: 'Google Ads', label: 'Light Pink', hex: '#f3a9f4' },
+        ];
+        ANNO_COLORS.forEach(c => {
+            colorInput.append('option')
+                .attr('value', c.hex)
+                .property('selected', existingColor === c.hex)
+                .style('color', c.hex)
+                .text(`● ${c.name} (${c.label})`);
+        });
 
         // Buttons
         const btnRow = form.append('div')

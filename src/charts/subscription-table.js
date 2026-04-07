@@ -640,7 +640,20 @@ class SubscriptionTable {
                 </div>
                 <div class="sub-anno-form-row">
                     <label>Color:</label>
-                    <input type="color" id="sub-anno-color-${key}" value="${existing ? (existing.color || '#e74c3c') : '#e74c3c'}">
+                    <select id="sub-anno-color-${key}" style="width:200px;height:28px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;cursor:pointer;font-size:12px;">
+                        ${[
+                            { name: 'Programmatic', label: 'Red', hex: '#e74c3c' },
+                            { name: 'Meta', label: 'Blue', hex: '#007bb3' },
+                            { name: 'TV', label: 'Purple', hex: '#bb2ce2' },
+                            { name: 'OOH', label: 'Charcoal', hex: '#2c2627' },
+                            { name: 'Organic', label: 'Green', hex: '#46bc96' },
+                            { name: 'Radio', label: 'Orange', hex: '#f68504' },
+                            { name: 'Point', label: 'Pink', hex: '#fb13f4' },
+                            { name: 'Print', label: 'Royal Blue', hex: '#1607e9' },
+                            { name: 'Referral', label: 'Teal', hex: '#40e7dc' },
+                            { name: 'Google Ads', label: 'Light Pink', hex: '#f3a9f4' },
+                        ].map(c => `<option value="${c.hex}" ${(existing ? (existing.color || '#e74c3c') : '#e74c3c') === c.hex ? 'selected' : ''} style="color:${c.hex}">● ${c.name} (${c.label})</option>`).join('')}
+                    </select>
                 </div>
                 <div class="sub-anno-form-buttons">
                     <button class="sub-anno-cancel-btn" onclick="document.getElementById('sub-anno-form-${key}').innerHTML=''">Cancel</button>
