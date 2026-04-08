@@ -97,6 +97,8 @@ exports.handler = async (event) => {
         return await getTemplates(bigquery);
       case 'apply-template':
         return await applyTemplate(bigquery, params.planId, params.templateId);
+      case 'save-as-template':
+        return await saveAsTemplate(bigquery, body);
 
       default:
         return respond(400, { error: `Unknown action: ${action}` });
@@ -454,4 +456,61 @@ async function applyTemplate(bigquery, planId, templateId) {
   await tbl.insert(rows);
 
   return respond(200, { success: true, copied: rows.length });
+}
+
+async function saveAsTemplate(bigquery, data) {
+  const { sourcePlanId, templateName } = data;
+  if (!sourcePlanId || !templateName) return respond(400, { error: 'sourcePlanId and templateName required' });
+
+  // Get source plan metadata
+  const [plans] = await bigquery.query({
+    query: `SELECT * FROM ${table('studio_plans')} WHERE plan_id = ?`,
+    params: [sourcePlanId],
+    location: 'US'
+  });
+  if (plans.length === 0) return respond(404, { error: 'Source plan not found' });
+  const source = plans[0];
+
+  // Create template plan
+  const planId = uuidv4();
+  const now = new Date().toISOString();
+  await bigquery.query({
+    query: `INSERT INTO ${table('studio_plans')}
+            (plan_id, plan_name, target_perf_code, series, venue, capacity, budget_goal, is_template, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, TRUE, TIMESTAMP(?), TIMESTAMP(?))`,
+    params: [planId, templateName, null, source.series || null, source.venue || null, source.capacity || null, source.budget_goal || null, now, now],
+    types: ['STRING', 'STRING', 'STRING', 'STRING', 'STRING', 'INT64', 'FLOAT64', 'STRING', 'STRING'],
+    location: 'US'
+  });
+
+  // Copy activities from source plan
+  const [activities] = await bigquery.query({
+    query: `SELECT * FROM ${table('studio_plan_activities')} WHERE plan_id = ? ORDER BY sort_order ASC`,
+    params: [sourcePlanId],
+    location: 'US'
+  });
+
+  let activityCount = 0;
+  if (activities.length > 0) {
+    const rows = activities.map((a, i) => ({
+      activity_id: uuidv4(),
+      plan_id: planId,
+      week_number: a.week_number,
+      end_week: a.end_week || null,
+      label: a.label,
+      activity_type: a.activity_type,
+      color: a.color,
+      ticket_delta: a.ticket_delta || null,
+      spread_weeks: a.spread_weeks || null,
+      sort_order: i,
+      created_at: now,
+      updated_at: now
+    }));
+
+    const tbl = bigquery.dataset(DATASET_ID).table('studio_plan_activities');
+    await tbl.insert(rows);
+    activityCount = rows.length;
+  }
+
+  return respond(201, { planId, planName: templateName, activityCount });
 }

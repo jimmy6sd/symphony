@@ -15,6 +15,8 @@ class StudioApp {
         this.projectionModifier = 0;         // percentage adjustment to projection line
         this.historicalComps = [];           // available historical comps
         this.selectedHistoricalComps = new Map(); // comparisonId -> { data, color }
+        this._templates = [];
+        this._selectedTemplateId = null;
 
         this.API_BASE = '/.netlify/functions/studio-plans';
         this.SNAPSHOTS_API = '/.netlify/functions/bigquery-snapshots';
@@ -45,8 +47,6 @@ class StudioApp {
         // Navigation
         document.getElementById('btn-my-plans')?.addEventListener('click', () => this.showPlansView());
         document.getElementById('btn-new-plan')?.addEventListener('click', () => this.showNewPlanModal());
-        document.getElementById('btn-new-plan-grid')?.addEventListener('click', () => this.showNewPlanModal());
-        document.getElementById('btn-new-plan-empty')?.addEventListener('click', () => this.showNewPlanModal());
         document.getElementById('btn-templates')?.addEventListener('click', () => this.showTemplates());
         document.getElementById('btn-delete-plan')?.addEventListener('click', () => this.deletePlan());
 
@@ -107,8 +107,31 @@ class StudioApp {
         document.getElementById('btn-save-plan')?.addEventListener('click', () => this.savePlan());
         document.getElementById('btn-export-pdf')?.addEventListener('click', () => window.print());
 
-        // Template
+        // Templates
         document.getElementById('btn-apply-template')?.addEventListener('click', () => this.showTemplates());
+        document.getElementById('btn-save-as-template')?.addEventListener('click', () => this.showSaveTemplateModal());
+        document.getElementById('template-modal-close')?.addEventListener('click', () => this.hideTemplateModal());
+        document.getElementById('template-modal-cancel')?.addEventListener('click', () => this.hideTemplateModal());
+        document.getElementById('template-modal-apply')?.addEventListener('click', () => this.applySelectedTemplate());
+        document.getElementById('template-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'template-modal') this.hideTemplateModal();
+        });
+        document.getElementById('save-template-modal-close')?.addEventListener('click', () => this.hideSaveTemplateModal());
+        document.getElementById('save-template-cancel')?.addEventListener('click', () => this.hideSaveTemplateModal());
+        document.getElementById('save-template-confirm')?.addEventListener('click', () => this.saveAsTemplate());
+        document.getElementById('save-template-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'save-template-modal') this.hideSaveTemplateModal();
+        });
+
+        // Resize chart on container size change
+        const chartContainer = document.getElementById('studio-chart');
+        if (chartContainer) {
+            let resizeTimeout;
+            new ResizeObserver(() => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => this.renderChart(), 150);
+            }).observe(chartContainer);
+        }
     }
 
     populateActivityWeeks() {
@@ -174,12 +197,20 @@ class StudioApp {
     async loadPlans() {
         this.showLoading(true);
         try {
-            this.plans = await this.api('get-plans');
+            const [plans, templates] = await Promise.all([
+                this.api('get-plans'),
+                this.api('get-templates')
+            ]);
+            this.plans = plans;
+            this._templates = templates;
             this.renderPlansGrid();
+            this.renderTemplatesGrid();
         } catch (err) {
             console.error('Failed to load plans:', err);
             this.plans = [];
+            this._templates = [];
             this.renderPlansGrid();
+            this.renderTemplatesGrid();
         }
         this.showLoading(false);
     }
@@ -214,12 +245,82 @@ class StudioApp {
         });
     }
 
+    renderTemplatesGrid() {
+        const section = document.getElementById('templates-section');
+        const grid = document.getElementById('templates-grid');
+        if (!section || !grid) return;
+
+        const templates = this._templates || [];
+        if (templates.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        grid.innerHTML = templates.map(t => `
+            <div class="plan-card template-card" data-template-id="${t.plan_id}">
+                <div class="plan-card-title">${this.escapeHtml(t.plan_name)}</div>
+                <div class="plan-card-meta">${[t.series, t.venue].filter(Boolean).join(' | ')}</div>
+                <div class="plan-card-stats">${t.activity_count || 0} annotations</div>
+                <div class="template-card-actions">
+                    <button class="template-card-action rename" data-id="${t.plan_id}">Rename</button>
+                    <button class="template-card-action delete" data-id="${t.plan_id}">Delete</button>
+                </div>
+            </div>
+        `).join('');
+
+        grid.querySelectorAll('.template-card-action.delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteTemplate(btn.dataset.id);
+            });
+        });
+
+        grid.querySelectorAll('.template-card-action.rename').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.renameTemplate(btn.dataset.id);
+            });
+        });
+    }
+
+    async deleteTemplate(templateId) {
+        const template = (this._templates || []).find(t => t.plan_id === templateId);
+        const name = template?.plan_name || 'this template';
+        if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+
+        try {
+            await this.api('delete-plan', { planId: templateId });
+            this._templates = (this._templates || []).filter(t => t.plan_id !== templateId);
+            this.renderTemplatesGrid();
+        } catch (err) {
+            console.error('Failed to delete template:', err);
+        }
+    }
+
+    async renameTemplate(templateId) {
+        const template = (this._templates || []).find(t => t.plan_id === templateId);
+        if (!template) return;
+
+        const newName = prompt('Rename template:', template.plan_name);
+        if (!newName || newName.trim() === template.plan_name) return;
+
+        try {
+            await this.api('update-plan', { planId: templateId }, { planName: newName.trim() });
+            template.plan_name = newName.trim();
+            this.renderTemplatesGrid();
+        } catch (err) {
+            console.error('Failed to rename template:', err);
+        }
+    }
+
     showPlansView() {
         document.getElementById('plans-view').style.display = 'block';
         document.getElementById('studio-workspace').style.display = 'none';
-        document.getElementById('plan-header').style.display = 'none';
+        document.getElementById('plan-bar').style.display = 'none';
         document.getElementById('btn-delete-plan').style.display = 'none';
-        document.getElementById('studio-footer').style.display = 'none';
+        document.getElementById('btn-save-plan').style.display = 'none';
+        document.getElementById('btn-export-pdf').style.display = 'none';
         this.currentPlan = null;
         this.selectedHistoricalComps.clear();
         this.historicalComps = [];
@@ -270,9 +371,10 @@ class StudioApp {
             // Switch to workspace view
             document.getElementById('plans-view').style.display = 'none';
             document.getElementById('studio-workspace').style.display = 'flex';
-            document.getElementById('plan-header').style.display = 'inline-flex';
+            document.getElementById('plan-bar').style.display = 'flex';
             document.getElementById('btn-delete-plan').style.display = 'inline-block';
-            document.getElementById('studio-footer').style.display = 'flex';
+            document.getElementById('btn-save-plan').style.display = 'inline-block';
+            document.getElementById('btn-export-pdf').style.display = 'inline-block';
 
             // Populate topbar header
             document.getElementById('plan-title').textContent = plan.plan_name;
@@ -1020,7 +1122,7 @@ class StudioApp {
             .attr('transform', `translate(0,${innerHeight})`)
             .append('text')
             .attr('x', innerWidth / 2)
-            .attr('y', 100)
+            .attr('y', 35)
             .attr('fill', 'var(--text-secondary)')
             .attr('text-anchor', 'middle')
             .attr('font-size', '12px')
@@ -1243,7 +1345,7 @@ class StudioApp {
                 // Bar indicator below axis
                 g.append('rect')
                     .attr('x', left)
-                    .attr('y', innerHeight + 40)
+                    .attr('y', innerHeight + 38)
                     .attr('width', width)
                     .attr('height', 14)
                     .attr('rx', 7)
@@ -1252,7 +1354,7 @@ class StudioApp {
 
                 g.append('text')
                     .attr('x', midX)
-                    .attr('y', innerHeight + 50)
+                    .attr('y', innerHeight + 48)
                     .attr('fill', 'white')
                     .attr('font-size', '8px')
                     .attr('font-weight', 'bold')
@@ -1261,7 +1363,7 @@ class StudioApp {
 
                 g.append('text')
                     .attr('x', midX)
-                    .attr('y', innerHeight + 68)
+                    .attr('y', innerHeight + 63)
                     .attr('fill', 'var(--text-secondary)')
                     .attr('font-size', '9px')
                     .attr('text-anchor', 'middle')
@@ -1280,14 +1382,14 @@ class StudioApp {
 
                 g.append('circle')
                     .attr('cx', x)
-                    .attr('cy', innerHeight + 46)
+                    .attr('cy', innerHeight + 44)
                     .attr('r', 8)
                     .attr('fill', color)
                     .attr('opacity', 0.9);
 
                 g.append('text')
                     .attr('x', x)
-                    .attr('y', innerHeight + 50)
+                    .attr('y', innerHeight + 48)
                     .attr('fill', 'white')
                     .attr('font-size', '8px')
                     .attr('font-weight', 'bold')
@@ -1296,7 +1398,7 @@ class StudioApp {
 
                 g.append('text')
                     .attr('x', x)
-                    .attr('y', innerHeight + 68)
+                    .attr('y', innerHeight + 63)
                     .attr('fill', 'var(--text-secondary)')
                     .attr('font-size', '9px')
                     .attr('text-anchor', 'middle')
@@ -1935,9 +2037,10 @@ class StudioApp {
             // Switch to workspace view
             document.getElementById('plans-view').style.display = 'none';
             document.getElementById('studio-workspace').style.display = 'flex';
-            document.getElementById('plan-header').style.display = 'inline-flex';
+            document.getElementById('plan-bar').style.display = 'flex';
             document.getElementById('btn-delete-plan').style.display = 'inline-block';
-            document.getElementById('studio-footer').style.display = 'flex';
+            document.getElementById('btn-save-plan').style.display = 'inline-block';
+            document.getElementById('btn-export-pdf').style.display = 'inline-block';
 
             // Populate header
             document.getElementById('plan-title').textContent = planName;
@@ -2052,33 +2155,135 @@ class StudioApp {
     // ═══════════════════════════════════════════
 
     async showTemplates() {
-        // For now, show an alert. Full template UI in Phase 5.
+        const modal = document.getElementById('template-modal');
+        const list = document.getElementById('template-list');
+        const empty = document.getElementById('template-empty');
+        const warning = document.getElementById('template-warning');
+        const applyBtn = document.getElementById('template-modal-apply');
+
+        this._selectedTemplateId = null;
+        applyBtn.disabled = true;
+        modal.style.display = 'flex';
+
+        if (warning) {
+            warning.style.display = this.activities.length > 0 ? 'block' : 'none';
+        }
+
+        list.innerHTML = '<div class="template-empty">Loading...</div>';
         try {
             const templates = await this.api('get-templates');
             if (templates.length === 0) {
-                alert('No templates available yet. Save a plan as a template first.');
+                list.style.display = 'none';
+                empty.style.display = 'block';
                 return;
             }
+            list.style.display = 'flex';
+            empty.style.display = 'none';
 
-            const names = templates.map((t, i) => `${i + 1}. ${t.plan_name} (${t.activity_count || 0} activities)`).join('\n');
-            const choice = prompt(`Select a template to apply:\n\n${names}\n\nEnter number:`);
-            if (!choice) return;
+            list.innerHTML = templates.map(t => `
+                <div class="template-item" data-template-id="${t.plan_id}">
+                    <div class="template-item-icon">&#9776;</div>
+                    <div class="template-item-info">
+                        <div class="template-item-name">${this.escapeHtml(t.plan_name)}</div>
+                        <div class="template-item-meta">
+                            ${t.activity_count || 0} annotations${t.series ? ' &middot; ' + this.escapeHtml(t.series) : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
 
-            const idx = parseInt(choice) - 1;
-            if (idx >= 0 && idx < templates.length && this.currentPlan) {
-                await this.api('apply-template', {
-                    planId: this.currentPlan.plan_id,
-                    templateId: templates[idx].plan_id
+            list.querySelectorAll('.template-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    list.querySelectorAll('.template-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    this._selectedTemplateId = item.dataset.templateId;
+                    applyBtn.disabled = false;
                 });
-                // Reload activities
-                const activities = await this.api('get-plan-activities', { planId: this.currentPlan.plan_id });
-                this.activities = activities;
-                this.renderActivities();
-                this.renderChart();
-                this.updateFooterStats();
-            }
+            });
         } catch (err) {
             console.error('Failed to load templates:', err);
+            list.innerHTML = '<div class="template-empty">Failed to load templates.</div>';
+        }
+    }
+
+    hideTemplateModal() {
+        document.getElementById('template-modal').style.display = 'none';
+        this._selectedTemplateId = null;
+    }
+
+    async applySelectedTemplate() {
+        if (!this._selectedTemplateId || !this.currentPlan) return;
+
+        const applyBtn = document.getElementById('template-modal-apply');
+        applyBtn.disabled = true;
+        applyBtn.textContent = 'Applying...';
+
+        try {
+            await this.api('apply-template', {
+                planId: this.currentPlan.plan_id,
+                templateId: this._selectedTemplateId
+            });
+
+            const activities = await this.api('get-plan-activities', { planId: this.currentPlan.plan_id });
+            this.activities = activities;
+            this.hideTemplateModal();
+            this.renderActivities();
+            this.renderChart();
+            this.updateFooterStats();
+        } catch (err) {
+            console.error('Failed to apply template:', err);
+            alert('Failed to apply template. Please try again.');
+        } finally {
+            applyBtn.textContent = 'Apply Template';
+            applyBtn.disabled = false;
+        }
+    }
+
+    showSaveTemplateModal() {
+        if (!this.currentPlan) return;
+        if (this.activities.length === 0) {
+            alert('Add annotations to your plan before saving as a template.');
+            return;
+        }
+
+        const nameInput = document.getElementById('save-template-name');
+        nameInput.value = `Template: ${this.currentPlan.plan_name}`;
+        document.getElementById('save-template-modal').style.display = 'flex';
+        nameInput.focus();
+        nameInput.select();
+    }
+
+    hideSaveTemplateModal() {
+        document.getElementById('save-template-modal').style.display = 'none';
+    }
+
+    async saveAsTemplate() {
+        const nameInput = document.getElementById('save-template-name');
+        const templateName = nameInput.value.trim();
+        if (!templateName) return;
+
+        const confirmBtn = document.getElementById('save-template-confirm');
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Saving...';
+
+        try {
+            await this.api('save-as-template', {}, {
+                sourcePlanId: this.currentPlan.plan_id,
+                templateName
+            });
+
+            this.hideSaveTemplateModal();
+
+            const btn = document.getElementById('btn-save-as-template');
+            const original = btn.textContent;
+            btn.textContent = 'Template Saved!';
+            setTimeout(() => { btn.textContent = original; }, 2000);
+        } catch (err) {
+            console.error('Failed to save as template:', err);
+            alert('Failed to save template. Please try again.');
+        } finally {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Save Template';
         }
     }
 
