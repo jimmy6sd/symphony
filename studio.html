@@ -11,31 +11,42 @@
 </head>
 <body>
     <div class="dashboard">
-        <!-- Studio Top Bar -->
+        <!-- Studio Top Bar - Row 1: Navigation -->
         <nav class="studio-topbar">
             <div class="studio-topbar-left">
                 <a href="/" class="studio-back" title="Back to Dashboard">&larr;</a>
                 <span class="studio-brand">STUDIO</span>
-                <span class="studio-plan-info" id="plan-header" style="display: none;">
-                    <span class="studio-plan-divider">/</span>
-                    <span class="studio-plan-name" id="plan-title"></span>
-                    <span class="studio-plan-meta">
-                        <span id="plan-series"></span>
-                        <span class="meta-dot">&middot;</span>
-                        <span id="plan-venue"></span>
-                        <span class="meta-dot">&middot;</span>
-                        <span>Cap: <strong id="plan-capacity"></strong></span>
-                        <span class="meta-dot">&middot;</span>
-                        <span>Budget: <strong id="plan-budget"></strong></span>
-                    </span>
-                </span>
             </div>
             <div class="studio-topbar-right">
                 <button class="studio-nav-btn" id="btn-my-plans">My Plans</button>
                 <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan">+ New Plan</button>
                 <button class="studio-nav-btn studio-btn-danger" id="btn-delete-plan" style="display:none;">Delete</button>
+                <button class="studio-btn studio-btn-primary" id="btn-save-plan" style="display:none;">Save Plan</button>
+                <button class="studio-btn" id="btn-export-pdf" style="display:none;">Export PDF</button>
             </div>
         </nav>
+
+        <!-- Studio Top Bar - Row 2: Plan Context (shown when plan is open) -->
+        <div class="studio-plan-bar" id="plan-bar" style="display: none;">
+            <div class="studio-plan-bar-left">
+                <span class="studio-plan-name" id="plan-title"></span>
+                <span class="studio-plan-meta">
+                    <span id="plan-series"></span>
+                    <span class="meta-dot">&middot;</span>
+                    <span id="plan-venue"></span>
+                    <span class="meta-dot">&middot;</span>
+                    <span>Cap: <strong id="plan-capacity"></strong></span>
+                    <span class="meta-dot">&middot;</span>
+                    <span>Budget: <strong id="plan-budget"></strong></span>
+                </span>
+            </div>
+            <div class="studio-topbar-stats" id="studio-topbar-stats">
+                <span id="stat-comps">0 comps selected</span>
+                <span id="stat-avg-tickets">0 avg final tickets</span>
+                <span id="stat-avg-occupancy">0% avg occupancy</span>
+                <span id="stat-activities">0 annotations</span>
+            </div>
+        </div>
 
         <!-- Loading State -->
         <div id="loading-indicator" class="loading-indicator" style="display: none;">
@@ -47,14 +58,20 @@
         <div class="studio-plans-grid" id="plans-view">
             <div class="plans-grid-header">
                 <h2>My Plans</h2>
-                <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan-grid">+ New Plan</button>
             </div>
             <div class="plans-grid" id="plans-grid">
                 <!-- Plan cards rendered here -->
             </div>
             <div class="plans-empty" id="plans-empty" style="display: none;">
                 <p>No plans yet. Create your first plan to get started.</p>
-                <button class="studio-nav-btn studio-nav-btn-primary" id="btn-new-plan-empty">+ New Plan</button>
+            </div>
+            <div class="templates-section" id="templates-section" style="display: none;">
+                <div class="plans-grid-header">
+                    <h2>Templates</h2>
+                </div>
+                <div class="plans-grid" id="templates-grid">
+                    <!-- Template cards rendered here -->
+                </div>
             </div>
         </div>
 
@@ -162,23 +179,11 @@
                         <!-- Activity items rendered here -->
                     </div>
                     <button class="studio-template-btn" id="btn-apply-template">Apply Template...</button>
+                    <button class="studio-template-btn" id="btn-save-as-template">Save as Template</button>
                 </div>
             </aside>
         </main>
 
-        <!-- Footer Stats -->
-        <footer class="studio-footer" id="studio-footer" style="display: none;">
-            <div class="studio-footer-stats">
-                <span id="stat-comps">0 comps selected</span>
-                <span id="stat-avg-tickets">0 avg final tickets</span>
-                <span id="stat-avg-occupancy">0% avg occupancy</span>
-                <span id="stat-activities">0 annotations</span>
-            </div>
-            <div class="studio-footer-actions">
-                <button class="studio-btn studio-btn-primary" id="btn-save-plan">Save Plan</button>
-                <button class="studio-btn" id="btn-export-pdf">Export PDF</button>
-            </div>
-        </footer>
 
         <!-- New Plan Modal -->
         <div class="studio-modal-overlay" id="new-plan-modal" style="display: none;">
@@ -237,6 +242,52 @@
             </div>
         </div>
     </div>
+
+        <!-- Template Selection Modal -->
+        <div class="studio-modal-overlay" id="template-modal" style="display: none;">
+            <div class="studio-modal">
+                <div class="studio-modal-header">
+                    <h3>Apply Template</h3>
+                    <button class="modal-close" id="template-modal-close">&times;</button>
+                </div>
+                <div class="studio-modal-body">
+                    <div id="template-list" class="template-list">
+                        <!-- Template items rendered by JS -->
+                    </div>
+                    <div id="template-empty" class="template-empty" style="display: none;">
+                        <p>No templates yet. Save a plan as a template first.</p>
+                    </div>
+                    <div id="template-warning" class="template-warning" style="display: none;">
+                        Template activities will be added to your existing annotations.
+                    </div>
+                </div>
+                <div class="studio-modal-footer">
+                    <button class="studio-btn" id="template-modal-cancel">Cancel</button>
+                    <button class="studio-btn studio-btn-primary" id="template-modal-apply" disabled>Apply Template</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save as Template Modal -->
+        <div class="studio-modal-overlay" id="save-template-modal" style="display: none;">
+            <div class="studio-modal" style="max-width: 400px;">
+                <div class="studio-modal-header">
+                    <h3>Save as Template</h3>
+                    <button class="modal-close" id="save-template-modal-close">&times;</button>
+                </div>
+                <div class="studio-modal-body">
+                    <div class="form-row">
+                        <label>Template Name</label>
+                        <input type="text" id="save-template-name" class="studio-input" placeholder="e.g., Classical Launch Playbook">
+                    </div>
+                    <p class="template-save-hint">Creates a reusable copy of your current annotations. Your plan will not be changed.</p>
+                </div>
+                <div class="studio-modal-footer">
+                    <button class="studio-btn" id="save-template-cancel">Cancel</button>
+                    <button class="studio-btn studio-btn-primary" id="save-template-confirm">Save Template</button>
+                </div>
+            </div>
+        </div>
 
     <!-- Scripts -->
     <script src="/src/data-service.js"></script>
