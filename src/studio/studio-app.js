@@ -60,6 +60,13 @@ class StudioApp {
             if (e.target.id === 'new-plan-modal') this.hideNewPlanModal();
         });
 
+        // Clear "from template" banner
+        document.getElementById('new-plan-template-banner-clear')?.addEventListener('click', () => {
+            this._pendingTemplateId = null;
+            const banner = document.getElementById('new-plan-template-banner');
+            if (banner) banner.style.display = 'none';
+        });
+
         // Comp library filters
         document.getElementById('filter-series')?.addEventListener('change', () => this.filterComps());
         document.getElementById('filter-season')?.addEventListener('change', () => this.filterComps());
@@ -282,6 +289,35 @@ class StudioApp {
                 this.renameTemplate(btn.dataset.id);
             });
         });
+
+        grid.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', () => this.createPlanFromTemplate(card.dataset.templateId));
+        });
+    }
+
+    createPlanFromTemplate(templateId) {
+        const template = (this._templates || []).find(t => t.plan_id === templateId);
+        if (!template) return;
+
+        this._pendingTemplateId = templateId;
+
+        // Show the banner
+        const banner = document.getElementById('new-plan-template-banner');
+        const bannerName = document.getElementById('new-plan-template-banner-name');
+        if (banner && bannerName) {
+            bannerName.textContent = template.plan_name;
+            banner.style.display = 'block';
+        }
+
+        // Pre-fill series/venue/capacity from the template
+        this.showNewPlanModal();
+        setTimeout(() => {
+            if (template.series) document.getElementById('new-plan-series').value = template.series;
+            if (template.venue) document.getElementById('new-plan-venue').value = template.venue;
+            if (template.capacity) document.getElementById('new-plan-capacity').value = template.capacity;
+            if (template.budget_goal) document.getElementById('new-plan-budget').value = template.budget_goal;
+            this._populateCompDropdown?.();
+        }, 0);
     }
 
     async deleteTemplate(templateId) {
@@ -289,12 +325,19 @@ class StudioApp {
         const name = template?.plan_name || 'this template';
         if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
 
+        const btn = document.querySelector(`.template-card-action.delete[data-id="${templateId}"]`);
+        const original = btn?.textContent;
+        if (btn) { btn.disabled = true; btn.textContent = 'Deleting...'; }
+
         try {
             await this.api('delete-plan', { planId: templateId });
             this._templates = (this._templates || []).filter(t => t.plan_id !== templateId);
             this.renderTemplatesGrid();
+            // re-render removes the card, no need to restore
         } catch (err) {
             console.error('Failed to delete template:', err);
+            alert('Failed to delete template. Please try again.');
+            if (btn) { btn.disabled = false; btn.textContent = original || 'Delete'; }
         }
     }
 
@@ -305,12 +348,19 @@ class StudioApp {
         const newName = prompt('Rename template:', template.plan_name);
         if (!newName || newName.trim() === template.plan_name) return;
 
+        const btn = document.querySelector(`.template-card-action.rename[data-id="${templateId}"]`);
+        const original = btn?.textContent;
+        if (btn) { btn.disabled = true; btn.textContent = 'Renaming...'; }
+
         try {
             await this.api('update-plan', { planId: templateId }, { planName: newName.trim() });
             template.plan_name = newName.trim();
             this.renderTemplatesGrid();
+            // re-render replaces the button, no need to restore
         } catch (err) {
             console.error('Failed to rename template:', err);
+            alert('Failed to rename template. Please try again.');
+            if (btn) { btn.disabled = false; btn.textContent = original || 'Rename'; }
         }
     }
 
@@ -1665,6 +1715,13 @@ class StudioApp {
         const defaultColors = { email: '#3498db', social: '#e74c3c', groups: '#f39c12', radio: '#9b59b6', pr: '#1abc9c', event: '#e84393', sale: '#00b894', note: '#636e72', other: '#95a5a6' };
         const firstTag = activityType.split(',')[0].trim().toLowerCase();
 
+        const saveBtn = document.getElementById('btn-save-activity');
+        const saveBtnOriginal = saveBtn?.textContent;
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+        }
+
         try {
             if (this._editingActivityId) {
                 // Update existing activity
@@ -1718,6 +1775,12 @@ class StudioApp {
             this.updateFooterStats();
         } catch (err) {
             console.error('Failed to add activity:', err);
+            alert('Failed to save annotation. Please try again.');
+        } finally {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = saveBtnOriginal || 'Save';
+            }
         }
     }
 
@@ -1976,6 +2039,10 @@ class StudioApp {
         document.getElementById('new-plan-budget').value = '';
         document.getElementById('new-plan-perf-code').value = '';
         document.getElementById('new-plan-target-comp').value = '';
+        // Clear pending template
+        this._pendingTemplateId = null;
+        const banner = document.getElementById('new-plan-template-banner');
+        if (banner) banner.style.display = 'none';
     }
 
     async createPlan() {
@@ -1993,6 +2060,14 @@ class StudioApp {
         const capacity = parseInt(document.getElementById('new-plan-capacity').value) || null;
         const budgetGoal = parseFloat(document.getElementById('new-plan-budget').value) || null;
         const isHistorical = targetCompVal.startsWith('hist:');
+        const fromTemplateId = this._pendingTemplateId; // capture before hideNewPlanModal clears it
+
+        const createBtn = document.getElementById('modal-create');
+        const createBtnOriginal = createBtn?.textContent;
+        if (createBtn) {
+            createBtn.disabled = true;
+            createBtn.textContent = fromTemplateId ? 'Creating from template...' : 'Creating...';
+        }
 
         try {
             // Create plan via API — we'll build state client-side to avoid BigQuery read latency
@@ -2030,6 +2105,17 @@ class StudioApp {
             this.selectedComps.clear();
             this.selectedHistoricalComps.clear();
             this.compColorIndex = 0;
+
+            // If creating from a template, copy its activities into the new plan
+            if (fromTemplateId) {
+                try {
+                    await this.api('apply-template', { planId, templateId: fromTemplateId });
+                    const acts = await this.api('get-plan-activities', { planId });
+                    this.activities = acts || [];
+                } catch (err) {
+                    console.error('Failed to apply template to new plan:', err);
+                }
+            }
 
             // Load comp library if needed
             await this.loadCompLibrary();
@@ -2114,11 +2200,24 @@ class StudioApp {
             this.updateFooterStats();
         } catch (err) {
             console.error('Failed to create plan:', err);
+            alert('Failed to create plan. Please try again.');
+        } finally {
+            if (createBtn) {
+                createBtn.disabled = false;
+                createBtn.textContent = createBtnOriginal || 'Create Plan';
+            }
         }
     }
 
     async savePlan() {
         if (!this.currentPlan) return;
+
+        const btn = document.getElementById('btn-save-plan');
+        const original = btn?.textContent || 'Save';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+        }
 
         try {
             await this.api('update-plan', { planId: this.currentPlan.plan_id }, {
@@ -2129,12 +2228,17 @@ class StudioApp {
                 budgetGoal: this.currentPlan.budget_goal
             });
 
-            const btn = document.getElementById('btn-save-plan');
-            const original = btn.textContent;
-            btn.textContent = 'Saved!';
-            setTimeout(() => { btn.textContent = original; }, 1500);
+            if (btn) {
+                btn.textContent = 'Saved!';
+                setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1500);
+            }
         } catch (err) {
             console.error('Failed to save plan:', err);
+            alert('Failed to save plan. Please try again.');
+            if (btn) {
+                btn.textContent = 'Failed';
+                setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1500);
+            }
         }
     }
 
@@ -2142,11 +2246,24 @@ class StudioApp {
         if (!this.currentPlan) return;
         if (!confirm(`Delete "${this.currentPlan.plan_name}"? This cannot be undone.`)) return;
 
+        const btn = document.getElementById('btn-delete-plan');
+        const original = btn?.textContent;
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+        }
+
         try {
             await this.api('delete-plan', { planId: this.currentPlan.plan_id });
             this.showPlansView();
+            // Button is hidden by showPlansView; no need to restore on success
         } catch (err) {
             console.error('Failed to delete plan:', err);
+            alert('Failed to delete plan. Please try again.');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = original || 'Delete';
+            }
         }
     }
 
