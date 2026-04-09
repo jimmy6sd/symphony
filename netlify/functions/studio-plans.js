@@ -435,27 +435,26 @@ async function applyTemplate(bigquery, planId, templateId) {
 
   if (activities.length === 0) return respond(200, { success: true, copied: 0 });
 
-  // Insert copies for the target plan
-  const now = new Date().toISOString();
-  const rows = activities.map((a, i) => ({
-    activity_id: uuidv4(),
-    plan_id: planId,
-    week_number: a.week_number,
-    end_week: a.end_week || null,
-    label: a.label,
-    activity_type: a.activity_type,
-    color: a.color,
-    ticket_delta: a.ticket_delta || null,
-    spread_weeks: a.spread_weeks || null,
-    sort_order: i,
-    created_at: now,
-    updated_at: now
-  }));
+  // Use DML INSERT (not streaming insert) so rows can be deleted immediately
+  const tuples = [];
+  const params = [];
+  const types = [];
+  activities.forEach((a, i) => {
+    tuples.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())');
+    params.push(uuidv4(), planId, a.week_number, a.end_week || null, a.label, a.activity_type, a.color, a.ticket_delta || null, a.spread_weeks || null, i);
+    types.push('STRING', 'STRING', 'INT64', 'INT64', 'STRING', 'STRING', 'STRING', 'INT64', 'INT64', 'INT64');
+  });
 
-  const tbl = bigquery.dataset(DATASET_ID).table('studio_plan_activities');
-  await tbl.insert(rows);
+  await bigquery.query({
+    query: `INSERT INTO ${table('studio_plan_activities')}
+            (activity_id, plan_id, week_number, end_week, label, activity_type, color, ticket_delta, spread_weeks, sort_order, created_at, updated_at)
+            VALUES ${tuples.join(', ')}`,
+    params,
+    types,
+    location: 'US'
+  });
 
-  return respond(200, { success: true, copied: rows.length });
+  return respond(200, { success: true, copied: activities.length });
 }
 
 async function saveAsTemplate(bigquery, data) {
@@ -492,24 +491,25 @@ async function saveAsTemplate(bigquery, data) {
 
   let activityCount = 0;
   if (activities.length > 0) {
-    const rows = activities.map((a, i) => ({
-      activity_id: uuidv4(),
-      plan_id: planId,
-      week_number: a.week_number,
-      end_week: a.end_week || null,
-      label: a.label,
-      activity_type: a.activity_type,
-      color: a.color,
-      ticket_delta: a.ticket_delta || null,
-      spread_weeks: a.spread_weeks || null,
-      sort_order: i,
-      created_at: now,
-      updated_at: now
-    }));
+    // Use DML INSERT (not streaming insert) so rows can be deleted immediately
+    const tuples = [];
+    const actParams = [];
+    const actTypes = [];
+    activities.forEach((a, i) => {
+      tuples.push('(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())');
+      actParams.push(uuidv4(), planId, a.week_number, a.end_week || null, a.label, a.activity_type, a.color, a.ticket_delta || null, a.spread_weeks || null, i);
+      actTypes.push('STRING', 'STRING', 'INT64', 'INT64', 'STRING', 'STRING', 'STRING', 'INT64', 'INT64', 'INT64');
+    });
 
-    const tbl = bigquery.dataset(DATASET_ID).table('studio_plan_activities');
-    await tbl.insert(rows);
-    activityCount = rows.length;
+    await bigquery.query({
+      query: `INSERT INTO ${table('studio_plan_activities')}
+              (activity_id, plan_id, week_number, end_week, label, activity_type, color, ticket_delta, spread_weeks, sort_order, created_at, updated_at)
+              VALUES ${tuples.join(', ')}`,
+      params: actParams,
+      types: actTypes,
+      location: 'US'
+    });
+    activityCount = activities.length;
   }
 
   return respond(201, { planId, planName: templateName, activityCount });

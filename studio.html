@@ -189,10 +189,14 @@
         <div class="studio-modal-overlay" id="new-plan-modal" style="display: none;">
             <div class="studio-modal">
                 <div class="studio-modal-header">
-                    <h3>New Plan</h3>
+                    <h3 id="new-plan-modal-title">New Plan</h3>
                     <button class="modal-close" id="modal-close">&times;</button>
                 </div>
                 <div class="studio-modal-body">
+                    <div id="new-plan-template-banner" style="display:none; padding:8px 12px; margin-bottom:12px; background:#eef5ff; border:1px solid #b3d4ff; border-radius:4px; font-size:13px; color:#1a4480;">
+                        Using template: <strong id="new-plan-template-banner-name"></strong>
+                        <button type="button" id="new-plan-template-banner-clear" style="float:right; background:none; border:none; color:#1a4480; cursor:pointer; font-size:13px; padding:0;">Clear</button>
+                    </div>
                     <div class="form-row">
                         <label>Series</label>
                         <select id="new-plan-series" class="studio-select">
