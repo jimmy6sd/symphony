@@ -15,7 +15,7 @@ class SubscriptionTable {
         this.categoryOrder = ['Classical', 'Pops', 'Flex', 'Family', 'Specials'];
 
         // Categories that support sales curve charts
-        this.chartCategories = ['Classical', 'Pops'];
+        this.chartCategories = ['Classical', 'Pops', 'Family'];
 
         // Store chart instances
         this.charts = new Map();
@@ -285,9 +285,9 @@ class SubscriptionTable {
             `;
         }
 
-        // Only show metrics for Classical and Pops (they have projections)
+        // Show full projection metrics for categories that have historical comps
         if (!projection) {
-            // Fallback to simple stats for Flex/Family
+            // Fallback to simple stats for categories without historical comps
             if (categoryTotals.totalSeats > 0) {
                 return `
                     <table class="subscription-rollup-table simple">
@@ -309,7 +309,7 @@ class SubscriptionTable {
             return '';
         }
 
-        // Full metrics table for Classical/Pops with projections
+        // Full metrics table for categories with projections
         const { current, targetAtDate, targetFinal, projected, variance } = projection;
         const targetSeason = this.categoryProjections?.targetSeason || '25-26';
 

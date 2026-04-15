@@ -435,11 +435,6 @@ async function insertSnapshots(bigquery, snapshots, tableId) {
 
 // Update subscription_historical_data with daily totals for the sales curve chart
 async function updateHistoricalData(bigquery, category, season, snapshotDate, snapshots, format) {
-  if (category !== 'Classical' && category !== 'Pops') {
-    console.log(`Skipping historical data update for ${category} (only Classical/Pops tracked)`);
-    return;
-  }
-
   if (snapshots.length === 0) return;
 
   const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
@@ -599,8 +594,8 @@ functions.http('subscriptionWebhook', async (req, res) => {
       // Insert into renewal table
       result = await insertSnapshots(bigquery, snapshots, RENEWAL_TABLE_ID);
 
-      // Update historical data for each tracked category
-      for (const cat of ['Classical', 'Pops']) {
+      // Update historical data for each category present in this PDF
+      for (const cat of categories) {
         const catSnapshots = snapshots.filter(s => s.category === cat);
         if (catSnapshots.length > 0) {
           await updateHistoricalData(bigquery, cat, season, snapshotDate, catSnapshots, 'renewal');

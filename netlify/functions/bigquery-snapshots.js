@@ -728,8 +728,8 @@ async function getSubscriptionData(bigquery, params, headers) {
 
 // Calculate category-level projections comparing current season to target comp
 async function calculateCategoryProjections(bigquery, currentData, currentSeason) {
-  // Only calculate for Classical and Pops (they have historical data)
-  const categories = ['Classical', 'Pops'];
+  // Categories with historical comp data in subscription_historical_data
+  const categories = ['Classical', 'Pops', 'Family'];
 
   // Calculate target season (previous season)
   // e.g., 26-27 -> 25-26, 25-26 -> 24-25
@@ -848,7 +848,7 @@ async function getTargetCompAtDate(bigquery, targetSeason, currentDate) {
       total_revenue as revenue
     FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
     WHERE season = '${targetSeason}'
-      AND series IN ('Classical', 'Pops')
+      AND series IN ('Classical', 'Pops', 'Family')
       AND is_final = FALSE
     ORDER BY ABS(week_number - ${weekNumber}) ASC
   `;
@@ -897,7 +897,7 @@ async function getTargetCompFinals(bigquery, targetSeason) {
     FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_historical_data\`
     WHERE season = '${targetSeason}'
       AND is_final = TRUE
-      AND series IN ('Classical', 'Pops')
+      AND series IN ('Classical', 'Pops', 'Family')
   `;
 
   try {
@@ -928,7 +928,7 @@ async function getSubscriptionHistory(bigquery, params, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'series parameter required (Classical or Pops)' })
+      body: JSON.stringify({ error: 'series parameter required (Classical, Pops, or Family)' })
     };
   }
 
