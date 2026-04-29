@@ -749,14 +749,15 @@ async function calculateCategoryProjections(bigquery, currentData, currentSeason
   }
 
   // Calculate current totals by category
-  // Exclude is_sub_line rows from seat counts (duplicative), keep revenue
+  // Count seats for non-sub-lines and Bravo sub-lines; zero out other sub-lines (duplicative)
   const currentByCategory = {};
   currentData.forEach(pkg => {
     const cat = pkg.category;
     if (!currentByCategory[cat]) {
       currentByCategory[cat] = { packages: 0, revenue: 0 };
     }
-    if (!pkg.is_sub_line) {
+    const zeroSeats = pkg.is_sub_line && !/bravo/i.test(pkg.package_name);
+    if (!zeroSeats) {
       currentByCategory[cat].packages += pkg.total_pkg_seats || 0;
     }
     currentByCategory[cat].revenue += pkg.total_amount || 0;
@@ -953,11 +954,11 @@ async function getSubscriptionHistory(bigquery, params, headers) {
         SELECT
           snapshot_date,
           EXTRACT(ISOWEEK FROM snapshot_date) as week_number,
-          SUM(CASE WHEN NOT is_sub_line THEN new_pkg_seats ELSE 0 END) as new_units,
+          SUM(CASE WHEN NOT is_sub_line OR package_name LIKE '%Bravo%' THEN new_pkg_seats ELSE 0 END) as new_units,
           SUM(new_amount) as new_revenue,
-          SUM(CASE WHEN NOT is_sub_line THEN renewed_pkg_seats ELSE 0 END) as renewal_units,
+          SUM(CASE WHEN NOT is_sub_line OR package_name LIKE '%Bravo%' THEN renewed_pkg_seats ELSE 0 END) as renewal_units,
           SUM(renewed_amount) as renewal_revenue,
-          SUM(CASE WHEN NOT is_sub_line THEN total_pkg_seats ELSE 0 END) as total_units,
+          SUM(CASE WHEN NOT is_sub_line OR package_name LIKE '%Bravo%' THEN total_pkg_seats ELSE 0 END) as total_units,
           SUM(total_amount) as total_revenue
         FROM \`${PROJECT_ID}.${DATASET_ID}.subscription_renewal_snapshots\`
         WHERE category = @series AND season = '26-27'

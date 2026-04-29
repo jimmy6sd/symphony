@@ -393,9 +393,9 @@ class SubscriptionTable {
 
     calculateTotals(data) {
         return {
-            newSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.new_pkg_seats || 0)), 0),
-            renewedSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.renewed_pkg_seats || 0)), 0),
-            totalSeats: data.reduce((sum, p) => sum + (p.is_sub_line ? 0 : (p.total_pkg_seats || 0)), 0),
+            newSeats: data.reduce((sum, p) => sum + ((p.is_sub_line && !/bravo/i.test(p.package_name)) ? 0 : (p.new_pkg_seats || 0)), 0),
+            renewedSeats: data.reduce((sum, p) => sum + ((p.is_sub_line && !/bravo/i.test(p.package_name)) ? 0 : (p.renewed_pkg_seats || 0)), 0),
+            totalSeats: data.reduce((sum, p) => sum + ((p.is_sub_line && !/bravo/i.test(p.package_name)) ? 0 : (p.total_pkg_seats || 0)), 0),
             totalRevenue: data.reduce((sum, p) => sum + (p.total_amount || 0), 0)
         };
     }

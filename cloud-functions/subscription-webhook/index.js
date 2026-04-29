@@ -288,17 +288,19 @@ async function parseRenewalPdf(base64Data) {
           const totalAmount = parseNumeric(numericItems[5].text);
 
           const isSubLine = /\bsub\b/i.test(packageName);
+          const isBravoSub = isSubLine && /bravo/i.test(packageName);
+          const zeroSeats = isSubLine && !isBravoSub;
 
           packages.push({
             season: currentSeason,
             category: currentCategory,
             package_type: packageType,
             package_name: packageName,
-            new_pkg_seats: isSubLine ? 0 : newSeats,
+            new_pkg_seats: zeroSeats ? 0 : newSeats,
             new_amount: newAmount,
-            renewed_pkg_seats: isSubLine ? 0 : renewedSeats,
+            renewed_pkg_seats: zeroSeats ? 0 : renewedSeats,
             renewed_amount: renewedAmount,
-            total_pkg_seats: isSubLine ? 0 : totalSeats,
+            total_pkg_seats: zeroSeats ? 0 : totalSeats,
             total_amount: totalAmount,
             is_sub_line: isSubLine
           });
@@ -450,11 +452,12 @@ async function updateHistoricalData(bigquery, category, season, snapshotDate, sn
 
   if (format === 'renewal') {
     // Renewal format: actual new/renewed breakdown available
-    newUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.new_pkg_seats || 0)), 0);
+    const zeroSeats = s => s.is_sub_line && !/bravo/i.test(s.package_name);
+    newUnits = snapshots.reduce((sum, s) => sum + (zeroSeats(s) ? 0 : (s.new_pkg_seats || 0)), 0);
     newRevenue = snapshots.reduce((sum, s) => sum + (s.new_amount || 0), 0);
-    renewalUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.renewed_pkg_seats || 0)), 0);
+    renewalUnits = snapshots.reduce((sum, s) => sum + (zeroSeats(s) ? 0 : (s.renewed_pkg_seats || 0)), 0);
     renewalRevenue = snapshots.reduce((sum, s) => sum + (s.renewed_amount || 0), 0);
-    totalUnits = snapshots.reduce((sum, s) => sum + (s.is_sub_line ? 0 : (s.total_pkg_seats || 0)), 0);
+    totalUnits = snapshots.reduce((sum, s) => sum + (zeroSeats(s) ? 0 : (s.total_pkg_seats || 0)), 0);
     totalRevenue = snapshots.reduce((sum, s) => sum + (s.total_amount || 0), 0);
   } else {
     // Legacy format: no new/renewed breakdown

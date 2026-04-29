@@ -146,18 +146,20 @@ async function parsePDF(pdfPath) {
           const totalAmount = parseNumeric(numericItems[5].text);
 
           // "Sub" lines have duplicative seat counts → zero out seats, keep revenue
+          // Exception: Bravo sub-lines keep their seats (one sub-line per package should be counted)
           const isSubLine = /\bsub\b/i.test(packageName);
+          const zeroSeats = isSubLine && !/bravo/i.test(packageName);
 
           packages.push({
             season: currentSeason,
             category: currentCategory,
             package_type: packageType,
             package_name: packageName,
-            new_pkg_seats: isSubLine ? 0 : newSeats,
+            new_pkg_seats: zeroSeats ? 0 : newSeats,
             new_amount: newAmount,
-            renewed_pkg_seats: isSubLine ? 0 : renewedSeats,
+            renewed_pkg_seats: zeroSeats ? 0 : renewedSeats,
             renewed_amount: renewedAmount,
-            total_pkg_seats: isSubLine ? 0 : totalSeats,
+            total_pkg_seats: zeroSeats ? 0 : totalSeats,
             total_amount: totalAmount,
             is_sub_line: isSubLine
           });
