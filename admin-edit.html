@@ -137,6 +137,62 @@
       background: #f8f9fa;
       color: #6c757d;
     }
+
+    .import-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .import-section h3 {
+      margin: 0 0 5px 0;
+      color: #2c3e50;
+    }
+
+    .import-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .import-progress {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .import-progress-bar {
+      height: 100%;
+      background: #27ae60;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .import-results-box {
+      background: #f8f9fa;
+      border-radius: 4px;
+      padding: 15px;
+      border-left: 4px solid #27ae60;
+    }
+
+    .import-results-box.error {
+      border-left-color: #e74c3c;
+    }
+
+    .import-results-box .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .import-results-box .stat-row:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
@@ -151,6 +207,30 @@
 
     <div class="info-box">
       <strong>📝 Note:</strong> This page edits performance metadata (title, series, venue, capacity). Sales data (tickets sold, revenue) updates automatically from daily PDF imports and cannot be edited here.
+    </div>
+
+    <div class="import-section">
+      <h3>Import Comp Data from Excel</h3>
+      <p style="color: #7f8c8d; margin-bottom: 15px;">
+        Upload a comp Excel file to replace all imported comparison data. Manual comparisons are preserved.
+      </p>
+      <div class="import-controls">
+        <input type="file" id="compFileInput" accept=".xlsx,.xls" style="display:none;">
+        <button class="btn btn-secondary" id="compFileSelectBtn" onclick="document.getElementById('compFileInput').click()">
+          Choose Excel File
+        </button>
+        <span id="compFileName" style="margin-left: 10px; color: #7f8c8d;">No file selected</span>
+        <button class="btn btn-primary" id="compUploadBtn" onclick="uploadCompFile()" disabled style="margin-left: 15px;">
+          Upload &amp; Import
+        </button>
+      </div>
+      <div id="compImportStatus" style="display: none; margin-top: 15px;">
+        <div class="import-progress">
+          <div class="import-progress-bar" id="compProgressBar"></div>
+        </div>
+        <div id="compImportMessage" style="margin-top: 10px;"></div>
+      </div>
+      <div id="compImportResults" style="display: none; margin-top: 15px;"></div>
     </div>
 
     <table class="performance-table" id="performanceTable">
@@ -423,6 +503,90 @@
         closeEditModal();
       }
     });
+
+    // --- Comp Import ---
+
+    document.getElementById('compFileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      document.getElementById('compUploadBtn').disabled = !file;
+      document.getElementById('compFileName').textContent = file ? file.name : 'No file selected';
+      document.getElementById('compImportResults').style.display = 'none';
+      document.getElementById('compImportStatus').style.display = 'none';
+    });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadCompFile() {
+      const file = document.getElementById('compFileInput').files[0];
+      if (!file) return;
+
+      const uploadBtn = document.getElementById('compUploadBtn');
+      const selectBtn = document.getElementById('compFileSelectBtn');
+      const statusDiv = document.getElementById('compImportStatus');
+      const progressBar = document.getElementById('compProgressBar');
+      const messageDiv = document.getElementById('compImportMessage');
+      const resultsDiv = document.getElementById('compImportResults');
+
+      uploadBtn.disabled = true;
+      selectBtn.disabled = true;
+      resultsDiv.style.display = 'none';
+      statusDiv.style.display = 'block';
+      progressBar.style.background = '#27ae60';
+      progressBar.style.width = '20%';
+      messageDiv.textContent = 'Reading file...';
+
+      try {
+        const base64 = await fileToBase64(file);
+        progressBar.style.width = '40%';
+        messageDiv.textContent = 'Uploading and processing...';
+
+        const response = await fetch('/.netlify/functions/comp-import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileData: base64 })
+        });
+
+        progressBar.style.width = '80%';
+        const result = await response.json();
+        progressBar.style.width = '100%';
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Import failed');
+        }
+
+        messageDiv.textContent = 'Import complete!';
+        const s = result.stats;
+        resultsDiv.innerHTML = `
+          <div class="import-results-box">
+            <strong>Import Results</strong>
+            <div class="stat-row"><span>Comps imported</span><span>${s.imported}</span></div>
+            <div class="stat-row"><span>Skipped (no comp data)</span><span>${s.skipped}</span></div>
+            <div class="stat-row"><span>Global defaults used</span><span>${s.usedGlobalDefault}</span></div>
+            <div class="stat-row"><span>Piazza defaults used</span><span>${s.usedPiazzaDefault}</span></div>
+            <div class="stat-row"><span>Target comps</span><span>${s.targetComps}</span></div>
+            <div class="stat-row"><span>With metadata</span><span>${s.withMetadata}</span></div>
+            ${s.errors.length > 0 ? `<div class="stat-row" style="color:#e74c3c"><span>Errors</span><span>${s.errors.length}</span></div>` : ''}
+          </div>`;
+        resultsDiv.style.display = 'block';
+
+      } catch (error) {
+        progressBar.style.width = '100%';
+        progressBar.style.background = '#e74c3c';
+        messageDiv.textContent = 'Import failed: ' + error.message;
+        resultsDiv.innerHTML = `<div class="import-results-box error"><strong>Error:</strong> ${error.message}</div>`;
+        resultsDiv.style.display = 'block';
+      } finally {
+        uploadBtn.disabled = false;
+        selectBtn.disabled = false;
+      }
+    }
 
     // Load performances on page load
     loadPerformances().then(() => {
