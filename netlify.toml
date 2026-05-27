@@ -83,6 +83,19 @@
   status = 200
 
 [[redirects]]
+  # Protect marketing dashboard
+  from = "/marketing"
+  to = "/login.html"
+  status = 302
+  conditions = {Role = ["!authenticated"]}
+
+[[redirects]]
+  # Marketing analytics dashboard
+  from = "/marketing"
+  to = "/marketing.html"
+  status = 200
+
+[[redirects]]
   # Year-to-date comparison page
   from = "/year-to-date"
   to = "/ytd-comparison.html"
@@ -129,5 +142,5 @@
   NODE_ENV = "staging"
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@google-cloud/storage", "@google-cloud/bigquery"]
+  external_node_modules = ["@google-cloud/storage", "@google-cloud/bigquery", "@google-analytics/data"]
 

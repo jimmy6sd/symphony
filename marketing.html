@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Kansas City Symphony - Marketing Analytics</title>
+    <link rel="stylesheet" href="/styles/main.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  .marketing-content { max-width: 1400px; margin: 0 auto; padding: 0 var(--spacing-lg); }
+
+  .date-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .date-controls label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .date-preset { padding: 5px 10px; font-size: 11px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--surface-color); color: var(--text-primary); cursor: pointer; transition: all 0.15s; }
+  .date-preset:hover { border-color: #667eea; color: #667eea; }
+  .date-preset.active { background: #667eea; color: white; border-color: #667eea; }
+  .date-sep { width: 1px; height: 20px; background: var(--border-color); margin: 0 4px; }
+  .date-custom { padding: 5px 8px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--surface-color); color: var(--text-primary); }
+  .date-range-to { font-size: 11px; color: var(--text-muted); }
+  .date-apply { padding: 5px 12px; font-size: 11px; border: 1px solid #667eea; border-radius: 6px; background: #667eea; color: white; cursor: pointer; transition: all 0.15s; }
+  .date-apply:hover { background: #5a6fd6; }
+  .period-label { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+  .meta-warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: var(--border-radius-md); padding: 12px 16px; margin-bottom: var(--spacing-lg); font-size: 13px; color: #856404; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 18px 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px; }
+  .kpi-card .kpi-label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+  .kpi-card .kpi-bottom { display: flex; align-items: baseline; gap: 10px; }
+  .kpi-card .kpi-value { font-size: 28px; font-weight: 700; color: #000; line-height: 1.2; white-space: nowrap; background: none; -webkit-background-clip: unset; -webkit-text-fill-color: #000; background-clip: unset; }
+  .kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
+  .kpi-badge.up { color: #00855a; background: #e6f7ef; }
+  .kpi-badge.down { color: #c0392b; background: #fdf0ef; }
+  .kpi-badge.flat { color: var(--text-muted); background: #f1f3f5; }
+  .kpi-badge svg { width: 10px; height: 10px; }
+  .change.up { color: var(--success-color); }
+  .change.down { color: var(--danger-color); }
+
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+  .card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px; }
+  .card-footnote { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+  .chart-container { width: 100%; position: relative; }
+  .channel-table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th { text-align: left; color: var(--text-secondary); font-weight: 500; padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
+  table tr:hover { background: #f1f3f5; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .cr-good { color: var(--success-color); }
+  .cr-poor { color: var(--danger-color); }
+  .channel-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+  .na-cell { color: var(--text-muted); font-style: italic; }
+
+  .th-tip { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--border-color); color: var(--text-secondary); font-size: 9px; font-weight: 700; cursor: help; vertical-align: middle; margin-left: 4px; text-transform: none; letter-spacing: 0; }
+  .th-tip-text { display: none; position: fixed; background: #1a1a2e; color: #fff; font-size: 12px; font-weight: 400; padding: 8px 12px; border-radius: 6px; width: 220px; line-height: 1.5; text-align: left; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none; }
+
+  .ch-row { cursor: pointer; }
+  .ch-row:hover { background: #f1f3f5 !important; }
+  .ch-expand-arrow { color: var(--text-muted); font-size: 10px; transition: transform 0.15s; display: inline-block; margin-right: 6px; }
+  .ch-expand-arrow.open { transform: rotate(90deg); }
+  .ch-health-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+
+  .ch-detail-td { padding: 0 !important; border-bottom: 1px solid var(--border-color) !important; background: var(--background-color); }
+  .ch-detail-inner { padding: 16px 20px 20px; }
+  .ch-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ch-detail-section h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; margin-top: 12px; }
+  .ch-detail-section h4:first-child { margin-top: 0; }
+  .ch-detail-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; margin-bottom: 12px; }
+  .ch-dm { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; text-align: center; }
+  .ch-dm .v { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .ch-dm .l { font-size: 9px; color: var(--text-secondary); margin-top: 1px; }
+  .ch-dm .c { font-size: 10px; margin-top: 2px; }
+  .ch-dm .c .up { color: var(--success-color); }
+  .ch-dm .c .down { color: var(--danger-color); }
+  .ch-sparkline-wrap { height: 64px; margin-bottom: 10px; }
+  .ch-context-box { font-size: 12px; color: var(--text-secondary); line-height: 1.5; padding: 8px 10px; background: var(--background-color); border-radius: 6px; border-left: 3px solid; margin-bottom: 14px; }
+  .ch-page-tbl { font-size: 11px; }
+  .ch-page-tbl td, .ch-page-tbl th { padding: 3px 6px; }
+  .ch-health-summary { font-size: 12px; margin-bottom: 12px; }
+
+  .attribution-bar { margin-bottom: 24px; padding: 10px 16px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); font-size: 12px; color: var(--text-secondary); }
+  .attribution-label { margin-right: 8px; }
+  .attribution-learn-more { background: none; border: none; color: #667eea; cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
+  .attribution-learn-more:hover { color: #5a6fd6; }
+  .attribution-detail { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); line-height: 1.6; color: var(--text-primary); font-size: 12px; }
+  .attribution-detail.open { display: block; }
+
+  .funnel-group-header td { padding: 12px 10px 6px !important; border-bottom: none !important; background: transparent; }
+  .funnel-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-primary); }
+  .funnel-group-desc { font-size: 11px; color: var(--text-muted); margin-left: 10px; font-weight: 400; }
+
+  .footer-note { max-width: 1400px; margin: 40px auto 20px; padding-top: 16px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 11px; text-align: center; }
+
+  .loading-state { text-align: center; padding: 80px 20px; color: var(--text-secondary); }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border-color); border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-state { text-align: center; padding: 80px 20px; }
+  .error-state h3 { color: var(--danger-color); margin-bottom: 8px; }
+  .error-state button { margin-top: 16px; padding: 8px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .chart-row { grid-template-columns: 1fr; }
+    .ch-detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Kansas City Symphony</h1>
+                    <p>Marketing Analytics &middot; <a href="/" style="color: rgba(255,255,255,0.9); text-decoration: none;">Sales Dashboard</a></p>
+                </div>
+                <nav class="header-nav">
+                </nav>
+            </div>
+        </header>
+
+        <nav class="dashboard-tabs">
+            <div class="dashboard-tabs-container">
+                <button class="tab-btn active" data-tab="channel-performance">
+                    Channel Performance
+                </button>
+                <button class="tab-btn" data-tab="demand-signals" disabled title="Coming soon">
+                    Demand Signals
+                </button>
+                <button class="tab-btn" data-tab="web-funnel" disabled title="Coming soon">
+                    Web Funnel
+                </button>
+                <button class="tab-btn" data-tab="production-performance" disabled title="Coming soon">
+                    Production Performance
+                </button>
+                <a href="/" class="tab-btn tab-link">
+                    ← Sales Dashboard
+                </a>
+            </div>
+        </nav>
+
+        <main class="marketing-content">
+            <div id="dashboard-content">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/src/marketing/shared.js"></script>
+    <script src="/src/marketing/channel-performance.js"></script>
+    <script src="/src/marketing/email-performance.js"></script>
+    <script>if(location.hostname==='localhost')document.write('<script src="http://localhost:35729/livereload.js?snipver=1"><\/script>')</script>
+</body>
+</html>
