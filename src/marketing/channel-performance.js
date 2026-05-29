@@ -1,3 +1,8 @@
+let _channelData = null;
+let _channelSortCol = null;
+let _channelSortDir = 'desc';
+let _channelFilter = '';
+
 const FUNNEL_GROUPS = [
   {
     key: 'bottom',
@@ -94,6 +99,176 @@ function applyDateInputs() {
   if (start && end && start <= end) {
     setDateRange(start, end);
   }
+}
+
+function filterChannels(val) {
+  _channelFilter = val.toLowerCase();
+  renderChannelTable();
+}
+
+function resetChannelSort() {
+  _channelSortCol = null;
+  _channelSortDir = 'desc';
+  _channelFilter = '';
+  var input = document.getElementById('channel-filter');
+  if (input) input.value = '';
+  renderChannelTable();
+}
+
+function sortValue(c, col) {
+  switch (col) {
+    case 'channel': return c.channel.toLowerCase();
+    case 'sessions': return c.sessions;
+    case 'eng_rate': return c.eng_rate;
+    case 'purchases': return c.purchases;
+    case 'cr': return c.cr;
+    case 'revenue': return c.revenue;
+    case 'aov': return c.aov;
+    case 'spend': return c.spend != null ? c.spend : -1;
+    case 'cpa': return c.cpa != null ? c.cpa : -1;
+    case 'roas': return c.roas != null ? c.roas : -1;
+    default: return c.sessions;
+  }
+}
+
+function renderChannelTable() {
+  var data = _channelData;
+  if (!data) return;
+  var tbody = document.getElementById('channel-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  var totalSessions = data.channels.reduce(function(s, c) { return s + c.sessions; }, 0);
+  var totalPurchases = data.channels.reduce(function(s, c) { return s + c.purchases; }, 0);
+  var blendedCR = totalSessions ? totalPurchases / totalSessions : 0;
+
+  var channels = data.channels.filter(function(c) {
+    return !_channelFilter || c.channel.toLowerCase().indexOf(_channelFilter) !== -1;
+  });
+
+  var isSorted = _channelSortCol != null;
+  var rowIdx = 0;
+
+  function appendChannelRow(c) {
+    var idx = rowIdx++;
+    var color = channelColor(c.channel);
+    var cr = c.cr;
+    var crClass = cr > blendedCR ? 'cr-good' : cr < blendedCR * 0.5 ? 'cr-poor' : '';
+    var aovVal = c.aov;
+    var detailId = 'detail-' + idx;
+    var sparkId = 'spark-' + idx;
+
+    var tr = document.createElement('tr');
+    tr.className = 'ch-row';
+    tr.onclick = function () {
+      var detail = document.getElementById(detailId);
+      var arrow = this.querySelector('.ch-expand-arrow');
+      var isOpen = detail.style.display !== 'none';
+      detail.style.display = isOpen ? 'none' : 'table-row';
+      arrow.classList.toggle('open', !isOpen);
+      if (!isOpen && !detail.dataset.rendered) {
+        var vals = data.daily.map(function(d) { return d[c.channel] || 0; });
+        sparkline('#' + sparkId, vals, 64, color);
+        detail.dataset.rendered = '1';
+      }
+    };
+
+    tr.innerHTML =
+      '<td><span class="ch-expand-arrow">&#9654;</span><span class="channel-dot" style="background:' + color + '"></span>' + c.channel + '</td>' +
+      '<td class="num">' + fmt(c.sessions) + ' ' + changePct(c.sessions, c.sessions_prev) + '</td>' +
+      '<td class="num">' + pct(c.eng_rate) + '</td>' +
+      '<td class="num">' + fmt(c.purchases) + ' ' + changePct(c.purchases, c.purchases_prev) + '</td>' +
+      '<td class="num ' + crClass + '">' + pct(cr) + '</td>' +
+      '<td class="num">' + currency(c.revenue) + '</td>' +
+      '<td class="num">' + (c.purchases ? '$' + aovVal.toFixed(0) : '—') + '</td>' +
+      '<td class="num">' + (c.spend != null ? currency(c.spend) : '<span class="na-cell">n/a</span>') + '</td>' +
+      '<td class="num">' + (c.spend != null && c.purchases ? '$' + (c.spend / c.purchases).toFixed(0) : '<span class="na-cell">n/a</span>') + '</td>' +
+      '<td class="num">' + (c.spend != null && c.spend > 0 ? (c.revenue / c.spend).toFixed(1) + 'x' : '<span class="na-cell">n/a</span>') + '</td>';
+    tbody.appendChild(tr);
+
+    var detailTr = document.createElement('tr');
+    detailTr.id = detailId;
+    detailTr.className = 'ch-detail-row';
+    detailTr.style.display = 'none';
+
+    var sessShare = (c.session_share * 100).toFixed(1);
+    var purchShare = (c.purchase_share * 100).toFixed(1);
+
+    var spendMetrics = '';
+    if (c.spend != null) {
+      spendMetrics =
+        '<div class="ch-dm"><div class="v">' + currency(c.spend) + '</div><div class="l">Spend</div></div>' +
+        '<div class="ch-dm"><div class="v">' + (c.cpa != null ? '$' + c.cpa.toFixed(0) : '—') + '</div><div class="l">CPA</div></div>' +
+        '<div class="ch-dm"><div class="v">' + (c.roas != null ? c.roas.toFixed(1) + 'x' : '—') + '</div><div class="l">ROAS</div></div>';
+    }
+
+    detailTr.innerHTML = '<td colspan="10" class="ch-detail-td">' +
+      '<div class="ch-detail-inner">' +
+        '<div class="ch-detail-grid">' +
+          '<div class="ch-detail-section">' +
+            '<h4>60-Day Trend</h4>' +
+            '<div class="ch-sparkline-wrap" id="' + sparkId + '"></div>' +
+            '<h4>Engagement & Quality</h4>' +
+            '<div class="ch-detail-metrics">' +
+              '<div class="ch-dm"><div class="v">' + fmt(c.users) + '</div><div class="l">Users</div><div class="c">' + changePct(c.users, c.users_prev) + '</div></div>' +
+              '<div class="ch-dm"><div class="v">' + pct(c.eng_rate) + '</div><div class="l">Eng Rate</div><div class="c">' + changePct(c.eng_rate, c.eng_rate_prev) + '</div></div>' +
+              '<div class="ch-dm"><div class="v">' + Math.round(c.avg_duration) + 's</div><div class="l">Avg Duration</div><div class="c">' + changePct(c.avg_duration, c.avg_duration_prev) + '</div></div>' +
+              '<div class="ch-dm"><div class="v">' + c.pages_per_session.toFixed(1) + '</div><div class="l">Pages/Session</div><div class="c">' + changePct(c.pages_per_session, c.pages_per_session_prev) + '</div></div>' +
+              '<div class="ch-dm"><div class="v">' + pct(c.new_user_pct) + '</div><div class="l">New Users</div><div class="c"></div></div>' +
+            '</div>' +
+            '<h4>Share</h4>' +
+            '<div class="ch-detail-metrics">' +
+              '<div class="ch-dm"><div class="v">' + sessShare + '%</div><div class="l">of Sessions</div></div>' +
+              '<div class="ch-dm"><div class="v">' + purchShare + '%</div><div class="l">of Purchases</div></div>' +
+              spendMetrics +
+            '</div>' +
+          '</div>' +
+          '<div class="ch-detail-section">' +
+            '<h4>What to Expect</h4>' +
+            '<div class="ch-context-box" style="border-color: ' + color + ';">' +
+              (FUNNEL_POSITION[c.channel] || c.funnel_pos) +
+            '</div>' +
+            '<h4>Top Landing Pages</h4>' +
+            '<table class="ch-page-tbl">' +
+              '<thead><tr><th>Page</th><th class="num">Sessions</th><th class="num">Conv Rate</th></tr></thead>' +
+              '<tbody>' +
+                c.top_pages.map(function(p) {
+                  return '<tr><td>' + escapeHtml(p.page) + '</td><td class="num">' + fmt(p.sessions) + '</td><td class="num">' + pct(p.cr) + '</td></tr>';
+                }).join('') +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</td>';
+    tbody.appendChild(detailTr);
+  }
+
+  // Update sort indicators on headers
+  document.querySelectorAll('.ch-sortable').forEach(function(th) {
+    var existing = th.querySelector('.sort-arrow');
+    if (existing) existing.remove();
+    if (th.dataset.sort === _channelSortCol) {
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.style.cssText = 'margin-left: 4px; font-size: 10px;';
+      arrow.textContent = _channelSortDir === 'asc' ? '▲' : '▼';
+      th.appendChild(arrow);
+    }
+  });
+
+  var sorted = channels.slice().sort(function(a, b) {
+    if (_channelSortCol) {
+      var va = sortValue(a, _channelSortCol);
+      var vb = sortValue(b, _channelSortCol);
+      if (typeof va === 'string') {
+        return _channelSortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+      }
+      return _channelSortDir === 'asc' ? va - vb : vb - va;
+    }
+    return b.sessions - a.sessions;
+  });
+  sorted.forEach(appendChannelRow);
 }
 
 async function loadChannelPerformance() {
@@ -194,21 +369,26 @@ function renderChannelPerformance(data) {
 
     <div class="card">
       <h3>Channel Performance</h3>
-      <p class="card-subtitle">Click a channel to expand. Grouped by funnel position — top-funnel channels drive awareness, not direct conversions.</p>
+      <p class="card-subtitle">Click a column header to sort. Click a channel row to expand details.</p>
+      <div style="margin-bottom: 10px;">
+        <input type="text" id="channel-filter" placeholder="Filter channels..." oninput="filterChannels(this.value)"
+          style="padding: 6px 10px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 6px; width: 200px; background: var(--surface-color); color: var(--text-primary);">
+        <button class="date-preset" onclick="resetChannelSort()" style="margin-left: 8px; font-size: 11px;">Reset Sort</button>
+      </div>
       <div class="channel-table-wrap">
         <table id="channel-table">
           <thead>
-            <tr>
-              <th>Channel ${tip('GA4 default channel grouping — how users found the site')}</th>
-              <th class="num">Sessions ${tip('Total visits from this channel in the selected period')}</th>
-              <th class="num">Eng Rate ${tip('Percent of sessions that were engaged (10+ seconds, 2+ pages, or a conversion)')}</th>
-              <th class="num">Purchases ${tip('Number of completed ticket purchases attributed to this channel (GA4 last-click)')}</th>
-              <th class="num">Conv Rate ${tip('Purchases ÷ Sessions — the percentage of visits that resulted in a purchase')}</th>
-              <th class="num">Revenue ${tip('Total purchase revenue attributed to this channel (GA4 last-click)')}</th>
-              <th class="num">AOV ${tip('Average Order Value — Revenue ÷ Purchases')}</th>
-              <th class="num">Spend ${tip('Ad spend from platform APIs (Meta, StackAdapt, TikTok) and GA4-reported Google Ads cost')}</th>
-              <th class="num">CPA ${tip('Cost Per Acquisition — Spend ÷ Purchases')}</th>
-              <th class="num">ROAS ${tip('Return on Ad Spend — Revenue ÷ Spend. Higher is better; 1.0x means break-even')}</th>
+            <tr id="channel-thead-row">
+              <th class="ch-sortable" data-sort="channel">Channel ${tip('GA4 default channel grouping — how users found the site')}</th>
+              <th class="num ch-sortable" data-sort="sessions">Sessions ${tip('Total visits from this channel in the selected period')}</th>
+              <th class="num ch-sortable" data-sort="eng_rate">Eng Rate ${tip('Percent of sessions that were engaged (10+ seconds, 2+ pages, or a conversion)')}</th>
+              <th class="num ch-sortable" data-sort="purchases">Purchases ${tip('Number of completed ticket purchases attributed to this channel (GA4 last-click)')}</th>
+              <th class="num ch-sortable" data-sort="cr">Conv Rate ${tip('Purchases ÷ Sessions — the percentage of visits that resulted in a purchase')}</th>
+              <th class="num ch-sortable" data-sort="revenue">Revenue ${tip('Total purchase revenue attributed to this channel (GA4 last-click)')}</th>
+              <th class="num ch-sortable" data-sort="aov">AOV ${tip('Average Order Value — Revenue ÷ Purchases')}</th>
+              <th class="num ch-sortable" data-sort="spend">Spend ${tip('Ad spend from platform APIs (Meta, StackAdapt, TikTok) and GA4-reported Google Ads cost')}</th>
+              <th class="num ch-sortable" data-sort="cpa">CPA ${tip('Cost Per Acquisition — Spend ÷ Purchases')}</th>
+              <th class="num ch-sortable" data-sort="roas">ROAS ${tip('Return on Ad Spend — Revenue ÷ Spend. Higher is better; 1.0x means break-even')}</th>
             </tr>
           </thead>
           <tbody id="channel-tbody"></tbody>
@@ -285,124 +465,23 @@ function renderChannelPerformance(data) {
   stackedArea('#daily-stacked', data.daily, data.channels_list, 300);
   legend('#daily-legend', data.channels_list.map(ch => ({ label: ch, color: channelColor(ch) })));
 
-  // Channel table — grouped by funnel position
-  const tbody = document.getElementById('channel-tbody');
-  const blendedCR = totalPurchases / totalSessions;
-  let rowIdx = 0;
-
-  for (const group of FUNNEL_GROUPS) {
-    const groupChannels = channelsSorted.filter(c => funnelGroup(c.channel).key === group.key);
-    if (!groupChannels.length) continue;
-
-    const headerTr = document.createElement('tr');
-    headerTr.className = 'funnel-group-header';
-    headerTr.innerHTML = `<td colspan="10"><span class="funnel-group-label">${group.label}</span><span class="funnel-group-desc">${group.desc}</span></td>`;
-    tbody.appendChild(headerTr);
-
-    groupChannels.forEach(c => {
-      const idx = rowIdx++;
-      const h = c.health;
-      const color = channelColor(c.channel);
-      const cr = c.sessions ? c.purchases / c.sessions : 0;
-      const crClass = cr > blendedCR ? 'cr-good' : cr < blendedCR * 0.5 ? 'cr-poor' : '';
-      const aovVal = c.purchases ? c.revenue / c.purchases : 0;
-      const detailId = 'detail-' + idx;
-      const sparkId = 'spark-' + idx;
-
-      const tr = document.createElement('tr');
-      tr.className = 'ch-row';
-      tr.onclick = function () {
-        const detail = document.getElementById(detailId);
-        const arrow = this.querySelector('.ch-expand-arrow');
-        const isOpen = detail.style.display !== 'none';
-        detail.style.display = isOpen ? 'none' : 'table-row';
-        arrow.classList.toggle('open', !isOpen);
-        if (!isOpen && !detail.dataset.rendered) {
-          const vals = data.daily.map(d => d[c.channel] || 0);
-          sparkline('#' + sparkId, vals, 64, color);
-          detail.dataset.rendered = '1';
-        }
-      };
-
-      tr.innerHTML = `
-        <td><span class="ch-expand-arrow">&#9654;</span><span class="channel-dot" style="background:${color}"></span>${c.channel}</td>
-        <td class="num">${fmt(c.sessions)} ${changePct(c.sessions, c.sessions_prev)}</td>
-        <td class="num">${pct(c.eng_rate)}</td>
-        <td class="num">${fmt(c.purchases)} ${changePct(c.purchases, c.purchases_prev)}</td>
-        <td class="num ${crClass}">${pct(cr)}</td>
-        <td class="num">${currency(c.revenue)}</td>
-        <td class="num">${c.purchases ? '$' + aovVal.toFixed(0) : '—'}</td>
-        <td class="num">${c.spend != null ? currency(c.spend) : '<span class="na-cell">n/a</span>'}</td>
-        <td class="num">${c.spend != null && c.purchases ? '$' + (c.spend / c.purchases).toFixed(0) : '<span class="na-cell">n/a</span>'}</td>
-        <td class="num">${c.spend != null && c.spend > 0 ? (c.revenue / c.spend).toFixed(1) + 'x' : '<span class="na-cell">n/a</span>'}</td>
-      `;
-      tbody.appendChild(tr);
-
-      const detailTr = document.createElement('tr');
-      detailTr.id = detailId;
-      detailTr.className = 'ch-detail-row';
-      detailTr.style.display = 'none';
-
-      const sessShare = (c.session_share * 100).toFixed(1);
-      const purchShare = (c.purchase_share * 100).toFixed(1);
-
-      let spendMetrics = '';
-      if (c.spend != null) {
-        spendMetrics = `
-          <div class="ch-dm"><div class="v">${currency(c.spend)}</div><div class="l">Spend</div></div>
-          <div class="ch-dm"><div class="v">${c.cpa != null ? '$' + c.cpa.toFixed(0) : '—'}</div><div class="l">CPA</div></div>
-          <div class="ch-dm"><div class="v">${c.roas != null ? c.roas.toFixed(1) + 'x' : '—'}</div><div class="l">ROAS</div></div>
-        `;
+  // Wire up sort headers
+  document.querySelectorAll('.ch-sortable').forEach(th => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', function() {
+      const col = this.dataset.sort;
+      if (_channelSortCol === col) {
+        _channelSortDir = _channelSortDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        _channelSortCol = col;
+        _channelSortDir = col === 'channel' ? 'asc' : 'desc';
       }
-
-      detailTr.innerHTML = `<td colspan="10" class="ch-detail-td">
-        <div class="ch-detail-inner">
-          <div class="ch-detail-grid">
-            <div class="ch-detail-section">
-              <h4>60-Day Trend</h4>
-              <div class="ch-sparkline-wrap" id="${sparkId}"></div>
-
-              <h4>Engagement & Quality</h4>
-              <div class="ch-detail-metrics">
-                <div class="ch-dm"><div class="v">${fmt(c.users)}</div><div class="l">Users</div><div class="c">${changePct(c.users, c.users_prev)}</div></div>
-                <div class="ch-dm"><div class="v">${pct(c.eng_rate)}</div><div class="l">Eng Rate</div><div class="c">${changePct(c.eng_rate, c.eng_rate_prev)}</div></div>
-                <div class="ch-dm"><div class="v">${Math.round(c.avg_duration)}s</div><div class="l">Avg Duration</div><div class="c">${changePct(c.avg_duration, c.avg_duration_prev)}</div></div>
-                <div class="ch-dm"><div class="v">${c.pages_per_session.toFixed(1)}</div><div class="l">Pages/Session</div><div class="c">${changePct(c.pages_per_session, c.pages_per_session_prev)}</div></div>
-                <div class="ch-dm"><div class="v">${pct(c.new_user_pct)}</div><div class="l">New Users</div><div class="c"></div></div>
-              </div>
-
-              <h4>Share</h4>
-              <div class="ch-detail-metrics">
-                <div class="ch-dm"><div class="v">${sessShare}%</div><div class="l">of Sessions</div></div>
-                <div class="ch-dm"><div class="v">${purchShare}%</div><div class="l">of Purchases</div></div>
-                ${spendMetrics}
-              </div>
-            </div>
-
-            <div class="ch-detail-section">
-              <h4>What to Expect</h4>
-              <div class="ch-context-box" style="border-color: ${color};">
-                ${FUNNEL_POSITION[c.channel] || c.funnel_pos}
-              </div>
-
-              <h4>Top Landing Pages</h4>
-              <table class="ch-page-tbl">
-                <thead><tr><th>Page</th><th class="num">Sessions</th><th class="num">Conv Rate</th></tr></thead>
-                <tbody>
-                  ${c.top_pages.map(p => `<tr>
-                    <td>${escapeHtml(p.page)}</td>
-                    <td class="num">${fmt(p.sessions)}</td>
-                    <td class="num">${pct(p.cr)}</td>
-                  </tr>`).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </td>`;
-      tbody.appendChild(detailTr);
+      renderChannelTable();
     });
-  }
+  });
+
+  _channelData = data;
+  renderChannelTable();
 
   // Spend scatter
   const spendChannels = data.channels.filter(c => c.spend != null);
@@ -424,4 +503,4 @@ function renderChannelPerformance(data) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', loadChannelPerformance);
+// Initial load is triggered by the tab-switching code in marketing.html.

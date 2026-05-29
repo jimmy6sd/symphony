@@ -3,6 +3,7 @@ const { fetchMetaInsights } = require('./lib/meta');
 const { fetchStackAdaptSpend } = require('./lib/stackadapt');
 const { fetchTikTokInsights } = require('./lib/tiktok');
 const { attributeSpend } = require('./lib/spend-mapping');
+const { queryClosedFunnel } = require('./lib/bq-funnel');
 
 const FUNNEL_POSITION = {
   'Organic Search': 'Bottom-funnel. User has existing awareness; searching for specifics.',
@@ -381,6 +382,10 @@ function assembleChannelData(ga4Current, ga4Previous, unassigned, metaSpend, sta
   };
 }
 
+async function getFunnelData({ days, startDate, endDate }) {
+  return queryClosedFunnel({ days, startDate, endDate });
+}
+
 async function getChannelPerformance({ days, startDate, endDate }) {
   const client = getGA4Client();
   const dates = computeDateRanges({ days, startDate, endDate });
@@ -433,11 +438,18 @@ exports.handler = async (event) => {
             : { days: parseInt(days, 10) }
         );
         break;
+      case 'funnel':
+        data = await getFunnelData(
+          startDate && endDate
+            ? { startDate, endDate }
+            : { days: parseInt(days, 10) }
+        );
+        break;
       default:
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ error: `Unknown view: ${view}. Available: channels` }),
+          body: JSON.stringify({ error: `Unknown view: ${view}. Available: channels, funnel` }),
         };
     }
 

@@ -1176,17 +1176,15 @@ async function getYTDComparison(bigquery, params, headers) {
           snapshot_fiscal_week as fiscal_week,
           snapshot_iso_week as iso_week,
           CAST(snapshot_date AS STRING) as week_end_date,
-          -- Running MAX smooths dips from mid-season source format changes
-          MAX(total_tickets) OVER w as ytd_tickets_sold,
-          MAX(single_tickets) OVER w as ytd_single_tickets,
-          MAX(subscription_tickets) OVER w as ytd_subscription_tickets,
-          MAX(total_revenue) OVER w as ytd_revenue,
-          MAX(single_revenue) OVER w as ytd_single_revenue,
-          MAX(subscription_revenue) OVER w as ytd_subscription_revenue,
+          total_tickets as ytd_tickets_sold,
+          single_tickets as ytd_single_tickets,
+          subscription_tickets as ytd_subscription_tickets,
+          total_revenue as ytd_revenue,
+          single_revenue as ytd_single_revenue,
+          subscription_revenue as ytd_subscription_revenue,
           performance_count
         FROM deduped
         WHERE rn = 1
-        WINDOW w AS (PARTITION BY fiscal_year ORDER BY snapshot_fiscal_week)
         ORDER BY fiscal_year, week
       `;
     }

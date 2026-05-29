@@ -58,6 +58,8 @@
   .th-tip { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--border-color); color: var(--text-secondary); font-size: 9px; font-weight: 700; cursor: help; vertical-align: middle; margin-left: 4px; text-transform: none; letter-spacing: 0; }
   .th-tip-text { display: none; position: fixed; background: #1a1a2e; color: #fff; font-size: 12px; font-weight: 400; padding: 8px 12px; border-radius: 6px; width: 220px; line-height: 1.5; text-align: left; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none; }
 
+  .ch-sortable { cursor: pointer; user-select: none; }
+  .ch-sortable:hover { color: #667eea; }
   .ch-row { cursor: pointer; }
   .ch-row:hover { background: #f1f3f5 !important; }
   .ch-expand-arrow { color: var(--text-muted); font-size: 10px; transition: transform 0.15s; display: inline-block; margin-right: 6px; }
@@ -102,6 +104,17 @@
   .error-state h3 { color: var(--danger-color); margin-bottom: 8px; }
   .error-state button { margin-top: 16px; padding: 8px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
 
+  .funnel-prog-selector { margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .funnel-prog-btn { background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+  .funnel-prog-btn:hover { border-color: #667eea; color: #667eea; }
+  .funnel-prog-btn.active { background: #667eea; color: white; border-color: #667eea; font-weight: 600; }
+  .funnel-dropoff { color: var(--danger-color); }
+  .funnel-insight { margin-top: 20px; padding: 12px; background: var(--background-color); border-radius: 8px; border-left: 3px solid #667eea; font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+  .funnel-insight strong { color: #667eea; }
+  .funnel-mock-notice { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: var(--border-radius-md); padding: 10px 16px; margin-bottom: var(--spacing-lg); font-size: 12px; color: #4338ca; }
+  .funnel-btn-count { font-size: 10px; color: var(--text-muted); margin-left: 4px; font-weight: 400; }
+  .funnel-prog-btn.active .funnel-btn-count { color: rgba(255,255,255,0.7); }
+
   @media (max-width: 900px) {
     .kpi-row { grid-template-columns: 1fr 1fr; }
     .chart-row { grid-template-columns: 1fr; }
@@ -115,7 +128,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <h1>Kansas City Symphony</h1>
-                    <p>Marketing Analytics &middot; <a href="/" style="color: rgba(255,255,255,0.9); text-decoration: none;">Sales Dashboard</a></p>
+                    <p>Marketing Analytics &middot; <a href="/" target="_blank" style="color: rgba(255,255,255,0.9); text-decoration: none;">Sales Dashboard</a></p>
                 </div>
                 <nav class="header-nav">
                 </nav>
@@ -130,13 +143,13 @@
                 <button class="tab-btn" data-tab="demand-signals" disabled title="Coming soon">
                     Demand Signals
                 </button>
-                <button class="tab-btn" data-tab="web-funnel" disabled title="Coming soon">
+                <button class="tab-btn" data-tab="web-funnel">
                     Web Funnel
                 </button>
                 <button class="tab-btn" data-tab="production-performance" disabled title="Coming soon">
                     Production Performance
                 </button>
-                <a href="/" class="tab-btn tab-link">
+                <a href="/" target="_blank" class="tab-btn tab-link">
                     ← Sales Dashboard
                 </a>
             </div>
@@ -155,6 +168,57 @@
     <script src="/src/marketing/shared.js"></script>
     <script src="/src/marketing/channel-performance.js"></script>
     <script src="/src/marketing/email-performance.js"></script>
+    <script src="/src/marketing/web-funnel.js"></script>
+    <script>
+    (function() {
+      var TAB_ROUTES = {
+        'channel-performance': '/marketing',
+        'web-funnel': '/marketing/web-funnel',
+      };
+      var tabs = document.querySelectorAll('.tab-btn[data-tab]');
+
+      function switchTab(tab, pushState) {
+        var emailSection = document.getElementById('email-section');
+        if (emailSection) emailSection.remove();
+
+        tabs.forEach(function(b) { b.classList.remove('active'); });
+        var btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
+        if (btn) btn.classList.add('active');
+
+        if (pushState && TAB_ROUTES[tab]) {
+          var url = new URL(window.location);
+          url.pathname = TAB_ROUTES[tab];
+          history.pushState(null, '', url);
+        }
+
+        if (tab === 'channel-performance') {
+          loadChannelPerformance();
+          var waitEmail = function() {
+            if (document.getElementById('channel-table') || document.querySelector('.error-state')) renderEmailCards();
+            else setTimeout(waitEmail, 200);
+          };
+          setTimeout(waitEmail, 500);
+        } else if (tab === 'web-funnel') {
+          loadWebFunnel();
+        }
+      }
+
+      tabs.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (this.disabled) return;
+          switchTab(this.dataset.tab, true);
+        });
+      });
+
+      // Route to tab based on URL
+      var path = window.location.pathname.replace(/\/$/, '');
+      if (path === '/marketing/web-funnel') {
+        switchTab('web-funnel', false);
+      } else {
+        switchTab('channel-performance', false);
+      }
+    })();
+    </script>
     <script>if(location.hostname==='localhost')document.write('<script src="http://localhost:35729/livereload.js?snipver=1"><\/script>')</script>
 </body>
 </html>

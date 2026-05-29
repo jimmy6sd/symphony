@@ -96,6 +96,12 @@
   status = 200
 
 [[redirects]]
+  # Marketing sub-routes
+  from = "/marketing/*"
+  to = "/marketing.html"
+  status = 200
+
+[[redirects]]
   # Year-to-date comparison page
   from = "/year-to-date"
   to = "/ytd-comparison.html"

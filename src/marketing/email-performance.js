@@ -227,7 +227,7 @@ function renderEmailCards() {
   section.innerHTML = `
     <div style="margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color);">
       <h2 style="font-size: 16px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); margin: 0;">Email Marketing</h2>
-      <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">${s.periodLabel} · HubSpot data · vs. previous 141 days</p>
+      <p style="font-size: 12px; color: var(--text-muted); margin: 4px 0 0;">${s.periodLabel} · vs. previous 141 days</p>
     </div>
 
     <div class="kpi-row" style="grid-template-columns: repeat(6, 1fr);">
@@ -428,13 +428,5 @@ function renderCampaignTable() {
   }).join('');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const wait = () => {
-    if (document.getElementById('channel-table') || document.querySelector('.error-state')) {
-      renderEmailCards();
-    } else {
-      setTimeout(wait, 200);
-    }
-  };
-  setTimeout(wait, 500);
-});
+// Email cards are rendered by the tab-switching code in marketing.html
+// when channel-performance tab is active — no DOMContentLoaded needed.
