@@ -266,6 +266,197 @@ functions.http('pdfWebhook', async (req, res) => {
   }
 });
 
+// ============================================================================
+// Season-aware production metadata helpers
+// The Performance Sales Summary groups performances by production. Each production
+// is closed by a "Total" row — a single text item like "27 CS01 The Rite of Spring
+// Total" (fiscal-year number, optional series code, title, then "Total") that appears
+// immediately AFTER its group's performance rows. We read the real title/series from
+// that row and derive season from the performance date + series, instead of hardcoding.
+// ============================================================================
+
+// Escape a string for inline use in a single-quoted BigQuery SQL literal.
+function sqlEscape(str) {
+  return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+// Parse a production "Total" row -> { series, title }, or null if not a total row.
+function parseProductionTotalRow(item) {
+  if (!item) return null;
+  const m = item.match(/^\d{1,3}\s+(.+?)\s+Total$/);
+  if (!m) return null;
+  const body = m[1].trim();                          // e.g. "CS01 The Rite of Spring" or "Interstellar"
+  const sm = body.match(/^([A-Z]{2,3}\d{1,2})\b/);   // leading series code, if present
+  return { series: sm ? sm[1] : null, title: body };
+}
+
+// Series code (CS01, PS3, FS1, FM2, ...) -> canonical season category.
+function categoryFromSeries(series) {
+  if (!series) return null;
+  const p = series.toUpperCase();
+  if (p.startsWith('CS')) return 'Classical';
+  if (p.startsWith('PS')) return 'Pops';
+  if (p.startsWith('FS')) return 'Family';
+  if (p.startsWith('FM')) return 'Film';
+  return null;
+}
+
+// Fiscal-year label for a YYYY-MM-DD date (KCS fiscal year runs Jul 1 - Jun 30).
+// e.g. 2026-12-17 -> "26-27", 2027-01-08 -> "26-27", 2025-10-10 -> "25-26".
+function fiscalYearLabel(dateStr) {
+  if (!dateStr) return null;
+  const [y, mo] = dateStr.split('-').map(Number);
+  if (!y || !mo) return null;
+  const start = mo >= 7 ? y : y - 1;
+  return `${String(start % 100).padStart(2, '0')}-${String((start + 1) % 100).padStart(2, '0')}`;
+}
+
+// Strip the "YY-YY " fiscal prefix from a season string -> the category.
+function seasonCategory(season) {
+  if (!season) return null;
+  return season.replace(/^\d{2}-\d{2}\s+/, '').trim() || null;
+}
+
+// Parse the report's "Run by ... on M/D/YYYY ..." footer -> YYYY-MM-DD snapshot date.
+function parseReportRunDate(items) {
+  for (const it of items) {
+    const m = it && it.match(/Run by .* on (\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (m) return `${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+  }
+  return null;
+}
+
+// Parse a Performance Sales Summary's pdf2json output into { performances, reportDate }.
+// Each performance carries title/series parsed from its production Total row.
+function extractPerformancesFromPdfData(pdfData) {
+  const performances = [];
+  let pendingGroup = [];   // performances awaiting their production's Total row
+  let reportDate = null;
+
+  const isCurrency = (str) => /^\d{1,3}(,\d{3})*\.\d{2}$/.test(str);
+  const isCount = (str) => /^\d+$/.test(str);
+
+  for (const page of pdfData.Pages) {
+    const allItems = [];
+    for (const textItem of page.Texts) {
+      allItems.push(decodeURIComponent(textItem.R[0].T));
+    }
+    if (!reportDate) reportDate = parseReportRunDate(allItems);
+
+    for (let i = 0; i < allItems.length; i++) {
+      const item = allItems[i];
+
+      // Production "Total" row: assign its title/series to the pending performances.
+      const totalRow = parseProductionTotalRow(item);
+      if (totalRow && pendingGroup.length > 0) {
+        for (const perf of pendingGroup) {
+          perf.title = totalRow.title;
+          if (totalRow.series) perf.series = totalRow.series;
+        }
+        pendingGroup = [];
+        continue;
+      }
+
+      // Performance row (YYMMDDX / YYMMDDXX format, not inside a Total row)
+      if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
+        const performanceCode = item;
+
+        // Expected sequence: [Code, DateTime, Budget%, FixedCount, FixedRev, NonFixedCount, NonFixedRev, SingleCount, SingleRev, Subtotal, Reserved, ReservedRev, Total, Avail, Capacity%]
+        let idx = i + 1;
+
+        const dateTime = allItems[idx++] || '';
+        const budgetStr = allItems[idx++] || '0%';
+        const fixedCountStr = allItems[idx++] || '0';
+        const fixedRevStr = allItems[idx++] || '0.00';
+        const nonFixedCountStr = allItems[idx++] || '0';
+        const nonFixedRevStr = allItems[idx++] || '0.00';
+        const singleCountStr = allItems[idx++] || '0';
+        const singleRevStr = allItems[idx++] || '0.00';
+        const subtotalStr = allItems[idx++] || '0.00';
+
+        // Reserved and Reserved Revenue (check if next item is a count)
+        let reservedStr = '0';
+        let reservedRevStr = '0.00';
+        if (idx < allItems.length && isCount(allItems[idx])) {
+          reservedStr = allItems[idx++];
+          if (idx < allItems.length && isCurrency(allItems[idx])) {
+            reservedRevStr = allItems[idx++];
+          }
+        }
+
+        // Total, Avail, Capacity%
+        const totalStr = allItems[idx++] || subtotalStr;
+        const availStr = allItems[idx++] || '0';
+        const capacityStr = allItems[idx++] || '0.0%';
+
+        const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
+        const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
+        const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
+        const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
+        const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
+        const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
+        const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
+        const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
+        const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
+        const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
+        const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
+        const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
+        const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
+
+        const totalSold = fixedCount + nonFixedCount + singleCount;
+        const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
+        const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
+        const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
+        const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
+
+        const performance = {
+          performance_code: performanceCode,
+          performance_date: parseDate(dateTime) || '2025-01-01',
+          performance_time: parseTime(dateTime) || null,
+
+          // Production metadata parsed from the report's Total row (assigned below)
+          title: null,
+          series: null,
+
+          // Granular ticket counts
+          fixed_tickets_sold: fixedCount,
+          non_fixed_tickets_sold: nonFixedCount,
+          single_tickets_sold: singleCount,
+          reserved_tickets: reservedCount,
+          total_tickets_sold: totalSold,
+
+          // Granular revenue breakdown
+          fixed_revenue: fixedRevenue,
+          non_fixed_revenue: nonFixedRevenue,
+          single_revenue: singleRevenue,
+          reserved_revenue: reservedRevenue,
+          subtotal_revenue: subtotalRevenue,
+          total_revenue: totalRevenue,
+
+          // Inventory
+          available_seats: availSeats,
+
+          // Analytics
+          capacity_percent: capacityPercent,
+          budget_percent: budgetPercent,
+
+          // Calculated ATP by ticket type
+          fixed_atp: fixedAtp,
+          non_fixed_atp: nonFixedAtp,
+          single_atp: singleAtp,
+          overall_atp: overallAtp
+        };
+
+        console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - Fixed: ${fixedCount}, Non-Fixed: ${nonFixedCount}, Single: ${singleCount}, Reserved: ${reservedCount}, Total: $${Math.round(totalRevenue)} (${capacityPercent}% capacity)`);
+        performances.push(performance);
+        pendingGroup.push(performance);
+      }
+    }
+  }
+
+  return { performances, reportDate };
+}
+
 // Process base64 PDF data
 async function processPdfBase64(base64Data, metadata) {
   console.log('🔍 Extracting text from base64 PDF...');
@@ -277,131 +468,17 @@ async function processPdfBase64(base64Data, metadata) {
   const PDFParser = require('pdf2json');
   const pdfParser = new PDFParser();
 
-  const performances = await new Promise((resolve, reject) => {
+  const { performances, reportDate } = await new Promise((resolve, reject) => {
     pdfParser.on('pdfParser_dataError', errData => reject(errData.parserError));
-    pdfParser.on('pdfParser_dataReady', pdfData => {
-      const performances = [];
-
-      for (const page of pdfData.Pages) {
-        // Collect all text items and sort by position
-        const allItems = [];
-        for (const textItem of page.Texts) {
-          const content = decodeURIComponent(textItem.R[0].T);
-          allItems.push(content);
-        }
-
-        // Find performance codes and extract data following each code
-        const isCurrency = (str) => /^\d{1,3}(,\d{3})*\.\d{2}$/.test(str);
-        const isPercent = (str) => /^\d+\.\d+%$/.test(str);
-        const isCount = (str) => /^\d+$/.test(str);
-
-        for (let i = 0; i < allItems.length; i++) {
-          const item = allItems[i];
-
-          // Check if this is a performance code (YYMMDDX or YYMMDDXX format, not a total row)
-          // Matches any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
-          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
-            const performanceCode = item;
-
-            // Expected sequence: [Code, DateTime, Budget%, FixedCount, FixedRev, NonFixedCount, NonFixedRev, SingleCount, SingleRev, Subtotal, Reserved, ReservedRev, Total, Avail, Capacity%]
-            let idx = i + 1;
-
-            const dateTime = allItems[idx++] || '';
-            const budgetStr = allItems[idx++] || '0%';
-            const fixedCountStr = allItems[idx++] || '0';
-            const fixedRevStr = allItems[idx++] || '0.00';
-            const nonFixedCountStr = allItems[idx++] || '0';
-            const nonFixedRevStr = allItems[idx++] || '0.00';
-            const singleCountStr = allItems[idx++] || '0';
-            const singleRevStr = allItems[idx++] || '0.00';
-            const subtotalStr = allItems[idx++] || '0.00';
-
-            // Reserved and Reserved Revenue (check if next item is a count)
-            let reservedStr = '0';
-            let reservedRevStr = '0.00';
-            if (idx < allItems.length && isCount(allItems[idx])) {
-              reservedStr = allItems[idx++];
-              if (idx < allItems.length && isCurrency(allItems[idx])) {
-                reservedRevStr = allItems[idx++];
-              }
-            }
-
-            // Total, Avail, Capacity%
-            const totalStr = allItems[idx++] || subtotalStr;
-            const availStr = allItems[idx++] || '0';
-            const capacityStr = allItems[idx++] || '0.0%';
-
-            const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
-            const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
-            const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
-            const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
-            const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
-            const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
-            const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
-            const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
-            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
-            const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
-            const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
-            const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
-            const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
-
-            // Calculate total sold tickets
-            const totalSold = fixedCount + nonFixedCount + singleCount;
-
-            // Calculate ATP for each ticket type
-            const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
-            const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
-            const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
-            const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
-
-            // NOTE: Granular sales data is now captured for detailed analytics
-            const performance = {
-              performance_code: performanceCode,
-              performance_date: parseDate(dateTime) || '2025-01-01',
-              performance_time: parseTime(dateTime) || null,
-
-              // Granular ticket counts
-              fixed_tickets_sold: fixedCount,
-              non_fixed_tickets_sold: nonFixedCount,
-              single_tickets_sold: singleCount,
-              reserved_tickets: reservedCount,
-              total_tickets_sold: totalSold,
-
-              // Granular revenue breakdown
-              fixed_revenue: fixedRevenue,
-              non_fixed_revenue: nonFixedRevenue,
-              single_revenue: singleRevenue,
-              reserved_revenue: reservedRevenue,
-              subtotal_revenue: subtotalRevenue,
-              total_revenue: totalRevenue,
-
-              // Inventory
-              available_seats: availSeats,
-
-              // Analytics
-              capacity_percent: capacityPercent,
-              budget_percent: budgetPercent,
-
-              // Calculated ATP by ticket type
-              fixed_atp: fixedAtp,
-              non_fixed_atp: nonFixedAtp,
-              single_atp: singleAtp,
-              overall_atp: overallAtp
-            };
-
-            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - Fixed: ${fixedCount}, Non-Fixed: ${nonFixedCount}, Single: ${singleCount}, Reserved: ${reservedCount}, Total: $${Math.round(totalRevenue)} (${capacityPercent}% capacity)`);
-            performances.push(performance);
-          }
-        }
-      }
-
-      resolve(performances);
-    });
-
+    pdfParser.on('pdfParser_dataReady', pdfData => resolve(extractPerformancesFromPdfData(pdfData)));
     pdfParser.parseBuffer(pdfBuffer);
   });
 
-  console.log(`📊 Parsed ${performances.length} performances from PDF`);
+  // Stamp the report's run date on each performance so snapshots land on the correct day
+  // (essential for historical re-runs to rebuild the daily sales curve).
+  performances.forEach(p => { p.report_date = reportDate; });
+
+  console.log(`📊 Parsed ${performances.length} performances from PDF (report date: ${reportDate || 'unknown'})`);
 
   // Return performances array
   return performances;
@@ -420,128 +497,19 @@ async function processPdfUrl(url, metadata) {
   // Download PDF
   const pdfBuffer = await downloadPdf(url);
 
-  // Extract and parse using pdf2json (same as processPdfBase64)
+  // Extract and parse using pdf2json (same shared parser as processPdfBase64)
   const PDFParser = require('pdf2json');
   const pdfParser = new PDFParser();
 
-  const performances = await new Promise((resolve, reject) => {
+  const { performances, reportDate } = await new Promise((resolve, reject) => {
     pdfParser.on('pdfParser_dataError', errData => reject(errData.parserError));
-    pdfParser.on('pdfParser_dataReady', pdfData => {
-      const performances = [];
-
-      for (const page of pdfData.Pages) {
-        // Collect all text items
-        const allItems = [];
-        for (const textItem of page.Texts) {
-          const content = decodeURIComponent(textItem.R[0].T);
-          allItems.push(content);
-        }
-
-        // Find performance codes and extract data following each code
-        const isCurrency = (str) => /^\d{1,3}(,\d{3})*\.\d{2}$/.test(str);
-        const isCount = (str) => /^\d+$/.test(str);
-
-        for (let i = 0; i < allItems.length; i++) {
-          const item = allItems[i];
-
-          // Check if this is a performance code (YYMMDDX or YYMMDDXX format, not a total row)
-          // Matches any 6-digit code + 1-2 letters (e.g., 251010E, 260109E, 270101E)
-          if (item.match(/^\d{6}[A-Z]{1,2}$/) && !allItems[i-1]?.includes('Total')) {
-            const performanceCode = item;
-
-            let idx = i + 1;
-            const dateTime = allItems[idx++] || '';
-            const budgetStr = allItems[idx++] || '0%';
-            const fixedCountStr = allItems[idx++] || '0';
-            const fixedRevStr = allItems[idx++] || '0.00';
-            const nonFixedCountStr = allItems[idx++] || '0';
-            const nonFixedRevStr = allItems[idx++] || '0.00';
-            const singleCountStr = allItems[idx++] || '0';
-            const singleRevStr = allItems[idx++] || '0.00';
-            const subtotalStr = allItems[idx++] || '0.00';
-
-            let reservedStr = '0';
-            let reservedRevStr = '0.00';
-            if (idx < allItems.length && isCount(allItems[idx])) {
-              reservedStr = allItems[idx++];
-              if (idx < allItems.length && isCurrency(allItems[idx])) {
-                reservedRevStr = allItems[idx++];
-              }
-            }
-
-            const totalStr = allItems[idx++] || subtotalStr;
-            const availStr = allItems[idx++] || '0';
-            const capacityStr = allItems[idx++] || '0.0%';
-
-            const budgetPercent = parseFloat(budgetStr.replace('%', '')) || 0;
-            const fixedCount = parseInt(fixedCountStr.replace(/,/g, '')) || 0;
-            const fixedRevenue = parseFloat(fixedRevStr.replace(/,/g, '')) || 0;
-            const nonFixedCount = parseInt(nonFixedCountStr.replace(/,/g, '')) || 0;
-            const nonFixedRevenue = parseFloat(nonFixedRevStr.replace(/,/g, '')) || 0;
-            const singleCount = parseInt(singleCountStr.replace(/,/g, '')) || 0;
-            const singleRevenue = parseFloat(singleRevStr.replace(/,/g, '')) || 0;
-            const subtotalRevenue = parseFloat(subtotalStr.replace(/,/g, '')) || 0;
-            const reservedCount = parseInt(reservedStr.replace(/,/g, '')) || 0;
-            const reservedRevenue = parseFloat(reservedRevStr.replace(/,/g, '')) || 0;
-            const totalRevenue = parseFloat(totalStr.replace(/,/g, '')) || 0;
-            const availSeats = parseInt(availStr.replace(/,/g, '')) || 0;
-            const capacityPercent = parseFloat(capacityStr.replace('%', '')) || 0;
-
-            // Calculate total sold tickets
-            const totalSold = fixedCount + nonFixedCount + singleCount;
-
-            // Calculate ATP for each ticket type
-            const fixedAtp = fixedCount > 0 ? fixedRevenue / fixedCount : 0;
-            const nonFixedAtp = nonFixedCount > 0 ? nonFixedRevenue / nonFixedCount : 0;
-            const singleAtp = singleCount > 0 ? singleRevenue / singleCount : 0;
-            const overallAtp = totalSold > 0 ? totalRevenue / totalSold : 0;
-
-            performances.push({
-              performance_code: performanceCode,
-              performance_date: parseDate(dateTime) || '2025-01-01',
-              performance_time: parseTime(dateTime) || null,
-
-              // Granular ticket counts
-              fixed_tickets_sold: fixedCount,
-              non_fixed_tickets_sold: nonFixedCount,
-              single_tickets_sold: singleCount,
-              reserved_tickets: reservedCount,
-              total_tickets_sold: totalSold,
-
-              // Granular revenue breakdown
-              fixed_revenue: fixedRevenue,
-              non_fixed_revenue: nonFixedRevenue,
-              single_revenue: singleRevenue,
-              reserved_revenue: reservedRevenue,
-              subtotal_revenue: subtotalRevenue,
-              total_revenue: totalRevenue,
-
-              // Inventory
-              available_seats: availSeats,
-
-              // Analytics
-              capacity_percent: capacityPercent,
-              budget_percent: budgetPercent,
-
-              // Calculated ATP by ticket type
-              fixed_atp: fixedAtp,
-              non_fixed_atp: nonFixedAtp,
-              single_atp: singleAtp,
-              overall_atp: overallAtp
-            });
-
-            console.log(`✅ Parsed: ${performanceCode} (${dateTime}) - Fixed: ${fixedCount}, Non-Fixed: ${nonFixedCount}, Single: ${singleCount}, Reserved: ${reservedCount}, Total: $${Math.round(totalRevenue)} (${capacityPercent}% capacity)`);
-          }
-        }
-      }
-
-      resolve(performances);
-    });
-
+    pdfParser.on('pdfParser_dataReady', pdfData => resolve(extractPerformancesFromPdfData(pdfData)));
     pdfParser.parseBuffer(pdfBuffer);
   });
 
-  console.log(`📊 Parsed ${performances.length} performances from downloaded PDF`);
+  performances.forEach(p => { p.report_date = reportDate; });
+
+  console.log(`📊 Parsed ${performances.length} performances from downloaded PDF (report date: ${reportDate || 'unknown'})`);
   return performances;
 }
 
@@ -917,13 +885,15 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
 
   const codes = performances.map(p => `'${p.performance_code}'`).join(',');
   const checkQuery = `
-    SELECT performance_code, performance_id
+    SELECT performance_code, performance_id, title, series, season
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
     WHERE performance_code IN (${codes})
   `;
 
   const [existingRows] = await bigquery.query({ query: checkQuery, location: 'US' });
   const existingCodes = new Map(existingRows.map(row => [row.performance_code, row.performance_id]));
+  // Current title/series/season per existing code, used to guard metadata updates below.
+  const existingMeta = new Map(existingRows.map(row => [row.performance_code, row]));
 
   console.log(`📋 Found ${existingCodes.size}/${performances.length} existing performances`);
 
@@ -946,19 +916,25 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
 
     const newPerfValues = newPerfs.map(p => {
       const perfId = parseInt(p.performance_code.substring(2)); // Extract numeric ID from code
-      // Extract series from performance code (e.g., CS04, PS1)
-      // Matches any year: 25XXXX, 26XXXX, 27XXXX, etc.
-      const seriesMatch = p.performance_code.match(/^\d{2}(\d{4})/);
-      const series = seriesMatch ? `Series-${seriesMatch[1].substring(0, 2)}` : 'Unknown';
+      // Series: prefer the real code parsed from the report's Total row (CS01, PS3, ...).
+      // Fall back to a month bucket (Series-MM) only when the report had no series code.
+      const monthMatch = p.performance_code.match(/^\d{2}(\d{2})/);
+      const series = p.series || (monthMatch ? `Series-${monthMatch[1]}` : 'Unknown');
+      // Title from the report, or a placeholder the client can edit later.
+      const title = p.title || `Performance ${p.performance_code}`;
+      // Season derived from the performance date (fiscal year) + category (from series).
+      const fy = fiscalYearLabel(p.performance_date) || '25-26';
+      const category = categoryFromSeries(p.series) || 'Special';
+      const season = `${fy} ${category}`;
 
       return `(
         ${perfId},
         '${p.performance_code}',
-        'Performance ${p.performance_code}',
-        '${series}',
+        '${sqlEscape(title)}',
+        '${sqlEscape(series)}',
         DATE('${p.performance_date || '2025-01-01'}'),
         'HELZBERG HALL',
-        '25-26 Classical',
+        '${sqlEscape(season)}',
         ${p.single_tickets_sold || 0},
         ${p.subscription_tickets_sold || 0},
         ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)},
@@ -1012,7 +988,7 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
       '${crypto.randomBytes(8).toString('hex')}',
       ${perfId},
       '${p.performance_code}',
-      CURRENT_DATE(),
+      ${p.report_date ? `DATE('${p.report_date}')` : 'CURRENT_DATE()'},
       ${p.performance_time ? `'${p.performance_time}'` : 'NULL'},
       ${p.fixed_tickets_sold || 0},
       ${p.non_fixed_tickets_sold || 0},
@@ -1056,10 +1032,37 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
   if (existingPerfs.length > 0) {
     console.log(`🔄 Updating ${existingPerfs.length} existing performances...`);
 
+    // Guarded production-metadata updates so historical re-runs repopulate without
+    // destroying curated data:
+    //   - title : only fill "Performance <code>" placeholders; never clobber a real title
+    //   - series: only fill month buckets ("Series-NN")/blank; keep a real code once set
+    //   - season: correct the fiscal-year prefix while preserving the existing category
+    const titleWhens = [], seriesWhens = [], seasonWhens = [];
+    for (const p of existingPerfs) {
+      const ex = existingMeta.get(p.performance_code) || {};
+      if (p.title && /^Performance /.test(ex.title || '')) {
+        titleWhens.push(`WHEN '${p.performance_code}' THEN '${sqlEscape(p.title)}'`);
+      }
+      if (p.series && (!ex.series || /^Series-/.test(ex.series) || ex.series === 'Unknown')) {
+        seriesWhens.push(`WHEN '${p.performance_code}' THEN '${sqlEscape(p.series)}'`);
+      }
+      const fy = fiscalYearLabel(p.performance_date);
+      const cat = seasonCategory(ex.season) || categoryFromSeries(p.series);
+      if (fy && cat) {
+        const newSeason = `${fy} ${cat}`;
+        if (newSeason !== ex.season) seasonWhens.push(`WHEN '${p.performance_code}' THEN '${sqlEscape(newSeason)}'`);
+      }
+    }
+    const metaSet = [];
+    if (titleWhens.length)  metaSet.push(`title = CASE performance_code ${titleWhens.join(' ')} ELSE title END`);
+    if (seriesWhens.length) metaSet.push(`series = CASE performance_code ${seriesWhens.join(' ')} ELSE series END`);
+    if (seasonWhens.length) metaSet.push(`season = CASE performance_code ${seasonWhens.join(' ')} ELSE season END`);
+    const metaSetSql = metaSet.length ? metaSet.join(',\n        ') + ',\n        ' : '';
+
     const batchUpdate = `
       UPDATE \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
       SET
-        performance_date = CASE performance_code ${existingPerfs.map(p => `WHEN '${p.performance_code}' THEN DATE('${p.performance_date || '2025-01-01'}')`).join(' ')} END,
+        ${metaSetSql}performance_date = CASE performance_code ${existingPerfs.map(p => `WHEN '${p.performance_code}' THEN DATE('${p.performance_date || '2025-01-01'}')`).join(' ')} END,
         single_tickets_sold = CASE performance_code ${existingPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.single_tickets_sold || 0}`).join(' ')} END,
         subscription_tickets_sold = CASE performance_code ${existingPerfs.map(p => `WHEN '${p.performance_code}' THEN ${p.subscription_tickets_sold || 0}`).join(' ')} END,
         total_tickets_sold = CASE performance_code ${existingPerfs.map(p => `WHEN '${p.performance_code}' THEN ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)}`).join(' ')} END,

@@ -7,7 +7,7 @@ class DataTable {
         this.filterText = '';
         this.filters = {
             season: 'all',
-            dateRange: 'all'
+            dateRange: 'current'
         };
         this.groupByProduction = true;
         this.expandedGroups = new Set();
@@ -993,13 +993,14 @@ class DataTable {
 
         const select = filterGroup
             .append('select')
-            .attr('class', 'filter-select')
+            .attr('class', 'filter-select date-range-select')
             .on('change', (event) => {
                 this.filters.dateRange = event.target.value;
                 this.renderTableRows();
             });
 
         const dateRangeOptions = [
+            { value: 'current', label: 'Current' },
             { value: 'all', label: 'All Dates' },
             { value: 'thisWeekAndBeyond', label: 'This Week & Beyond' },
             { value: 'thisMonth', label: 'This Month' },
@@ -1029,13 +1030,15 @@ class DataTable {
     clearAllFilters() {
         this.filters = {
             season: 'all',
-            dateRange: 'all'
+            dateRange: 'current'
         };
         this.filterText = '';
 
         // Reset UI elements
         this.container.select('.search-input').property('value', '');
         this.container.selectAll('.filter-select').property('value', 'all');
+        // Date range default is "Current", not "All Dates"
+        this.container.select('.date-range-select').property('value', 'current');
 
         this.renderTableRows();
     }
@@ -3919,6 +3922,12 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
                 const performanceDate = new Date(row.date);
 
                 switch (this.filters.dateRange) {
+                    case 'current':
+                        // "Current" = last week and beyond: 7 days ago through the future
+                        const weekAgo = new Date(now);
+                        weekAgo.setDate(now.getDate() - 7);
+                        weekAgo.setHours(0, 0, 0, 0);
+                        return performanceDate >= weekAgo;
                     case 'thisWeekAndBeyond':
                         // Get the start of this week (Sunday)
                         const today = new Date();

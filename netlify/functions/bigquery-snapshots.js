@@ -1321,6 +1321,10 @@ async function getYTDComparison(bigquery, params, headers) {
         JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
           ON p.performance_code = s.performance_code
         WHERE p.season LIKE '25-26%'
+          -- FY26 = Jul 2025–Jun 2026 only. Next-season (26-27) performances are
+          -- currently loaded under a '25-26 ...' season label but carry FY27 dates;
+          -- this boundary keeps their (mostly subscription) sales out of FY26 YTD.
+          AND p.performance_date BETWEEN '2025-07-01' AND '2026-06-30'
           AND (p.cancelled IS NULL OR p.cancelled = false)
           ${fy26SeriesCondition}
       ),
@@ -1386,6 +1390,10 @@ async function getYTDComparison(bigquery, params, headers) {
         JOIN \`${PROJECT_ID}.${DATASET_ID}.performance_sales_snapshots\` s
           ON p.performance_code = s.performance_code
         WHERE p.season LIKE '25-26%'
+          -- FY26 = Jul 2025–Jun 2026 only. Next-season (26-27) performances are
+          -- currently loaded under a '25-26 ...' season label but carry FY27 dates;
+          -- this boundary keeps their (mostly subscription) sales out of FY26 YTD.
+          AND p.performance_date BETWEEN '2025-07-01' AND '2026-06-30'
           AND (p.cancelled IS NULL OR p.cancelled = false)
           ${fy26SeriesCondition}
       ),
