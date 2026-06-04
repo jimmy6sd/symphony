@@ -1,5 +1,12 @@
 const { BigQuery } = require('@google-cloud/bigquery');
 
+// GA4 event name for the "Login Successful" funnel step (between Begin Checkout and Purchase).
+// Live since 2026-06-04 on measurement ID G-VN1MPLJ55F (stream_id 8246680965, the only stream in
+// property analytics_445499663). The funnel reads finalized daily tables, so a given day's logins
+// appear ~1 day after firing (intraday data is excluded by design). Sparse until it accumulates.
+// `sign_up` (account creation) is a separate, complementary signal and is not folded in here.
+const LOGIN_EVENT = 'login';
+
 let bqClient = null;
 
 function getBQClient() {
@@ -104,6 +111,7 @@ async function queryClosedFunnel({ days, startDate, endDate }) {
         MAX(IF(event_name = 'view_item', 1, 0)) AS had_view_item,
         MAX(IF(event_name = 'add_to_cart', 1, 0)) AS had_atc,
         MAX(IF(event_name = 'begin_checkout', 1, 0)) AS had_checkout,
+        MAX(IF(event_name = '${LOGIN_EVENT}', 1, 0)) AS had_login,
         MAX(IF(event_name = 'purchase', 1, 0)) AS had_purchase,
         MAX(IF(event_name = 'purchase',
           COALESCE(
@@ -114,7 +122,7 @@ async function queryClosedFunnel({ days, startDate, endDate }) {
         )) AS purchase_value
       FROM \`kcsymphony.analytics_445499663.events_*\`
       WHERE _TABLE_SUFFIX BETWEEN '${d.tableSuffix}' AND '${d.currentEnd}'
-        AND event_name IN ('session_start', 'view_item', 'add_to_cart', 'begin_checkout', 'purchase')
+        AND event_name IN ('session_start', 'view_item', 'add_to_cart', 'begin_checkout', '${LOGIN_EVENT}', 'purchase')
       GROUP BY user_pseudo_id, session_id
     ),
     with_period AS (
@@ -133,9 +141,11 @@ async function queryClosedFunnel({ days, startDate, endDate }) {
       COUNTIF(had_view_item = 1) AS users_view_item,
       COUNTIF(had_atc = 1) AS users_atc,
       COUNTIF(had_atc = 1 AND had_checkout = 1) AS users_checkout,
+      COUNTIF(had_atc = 1 AND had_checkout = 1 AND had_login = 1) AS users_login,
       COUNTIF(had_atc = 1 AND had_checkout = 1 AND had_purchase = 1) AS users_purchase,
       ROUND(SUM(IF(had_atc = 1 AND had_checkout = 1 AND had_purchase = 1, purchase_value, 0)), 2) AS revenue,
       COUNTIF(had_checkout = 1) AS open_checkout,
+      COUNTIF(had_login = 1) AS open_login,
       COUNTIF(had_purchase = 1) AS open_purchase,
       ROUND(SUM(IF(had_purchase = 1, purchase_value, 0)), 2) AS open_revenue
     FROM with_period
@@ -150,7 +160,7 @@ async function queryClosedFunnel({ days, startDate, endDate }) {
   return assembleFunnelData(rows, d, perfMap);
 }
 
-const ZERO_CH = { sessions: 0, view_item: 0, atc: 0, checkout: 0, purchase: 0, revenue: 0, open_checkout: 0, open_purchase: 0, open_revenue: 0 };
+const ZERO_CH = { sessions: 0, view_item: 0, atc: 0, checkout: 0, login: 0, purchase: 0, revenue: 0, open_checkout: 0, open_login: 0, open_purchase: 0, open_revenue: 0 };
 
 function buildFunnelSteps(channels, mode) {
   const sum = (key) => channels.reduce((s, c) => s + c[key], 0);
@@ -159,9 +169,12 @@ function buildFunnelSteps(channels, mode) {
   const tA = sum('atc'), tAp = sum('atc_prev');
   const co = mode === 'open' ? 'open_checkout' : 'checkout';
   const cop = mode === 'open' ? 'open_checkout_prev' : 'checkout_prev';
+  const lg = mode === 'open' ? 'open_login' : 'login';
+  const lgp = mode === 'open' ? 'open_login_prev' : 'login_prev';
   const pu = mode === 'open' ? 'open_purchase' : 'purchase';
   const pup = mode === 'open' ? 'open_purchase_prev' : 'purchase_prev';
   const tC = sum(co), tCp = sum(cop);
+  const tL = sum(lg), tLp = sum(lgp);
   const tP = sum(pu), tPp = sum(pup);
 
   const funnel = [
@@ -169,6 +182,8 @@ function buildFunnelSteps(channels, mode) {
     { label: 'View Item', count: tV, count_prev: tVp, rate: tS ? tV / tS : 0 },
     { label: 'Add to Cart', count: tA, count_prev: tAp, rate: tS ? tA / tS : 0 },
     { label: 'Begin Checkout', count: tC, count_prev: tCp, rate: tS ? tC / tS : 0 },
+    // Scaffolded step — populated once the GA4 `login` event lands (see LOGIN_EVENT). Hidden by default in the UI.
+    { label: 'Login Successful', count: tL, count_prev: tLp, rate: tS ? tL / tS : 0 },
     { label: 'Purchase', count: tP, count_prev: tPp, rate: tS ? tP / tS : 0 },
   ];
 
@@ -176,7 +191,8 @@ function buildFunnelSteps(channels, mode) {
     { from: 'Sessions → View Item', rate: tS ? tV / tS : 0, rate_prev: tSp ? tVp / tSp : 0 },
     { from: 'View Item → Add to Cart', rate: tV ? tA / tV : 0, rate_prev: tVp ? tAp / tVp : 0 },
     { from: 'ATC → Checkout', rate: tA ? tC / tA : 0, rate_prev: tAp ? tCp / tAp : 0 },
-    { from: 'Checkout → Purchase', rate: tC ? tP / tC : 0, rate_prev: tCp ? tPp / tCp : 0 },
+    { from: 'Checkout → Login Successful', rate: tC ? tL / tC : 0, rate_prev: tCp ? tLp / tCp : 0 },
+    { from: 'Login Successful → Purchase', rate: tL ? tP / tL : 0, rate_prev: tLp ? tPp / tLp : 0 },
   ];
   step_conversion.forEach(s => { s.dropoff = 1 - s.rate; });
 
@@ -191,14 +207,16 @@ function assembleFunnelData(rows, dates, perfMap) {
     const p = byPeriod[row.period];
     if (!p) return;
     const ch = row.channel;
-    if (!p[ch]) p[ch] = { sessions: 0, view_item: 0, atc: 0, checkout: 0, purchase: 0, revenue: 0, open_checkout: 0, open_purchase: 0, open_revenue: 0 };
+    if (!p[ch]) p[ch] = { ...ZERO_CH };
     p[ch].sessions += row.sessions;
     p[ch].view_item += row.users_view_item;
     p[ch].atc += row.users_atc;
     p[ch].checkout += row.users_checkout;
+    p[ch].login += row.users_login;
     p[ch].purchase += row.users_purchase;
     p[ch].revenue += Number(row.revenue) || 0;
     p[ch].open_checkout += row.open_checkout;
+    p[ch].open_login += row.open_login;
     p[ch].open_purchase += row.open_purchase;
     p[ch].open_revenue += Number(row.open_revenue) || 0;
   });
@@ -212,8 +230,8 @@ function assembleFunnelData(rows, dates, perfMap) {
     channels.push({
       channel: ch, ...c,
       sessions_prev: p.sessions, view_item_prev: p.view_item, atc_prev: p.atc, checkout_prev: p.checkout,
-      purchase_prev: p.purchase, revenue_prev: p.revenue,
-      open_checkout_prev: p.open_checkout, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
+      login_prev: p.login, purchase_prev: p.purchase, revenue_prev: p.revenue,
+      open_checkout_prev: p.open_checkout, open_login_prev: p.open_login, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
     });
   }
   channels.sort((a, b) => b.sessions - a.sessions);
@@ -260,9 +278,11 @@ function assembleFunnelData(rows, dates, perfMap) {
     t.view_item += row.users_view_item;
     t.atc += row.users_atc;
     t.checkout += row.users_checkout;
+    t.login += row.users_login;
     t.purchase += row.users_purchase;
     t.revenue += Number(row.revenue) || 0;
     t.open_checkout += row.open_checkout;
+    t.open_login += row.open_login;
     t.open_purchase += row.open_purchase;
     t.open_revenue += Number(row.open_revenue) || 0;
   });
@@ -282,8 +302,8 @@ function assembleFunnelData(rows, dates, perfMap) {
       chList.push({
         channel: ch, ...c,
         sessions_prev: p.sessions, view_item_prev: p.view_item, atc_prev: p.atc, checkout_prev: p.checkout,
-        purchase_prev: p.purchase, revenue_prev: p.revenue,
-        open_checkout_prev: p.open_checkout, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
+        login_prev: p.login, purchase_prev: p.purchase, revenue_prev: p.revenue,
+        open_checkout_prev: p.open_checkout, open_login_prev: p.open_login, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
       });
     }
     chList.sort((a, b) => b.sessions - a.sessions);
@@ -314,9 +334,11 @@ function assembleFunnelData(rows, dates, perfMap) {
     target[ch].view_item += row.users_view_item;
     target[ch].atc += row.users_atc;
     target[ch].checkout += row.users_checkout;
+    target[ch].login += row.users_login;
     target[ch].purchase += row.users_purchase;
     target[ch].revenue += Number(row.revenue) || 0;
     target[ch].open_checkout += row.open_checkout;
+    target[ch].open_login += row.open_login;
     target[ch].open_purchase += row.open_purchase;
     target[ch].open_revenue += Number(row.open_revenue) || 0;
   });
@@ -336,8 +358,8 @@ function assembleFunnelData(rows, dates, perfMap) {
       chList.push({
         channel: ch, ...c,
         sessions_prev: p.sessions, view_item_prev: p.view_item, atc_prev: p.atc, checkout_prev: p.checkout,
-        purchase_prev: p.purchase, revenue_prev: p.revenue,
-        open_checkout_prev: p.open_checkout, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
+        login_prev: p.login, purchase_prev: p.purchase, revenue_prev: p.revenue,
+        open_checkout_prev: p.open_checkout, open_login_prev: p.open_login, open_purchase_prev: p.open_purchase, open_revenue_prev: p.open_revenue,
       });
     }
     chList.sort((a, b) => b.sessions - a.sessions);

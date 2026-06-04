@@ -1,13 +1,24 @@
-const FUNNEL_STEP_KEYS = [
-  { from: 'sessions', to: 'view_item', label: 'Sessions → View Item' },
-  { from: 'view_item', to: 'atc', label: 'View Item → Add to Cart' },
-  { from: 'atc', to: 'checkout', label: 'ATC → Checkout' },
-  { from: 'checkout', to: 'purchase', label: 'Checkout → Purchase' },
+// Ordered funnel steps. `key` is the channel-data field used for per-channel cells.
+// `optional` steps can be toggled off in the UI (and are bridged over in the conversion table).
+const STEP_DEFS = [
+  { label: 'Sessions',         key: 'sessions',  optional: false },
+  { label: 'View Item',        key: 'view_item', optional: true,  isOn: function () { return _showViewItem; } },
+  { label: 'Add to Cart',      key: 'atc',       optional: false },
+  { label: 'Begin Checkout',   key: 'checkout',  optional: false },
+  { label: 'Login Successful', key: 'login',     optional: true,  isOn: function () { return _showLogin; } },
+  { label: 'Purchase',         key: 'purchase',  optional: false },
 ];
+
+// DISPLAY-ONLY relabeling. Data-layer labels (used for matching/keys) stay as-is; this maps them
+// to the user-facing strings. `view_item` event key and all mappings are untouched downstream.
+function displayLabel(label) {
+  return String(label).replace(/View Item/g, 'View Performance');
+}
 
 let _funnelData = null;
 let _funnelMode = 'performance'; // 'performance' or 'page'
-let _showViewItem = false;
+let _showViewItem = false; // View Performance step off by default — sparse historical data skews the math
+let _showLogin = false;    // Login Successful step off by default — GA4 `login` event live since 2026-06-04, sparse until it accumulates
 let _selectedKey = 'all';
 let _funnelType = 'closed'; // 'closed' or 'open'
 
@@ -36,7 +47,7 @@ function funnelChart(container, steps, height) {
     svg.append('text')
       .attr('x', width / 2).attr('y', y + (stepH - 8) / 2 - 8).attr('dy', '0.35em')
       .attr('text-anchor', 'middle').attr('fill', '#fff').attr('font-size', 14).attr('font-weight', 600)
-      .text(step.label);
+      .text(displayLabel(step.label));
 
     svg.append('text')
       .attr('x', width / 2).attr('y', y + (stepH - 8) / 2 + 10).attr('dy', '0.35em')
@@ -135,7 +146,17 @@ function toggleViewItem() {
   var btn = document.getElementById('view-item-toggle');
   if (btn) {
     btn.classList.toggle('active', _showViewItem);
-    btn.textContent = _showViewItem ? 'View Item: ON' : 'View Item: OFF';
+    btn.textContent = _showViewItem ? 'View Performance: ON' : 'View Performance: OFF';
+  }
+  renderFunnelView(_selectedKey);
+}
+
+function toggleLogin() {
+  _showLogin = !_showLogin;
+  var btn = document.getElementById('login-toggle');
+  if (btn) {
+    btn.classList.toggle('active', _showLogin);
+    btn.textContent = _showLogin ? 'Login Step: ON' : 'Login Step: OFF';
   }
   renderFunnelView(_selectedKey);
 }
@@ -186,20 +207,53 @@ function rebuildSelector() {
   container.innerHTML = btns;
 }
 
+// Given the full funnel array (all steps from the API), return the visible funnel bars plus a
+// step-to-step conversion table that bridges across any steps toggled off. Optional steps that
+// are off (or absent from the data) are dropped and their neighbours connected directly.
+function buildFilteredFunnel(viewFunnel) {
+  var byLabel = {};
+  viewFunnel.forEach(function(s) { byLabel[s.label] = s; });
+
+  var visibleDefs = STEP_DEFS.filter(function(d) {
+    if (!byLabel[d.label]) return false;            // step not present in this dataset
+    if (d.optional && !d.isOn()) return false;       // toggled off
+    return true;
+  });
+
+  var top = visibleDefs.length ? byLabel[visibleDefs[0].label].count : 0;
+  var funnel = visibleDefs.map(function(d) {
+    var s = byLabel[d.label];
+    return { label: s.label, count: s.count, count_prev: s.count_prev, rate: top ? s.count / top : 0 };
+  });
+
+  var steps = [];
+  var keys = [];
+  for (var i = 1; i < visibleDefs.length; i++) {
+    var fromDef = visibleDefs[i - 1], toDef = visibleDefs[i];
+    var fromBar = byLabel[fromDef.label], toBar = byLabel[toDef.label];
+    var rate = fromBar.count ? toBar.count / fromBar.count : 0;
+    var ratePrev = fromBar.count_prev ? toBar.count_prev / fromBar.count_prev : 0;
+    steps.push({
+      from: displayLabel(fromDef.label) + ' → ' + displayLabel(toDef.label),
+      rate: rate, rate_prev: ratePrev, dropoff: 1 - rate,
+    });
+    keys.push({ from: fromDef.key, to: toDef.key });
+  }
+  return { funnel: funnel, steps: steps, keys: keys };
+}
+
 function renderFunnelView(selectedKey) {
   var data = _funnelData;
   if (!data) return;
 
-  var viewFunnel, viewSteps, viewChannels, title;
+  var viewFunnel, viewChannels, title;
 
   var isOpen = _funnelType === 'open';
   var fKey = isOpen ? 'open_funnel' : 'funnel';
-  var sKey = isOpen ? 'open_step_conversion' : 'step_conversion';
   var typeLabel = isOpen ? 'Open' : 'Closed';
 
   if (selectedKey === 'all') {
     viewFunnel = data[fKey] || data.funnel;
-    viewSteps = data[sKey] || data.step_conversion;
     viewChannels = data.channels;
     title = typeLabel + ' Funnel (All)';
   } else if (selectedKey.startsWith('perf:')) {
@@ -207,14 +261,12 @@ function renderFunnelView(selectedKey) {
     var pf = data.performance_funnels[perfId];
     if (!pf) return;
     viewFunnel = pf[fKey] || pf.funnel;
-    viewSteps = pf[sKey] || pf.step_conversion;
     viewChannels = pf.channels;
     title = typeLabel + ' Funnel — ' + (pf.title || perfId);
   } else {
     var pageFunnel = data.page_funnels[selectedKey];
     if (!pageFunnel) return;
     viewFunnel = pageFunnel[fKey] || pageFunnel.funnel;
-    viewSteps = pageFunnel[sKey] || pageFunnel.step_conversion;
     viewChannels = pageFunnel.channels;
     title = typeLabel + ' Funnel — ' + prettifyPage(selectedKey);
   }
@@ -224,38 +276,11 @@ function renderFunnelView(selectedKey) {
 
   document.getElementById('funnel-title').textContent = title;
 
-  // Filter out View Item step if toggle is off
-  var filteredFunnel = viewFunnel;
-  var filteredSteps = viewSteps;
-  var filteredStepKeys = FUNNEL_STEP_KEYS;
-  if (!_showViewItem) {
-    filteredFunnel = viewFunnel.filter(function(s) { return s.label !== 'View Item'; });
-    // Recalculate rates relative to sessions after removing View Item
-    if (filteredFunnel.length > 0) {
-      var topCount = filteredFunnel[0].count;
-      filteredFunnel = filteredFunnel.map(function(s) {
-        return { label: s.label, count: s.count, count_prev: s.count_prev, rate: topCount ? s.count / topCount : 0 };
-      });
-    }
-    // Replace the two view_item steps with a single Sessions → ATC step
-    filteredSteps = [];
-    filteredStepKeys = [];
-    var sessStep = viewSteps.find(function(s) { return s.from.indexOf('View Item') === 0; });
-    var sessToAtc = viewSteps[0]; // Sessions → View Item
-    if (sessStep && sessToAtc) {
-      var totalSess = viewFunnel[0], totalAtc = viewFunnel.find(function(f) { return f.label === 'Add to Cart'; });
-      var rCurr = totalSess && totalAtc ? totalAtc.count / totalSess.count : 0;
-      var rPrev = totalSess && totalAtc ? totalAtc.count_prev / totalSess.count_prev : 0;
-      filteredSteps.push({ from: 'Sessions → Add to Cart', rate: rCurr, rate_prev: rPrev, dropoff: 1 - rCurr });
-      filteredStepKeys.push({ from: 'sessions', to: 'atc', label: 'Sessions → Add to Cart' });
-    }
-    viewSteps.forEach(function(s, i) {
-      if (s.from.indexOf('View Item') === -1 && s.from.indexOf('→ View Item') === -1) {
-        filteredSteps.push(s);
-        filteredStepKeys.push(FUNNEL_STEP_KEYS[i]);
-      }
-    });
-  }
+  // Show only the steps whose toggle is on, bridging the conversion table across hidden steps.
+  var filtered = buildFilteredFunnel(viewFunnel);
+  var filteredFunnel = filtered.funnel;
+  var filteredSteps = filtered.steps;
+  var filteredStepKeys = filtered.keys;
 
   var funnelEl = document.getElementById('funnel-chart');
   funnelEl.innerHTML = '';
@@ -397,7 +422,8 @@ function renderFunnel(data) {
         '<h3 id="funnel-title" style="margin: 0; border: none; padding: 0;">Conversion Funnel (All)</h3>' +
         '<div style="display: flex; gap: 6px;">' +
           '<button id="funnel-type-toggle" class="date-preset' + (_funnelType === 'open' ? ' active' : '') + '" onclick="toggleFunnelType()" style="font-size: 11px;">' + (_funnelType === 'closed' ? 'Closed Funnel' : 'Open Funnel') + '</button>' +
-          '<button id="view-item-toggle" class="date-preset" onclick="toggleViewItem()" style="font-size: 11px;">' + (_showViewItem ? 'View Item: ON' : 'View Item: OFF') + '</button>' +
+          '<button id="view-item-toggle" class="date-preset' + (_showViewItem ? ' active' : '') + '" onclick="toggleViewItem()" style="font-size: 11px;">' + (_showViewItem ? 'View Performance: ON' : 'View Performance: OFF') + '</button>' +
+          '<button id="login-toggle" class="date-preset' + (_showLogin ? ' active' : '') + '" onclick="toggleLogin()" style="font-size: 11px;" title="GA4 login event live since 2026-06-04 — counts fill in as data accumulates (daily export lags ~1 day)">' + (_showLogin ? 'Login Step: ON' : 'Login Step: OFF') + '</button>' +
         '</div>' +
       '</div>' +
       '<div class="chart-container" id="funnel-chart" style="max-width: 700px; margin: 0 auto;"></div>' +
