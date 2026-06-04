@@ -4,8 +4,8 @@ const STEP_DEFS = [
   { label: 'Sessions',         key: 'sessions',  optional: false },
   { label: 'View Item',        key: 'view_item', optional: true,  isOn: function () { return _showViewItem; } },
   { label: 'Add to Cart',      key: 'atc',       optional: false },
-  { label: 'Begin Checkout',   key: 'checkout',  optional: false },
   { label: 'Login Successful', key: 'login',     optional: true,  isOn: function () { return _showLogin; } },
+  { label: 'Begin Checkout',   key: 'checkout',  optional: false },
   { label: 'Purchase',         key: 'purchase',  optional: false },
 ];
 

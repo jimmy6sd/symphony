@@ -141,7 +141,7 @@ async function queryClosedFunnel({ days, startDate, endDate }) {
       COUNTIF(had_view_item = 1) AS users_view_item,
       COUNTIF(had_atc = 1) AS users_atc,
       COUNTIF(had_atc = 1 AND had_checkout = 1) AS users_checkout,
-      COUNTIF(had_atc = 1 AND had_checkout = 1 AND had_login = 1) AS users_login,
+      COUNTIF(had_atc = 1 AND had_login = 1) AS users_login,
       COUNTIF(had_atc = 1 AND had_checkout = 1 AND had_purchase = 1) AS users_purchase,
       ROUND(SUM(IF(had_atc = 1 AND had_checkout = 1 AND had_purchase = 1, purchase_value, 0)), 2) AS revenue,
       COUNTIF(had_checkout = 1) AS open_checkout,
@@ -181,18 +181,18 @@ function buildFunnelSteps(channels, mode) {
     { label: 'Sessions', count: tS, count_prev: tSp, rate: 1.0 },
     { label: 'View Item', count: tV, count_prev: tVp, rate: tS ? tV / tS : 0 },
     { label: 'Add to Cart', count: tA, count_prev: tAp, rate: tS ? tA / tS : 0 },
-    { label: 'Begin Checkout', count: tC, count_prev: tCp, rate: tS ? tC / tS : 0 },
     // Scaffolded step — populated once the GA4 `login` event lands (see LOGIN_EVENT). Hidden by default in the UI.
     { label: 'Login Successful', count: tL, count_prev: tLp, rate: tS ? tL / tS : 0 },
+    { label: 'Begin Checkout', count: tC, count_prev: tCp, rate: tS ? tC / tS : 0 },
     { label: 'Purchase', count: tP, count_prev: tPp, rate: tS ? tP / tS : 0 },
   ];
 
   const step_conversion = [
     { from: 'Sessions → View Item', rate: tS ? tV / tS : 0, rate_prev: tSp ? tVp / tSp : 0 },
     { from: 'View Item → Add to Cart', rate: tV ? tA / tV : 0, rate_prev: tVp ? tAp / tVp : 0 },
-    { from: 'ATC → Checkout', rate: tA ? tC / tA : 0, rate_prev: tAp ? tCp / tAp : 0 },
-    { from: 'Checkout → Login Successful', rate: tC ? tL / tC : 0, rate_prev: tCp ? tLp / tCp : 0 },
-    { from: 'Login Successful → Purchase', rate: tL ? tP / tL : 0, rate_prev: tLp ? tPp / tLp : 0 },
+    { from: 'ATC → Login Successful', rate: tA ? tL / tA : 0, rate_prev: tAp ? tLp / tAp : 0 },
+    { from: 'Login Successful → Checkout', rate: tL ? tC / tL : 0, rate_prev: tLp ? tCp / tLp : 0 },
+    { from: 'Checkout → Purchase', rate: tC ? tP / tC : 0, rate_prev: tCp ? tPp / tCp : 0 },
   ];
   step_conversion.forEach(s => { s.dropoff = 1 - s.rate; });
 
