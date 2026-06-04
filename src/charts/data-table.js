@@ -2172,7 +2172,10 @@ class DataTable {
         const performances = group.performances || [];
         if (performances.length === 0) return;
 
-        const groupTitle = group.groupKey || group.title;
+        // Annotations + heading are keyed by the production title (shared across seasons),
+        // while the group row itself is identified by the composite groupKey (title + FY).
+        const groupTitle = group.title || group.groupKey;
+        this._openGroupKey = group.groupKey;
 
         // Create modal overlay
         const modalOverlay = d3.select('body')
@@ -2921,7 +2924,7 @@ class DataTable {
                     // If not editing (new annotation), reload the entire modal content
                     if (!isEdit) {
                         // Find the modal and re-trigger showGroupDetails
-                        const groupRow = (this.filteredData || this.data || []).find(d => d.isGroup && d.groupKey === groupTitle);
+                        const groupRow = (this.filteredData || this.data || []).find(d => d.isGroup && d.groupKey === this._openGroupKey);
                         if (groupRow) {
                             const overlay = d3.select('.modal-overlay');
                             if (this._groupChart) this._groupChart.destroy();
@@ -3973,18 +3976,28 @@ overlayHistoricalData(container, performance, historicalData, salesChart) {
     groupDataByProduction(data) {
         const groups = {};
 
-        // Group performances by title
+        // Group performances by title + fiscal year, so recurring annual productions
+        // (e.g. "Handel's Messiah", "Christmas Festival") don't collapse across seasons
+        // into one row. Fiscal year runs Jul–Jun; key by its start year, derived from the
+        // (always-reliable) performance date rather than the season string.
+        const fiscalYearOf = (dateStr) => {
+            if (!dateStr) return 'unknown';
+            const [y, m] = String(dateStr).split('-').map(Number);
+            if (!y || !m) return 'unknown';
+            return m >= 7 ? y : y - 1; // start year of the Jul–Jun fiscal year
+        };
         data.forEach(perf => {
             const title = perf.title || 'Unknown';
-            if (!groups[title]) {
-                groups[title] = {
+            const groupKey = `${title}__FY${fiscalYearOf(perf.date)}`;
+            if (!groups[groupKey]) {
+                groups[groupKey] = {
                     title: title,
                     performances: [],
                     isGroup: true,
-                    groupKey: title
+                    groupKey: groupKey
                 };
             }
-            groups[title].performances.push(perf);
+            groups[groupKey].performances.push(perf);
         });
 
         // Calculate aggregated stats for each group
