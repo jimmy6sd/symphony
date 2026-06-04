@@ -121,10 +121,13 @@ exports.handler = async (event) => {
       usedPiazzaDefault: 0,
       withMetadata: 0,
       targetComps: 0,
+      performancesTouched: 0,
       errors: []
     };
 
     const insertRows = [];
+    // Every performance ID that appears in this sheet — only these get their comps replaced.
+    const seenPerformanceIds = new Set();
     const now = new Date().toISOString();
 
     for (let i = 14; i < rows.length; i++) {
@@ -133,6 +136,7 @@ exports.handler = async (event) => {
       if (!row[0] || String(row[0]).trim() === '') continue;
 
       const performanceId = String(row[0]).trim();
+      seenPerformanceIds.add(performanceId);
       const targetFlag = String(row[1] || '').trim().toLowerCase();
       const compDesc = row[3] ? String(row[3]).trim() : '';
 
@@ -214,10 +218,19 @@ exports.handler = async (event) => {
     const bigquery = initializeBigQuery();
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
 
-    await bigquery.query({
-      query: `DELETE FROM \`${projectId}.${DATASET_ID}.${TABLE_ID}\` WHERE source = 'excel_import' OR source IS NULL`,
-      location: 'US'
-    });
+    // Upsert by performance: clear and replace comps ONLY for the performance IDs present in this
+    // sheet. Comps for performances not in the sheet (e.g. prior seasons) are left untouched.
+    if (seenPerformanceIds.size > 0) {
+      const sqlStrId = v => `'${String(v).replace(/'/g, "\\'")}'`;
+      const idList = [...seenPerformanceIds].map(sqlStrId).join(', ');
+      await bigquery.query({
+        query: `DELETE FROM \`${projectId}.${DATASET_ID}.${TABLE_ID}\`
+                WHERE (source = 'excel_import' OR source IS NULL)
+                  AND performance_id IN (${idList})`,
+        location: 'US'
+      });
+      stats.performancesTouched = seenPerformanceIds.size;
+    }
 
     if (insertRows.length > 0) {
       const sqlStr = v => v === null ? 'NULL' : `'${String(v).replace(/'/g, "\\'")}'`;
@@ -245,7 +258,7 @@ exports.handler = async (event) => {
       }
     }
 
-    console.log(`Comp import complete: ${stats.imported} imported, ${stats.skipped} skipped`);
+    console.log(`Comp import complete: ${stats.imported} imported, ${stats.skipped} skipped, ${stats.performancesTouched} performance(s) updated (others left intact)`);
 
     return {
       statusCode: 200,
