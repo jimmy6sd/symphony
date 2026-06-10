@@ -150,3 +150,8 @@
   node_bundler = "esbuild"
   external_node_modules = ["@google-cloud/storage", "@google-cloud/bigquery", "@google-analytics/data"]
 
+[functions."pipeline-health-cron"]
+  # Daily, 30 min after the noon UTC ingest. Pushes health JSON to Make
+  # (password protection blocks Make from polling pipeline-health directly).
+  schedule = "30 12 * * *"
+
