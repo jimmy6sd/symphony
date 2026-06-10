@@ -153,5 +153,5 @@
 [functions."pipeline-health-cron"]
   # Daily, 30 min after the noon UTC ingest. Pushes health JSON to Make
   # (password protection blocks Make from polling pipeline-health directly).
-  schedule = "30 12 * * *"
+  schedule = "2 19 * * *"
 
