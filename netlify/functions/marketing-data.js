@@ -185,6 +185,41 @@ async function fetchTopPages(client, dates) {
   return byChannel;
 }
 
+async function fetchSourceMedium(client, dates) {
+  const rows = await runReport(client, {
+    dateRanges: [{ startDate: dates.currentStart, endDate: dates.currentEnd }],
+    dimensions: ['sessionDefaultChannelGroup', 'sessionSource', 'sessionMedium'],
+    metrics: ['sessions', 'engagedSessions', 'ecommercePurchases', 'purchaseRevenue'],
+    orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+    limit: 10000,
+  });
+
+  const byChannel = {};
+  rows.forEach(row => {
+    // Mirror the channel renaming in assembleChannelData: Unassigned Meta
+    // traffic rolls into Paid Social, the rest becomes Unassigned (Other)
+    let ch = row.sessionDefaultChannelGroup;
+    if (ch === 'Unassigned') {
+      ch = isMetaSource(row.sessionSource) ? 'Paid Social' : 'Unassigned (Other)';
+    }
+    if (!byChannel[ch]) byChannel[ch] = [];
+    byChannel[ch].push({
+      source: row.sessionSource,
+      medium: row.sessionMedium,
+      sessions: row.sessions || 0,
+      eng_rate: row.sessions ? (row.engagedSessions || 0) / row.sessions : 0,
+      purchases: row.ecommercePurchases || 0,
+      revenue: row.purchaseRevenue || 0,
+    });
+  });
+
+  Object.keys(byChannel).forEach(ch => {
+    byChannel[ch].sort((a, b) => b.sessions - a.sessions);
+  });
+
+  return byChannel;
+}
+
 async function fetchDailySessions(client, dates) {
   const rows = await runReport(client, {
     dateRanges: [{ startDate: dates.dailyStart, endDate: dates.currentEnd }],
@@ -232,7 +267,7 @@ async function fetchDailyUnassignedSplit(client, dates) {
   return dailyMap;
 }
 
-function assembleChannelData(ga4Current, ga4Previous, unassigned, metaSpend, stackadaptSpend, tiktokSpend, topPages, daily, dailyUnassigned, dates) {
+function assembleChannelData(ga4Current, ga4Previous, unassigned, metaSpend, stackadaptSpend, tiktokSpend, topPages, sourceMedium, daily, dailyUnassigned, dates) {
   const sessionsByChannel = {};
   const channels = [];
 
@@ -280,6 +315,7 @@ function assembleChannelData(ga4Current, ga4Previous, unassigned, metaSpend, sta
       new_user_pct: curr.users ? (curr.newUsers || 0) / curr.users : 0,
       new_user_pct_prev: prev.users ? (prev.newUsers || 0) / prev.users : 0,
       top_pages: topPages[ch] || topPages['Unassigned'] || [],
+      sources: sourceMedium[ch] || [],
     });
   }
 
@@ -390,10 +426,11 @@ async function getChannelPerformance({ days, startDate, endDate }) {
   const client = getGA4Client();
   const dates = computeDateRanges({ days, startDate, endDate });
 
-  const [channelData, unassigned, topPages, daily, dailyUnassigned, metaSpend, stackadaptSpend, tiktokSpend] = await Promise.all([
+  const [channelData, unassigned, topPages, sourceMedium, daily, dailyUnassigned, metaSpend, stackadaptSpend, tiktokSpend] = await Promise.all([
     fetchChannelMetrics(client, dates),
     fetchUnassignedBreakdown(client, dates),
     fetchTopPages(client, dates),
+    fetchSourceMedium(client, dates),
     fetchDailySessions(client, dates),
     fetchDailyUnassignedSplit(client, dates),
     fetchMetaInsights(dates.currentStart, dates.currentEnd),
@@ -403,7 +440,7 @@ async function getChannelPerformance({ days, startDate, endDate }) {
 
   return assembleChannelData(
     channelData.current, channelData.previous,
-    unassigned, metaSpend, stackadaptSpend, tiktokSpend, topPages, daily, dailyUnassigned, dates
+    unassigned, metaSpend, stackadaptSpend, tiktokSpend, topPages, sourceMedium, daily, dailyUnassigned, dates
   );
 }
 

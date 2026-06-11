@@ -131,6 +131,28 @@ function sortValue(c, col) {
   }
 }
 
+function sourceMediumSection(c) {
+  var sources = c.sources || [];
+  if (!sources.length) return '';
+  return '<div class="ch-detail-section ch-source-section">' +
+    '<h4>Source / Medium (' + sources.length + ')</h4>' +
+    '<div class="ch-source-wrap">' +
+      '<table class="ch-page-tbl">' +
+        '<thead><tr><th>Source / Medium</th><th class="num">Sessions</th><th class="num">Eng Rate</th><th class="num">Purchases</th><th class="num">Revenue</th></tr></thead>' +
+        '<tbody>' +
+          sources.map(function(s) {
+            return '<tr><td>' + escapeHtml(s.source + ' / ' + s.medium) + '</td>' +
+              '<td class="num">' + fmt(s.sessions) + '</td>' +
+              '<td class="num">' + pct(s.eng_rate) + '</td>' +
+              '<td class="num">' + fmt(s.purchases) + '</td>' +
+              '<td class="num">' + currency(s.revenue) + '</td></tr>';
+          }).join('') +
+        '</tbody>' +
+      '</table>' +
+    '</div>' +
+  '</div>';
+}
+
 function renderChannelTable() {
   var data = _channelData;
   if (!data) return;
@@ -239,6 +261,7 @@ function renderChannelTable() {
             '</table>' +
           '</div>' +
         '</div>' +
+        sourceMediumSection(c) +
       '</div>' +
     '</td>';
     tbody.appendChild(detailTr);
