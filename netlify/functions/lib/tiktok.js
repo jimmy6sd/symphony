@@ -1,9 +1,13 @@
+const { prorateMonthlySpend } = require('./stackadapt');
+
 async function fetchTikTokInsights(startDate, endDate) {
   const token = process.env.TIKTOK_ACCESS_TOKEN;
   const advertiserId = process.env.TIKTOK_ADVERTISER_ID;
 
   if (!token || !advertiserId) {
-    return { spend: null, impressions: null, clicks: null, error: 'TikTok credentials not configured' };
+    // No API credentials yet (app verification pending) — fall back to
+    // manual monthly totals exported from TikTok Ads Manager.
+    return prorateMonthlySpend(process.env.TIKTOK_SPEND_DATA, startDate, endDate, 'TIKTOK_SPEND_DATA');
   }
 
   const params = new URLSearchParams({

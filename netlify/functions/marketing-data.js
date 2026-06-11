@@ -434,7 +434,7 @@ async function getChannelPerformance({ days, startDate, endDate }) {
     fetchDailySessions(client, dates),
     fetchDailyUnassignedSplit(client, dates),
     fetchMetaInsights(dates.currentStart, dates.currentEnd),
-    Promise.resolve(fetchStackAdaptSpend(dates.currentStart, dates.currentEnd)),
+    fetchStackAdaptSpend(dates.currentStart, dates.currentEnd),
     fetchTikTokInsights(dates.currentStart, dates.currentEnd),
   ]);
 
