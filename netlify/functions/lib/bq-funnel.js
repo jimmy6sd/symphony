@@ -389,7 +389,7 @@ function assembleFunnelData(rows, dates, perfMap) {
     open_funnel: open.funnel, open_step_conversion: open.step_conversion,
     landing_pages, page_funnels, performance_funnels,
     data_source: 'bigquery_closed_funnel',
-    tracking_gaps: ['view_item tag recently deployed — historical data for this step will be sparse until it accumulates'],
+    tracking_gaps: ['view_item tag and Login Successful step recently deployed — historical data for these steps will be sparse until it accumulates'],
   };
 }
 
