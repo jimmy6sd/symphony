@@ -939,7 +939,7 @@ async function processPerformanceData(bigquery, performances, snapshotId, execut
         ${p.subscription_tickets_sold || 0},
         ${(p.single_tickets_sold || 0) + (p.subscription_tickets_sold || 0)},
         ${p.total_revenue || 0},
-        1600,
+        1607,
         ${p.capacity_percent || 0},
         85,
         ${p.budget_percent > 0 ? Math.round((p.total_revenue / p.budget_percent) * 100) : 0},
