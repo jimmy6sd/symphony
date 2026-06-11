@@ -177,13 +177,14 @@ async function getPerformances(bigquery, params, headers) {
 
   const [rows] = await bigquery.query(options);
 
-  // Transform dates for frontend compatibility and remove duplicates
+  // Transform dates for frontend compatibility and remove duplicates.
+  // Key on performance_code: performance_id is date-derived and collides across
+  // seasons and same-day showings, which silently dropped rows from the admin page.
   const uniquePerformances = new Map();
 
   rows.forEach(row => {
-    // Use performance_id as key to deduplicate
-    if (!uniquePerformances.has(row.performance_id)) {
-      uniquePerformances.set(row.performance_id, {
+    if (!uniquePerformances.has(row.performance_code)) {
+      uniquePerformances.set(row.performance_code, {
         ...row,
         date: typeof row.performance_date === 'object' ? row.performance_date.value : row.performance_date,
         id: row.performance_code,
@@ -213,13 +214,14 @@ async function getPerformances(bigquery, params, headers) {
 
 // Get detailed performance data including weekly sales
 async function getPerformanceDetail(bigquery, params, headers) {
-  const { performanceId } = params;
+  // Look up by performance_code: performance_id is date-derived and not unique
+  const { performanceCode } = params;
 
-  if (!performanceId) {
+  if (!performanceCode) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Performance ID is required' })
+      body: JSON.stringify({ error: 'Performance code is required' })
     };
   }
 
@@ -228,7 +230,7 @@ async function getPerformanceDetail(bigquery, params, headers) {
     SELECT
       *
     FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\`
-    WHERE performance_id = ?
+    WHERE performance_code = ?
   `;
 
   // Get weekly sales data
@@ -246,13 +248,7 @@ async function getPerformanceDetail(bigquery, params, headers) {
 
   const [performanceRows] = await bigquery.query({
     query: performanceQuery,
-    params: [parseInt(performanceId)],
-    location: 'US'
-  });
-
-  const [salesRows] = await bigquery.query({
-    query: weeklySalesQuery,
-    params: [parseInt(performanceId)],
+    params: [performanceCode],
     location: 'US'
   });
 
@@ -265,6 +261,12 @@ async function getPerformanceDetail(bigquery, params, headers) {
   }
 
   const performance = performanceRows[0];
+
+  const [salesRows] = await bigquery.query({
+    query: weeklySalesQuery,
+    params: [performance.performance_id],
+    location: 'US'
+  });
   const weeklySales = salesRows.map(row => ({
     week: row.week_number,
     ticketsSold: row.tickets_sold,
@@ -285,7 +287,10 @@ async function getPerformanceDetail(bigquery, params, headers) {
 
 // Update performance data
 async function updatePerformance(bigquery, data, headers) {
+  // Keyed by performance_code: performance_id is date-derived and not unique,
+  // so an id-based UPDATE could modify multiple performances
   const {
+    performanceCode,
     performanceId,
     singleTicketsSold,
     subscriptionTicketsSold,
@@ -293,11 +298,11 @@ async function updatePerformance(bigquery, data, headers) {
     weeklySales
   } = data;
 
-  if (!performanceId) {
+  if (!performanceCode) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Performance ID is required' })
+      body: JSON.stringify({ error: 'Performance code is required' })
     };
   }
 
@@ -310,7 +315,7 @@ async function updatePerformance(bigquery, data, headers) {
       total_revenue = ?,
       has_sales_data = TRUE,
       updated_at = CURRENT_TIMESTAMP()
-    WHERE performance_id = ?
+    WHERE performance_code = ?
   `;
 
   await bigquery.query({
@@ -319,23 +324,31 @@ async function updatePerformance(bigquery, data, headers) {
       singleTicketsSold || 0,
       subscriptionTicketsSold || 0,
       totalRevenue || 0,
-      parseInt(performanceId)
+      performanceCode
     ],
     location: 'US'
   });
 
-  // Update weekly sales if provided
+  // Update weekly sales if provided (weekly_sales is keyed by performance_id,
+  // so resolve it from the code)
   if (weeklySales && weeklySales.length > 0) {
+    const [perfRows] = await bigquery.query({
+      query: `SELECT performance_id FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.performances\` WHERE performance_code = ?`,
+      params: [performanceCode],
+      location: 'US'
+    });
+    const resolvedId = perfRows.length > 0 ? perfRows[0].performance_id : parseInt(performanceId);
+
     // Delete existing weekly sales
     await bigquery.query({
       query: `DELETE FROM \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.weekly_sales\` WHERE performance_id = ?`,
-      params: [parseInt(performanceId)],
+      params: [resolvedId],
       location: 'US'
     });
 
     // Insert new weekly sales data
     const salesData = weeklySales.map(week => [
-      parseInt(performanceId),
+      resolvedId,
       week.week,
       week.ticketsSold,
       week.percentage,
