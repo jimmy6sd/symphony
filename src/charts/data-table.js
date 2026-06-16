@@ -2010,6 +2010,24 @@ class DataTable {
                 .text(style.label);
         });
 
+        // Target comp checkbox — the dashboard keys projections/tracking off the target comp,
+        // so without this a comp created here would never drive a projection.
+        const targetLabel = form.append('label')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('gap', '8px')
+            .style('margin-bottom', '20px')
+            .style('font-weight', '600')
+            .style('cursor', 'pointer');
+
+        targetLabel.append('input')
+            .attr('type', 'checkbox')
+            .attr('class', 'comp-target-input')
+            .property('checked', existingComparison?.is_target === true);
+
+        targetLabel.append('span')
+            .html('★ Set as target comp <span style="font-weight: normal; font-size: 12px; color: #6c757d;">(drives projections &amp; tracking; replaces any current target)</span>');
+
         // Buttons
         const buttonContainer = form.append('div')
             .style('display', 'flex')
@@ -2037,6 +2055,7 @@ class DataTable {
                 const weeksData = weeksInput.property('value');
                 const color = colorInput.property('value');
                 const lineStyle = form.select('input[name="line-style"]:checked').property('value');
+                const isTarget = form.select('.comp-target-input').property('checked');
 
                 if (!name || !weeksData) {
                     alert('Please fill in all required fields');
@@ -2078,14 +2097,16 @@ class DataTable {
                             comparisonName: name,
                             weeksData,
                             lineColor: color,
-                            lineStyle
+                            lineStyle,
+                            isTarget
                         });
                     } else {
                         await window.dataService.createComparison(performanceCode, {
                             comparisonName: name,
                             weeksData,
                             lineColor: color,
-                            lineStyle
+                            lineStyle,
+                            isTarget
                         });
                     }
 
