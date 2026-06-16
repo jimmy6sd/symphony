@@ -121,6 +121,7 @@ exports.handler = async (event) => {
       usedPiazzaDefault: 0,
       withMetadata: 0,
       targetComps: 0,
+      autoAssignedTargets: 0,
       performancesTouched: 0,
       errors: []
     };
@@ -213,6 +214,24 @@ exports.handler = async (event) => {
       });
 
       stats.imported++;
+    }
+
+    // Auto-target fallback: a performance with comps but no explicit target flag would otherwise
+    // have NO projections or tracking status on the dashboard (those key off is_target). For each
+    // such performance, promote its first comp to target — matching the documented import behavior.
+    const rowsByPerformance = new Map();
+    for (const r of insertRows) {
+      if (!rowsByPerformance.has(r.performanceId)) rowsByPerformance.set(r.performanceId, []);
+      rowsByPerformance.get(r.performanceId).push(r);
+    }
+    for (const perfRows of rowsByPerformance.values()) {
+      if (perfRows.some(r => r.isTarget)) continue;
+      const promoted = perfRows[0];
+      promoted.isTarget = true;
+      promoted.lineColor = '#ff6b35';
+      promoted.lineStyle = 'solid';
+      stats.targetComps++;
+      stats.autoAssignedTargets++;
     }
 
     const bigquery = initializeBigQuery();

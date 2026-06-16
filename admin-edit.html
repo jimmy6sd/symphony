@@ -571,6 +571,7 @@
             <div class="stat-row"><span>Global defaults used</span><span>${s.usedGlobalDefault}</span></div>
             <div class="stat-row"><span>Piazza defaults used</span><span>${s.usedPiazzaDefault}</span></div>
             <div class="stat-row"><span>Target comps</span><span>${s.targetComps}</span></div>
+            ${s.autoAssignedTargets > 0 ? `<div class="stat-row"><span>Auto-assigned targets (no flag in sheet)</span><span>${s.autoAssignedTargets}</span></div>` : ''}
             <div class="stat-row"><span>With metadata</span><span>${s.withMetadata}</span></div>
             ${s.errors.length > 0 ? `<div class="stat-row" style="color:#e74c3c"><span>Errors</span><span>${s.errors.length}</span></div>` : ''}
           </div>`;
