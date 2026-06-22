@@ -4,6 +4,7 @@ const { fetchStackAdaptSpend } = require('./lib/stackadapt');
 const { fetchTikTokInsights } = require('./lib/tiktok');
 const { attributeSpend } = require('./lib/spend-mapping');
 const { queryClosedFunnel } = require('./lib/bq-funnel');
+const { queryEmailPerformance } = require('./lib/bq-email');
 
 const FUNNEL_POSITION = {
   'Organic Search': 'Bottom-funnel. User has existing awareness; searching for specifics.',
@@ -482,11 +483,18 @@ exports.handler = async (event) => {
             : { days: parseInt(days, 10) }
         );
         break;
+      case 'email':
+        data = await queryEmailPerformance(
+          startDate && endDate
+            ? { startDate, endDate }
+            : { days: parseInt(days, 10) }
+        );
+        break;
       default:
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ error: `Unknown view: ${view}. Available: channels, funnel` }),
+          body: JSON.stringify({ error: `Unknown view: ${view}. Available: channels, funnel, email` }),
         };
     }
 

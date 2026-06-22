@@ -155,3 +155,8 @@
   # (password protection blocks Make from polling pipeline-health directly).
   schedule = "30 12 * * *"
 
+[functions."email-sync-cron"]
+  # Daily 13:00 UTC. Pulls Constant Contact campaign stats into
+  # email_campaign_snapshots (append-only; latest snapshot per campaign wins on read).
+  schedule = "0 13 * * *"
+
