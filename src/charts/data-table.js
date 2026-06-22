@@ -1960,6 +1960,27 @@ class DataTable {
             .style('font-weight', '600')
             .html('⚠️ Enter <strong>single tickets + non-fixed packages only</strong> (exclude fixed subscription packages)');
 
+        // Comp ATP input — the rollup projects revenue as (target comp ATP × projected tickets).
+        // Without an ATP the rollup shows "Comp ATP Missing" and can't project revenue.
+        form.append('label')
+            .style('display', 'block')
+            .style('margin-bottom', '5px')
+            .style('font-weight', '600')
+            .html('Comp ATP <span style="font-weight: normal; font-size: 12px; color: #6c757d;">(avg ticket price — used for revenue projection on the rollup)</span>:');
+
+        const atpInput = form.append('input')
+            .attr('type', 'number')
+            .attr('step', '0.01')
+            .attr('min', '0')
+            .attr('class', 'comp-atp-input')
+            .attr('placeholder', 'e.g., 42.50')
+            .style('width', '100%')
+            .style('padding', '8px')
+            .style('margin-bottom', '15px')
+            .style('border', '1px solid #ddd')
+            .style('border-radius', '4px')
+            .property('value', existingComparison?.atp ?? '');
+
         // Color picker
         form.append('label')
             .style('display', 'block')
@@ -2056,9 +2077,16 @@ class DataTable {
                 const color = colorInput.property('value');
                 const lineStyle = form.select('input[name="line-style"]:checked').property('value');
                 const isTarget = form.select('.comp-target-input').property('checked');
+                const atpRaw = atpInput.property('value');
+                const atp = atpRaw === '' ? null : parseFloat(atpRaw);
 
                 if (!name || !weeksData) {
                     alert('Please fill in all required fields');
+                    return;
+                }
+
+                if (atp !== null && (isNaN(atp) || atp < 0)) {
+                    alert('Comp ATP must be a positive number (or left blank)');
                     return;
                 }
 
@@ -2098,7 +2126,8 @@ class DataTable {
                             weeksData,
                             lineColor: color,
                             lineStyle,
-                            isTarget
+                            isTarget,
+                            atp
                         });
                     } else {
                         await window.dataService.createComparison(performanceCode, {
@@ -2106,7 +2135,8 @@ class DataTable {
                             weeksData,
                             lineColor: color,
                             lineStyle,
-                            isTarget
+                            isTarget,
+                            atp
                         });
                     }
 

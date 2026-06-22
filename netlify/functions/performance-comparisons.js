@@ -254,8 +254,14 @@ async function createComparison(bigquery, data, headers) {
     weeksData,
     lineColor = '#4285f4',
     lineStyle = 'dashed',
-    isTarget = false
+    isTarget = false,
+    atp
   } = data;
+
+  // Normalize ATP: accept a positive number, otherwise store NULL.
+  const atpValue = (atp === undefined || atp === null || atp === '' || isNaN(parseFloat(atp)))
+    ? null
+    : parseFloat(atp);
 
   // Validation
   if (!performanceId || !comparisonName || !weeksData) {
@@ -299,26 +305,29 @@ async function createComparison(bigquery, data, headers) {
     });
   }
 
+  // Inline NULL for ATP rather than a null param — BigQuery requires explicit type info
+  // for null query parameters, so a placeholder is only emitted when a value is present.
   const query = `
     INSERT INTO \`${process.env.GOOGLE_CLOUD_PROJECT_ID}.${DATASET_ID}.${TABLE_ID}\`
-    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, source, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, TIMESTAMP(?), TIMESTAMP(?))
+    (comparison_id, performance_id, comparison_name, weeks_data, line_color, line_style, is_target, atp, source, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ${atpValue === null ? 'NULL' : '?'}, ?, TIMESTAMP(?), TIMESTAMP(?))
   `;
+
+  const params = [
+    comparisonId,
+    String(performanceId), // Convert to string for BigQuery
+    comparisonName,
+    weeksData.trim(),
+    lineColor,
+    lineStyle,
+    isTarget
+  ];
+  if (atpValue !== null) params.push(atpValue);
+  params.push('manual', now, now);
 
   await bigquery.query({
     query,
-    params: [
-      comparisonId,
-      String(performanceId), // Convert to string for BigQuery
-      comparisonName,
-      weeksData.trim(),
-      lineColor,
-      lineStyle,
-      isTarget,
-      'manual',
-      now,
-      now
-    ],
+    params,
     location: 'US'
   });
 
@@ -333,6 +342,7 @@ async function createComparison(bigquery, data, headers) {
       lineColor,
       lineStyle,
       isTarget,
+      atp: atpValue,
       weeksArray,
       createdAt: now
     })
@@ -346,7 +356,8 @@ async function updateComparison(bigquery, comparisonId, data, headers) {
     weeksData,
     lineColor,
     lineStyle,
-    isTarget
+    isTarget,
+    atp
   } = data;
 
   // Business Rule: If setting this as target, first get performance_id, then unset other targets
@@ -416,6 +427,16 @@ async function updateComparison(bigquery, comparisonId, data, headers) {
   if (isTarget !== undefined) {
     updates.push('is_target = ?');
     params.push(isTarget);
+  }
+  if (atp !== undefined) {
+    // Clearing ATP sets NULL inline (BigQuery needs type info for null params);
+    // a provided value goes through a placeholder.
+    if (atp === null || atp === '' || isNaN(parseFloat(atp))) {
+      updates.push('atp = NULL');
+    } else {
+      updates.push('atp = ?');
+      params.push(parseFloat(atp));
+    }
   }
 
   if (updates.length === 0) {
