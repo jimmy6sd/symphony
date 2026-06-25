@@ -5,6 +5,39 @@ const { BigQuery } = require('@google-cloud/bigquery');
 
 const DATASET_ID = process.env.BIGQUERY_DATASET || 'symphony_dashboard';
 
+// Parse GOOGLE_APPLICATION_CREDENTIALS as inline JSON or a file path,
+// matching how the other functions initialize BigQuery.
+const initializeBigQuery = () => {
+  const credentialsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+  if (!credentialsEnv) {
+    throw new Error('GOOGLE_APPLICATION_CREDENTIALS environment variable not set');
+  }
+
+  let credentials;
+
+  if (credentialsEnv.startsWith('{')) {
+    credentials = JSON.parse(credentialsEnv);
+  } else {
+    const fs = require('fs');
+    const path = require('path');
+    credentials = JSON.parse(fs.readFileSync(path.resolve(credentialsEnv), 'utf8'));
+  }
+
+  if (credentials.private_key && credentials.private_key.includes('\\\\n')) {
+    credentials.private_key = credentials.private_key.replace(/\\\\n/g, '\n');
+  }
+
+  return new BigQuery({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID || credentials.project_id,
+    credentials: {
+      client_email: credentials.client_email,
+      private_key: credentials.private_key,
+    },
+    location: 'US'
+  });
+};
+
 exports.handler = async (event, context) => {
   // CORS headers
   const headers = {
@@ -42,10 +75,7 @@ exports.handler = async (event, context) => {
     console.log(`📊 Processing ${requestData.performances.length} performances`);
 
     // Initialize BigQuery
-    const bigquery = new BigQuery({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      credentials: JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
-    });
+    const bigquery = initializeBigQuery();
 
     // Process updates
     const result = await updatePerformances(bigquery, requestData.performances);
