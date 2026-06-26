@@ -193,6 +193,51 @@
     .import-results-box .stat-row:last-child {
       border-bottom: none;
     }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .filter-bar .filter-input {
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .filter-bar #filterSearch {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .filter-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #2c3e50;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .filter-toggle input {
+      width: auto;
+    }
+
+    .filter-count {
+      margin-left: auto;
+      color: #7f8c8d;
+      font-size: 13px;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -233,12 +278,32 @@
       <div id="compImportResults" style="display: none; margin-top: 15px;"></div>
     </div>
 
+    <div class="filter-bar" id="filterBar">
+      <input type="text" id="filterSearch" class="filter-input" placeholder="Search title or code...">
+      <select id="filterSeason" class="filter-input">
+        <option value="all">All Seasons</option>
+      </select>
+      <select id="filterVenue" class="filter-input">
+        <option value="all">All Venues</option>
+      </select>
+      <select id="filterStatus" class="filter-input">
+        <option value="all">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <label class="filter-toggle">
+        <input type="checkbox" id="filterHide2526" checked>
+        Hide 25-26 season
+      </label>
+      <span id="filterCount" class="filter-count"></span>
+    </div>
+
     <table class="performance-table" id="performanceTable">
       <thead>
         <tr>
           <th>Code</th>
           <th>Title</th>
-          <th>Series</th>
+          <th>Season</th>
           <th>Date</th>
           <th>Venue</th>
           <th>Capacity</th>
@@ -249,7 +314,7 @@
       </thead>
       <tbody id="performanceTableBody">
         <tr>
-          <td colspan="8" style="text-align: center; padding: 40px;">Loading performances...</td>
+          <td colspan="9" style="text-align: center; padding: 40px;">Loading performances...</td>
         </tr>
       </tbody>
     </table>
@@ -274,20 +339,6 @@
         </div>
 
         <div class="form-group">
-          <label>Series *</label>
-          <select id="edit_series" required>
-            <option value="">Select Series</option>
-            <option value="Classical">Classical</option>
-            <option value="Pops">Pops</option>
-            <option value="Family">Family</option>
-            <option value="Special Event">Special Event</option>
-            <option value="Chamber">Chamber</option>
-            <option value="Education">Education</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label>Performance Date *</label>
           <input type="date" id="edit_date" required>
         </div>
@@ -304,7 +355,12 @@
 
         <div class="form-group">
           <label>Season</label>
-          <input type="text" id="edit_season" placeholder="e.g., 25-26">
+          <select id="edit_season_category">
+            <option value="">— None —</option>
+            <option value="__new__">+ Add new category…</option>
+          </select>
+          <input type="text" id="edit_season_category_new" placeholder="New category name (e.g. Gala)" style="display:none; margin-top:8px;">
+          <small id="edit_season_preview" style="display:block; margin-top:6px; color:#7f8c8d;"></small>
         </div>
 
         <div class="form-group">
@@ -342,6 +398,35 @@
   <script>
     let performances = [];
 
+    const filterState = {
+      search: '',
+      season: 'all',
+      venue: 'all',
+      status: 'all',
+      hide2526: true
+    };
+
+    // Fiscal-year label for a YYYY-MM-DD date (KCS fiscal year runs Jul 1 - Jun 30).
+    // e.g. 2026-12-17 -> "26-27", 2025-10-10 -> "25-26". Mirrors the pdf-webhook logic.
+    function fiscalYearLabel(dateStr) {
+      if (!dateStr) return null;
+      const [y, mo] = String(dateStr).split('-').map(Number);
+      if (!y || !mo) return null;
+      const start = mo >= 7 ? y : y - 1;
+      return `${String(start % 100).padStart(2, '0')}-${String((start + 1) % 100).padStart(2, '0')}`;
+    }
+
+    // Strip the "YY-YY " fiscal prefix from a season string -> the category.
+    function seasonCategory(season) {
+      if (!season) return '';
+      return season.replace(/^\d{2}-\d{2}\s+/, '').trim();
+    }
+
+    // Distinct season categories present in the loaded data, sorted.
+    function getCategories() {
+      return [...new Set(performances.map(p => seasonCategory(p.season)).filter(Boolean))].sort();
+    }
+
     // Load performances on page load
     async function loadPerformances() {
       try {
@@ -354,24 +439,64 @@
         const data = await response.json();
         // BigQuery endpoint returns array directly, not wrapped in object
         performances = Array.isArray(data) ? data : (data.performances || []);
+        populateFilters();
         renderTable();
 
       } catch (error) {
         console.error('Error loading performances:', error);
         document.getElementById('performanceTableBody').innerHTML =
-          '<tr><td colspan="8" style="text-align: center; color: red;">Error loading data</td></tr>';
+          '<tr><td colspan="10" style="text-align: center; color: red;">Error loading data</td></tr>';
       }
+    }
+
+    // Fill the Category and Venue filter dropdowns from the loaded data,
+    // preserving any current selection.
+    function populateFilters() {
+      const seasonSelect = document.getElementById('filterSeason');
+      const venueSelect = document.getElementById('filterVenue');
+
+      const cats = getCategories();
+      seasonSelect.innerHTML = '<option value="all">All Seasons</option>' +
+        cats.map(c => `<option value="${c}">${c}</option>`).join('');
+      seasonSelect.value = cats.includes(filterState.season) ? filterState.season : 'all';
+      filterState.season = seasonSelect.value;
+
+      const venues = [...new Set(performances.map(p => p.venue).filter(Boolean))].sort();
+      venueSelect.innerHTML = '<option value="all">All Venues</option>' +
+        venues.map(v => `<option value="${v}">${v}</option>`).join('');
+      venueSelect.value = venues.includes(filterState.venue) ? filterState.venue : 'all';
+      filterState.venue = venueSelect.value;
+    }
+
+    // Apply the active filters to the loaded performances.
+    function getFilteredPerformances() {
+      const s = filterState;
+      return performances.filter(perf => {
+        if (s.hide2526 && (perf.season || '').startsWith('25-26')) return false;
+        if (s.season !== 'all' && seasonCategory(perf.season) !== s.season) return false;
+        if (s.venue !== 'all' && (perf.venue || '') !== s.venue) return false;
+        if (s.status === 'active' && perf.cancelled === true) return false;
+        if (s.status === 'cancelled' && perf.cancelled !== true) return false;
+        if (s.search) {
+          const hay = `${perf.performance_code || ''} ${perf.title || ''}`.toLowerCase();
+          if (!hay.includes(s.search.toLowerCase())) return false;
+        }
+        return true;
+      });
     }
 
     function renderTable() {
       const tbody = document.getElementById('performanceTableBody');
+      const rows = getFilteredPerformances();
+      const countEl = document.getElementById('filterCount');
+      if (countEl) countEl.textContent = `Showing ${rows.length} of ${performances.length}`;
 
-      if (performances.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No performances found</td></tr>';
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">No performances match the current filters</td></tr>';
         return;
       }
 
-      tbody.innerHTML = performances.map(perf => {
+      tbody.innerHTML = rows.map(perf => {
         const perfDate = perf.performance_date?.value || perf.performance_date || '-';
         const importDate = perf.last_pdf_import_date?.value || perf.last_pdf_import_date;
         const isCancelled = perf.cancelled === true;
@@ -383,7 +508,7 @@
         <tr style="${isCancelled ? 'opacity: 0.6; background: #fff5f5;' : ''}">
           <td>${perf.performance_code}</td>
           <td>${perf.title || '-'}</td>
-          <td>${perf.series || '-'}</td>
+          <td>${perf.season || '-'}</td>
           <td>${perfDate}</td>
           <td>${perf.venue || '-'}</td>
           <td>${perf.capacity || '-'}</td>
@@ -411,17 +536,6 @@
       document.getElementById('edit_code_display').value = perf.performance_code;
       document.getElementById('edit_title').value = perf.title || '';
 
-      // Set series - handle exact match or add as option if not in list
-      const seriesSelect = document.getElementById('edit_series');
-      const seriesValue = perf.series || '';
-      if (seriesValue && !Array.from(seriesSelect.options).some(opt => opt.value === seriesValue)) {
-        // Add the current series value as an option if it doesn't exist
-        const newOption = new Option(seriesValue, seriesValue, false, true);
-        seriesSelect.add(newOption);
-      } else {
-        seriesSelect.value = seriesValue;
-      }
-
       document.getElementById('edit_date').value = perfDate;
 
       // Set venue - handle exact match or add as option if not in list
@@ -435,7 +549,7 @@
         venueSelect.value = venueValue;
       }
 
-      document.getElementById('edit_season').value = perf.season || '';
+      populateSeasonCategorySelect(seasonCategory(perf.season));
       document.getElementById('edit_capacity').value = perf.capacity || '';
       document.getElementById('edit_budget_goal').value = perf.budget_goal || '';
       document.getElementById('edit_cancelled').checked = perf.cancelled === true;
@@ -457,16 +571,75 @@
       window.history.pushState({}, '', '/admin-edit.html');
     }
 
+    // --- Season category picker ---
+
+    // Build the category dropdown from existing categories, ensuring the current
+    // value is present, plus an "+ Add new…" escape hatch.
+    function populateSeasonCategorySelect(currentCategory) {
+      const sel = document.getElementById('edit_season_category');
+      const cats = getCategories();
+      if (currentCategory && !cats.includes(currentCategory)) cats.push(currentCategory);
+      cats.sort();
+      sel.innerHTML = '<option value="">— None —</option>' +
+        cats.map(c => `<option value="${c}">${c}</option>`).join('') +
+        '<option value="__new__">+ Add new category…</option>';
+      sel.value = currentCategory || '';
+
+      const newInput = document.getElementById('edit_season_category_new');
+      newInput.value = '';
+      newInput.style.display = 'none';
+      updateSeasonPreview();
+    }
+
+    // The category the user has chosen (handles the "+ Add new…" path).
+    function selectedSeasonCategory() {
+      const sel = document.getElementById('edit_season_category');
+      if (sel.value === '__new__') {
+        return document.getElementById('edit_season_category_new').value.trim();
+      }
+      return sel.value;
+    }
+
+    // Compose the season string stored in BigQuery: "FY Category" (FY from the date).
+    function composeSeason() {
+      const category = selectedSeasonCategory();
+      if (!category) return '';
+      const fy = fiscalYearLabel(document.getElementById('edit_date').value);
+      return fy ? `${fy} ${category}` : category;
+    }
+
+    function updateSeasonPreview() {
+      const preview = document.getElementById('edit_season_preview');
+      const category = selectedSeasonCategory();
+      const fy = fiscalYearLabel(document.getElementById('edit_date').value);
+      if (!category) {
+        preview.textContent = 'No season category — the season field will be cleared.';
+      } else if (fy) {
+        preview.textContent = `Will be saved as: "${fy} ${category}"`;
+      } else {
+        preview.textContent = `Will be saved as: "${category}" (set a performance date to add the fiscal year)`;
+      }
+    }
+
+    document.getElementById('edit_season_category').addEventListener('change', () => {
+      const isNew = document.getElementById('edit_season_category').value === '__new__';
+      const newInput = document.getElementById('edit_season_category_new');
+      newInput.style.display = isNew ? 'block' : 'none';
+      if (isNew) newInput.focus();
+      updateSeasonPreview();
+    });
+    document.getElementById('edit_season_category_new').addEventListener('input', updateSeasonPreview);
+    document.getElementById('edit_date').addEventListener('change', updateSeasonPreview);
+
     document.getElementById('editForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const performanceCode = document.getElementById('edit_performance_code').value;
       const updates = {
         title: document.getElementById('edit_title').value,
-        series: document.getElementById('edit_series').value,
         performance_date: document.getElementById('edit_date').value,
         venue: document.getElementById('edit_venue').value,
-        season: document.getElementById('edit_season').value,
+        season: composeSeason(),
         capacity: parseInt(document.getElementById('edit_capacity').value),
         budget_goal: parseInt(document.getElementById('edit_budget_goal').value) || 0,
         cancelled: document.getElementById('edit_cancelled').checked
@@ -588,6 +761,28 @@
         selectBtn.disabled = false;
       }
     }
+
+    // --- List filters ---
+    document.getElementById('filterSearch').addEventListener('input', (e) => {
+      filterState.search = e.target.value;
+      renderTable();
+    });
+    document.getElementById('filterSeason').addEventListener('change', (e) => {
+      filterState.season = e.target.value;
+      renderTable();
+    });
+    document.getElementById('filterVenue').addEventListener('change', (e) => {
+      filterState.venue = e.target.value;
+      renderTable();
+    });
+    document.getElementById('filterStatus').addEventListener('change', (e) => {
+      filterState.status = e.target.value;
+      renderTable();
+    });
+    document.getElementById('filterHide2526').addEventListener('change', (e) => {
+      filterState.hide2526 = e.target.checked;
+      renderTable();
+    });
 
     // Load performances on page load
     loadPerformances().then(() => {

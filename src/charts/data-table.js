@@ -885,8 +885,10 @@ class DataTable {
             .append('div')
             .attr('class', 'filter-center');
 
-        // Season filter (with cleaned values)
-        const seasonValues = this.getUniqueValues('season').map(s => s.replace(/^\d{2}-\d{2}\s+/, ''));
+        // Season filter (categories only; fiscal-year prefixes collapsed and de-duped)
+        const seasonValues = [...new Set(
+            this.getUniqueValues('season').map(s => s.replace(/^\d{2}-\d{2}\s+/, '').trim()).filter(Boolean)
+        )].sort();
         this.createFilterDropdown(centerSection, 'season', 'Season', seasonValues);
 
         // Date range filter
