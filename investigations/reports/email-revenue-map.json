@@ -1,0 +1,4754 @@
+{
+  "window": {
+    "start": "2025-07-01",
+    "end": "2026-06-28"
+  },
+  "summary": {
+    "total": 292234.69999999995,
+    "tally": {
+      "GREEN": 134170.4,
+      "YELLOW": 137491.5,
+      "RED": 9377.3,
+      "AUTO": 11195.5
+    },
+    "cnt": {
+      "GREEN": 39,
+      "YELLOW": 3,
+      "RED": 66,
+      "AUTO": 11
+    }
+  },
+  "groups": [
+    {
+      "label": "26/27 Subscriptions",
+      "revenue": 100598.8,
+      "purchases": 97,
+      "sessions": 2364,
+      "rawSlugs": [
+        "26/27Subs",
+        "2026/27-subscriptions",
+        "subscriptions"
+      ],
+      "mappedSends": 27,
+      "note": "Season/subscription revenue; shares sends with 26/27 Concerts — split is approximate.",
+      "confidence": "YELLOW",
+      "sends": [
+        {
+          "name": "FY26 Classical Subscription Packages",
+          "sent": "2025-11-05",
+          "sends": 101453,
+          "opens": 34140,
+          "clicks": 1305,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Season Announcement Invite",
+          "sent": "2025-12-10",
+          "sends": 234,
+          "opens": 181,
+          "clicks": 37,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Lapsed Pops Subscribers - Customer Feedback Survey #1",
+          "sent": "2025-12-15",
+          "sends": 199,
+          "opens": 114,
+          "clicks": 35,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Active Non Pops Subscribers - Customer Feedback Survey #1",
+          "sent": "2025-12-15",
+          "sends": 195,
+          "opens": 103,
+          "clicks": 18,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Season Announcement Invite - Reminder",
+          "sent": "2026-01-06",
+          "sends": 201,
+          "opens": 142,
+          "clicks": 12,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Piazza Subscription Update - Customer Facing",
+          "sent": "2026-01-12",
+          "sends": 373,
+          "opens": 293,
+          "clicks": 2,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Season Announcement KBYG",
+          "sent": "2026-01-26",
+          "sends": 60,
+          "opens": 56,
+          "clicks": 6,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26/27 Season Launch Email",
+          "sent": "2026-01-29",
+          "sends": 96820,
+          "opens": 36064,
+          "clicks": 1697,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26/27 Season Announcement Email #2",
+          "sent": "2026-02-12",
+          "sends": 96950,
+          "opens": 14079,
+          "clicks": 1652,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal 2/26",
+          "sent": "2026-02-27",
+          "sends": 1553,
+          "opens": 1010,
+          "clicks": 91,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal 3/5 - Pops and Family",
+          "sent": "2026-03-06",
+          "sends": 684,
+          "opens": 397,
+          "clicks": 15,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal 3/5 - Classical",
+          "sent": "2026-03-06",
+          "sends": 1144,
+          "opens": 700,
+          "clicks": 25,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Don't Miss Out 3/12 - Pops and Family",
+          "sent": "2026-03-12",
+          "sends": 489,
+          "opens": 294,
+          "clicks": 15,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Don't Miss Out 3/12 - Classical",
+          "sent": "2026-03-12",
+          "sends": 817,
+          "opens": 519,
+          "clicks": 40,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Count Down Timer 3/19 - Classical",
+          "sent": "2026-03-19",
+          "sends": 683,
+          "opens": 428,
+          "clicks": 64,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Count Down Timer 3/19 - Pops and Family",
+          "sent": "2026-03-19",
+          "sends": 399,
+          "opens": 241,
+          "clicks": 32,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Last Chance 3/27 - Pops and Family",
+          "sent": "2026-03-27",
+          "sends": 310,
+          "opens": 178,
+          "clicks": 16,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Renewal: Last Chance 3/27 - Classical",
+          "sent": "2026-03-27",
+          "sends": 471,
+          "opens": 273,
+          "clicks": 37,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Film Subscription Announcement 4/16",
+          "sent": "2026-04-16",
+          "sends": 2788,
+          "opens": 1374,
+          "clicks": 83,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 New Subscriber 4/23",
+          "sent": "2026-04-23",
+          "sends": 2787,
+          "opens": 1312,
+          "clicks": 30,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 New Subscriber Acquisition #2",
+          "sent": "2026-05-08",
+          "sends": 2646,
+          "opens": 1188,
+          "clicks": 28,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 EU Tour Pre-Sale #2 - Subscribers & Donors",
+          "sent": "2026-05-12",
+          "sends": 2887,
+          "opens": 1621,
+          "clicks": 132,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Subscriber Courtesy Week",
+          "sent": "2026-05-18",
+          "sends": 1804,
+          "opens": 1216,
+          "clicks": 111,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 New Subscriber Acquisition #3",
+          "sent": "2026-05-21",
+          "sends": 2640,
+          "opens": 1456,
+          "clicks": 66,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 New Subscriber Acquisition #4",
+          "sent": "2026-06-04",
+          "sends": 2639,
+          "opens": 1150,
+          "clicks": 40,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Lapsed Subscriber Email - 6/16",
+          "sent": "2026-06-24",
+          "sends": 387,
+          "opens": 233,
+          "clicks": 28,
+          "matchScore": 2,
+          "matchReason": "override"
+        },
+        {
+          "name": "Automatic Renewal Opt-In 6/25",
+          "sent": "2026-06-25",
+          "sends": 600,
+          "opens": 392,
+          "clicks": 56,
+          "matchScore": 2,
+          "matchReason": "override"
+        }
+      ]
+    },
+    {
+      "label": "26/27 Concerts",
+      "revenue": 35600,
+      "purchases": 109,
+      "sessions": 1948,
+      "rawSlugs": [
+        "26/27_ concerts",
+        "26/27_concerts"
+      ],
+      "mappedSends": 0,
+      "note": "New-season concert revenue; shares season-announcement sends with Subscriptions.",
+      "confidence": "YELLOW",
+      "sends": []
+    },
+    {
+      "label": "ELF",
+      "revenue": 22714.5,
+      "purchases": 101,
+      "sessions": 2974,
+      "rawSlugs": [
+        "ELF",
+        "Elf",
+        "[ELF]"
+      ],
+      "mappedSends": 6,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Elf Standalone Email",
+          "sent": "2025-10-02",
+          "sends": 103391,
+          "opens": 35150,
+          "clicks": 751,
+          "matchScore": 3,
+          "matchReason": "elf"
+        },
+        {
+          "name": "FY26 Elf Standalone Email #2",
+          "sent": "2025-10-24",
+          "sends": 103537,
+          "opens": 36081,
+          "clicks": 564,
+          "matchScore": 3,
+          "matchReason": "elf"
+        },
+        {
+          "name": "FY26 Elf KBYG - Friday",
+          "sent": "2025-11-26",
+          "sends": 234,
+          "opens": 172,
+          "clicks": 83,
+          "matchScore": 3,
+          "matchReason": "elf"
+        },
+        {
+          "name": "FY26 Elf KBYG - Saturday 7PM",
+          "sent": "2025-11-27",
+          "sends": 218,
+          "opens": 156,
+          "clicks": 70,
+          "matchScore": 3,
+          "matchReason": "elf"
+        },
+        {
+          "name": "FY26 Elf KBYG - Saturday 1PM",
+          "sent": "2025-11-27",
+          "sends": 190,
+          "opens": 139,
+          "clicks": 74,
+          "matchScore": 3,
+          "matchReason": "elf"
+        },
+        {
+          "name": "FY26 Elf KBYG - Sunday",
+          "sent": "2025-11-28",
+          "sends": 240,
+          "opens": 173,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "elf"
+        }
+      ]
+    },
+    {
+      "label": "Billy Joel / Elton John",
+      "revenue": 10010.5,
+      "purchases": 41,
+      "sessions": 1270,
+      "rawSlugs": [
+        "BillyJoelEltonJohn",
+        "eltonjohn-billyjoel",
+        "billyjoel-eltonjohn"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Billy Joel/Elton John Standalone #1",
+          "sent": "2026-02-19",
+          "sends": 97591,
+          "opens": 35649,
+          "clicks": 984,
+          "matchScore": 3,
+          "matchReason": "billy+joel+elton+john"
+        },
+        {
+          "name": "FY26 Billy Joel & Elton John KYBG - FRIDAY 3/27",
+          "sent": "2026-03-26",
+          "sends": 491,
+          "opens": 335,
+          "clicks": 117,
+          "matchScore": 3,
+          "matchReason": "billy+joel+elton+john"
+        },
+        {
+          "name": "FY26 Billy Joel & Elton John KYBG - SUNDAY 3/29",
+          "sent": "2026-03-27",
+          "sends": 473,
+          "opens": 324,
+          "clicks": 137,
+          "matchScore": 3,
+          "matchReason": "billy+joel+elton+john"
+        },
+        {
+          "name": "FY26 Billy Joel & Elton John KYBG - SATURDAY 3/28",
+          "sent": "2026-03-27",
+          "sends": 475,
+          "opens": 347,
+          "clicks": 134,
+          "matchScore": 3,
+          "matchReason": "billy+joel+elton+john"
+        }
+      ]
+    },
+    {
+      "label": "ChristmasFestival",
+      "revenue": 9333,
+      "purchases": 32,
+      "sessions": 1522,
+      "rawSlugs": [
+        "ChristmasFestival"
+      ],
+      "mappedSends": 11,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Christmas Festival Standalone #1",
+          "sent": "2025-11-13",
+          "sends": 96184,
+          "opens": 34991,
+          "clicks": 486,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival Rehearsal Reception Invite",
+          "sent": "2025-11-14",
+          "sends": 354,
+          "opens": 270,
+          "clicks": 60,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 LOJ Christmas Tour KYBG - FRI",
+          "sent": "2025-12-11",
+          "sends": 561,
+          "opens": 420,
+          "clicks": 230,
+          "matchScore": 3,
+          "matchReason": "christmas"
+        },
+        {
+          "name": "FY26 LOJ Christmas Tour KYBG - SAT",
+          "sent": "2025-12-12",
+          "sends": 533,
+          "opens": 399,
+          "clicks": 205,
+          "matchScore": 3,
+          "matchReason": "christmas"
+        },
+        {
+          "name": "FY26 Christmas Festival Rehearsal Reception KBYG",
+          "sent": "2025-12-15",
+          "sends": 101,
+          "opens": 87,
+          "clicks": 1,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - THURSDAY",
+          "sent": "2025-12-17",
+          "sends": 237,
+          "opens": 156,
+          "clicks": 79,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - FRIDAY",
+          "sent": "2025-12-18",
+          "sends": 229,
+          "opens": 142,
+          "clicks": 61,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - SUNDAY 2PM",
+          "sent": "2025-12-19",
+          "sends": 273,
+          "opens": 182,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - SATURDAY 1PM",
+          "sent": "2025-12-19",
+          "sends": 264,
+          "opens": 175,
+          "clicks": 70,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - SATURDAY 7PM",
+          "sent": "2025-12-19",
+          "sends": 239,
+          "opens": 167,
+          "clicks": 58,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        },
+        {
+          "name": "FY26 Christmas Festival KYBG - SUNDAY 7PM",
+          "sent": "2025-12-19",
+          "sends": 205,
+          "opens": 134,
+          "clicks": 49,
+          "matchScore": 3,
+          "matchReason": "christmas+festival"
+        }
+      ]
+    },
+    {
+      "label": "ShesGotSoul",
+      "revenue": 9274.5,
+      "purchases": 46,
+      "sessions": 1822,
+      "rawSlugs": [
+        "ShesGotSoul"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 She's Got Soul Standalone #1",
+          "sent": "2026-01-15",
+          "sends": 96407,
+          "opens": 34351,
+          "clicks": 236,
+          "matchScore": 3,
+          "matchReason": "got+soul"
+        },
+        {
+          "name": "FY26 She's Got Soul Standalone #2",
+          "sent": "2026-02-05",
+          "sends": 96676,
+          "opens": 12170,
+          "clicks": 264,
+          "matchScore": 3,
+          "matchReason": "got+soul"
+        },
+        {
+          "name": "FY26 She's Got Soul KYBG - FRIDAY",
+          "sent": "2026-02-12",
+          "sends": 394,
+          "opens": 190,
+          "clicks": 79,
+          "matchScore": 3,
+          "matchReason": "got+soul"
+        },
+        {
+          "name": "FY26 She's Got Soul KYBG - SUNDAY",
+          "sent": "2026-02-13",
+          "sends": 293,
+          "opens": 130,
+          "clicks": 66,
+          "matchScore": 3,
+          "matchReason": "got+soul"
+        },
+        {
+          "name": "FY26 She's Got Soul KYBG - SATURDAY",
+          "sent": "2026-02-13",
+          "sends": 407,
+          "opens": 174,
+          "clicks": 83,
+          "matchScore": 3,
+          "matchReason": "got+soul"
+        }
+      ]
+    },
+    {
+      "label": "ChrisThile",
+      "revenue": 9158,
+      "purchases": 37,
+      "sessions": 1799,
+      "rawSlugs": [
+        "ChrisThile"
+      ],
+      "mappedSends": 1,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Chris Thile KYBG - THURSDAY",
+          "sent": "2026-02-11",
+          "sends": 523,
+          "opens": 287,
+          "clicks": 179,
+          "matchScore": 3,
+          "matchReason": "chris+thile"
+        }
+      ]
+    },
+    {
+      "label": "IndianaJones",
+      "revenue": 9091.5,
+      "purchases": 40,
+      "sessions": 2184,
+      "rawSlugs": [
+        "IndianaJones"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Indiana Jones Standalone #1",
+          "sent": "2026-01-01",
+          "sends": 96612,
+          "opens": 35202,
+          "clicks": 529,
+          "matchScore": 3,
+          "matchReason": "indiana+jones"
+        },
+        {
+          "name": "FY26 Indiana Jones KYBG - THURSDAY",
+          "sent": "2026-01-21",
+          "sends": 421,
+          "opens": 288,
+          "clicks": 110,
+          "matchScore": 3,
+          "matchReason": "indiana+jones"
+        },
+        {
+          "name": "FY26 Indiana Jones KYBG - FRIDAY",
+          "sent": "2026-01-22",
+          "sends": 387,
+          "opens": 262,
+          "clicks": 107,
+          "matchScore": 3,
+          "matchReason": "indiana+jones"
+        },
+        {
+          "name": "FY26 Indiana Jones KYBG - SATURDAY",
+          "sent": "2026-01-23",
+          "sends": 366,
+          "opens": 254,
+          "clicks": 93,
+          "matchScore": 3,
+          "matchReason": "indiana+jones"
+        },
+        {
+          "name": "FY26 Indiana Jones KYBG - SUNDAY",
+          "sent": "2026-01-24",
+          "sends": 357,
+          "opens": 243,
+          "clicks": 80,
+          "matchScore": 3,
+          "matchReason": "indiana+jones"
+        }
+      ]
+    },
+    {
+      "label": "Messiah",
+      "revenue": 8603.5,
+      "purchases": 59,
+      "sessions": 1543,
+      "rawSlugs": [
+        "Messiah",
+        "messiah"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Handel's Messiah Standalone #1",
+          "sent": "2025-10-09",
+          "sends": 103204,
+          "opens": 34290,
+          "clicks": 428,
+          "matchScore": 3,
+          "matchReason": "messiah"
+        },
+        {
+          "name": "FY26 Handel's Messiah KYBG - FRI",
+          "sent": "2025-12-04",
+          "sends": 346,
+          "opens": 192,
+          "clicks": 19,
+          "matchScore": 3,
+          "matchReason": "messiah"
+        },
+        {
+          "name": "FY26 Handel's Messiah KYBG - SAT",
+          "sent": "2025-12-04",
+          "sends": 292,
+          "opens": 192,
+          "clicks": 86,
+          "matchScore": 3,
+          "matchReason": "messiah"
+        },
+        {
+          "name": "FY26 Handel's Messiah KYBG - FRI (Resend)",
+          "sent": "2025-12-04",
+          "sends": 318,
+          "opens": 217,
+          "clicks": 105,
+          "matchScore": 3,
+          "matchReason": "messiah"
+        },
+        {
+          "name": "FY26 Handel's Messiah KYBG - SUN",
+          "sent": "2025-12-05",
+          "sends": 342,
+          "opens": 223,
+          "clicks": 106,
+          "matchScore": 3,
+          "matchReason": "messiah"
+        }
+      ]
+    },
+    {
+      "label": "Taylor Swift (Symphony Era)",
+      "revenue": 7786,
+      "purchases": 36,
+      "sessions": 353,
+      "rawSlugs": [
+        "taylor-swift-symphony-era"
+      ],
+      "mappedSends": 3,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/10 Weekly Concert Update Final Symphony -- Curious Explorer",
+          "sent": "2026-03-10",
+          "sends": 7339,
+          "opens": 3575,
+          "clicks": 63,
+          "matchScore": 3,
+          "matchReason": "symphony"
+        },
+        {
+          "name": "FY26 Final Symphony KYBG - WEDNESDAY 3/25",
+          "sent": "2026-03-24",
+          "sends": 351,
+          "opens": 229,
+          "clicks": 110,
+          "matchScore": 3,
+          "matchReason": "symphony"
+        },
+        {
+          "name": "FY26 Final Symphony KYBG - THURSDAY 3/26",
+          "sent": "2026-03-25",
+          "sends": 308,
+          "opens": 175,
+          "clicks": 85,
+          "matchScore": 3,
+          "matchReason": "symphony"
+        }
+      ]
+    },
+    {
+      "label": "IAWL",
+      "revenue": 7660,
+      "purchases": 28,
+      "sessions": 1506,
+      "rawSlugs": [
+        "IAWL"
+      ],
+      "mappedSends": 2,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 IAWL KYBG - TUESDAY",
+          "sent": "2025-12-22",
+          "sends": 273,
+          "opens": 197,
+          "clicks": 78,
+          "matchScore": 3,
+          "matchReason": "iawl"
+        },
+        {
+          "name": "FY26 IAWL KYBG - WEDNESDAY",
+          "sent": "2025-12-23",
+          "sends": 279,
+          "opens": 200,
+          "clicks": 90,
+          "matchScore": 3,
+          "matchReason": "iawl"
+        }
+      ]
+    },
+    {
+      "label": "BFCM",
+      "revenue": 5771.9,
+      "purchases": 34,
+      "sessions": 1439,
+      "rawSlugs": [
+        "BFCM"
+      ],
+      "mappedSends": 1,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 BFCM Deals: Promo Email 3",
+          "sent": "2025-12-01",
+          "sends": 96078,
+          "opens": 33797,
+          "clicks": 317,
+          "matchScore": 3,
+          "matchReason": "bfcm"
+        }
+      ]
+    },
+    {
+      "label": "CS6",
+      "revenue": 5630,
+      "purchases": 27,
+      "sessions": 1670,
+      "rawSlugs": [
+        "CS6"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS6 Standalone #1",
+          "sent": "2025-12-26",
+          "sends": 96863,
+          "opens": 34760,
+          "clicks": 274,
+          "matchScore": 3,
+          "matchReason": "series CS6"
+        },
+        {
+          "name": "FY26 CS6 KYBG - FRIDAY",
+          "sent": "2026-01-29",
+          "sends": 302,
+          "opens": 221,
+          "clicks": 64,
+          "matchScore": 3,
+          "matchReason": "series CS6"
+        },
+        {
+          "name": "FY26 CS6 KYBG - SATURDAY",
+          "sent": "2026-01-30",
+          "sends": 418,
+          "opens": 274,
+          "clicks": 77,
+          "matchScore": 3,
+          "matchReason": "series CS6"
+        },
+        {
+          "name": "FY26 CS6 KYBG - SUNDAY",
+          "sent": "2026-01-30",
+          "sends": 444,
+          "opens": 310,
+          "clicks": 76,
+          "matchScore": 3,
+          "matchReason": "series CS6"
+        }
+      ]
+    },
+    {
+      "label": "abandoncart",
+      "revenue": 4983,
+      "purchases": 43,
+      "sessions": 405,
+      "rawSlugs": [
+        "abandoncart"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "CS3",
+      "revenue": 4572.5,
+      "purchases": 32,
+      "sessions": 1123,
+      "rawSlugs": [
+        "CS3"
+      ],
+      "mappedSends": 6,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS3 Standalone Email",
+          "sent": "2025-09-25",
+          "sends": 103519,
+          "opens": 35979,
+          "clicks": 348,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        },
+        {
+          "name": "FY26 CS3 Standalone Email #2",
+          "sent": "2025-10-16",
+          "sends": 103590,
+          "opens": 34664,
+          "clicks": 229,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        },
+        {
+          "name": "FY26 CS3 Matthias Video",
+          "sent": "2025-11-17",
+          "sends": 96088,
+          "opens": 34953,
+          "clicks": 554,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        },
+        {
+          "name": "FY26 CS3 - KBYG FRI",
+          "sent": "2025-11-21",
+          "sends": 261,
+          "opens": 174,
+          "clicks": 57,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        },
+        {
+          "name": "FY26 CS3 - KBYG SAT",
+          "sent": "2025-11-21",
+          "sends": 386,
+          "opens": 252,
+          "clicks": 77,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        },
+        {
+          "name": "FY26 CS3 - KBYG SUN",
+          "sent": "2025-11-21",
+          "sends": 394,
+          "opens": 275,
+          "clicks": 77,
+          "matchScore": 3,
+          "matchReason": "series CS3"
+        }
+      ]
+    },
+    {
+      "label": "EU Tour",
+      "revenue": 4331,
+      "purchases": 30,
+      "sessions": 438,
+      "rawSlugs": [
+        "EUTour",
+        "EUR-Tour-Kickoff",
+        "european-send-off"
+      ],
+      "mappedSends": 2,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 EU Tour Pre-Sale #1 - Symphony Society",
+          "sent": "2026-05-07",
+          "sends": 337,
+          "opens": 242,
+          "clicks": 32,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 EU Tour Sale - General Audience",
+          "sent": "2026-05-15",
+          "sends": 29780,
+          "opens": 11229,
+          "clicks": 162,
+          "matchScore": 3,
+          "matchReason": "override"
+        }
+      ]
+    },
+    {
+      "label": "single-tickets",
+      "revenue": 3414,
+      "purchases": 6,
+      "sessions": 41,
+      "rawSlugs": [
+        "single-tickets"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": [
+        {
+          "name": "FY26 7/15 Single Ticket On Sale Announcement",
+          "sent": "2025-07-15",
+          "sends": 104010,
+          "opens": 36330,
+          "clicks": 1760,
+          "matchScore": 3,
+          "matchReason": "single"
+        },
+        {
+          "name": "FY26 Single Ticket Email #1 - Teaser & Early Access",
+          "sent": "2026-06-08",
+          "sends": 4466,
+          "opens": 2464,
+          "clicks": 169,
+          "matchScore": 3,
+          "matchReason": "single"
+        },
+        {
+          "name": "FY26 Single Ticket Email #2 - Final Reminder",
+          "sent": "2026-06-14",
+          "sends": 4461,
+          "opens": 2299,
+          "clicks": 196,
+          "matchScore": 3,
+          "matchReason": "single"
+        },
+        {
+          "name": "FY26 Single Ticket Email #3 - Launch",
+          "sent": "2026-06-15",
+          "sends": 41712,
+          "opens": 16351,
+          "clicks": 1014,
+          "matchScore": 3,
+          "matchReason": "single"
+        },
+        {
+          "name": "Single Ticket Email #4 Launch Follow Up",
+          "sent": "2026-06-23",
+          "sends": 4457,
+          "opens": 2218,
+          "clicks": 52,
+          "matchScore": 3,
+          "matchReason": "single"
+        }
+      ]
+    },
+    {
+      "label": "Harry Potter (HP2)",
+      "revenue": 2510,
+      "purchases": 6,
+      "sessions": 987,
+      "rawSlugs": [
+        "HP2"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Harry Potter KYBG - THURSDAY",
+          "sent": "2026-02-18",
+          "sends": 428,
+          "opens": 258,
+          "clicks": 113,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Harry Potter KYBG - FRIDAY",
+          "sent": "2026-02-20",
+          "sends": 402,
+          "opens": 263,
+          "clicks": 105,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Harry Potter KYBG - SATURDAY",
+          "sent": "2026-02-21",
+          "sends": 380,
+          "opens": 253,
+          "clicks": 104,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 Harry Potter KYBG - SUNDAY",
+          "sent": "2026-02-21",
+          "sends": 328,
+          "opens": 230,
+          "clicks": 98,
+          "matchScore": 3,
+          "matchReason": "override"
+        }
+      ]
+    },
+    {
+      "label": "OnStage2",
+      "revenue": 2419,
+      "purchases": 19,
+      "sessions": 1579,
+      "rawSlugs": [
+        "OnStage2"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "CS5",
+      "revenue": 2314,
+      "purchases": 18,
+      "sessions": 1518,
+      "rawSlugs": [
+        "CS5"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS5 Standalone #1",
+          "sent": "2025-12-05",
+          "sends": 96232,
+          "opens": 35634,
+          "clicks": 304,
+          "matchScore": 3,
+          "matchReason": "series CS5"
+        },
+        {
+          "name": "FY26 CS5 KYBG - FRIDAY",
+          "sent": "2026-01-15",
+          "sends": 214,
+          "opens": 150,
+          "clicks": 40,
+          "matchScore": 3,
+          "matchReason": "series CS5"
+        },
+        {
+          "name": "FY26 CS5 KYBG - SATURDAY",
+          "sent": "2026-01-16",
+          "sends": 389,
+          "opens": 248,
+          "clicks": 67,
+          "matchScore": 3,
+          "matchReason": "series CS5"
+        },
+        {
+          "name": "FY26 CS5 KYBG - SUNDAY",
+          "sent": "2026-01-17",
+          "sends": 375,
+          "opens": 258,
+          "clicks": 66,
+          "matchScore": 3,
+          "matchReason": "series CS5"
+        }
+      ]
+    },
+    {
+      "label": "CS7",
+      "revenue": 2280,
+      "purchases": 13,
+      "sessions": 800,
+      "rawSlugs": [
+        "CS7"
+      ],
+      "mappedSends": 3,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS7 KYBG - FRIDAY",
+          "sent": "2026-02-04",
+          "sends": 254,
+          "opens": 171,
+          "clicks": 54,
+          "matchScore": 3,
+          "matchReason": "series CS7"
+        },
+        {
+          "name": "FY26 CS7 KYBG - SATURDAY",
+          "sent": "2026-02-05",
+          "sends": 275,
+          "opens": 115,
+          "clicks": 54,
+          "matchScore": 3,
+          "matchReason": "series CS7"
+        },
+        {
+          "name": "FY26 CS7 KYBG - SUNDAY",
+          "sent": "2026-02-06",
+          "sends": 318,
+          "opens": 146,
+          "clicks": 62,
+          "matchScore": 3,
+          "matchReason": "series CS7"
+        }
+      ]
+    },
+    {
+      "label": "CS4",
+      "revenue": 2091,
+      "purchases": 11,
+      "sessions": 1671,
+      "rawSlugs": [
+        "CS4"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS4 Standalone #1",
+          "sent": "2025-12-11",
+          "sends": 96528,
+          "opens": 34622,
+          "clicks": 234,
+          "matchScore": 3,
+          "matchReason": "series CS4"
+        },
+        {
+          "name": "FY26 CS4 KYBG - FRIDAY",
+          "sent": "2026-01-08",
+          "sends": 359,
+          "opens": 240,
+          "clicks": 75,
+          "matchScore": 3,
+          "matchReason": "series CS4"
+        },
+        {
+          "name": "FY26 CS4 KYBG - SUNDAY",
+          "sent": "2026-01-09",
+          "sends": 399,
+          "opens": 260,
+          "clicks": 88,
+          "matchScore": 3,
+          "matchReason": "series CS4"
+        },
+        {
+          "name": "FY26 CS4 KYBG - SATURDAY",
+          "sent": "2026-01-09",
+          "sends": 358,
+          "opens": 240,
+          "clicks": 74,
+          "matchScore": 3,
+          "matchReason": "series CS4"
+        }
+      ]
+    },
+    {
+      "label": "Leslie Odom Jr",
+      "revenue": 2074.5,
+      "purchases": 12,
+      "sessions": 378,
+      "rawSlugs": [
+        "LeslieOdomJr"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "CS9",
+      "revenue": 2071.5,
+      "purchases": 11,
+      "sessions": 252,
+      "rawSlugs": [
+        "CS9"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CS9 KBYG - FRIDAY",
+          "sent": "2026-04-09",
+          "sends": 309,
+          "opens": 219,
+          "clicks": 72,
+          "matchScore": 3,
+          "matchReason": "series CS9"
+        },
+        {
+          "name": "FY26 CS9 KBYG - SUNDAY",
+          "sent": "2026-04-10",
+          "sends": 402,
+          "opens": 272,
+          "clicks": 80,
+          "matchScore": 3,
+          "matchReason": "series CS9"
+        },
+        {
+          "name": "FY26 CS9 KBYG - CORRECTION EMAIL",
+          "sent": "2026-04-10",
+          "sends": 1060,
+          "opens": 716,
+          "clicks": 10,
+          "matchScore": 3,
+          "matchReason": "series CS9"
+        },
+        {
+          "name": "FY26 CS9 KBYG - SATURDAY",
+          "sent": "2026-04-10",
+          "sends": 374,
+          "opens": 255,
+          "clicks": 76,
+          "matchScore": 3,
+          "matchReason": "series CS9"
+        }
+      ]
+    },
+    {
+      "label": "film-subscription",
+      "revenue": 1962.8,
+      "purchases": 3,
+      "sessions": 161,
+      "rawSlugs": [
+        "film-subscription"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "PhilharmoniaFantastique",
+      "revenue": 1814,
+      "purchases": 13,
+      "sessions": 875,
+      "rawSlugs": [
+        "PhilharmoniaFantastique"
+      ],
+      "mappedSends": 2,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Philharmonia Fantastique Standalone",
+          "sent": "2026-01-23",
+          "sends": 96920,
+          "opens": 34564,
+          "clicks": 497,
+          "matchScore": 3,
+          "matchReason": "philharmonia+fantastique"
+        },
+        {
+          "name": "FY26 Philharmonia Fantastique KYBG",
+          "sent": "2026-02-27",
+          "sends": 167,
+          "opens": 126,
+          "clicks": 31,
+          "matchScore": 3,
+          "matchReason": "philharmonia+fantastique"
+        }
+      ]
+    },
+    {
+      "label": "CS2",
+      "revenue": 1619.5,
+      "purchases": 18,
+      "sessions": 611,
+      "rawSlugs": [
+        "CS2"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 9/15 CS2 Standalone Email",
+          "sent": "2025-09-15",
+          "sends": 103598,
+          "opens": 35612,
+          "clicks": 356,
+          "matchScore": 3,
+          "matchReason": "series CS2"
+        },
+        {
+          "name": "FY26 CS2 Matthias Video",
+          "sent": "2025-10-29",
+          "sends": 103396,
+          "opens": 34678,
+          "clicks": 696,
+          "matchScore": 3,
+          "matchReason": "series CS2"
+        },
+        {
+          "name": "FY26 CS2 - KBYG SAT",
+          "sent": "2025-10-30",
+          "sends": 523,
+          "opens": 356,
+          "clicks": 109,
+          "matchScore": 3,
+          "matchReason": "series CS2"
+        },
+        {
+          "name": "FY26 CS2 - KBYG FRI",
+          "sent": "2025-10-30",
+          "sends": 280,
+          "opens": 181,
+          "clicks": 63,
+          "matchScore": 3,
+          "matchReason": "series CS2"
+        },
+        {
+          "name": "FY26 CS2 - KBYG SUN",
+          "sent": "2025-10-31",
+          "sends": 513,
+          "opens": 340,
+          "clicks": 105,
+          "matchScore": 3,
+          "matchReason": "series CS2"
+        }
+      ]
+    },
+    {
+      "label": "CS8",
+      "revenue": 1389,
+      "purchases": 10,
+      "sessions": 305,
+      "rawSlugs": [
+        "CS8"
+      ],
+      "mappedSends": 5,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/3 Weekly Concert Promo CS8 - Classical Aficionado",
+          "sent": "2026-03-04",
+          "sends": 9657,
+          "opens": 4543,
+          "clicks": 148,
+          "matchScore": 3,
+          "matchReason": "series CS8"
+        },
+        {
+          "name": "FY26 CS8 KYBG - FRIDAY CORRECT",
+          "sent": "2026-03-12",
+          "sends": 314,
+          "opens": 244,
+          "clicks": 57,
+          "matchScore": 3,
+          "matchReason": "series CS8"
+        },
+        {
+          "name": "FY26 CS8 KYBG - FRIDAY",
+          "sent": "2026-03-12",
+          "sends": 314,
+          "opens": 167,
+          "clicks": 22,
+          "matchScore": 3,
+          "matchReason": "series CS8"
+        },
+        {
+          "name": "FY26 CS8 KYBG - SATURDAY 3/14",
+          "sent": "2026-03-13",
+          "sends": 296,
+          "opens": 204,
+          "clicks": 56,
+          "matchScore": 3,
+          "matchReason": "series CS8"
+        },
+        {
+          "name": "FY26 CS8 KYBG - SUNDAY 3/15",
+          "sent": "2026-03-13",
+          "sends": 365,
+          "opens": 265,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "series CS8"
+        }
+      ]
+    },
+    {
+      "label": "KCSMoviesSub",
+      "revenue": 1292.7,
+      "purchases": 2,
+      "sessions": 115,
+      "rawSlugs": [
+        "KCSMoviesSub"
+      ],
+      "mappedSends": 1,
+      "note": null,
+      "confidence": "YELLOW",
+      "sends": [
+        {
+          "name": "FY26 DEVO | CF Family Sub Suite Invite",
+          "sent": "2025-12-15",
+          "sends": 52,
+          "opens": 33,
+          "clicks": 14,
+          "matchScore": 2,
+          "matchReason": "sub"
+        }
+      ]
+    },
+    {
+      "label": "FinalSymphony",
+      "revenue": 1196.5,
+      "purchases": 6,
+      "sessions": 304,
+      "rawSlugs": [
+        "FinalSymphony",
+        "final-symphony"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "openhouse",
+      "revenue": 910,
+      "purchases": 2,
+      "sessions": 20,
+      "rawSlugs": [
+        "openhouse"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "Dolly Parton",
+      "revenue": 800.5,
+      "purchases": 3,
+      "sessions": 75,
+      "rawSlugs": [
+        "dollyparton",
+        "DollyParton"
+      ],
+      "mappedSends": 8,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/17 Weekly Concert Update Dolly Parton's Threads -- Curious Explorer",
+          "sent": "2026-03-17",
+          "sends": 7348,
+          "opens": 3177,
+          "clicks": 80,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 4/14 Weekly Concert Update Dolly Parton Threads -- CE CONTROL GROUP",
+          "sent": "2026-04-16",
+          "sends": 1371,
+          "opens": 624,
+          "clicks": 12,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton KBYG - FRIDAY 5/15",
+          "sent": "2026-05-13",
+          "sends": 388,
+          "opens": 264,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton KBYG - SATURDAY 5/16",
+          "sent": "2026-05-14",
+          "sends": 349,
+          "opens": 237,
+          "clicks": 71,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton KBYG - SUNDAY 5/17",
+          "sent": "2026-05-15",
+          "sends": 381,
+          "opens": 244,
+          "clicks": 99,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton Follow-Up #1 Friday",
+          "sent": "2026-05-16",
+          "sends": 411,
+          "opens": 213,
+          "clicks": 11,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton Follow-Up #2 Saturday",
+          "sent": "2026-05-17",
+          "sends": 380,
+          "opens": 211,
+          "clicks": 15,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        },
+        {
+          "name": "FY26 Dolly Parton Follow-Up #3 Sunday",
+          "sent": "2026-05-18",
+          "sends": 433,
+          "opens": 224,
+          "clicks": 9,
+          "matchScore": 3,
+          "matchReason": "dolly+parton"
+        }
+      ]
+    },
+    {
+      "label": "CS11",
+      "revenue": 659.5,
+      "purchases": 6,
+      "sessions": 117,
+      "rawSlugs": [
+        "CS11"
+      ],
+      "mappedSends": 9,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/17 Weekly Concert Promo CS11 - Classical Aficionado",
+          "sent": "2026-03-17",
+          "sends": 9805,
+          "opens": 4051,
+          "clicks": 120,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 4/21 Weekly Concert Promo CS11 - CA CONTROL",
+          "sent": "2026-04-23",
+          "sends": 413,
+          "opens": 197,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 4/22 - Dolly, CS11, CS12 Promo - BOGO",
+          "sent": "2026-04-24",
+          "sends": 1086,
+          "opens": 575,
+          "clicks": 20,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 KBYG - FRIDAY",
+          "sent": "2026-05-07",
+          "sends": 276,
+          "opens": 187,
+          "clicks": 60,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 KBYG - SATURDAY",
+          "sent": "2026-05-08",
+          "sends": 385,
+          "opens": 247,
+          "clicks": 78,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 KBYG - SUNDAY",
+          "sent": "2026-05-08",
+          "sends": 415,
+          "opens": 280,
+          "clicks": 90,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 Follow-Up #1 Friday",
+          "sent": "2026-05-09",
+          "sends": 340,
+          "opens": 197,
+          "clicks": 11,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 Follow-Up #2 Saturday",
+          "sent": "2026-05-10",
+          "sends": 407,
+          "opens": 237,
+          "clicks": 14,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        },
+        {
+          "name": "FY26 CS11 Follow-Up #3 Sunday",
+          "sent": "2026-05-11",
+          "sends": 420,
+          "opens": 242,
+          "clicks": 20,
+          "matchScore": 3,
+          "matchReason": "series CS11"
+        }
+      ]
+    },
+    {
+      "label": "midsummer-nights-dream",
+      "revenue": 603.5,
+      "purchases": 4,
+      "sessions": 67,
+      "rawSlugs": [
+        "midsummer-nights-dream"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "upcoming-events",
+      "revenue": 579,
+      "purchases": 4,
+      "sessions": 171,
+      "rawSlugs": [
+        "upcoming-events"
+      ],
+      "mappedSends": 3,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": [
+        {
+          "name": "FY26 Campaign Events Invite Reminder - MARNY",
+          "sent": "2026-03-09",
+          "sends": 38,
+          "opens": 28,
+          "clicks": 5,
+          "matchScore": 3,
+          "matchReason": "events"
+        },
+        {
+          "name": "FY26 Campaign Events Invite Reminder - BEBE",
+          "sent": "2026-03-09",
+          "sends": 14,
+          "opens": 12,
+          "clicks": 0,
+          "matchScore": 3,
+          "matchReason": "events"
+        },
+        {
+          "name": "FY26 Campaign Events Invite Reminder - JEFF",
+          "sent": "2026-03-09",
+          "sends": 16,
+          "opens": 14,
+          "clicks": 2,
+          "matchScore": 3,
+          "matchReason": "events"
+        }
+      ]
+    },
+    {
+      "label": "Holiday",
+      "revenue": 562,
+      "purchases": 4,
+      "sessions": 116,
+      "rawSlugs": [
+        "Holiday"
+      ],
+      "mappedSends": 3,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY25 7/1 Holiday Single Tickets On Sale",
+          "sent": "2025-07-01",
+          "sends": 104205,
+          "opens": 36069,
+          "clicks": 854,
+          "matchScore": 3,
+          "matchReason": "holiday"
+        },
+        {
+          "name": "FY26 Holiday Standalone #1",
+          "sent": "2025-10-08",
+          "sends": 103257,
+          "opens": 34877,
+          "clicks": 438,
+          "matchScore": 3,
+          "matchReason": "holiday"
+        },
+        {
+          "name": "FY26 Holiday Standalone #2",
+          "sent": "2025-10-15",
+          "sends": 103631,
+          "opens": 35213,
+          "clicks": 602,
+          "matchScore": 3,
+          "matchReason": "holiday"
+        }
+      ]
+    },
+    {
+      "label": "CS13",
+      "revenue": 545.5,
+      "purchases": 4,
+      "sessions": 133,
+      "rawSlugs": [
+        "CS13"
+      ],
+      "mappedSends": 11,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 4/7 Weekly Concert CS13 - Curious Explorer COMBO",
+          "sent": "2026-04-09",
+          "sends": 22966,
+          "opens": 10461,
+          "clicks": 125,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 4/7 Weekly Concert Promo CS13 - CA CONTROL",
+          "sent": "2026-04-09",
+          "sends": 415,
+          "opens": 197,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 4/7 Weekly Concert CS13 - Classical Aficionado COMBO",
+          "sent": "2026-04-09",
+          "sends": 7039,
+          "opens": 3304,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 5/5 Weekly Concert Promo CS13",
+          "sent": "2026-05-05",
+          "sends": 1095,
+          "opens": 566,
+          "clicks": 23,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 KBYG - FRIDAY",
+          "sent": "2026-06-03",
+          "sends": 449,
+          "opens": 338,
+          "clicks": 102,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 6/2 CS13 Promo #2",
+          "sent": "2026-06-03",
+          "sends": 1058,
+          "opens": 528,
+          "clicks": 30,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 KBYG - SATURDAY",
+          "sent": "2026-06-04",
+          "sends": 477,
+          "opens": 317,
+          "clicks": 98,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 KBYG - SUNDAY",
+          "sent": "2026-06-05",
+          "sends": 556,
+          "opens": 385,
+          "clicks": 121,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 Follow-Up #1 Friday",
+          "sent": "2026-06-06",
+          "sends": 416,
+          "opens": 250,
+          "clicks": 24,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 Follow-Up #2 Saturday",
+          "sent": "2026-06-07",
+          "sends": 450,
+          "opens": 267,
+          "clicks": 29,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        },
+        {
+          "name": "FY26 CS13 Follow-Up #3 Sunday",
+          "sent": "2026-06-08",
+          "sends": 527,
+          "opens": 297,
+          "clicks": 40,
+          "matchScore": 3,
+          "matchReason": "series CS13"
+        }
+      ]
+    },
+    {
+      "label": "90sMixtape",
+      "revenue": 479.5,
+      "purchases": 5,
+      "sessions": 154,
+      "rawSlugs": [
+        "90sMixtape"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 90s Mixtape - KBYG 10/25 SAT",
+          "sent": "2025-10-23",
+          "sends": 330,
+          "opens": 240,
+          "clicks": 87,
+          "matchScore": 3,
+          "matchReason": "90s+mixtape"
+        },
+        {
+          "name": "FY26 90s Mixtape - KBYG 10/24 FRI",
+          "sent": "2025-10-23",
+          "sends": 328,
+          "opens": 232,
+          "clicks": 67,
+          "matchScore": 3,
+          "matchReason": "90s+mixtape"
+        },
+        {
+          "name": "FY26 90s Mixtape - KBYG 10/26 SUN",
+          "sent": "2025-10-24",
+          "sends": 258,
+          "opens": 191,
+          "clicks": 67,
+          "matchScore": 3,
+          "matchReason": "90s+mixtape"
+        },
+        {
+          "name": "FY26 9/18 90s Standalone Email",
+          "sent": "2025-09-18",
+          "sends": 103487,
+          "opens": 34995,
+          "clicks": 366,
+          "matchScore": 2,
+          "matchReason": "90s"
+        }
+      ]
+    },
+    {
+      "label": "contact-us",
+      "revenue": 360,
+      "purchases": 1,
+      "sessions": 84,
+      "rawSlugs": [
+        "contact-us"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "CS10",
+      "revenue": 346,
+      "purchases": 2,
+      "sessions": 149,
+      "rawSlugs": [
+        "CS10"
+      ],
+      "mappedSends": 4,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/10 Weekly Concert Promo CS10 - Classical Aficionado",
+          "sent": "2026-03-10",
+          "sends": 9658,
+          "opens": 4342,
+          "clicks": 111,
+          "matchScore": 3,
+          "matchReason": "series CS10"
+        },
+        {
+          "name": "FY26 CS10 KBYG - FRIDAY",
+          "sent": "2026-04-16",
+          "sends": 329,
+          "opens": 236,
+          "clicks": 54,
+          "matchScore": 3,
+          "matchReason": "series CS10"
+        },
+        {
+          "name": "FY26 CS10 KBYG - SUNDAY",
+          "sent": "2026-04-17",
+          "sends": 369,
+          "opens": 243,
+          "clicks": 61,
+          "matchScore": 3,
+          "matchReason": "series CS10"
+        },
+        {
+          "name": "FY26 CS10 KBYG - SATURDAY",
+          "sent": "2026-04-17",
+          "sends": 329,
+          "opens": 213,
+          "clicks": 51,
+          "matchScore": 3,
+          "matchReason": "series CS10"
+        }
+      ]
+    },
+    {
+      "label": "get-ready",
+      "revenue": 316,
+      "purchases": 4,
+      "sessions": 793,
+      "rawSlugs": [
+        "get-ready"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "on-stage-yefim-bronfman",
+      "revenue": 300,
+      "purchases": 1,
+      "sessions": 11,
+      "rawSlugs": [
+        "on-stage-yefim-bronfman"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "CATS26",
+      "revenue": 266,
+      "purchases": 7,
+      "sessions": 928,
+      "rawSlugs": [
+        "CATS26"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "OnStage4",
+      "revenue": 252,
+      "purchases": 2,
+      "sessions": 5,
+      "rawSlugs": [
+        "OnStage4"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "TopGun",
+      "revenue": 213,
+      "purchases": 1,
+      "sessions": 43,
+      "rawSlugs": [
+        "TopGun"
+      ],
+      "mappedSends": 3,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 Top Gun - KBYG 10/17 FRI",
+          "sent": "2025-10-16",
+          "sends": 356,
+          "opens": 263,
+          "clicks": 117,
+          "matchScore": 3,
+          "matchReason": "top+gun"
+        },
+        {
+          "name": "FY26 Top Gun - KBYG 10/19 SUN",
+          "sent": "2025-10-17",
+          "sends": 286,
+          "opens": 202,
+          "clicks": 81,
+          "matchScore": 3,
+          "matchReason": "top+gun"
+        },
+        {
+          "name": "FY26 Top Gun - KBYG 10/18 SAT",
+          "sent": "2025-10-17",
+          "sends": 373,
+          "opens": 262,
+          "clicks": 106,
+          "matchScore": 3,
+          "matchReason": "top+gun"
+        }
+      ]
+    },
+    {
+      "label": "steve-hackman",
+      "revenue": 210,
+      "purchases": 1,
+      "sessions": 79,
+      "rawSlugs": [
+        "steve-hackman"
+      ],
+      "mappedSends": 9,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/24 Weekly Concert Update Steve Hackman -- Curious Explorer",
+          "sent": "2026-03-24",
+          "sends": 4643,
+          "opens": 2417,
+          "clicks": 246,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 4/21 Weekly Concert Update Steve Hackman -- CE CONTROL GROUP",
+          "sent": "2026-04-23",
+          "sends": 1366,
+          "opens": 657,
+          "clicks": 13,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 4/21 Weekly Concert Update Steve Hackman -- CE COMBO",
+          "sent": "2026-04-23",
+          "sends": 22868,
+          "opens": 10859,
+          "clicks": 346,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 4/21 Weekly Concert Update Steve Hackman -- CA COMBO",
+          "sent": "2026-04-23",
+          "sends": 7014,
+          "opens": 3295,
+          "clicks": 77,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 Steve Hackman - Radio Contest",
+          "sent": "2026-06-09",
+          "sends": 68,
+          "opens": 37,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 Steve Hackman KBYG - THURS 6/11",
+          "sent": "2026-06-09",
+          "sends": 505,
+          "opens": 351,
+          "clicks": 153,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 Steve Hackman KBYG - FRIDAY 6/12",
+          "sent": "2026-06-10",
+          "sends": 572,
+          "opens": 376,
+          "clicks": 186,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 Steve Hackman Follow-Up #1 Thursday",
+          "sent": "2026-06-12",
+          "sends": 504,
+          "opens": 284,
+          "clicks": 13,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        },
+        {
+          "name": "FY26 Steve Hackman Follow-Up #2 Friday",
+          "sent": "2026-06-13",
+          "sends": 534,
+          "opens": 283,
+          "clicks": 30,
+          "matchScore": 3,
+          "matchReason": "steve+hackman"
+        }
+      ]
+    },
+    {
+      "label": "New Music Venue",
+      "revenue": 200.5,
+      "purchases": 8,
+      "sessions": 1745,
+      "rawSlugs": [
+        "new-music-venue"
+      ],
+      "mappedSends": 7,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 NMV External Announcement 3/30",
+          "sent": "2026-03-30",
+          "sends": 30475,
+          "opens": 13309,
+          "clicks": 799,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "EJT Donor Message on NMV TRUE",
+          "sent": "2026-03-30",
+          "sends": 818,
+          "opens": 572,
+          "clicks": 13,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 NMV - Donor Follow Up 4/2",
+          "sent": "2026-04-02",
+          "sends": 1409,
+          "opens": 825,
+          "clicks": 49,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 NMV - General Interest Catch Up Send 4/2",
+          "sent": "2026-04-03",
+          "sends": 29944,
+          "opens": 12551,
+          "clicks": 403,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "FY26 NMV 6/12",
+          "sent": "2026-06-12",
+          "sends": 2538,
+          "opens": 1512,
+          "clicks": 37,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "DB Donor Message (Matthias & NMV)  2026-06-22",
+          "sent": "2026-06-22",
+          "sends": 2537,
+          "opens": 1369,
+          "clicks": 19,
+          "matchScore": 3,
+          "matchReason": "override"
+        },
+        {
+          "name": "DB Donor Message (Matthias & NMV)  2026-06-22 (Resend)",
+          "sent": "2026-06-25",
+          "sends": 1,
+          "opens": 1,
+          "clicks": 0,
+          "matchScore": 3,
+          "matchReason": "override"
+        }
+      ]
+    },
+    {
+      "label": "tickets",
+      "revenue": 200,
+      "purchases": 1,
+      "sessions": 153,
+      "rawSlugs": [
+        "tickets"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "plan-your-visit",
+      "revenue": 169,
+      "purchases": 9,
+      "sessions": 300,
+      "rawSlugs": [
+        "plan-your-visit"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "spring",
+      "revenue": 132,
+      "purchases": 2,
+      "sessions": 32,
+      "rawSlugs": [
+        "spring"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "PetitePerformances",
+      "revenue": 128,
+      "purchases": 4,
+      "sessions": 18,
+      "rawSlugs": [
+        "PetitePerformances"
+      ],
+      "mappedSends": 12,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 10/11 Petite Performances 9:30 Reminder",
+          "sent": "2025-10-10",
+          "sends": 24,
+          "opens": 21,
+          "clicks": 10,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 10/11 Petite Performances 10:30 Reminder",
+          "sent": "2025-10-10",
+          "sends": 29,
+          "opens": 26,
+          "clicks": 9,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 10/11 Petite Performances 11:30 Reminder",
+          "sent": "2025-10-10",
+          "sends": 22,
+          "opens": 17,
+          "clicks": 7,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 12/5 Petite Performances 9:30 Reminder",
+          "sent": "2025-12-05",
+          "sends": 47,
+          "opens": 41,
+          "clicks": 7,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 12/5 Petite Performances 10:30 Reminder",
+          "sent": "2025-12-05",
+          "sends": 46,
+          "opens": 42,
+          "clicks": 8,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 12/5 Petite Performances 11:30 Reminder",
+          "sent": "2025-12-05",
+          "sends": 32,
+          "opens": 23,
+          "clicks": 5,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 3/14 Petite Performances 10:30 Reminder",
+          "sent": "2026-03-13",
+          "sends": 53,
+          "opens": 48,
+          "clicks": 12,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 3/14 Petite Performances 9:30 Reminder",
+          "sent": "2026-03-13",
+          "sends": 48,
+          "opens": 41,
+          "clicks": 8,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 3/14 Petite Performances 11:30 Reminder",
+          "sent": "2026-03-13",
+          "sends": 46,
+          "opens": 37,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 5/9 Petite Performances 10:30 Reminder",
+          "sent": "2026-05-08",
+          "sends": 56,
+          "opens": 42,
+          "clicks": 6,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 5/9 Petite Performances 9:30 Reminder",
+          "sent": "2026-05-08",
+          "sends": 50,
+          "opens": 37,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        },
+        {
+          "name": "FY26 5/9 Petite Performances 11:30 Reminder",
+          "sent": "2026-05-08",
+          "sends": 41,
+          "opens": 31,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "petite+performances"
+        }
+      ]
+    },
+    {
+      "label": "FS2",
+      "revenue": 123,
+      "purchases": 2,
+      "sessions": 149,
+      "rawSlugs": [
+        "FS2"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "musicians",
+      "revenue": 116.5,
+      "purchases": 2,
+      "sessions": 228,
+      "rawSlugs": [
+        "musicians"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "on-stage-gil",
+      "revenue": 100,
+      "purchases": 1,
+      "sessions": 19,
+      "rawSlugs": [
+        "on-stage-gil"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "PP03",
+      "revenue": 80,
+      "purchases": 3,
+      "sessions": 27,
+      "rawSlugs": [
+        "PP03"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "app",
+      "revenue": 16,
+      "purchases": 1,
+      "sessions": 124,
+      "rawSlugs": [
+        "app"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "AUTO",
+      "sends": []
+    },
+    {
+      "label": "mp-contract-pr",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 186,
+      "rawSlugs": [
+        "mp-contract-pr"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "100kRAOSamplerPackageFY26",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 126,
+      "rawSlugs": [
+        "100kRAOSamplerPackageFY26"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "LOJ",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 106,
+      "rawSlugs": [
+        "LOJ"
+      ],
+      "mappedSends": 1,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY25 7/8 LOJ Promo",
+          "sent": "2025-07-08",
+          "sends": 104107,
+          "opens": 36640,
+          "clicks": 582,
+          "matchScore": 3,
+          "matchReason": "loj"
+        }
+      ]
+    },
+    {
+      "label": "kcsymphony",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 99,
+      "rawSlugs": [
+        "kcsymphony"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "CS14",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 94,
+      "rawSlugs": [
+        "CS14"
+      ],
+      "mappedSends": 9,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 4/14 Weekly Concert CS14 - Classical Aficionado COMBO",
+          "sent": "2026-04-16",
+          "sends": 7022,
+          "opens": 3360,
+          "clicks": 96,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 4/14 Weekly Concert CS14 - Curious Explorer COMBO",
+          "sent": "2026-04-16",
+          "sends": 22903,
+          "opens": 10437,
+          "clicks": 170,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 4/14 Weekly Concert Promo CS14 - CA CONTROL",
+          "sent": "2026-04-16",
+          "sends": 413,
+          "opens": 198,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 KBYG - FRIDAY",
+          "sent": "2026-06-17",
+          "sends": 504,
+          "opens": 364,
+          "clicks": 100,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 KBYG - SATURDAY",
+          "sent": "2026-06-18",
+          "sends": 578,
+          "opens": 381,
+          "clicks": 106,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 KBYG - SUNDAY",
+          "sent": "2026-06-19",
+          "sends": 610,
+          "opens": 405,
+          "clicks": 137,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 Follow Up #1 FRIDAY",
+          "sent": "2026-06-20",
+          "sends": 479,
+          "opens": 251,
+          "clicks": 19,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 Follow Up #2 SATURDAY",
+          "sent": "2026-06-21",
+          "sends": 546,
+          "opens": 281,
+          "clicks": 25,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        },
+        {
+          "name": "FY26 CS14 Follow Up #3 SUNDAY",
+          "sent": "2026-06-22",
+          "sends": 580,
+          "opens": 298,
+          "clicks": 45,
+          "matchScore": 3,
+          "matchReason": "series CS14"
+        }
+      ]
+    },
+    {
+      "label": "OnStage",
+      "revenue": 0,
+      "purchases": 1,
+      "sessions": 80,
+      "rawSlugs": [
+        "OnStage"
+      ],
+      "mappedSends": 8,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 On Stage 1 - KBYG 10/29",
+          "sent": "2025-10-29",
+          "sends": 23,
+          "opens": 19,
+          "clicks": 1,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 2 Standalone #1",
+          "sent": "2026-01-08",
+          "sends": 96583,
+          "opens": 35503,
+          "clicks": 267,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 2 KYBG - THURSDAY",
+          "sent": "2026-02-04",
+          "sends": 34,
+          "opens": 27,
+          "clicks": 15,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 3/24 Weekly Concert Promo On Stage Gil Shaham - Classical Aficionado",
+          "sent": "2026-03-24",
+          "sends": 4869,
+          "opens": 2057,
+          "clicks": 45,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 3 KBYG - THURSDAY",
+          "sent": "2026-05-27",
+          "sends": 48,
+          "opens": 33,
+          "clicks": 16,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 3 Follow-Up",
+          "sent": "2026-05-29",
+          "sends": 53,
+          "opens": 34,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 4 KBYG - THURSDAY",
+          "sent": "2026-06-02",
+          "sends": 37,
+          "opens": 29,
+          "clicks": 8,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        },
+        {
+          "name": "FY26 On Stage 4 Follow-Up",
+          "sent": "2026-06-05",
+          "sends": 42,
+          "opens": 27,
+          "clicks": 1,
+          "matchScore": 3,
+          "matchReason": "on+stage"
+        }
+      ]
+    },
+    {
+      "label": "CS11CS12",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 69,
+      "rawSlugs": [
+        "CS11CS12"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "steve-hackman-promo",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 58,
+      "rawSlugs": [
+        "steve-hackman-promo"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "TheLodger",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 57,
+      "rawSlugs": [
+        "TheLodger"
+      ],
+      "mappedSends": 2,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 The Lodger - KBYG 10/22 WED",
+          "sent": "2025-10-21",
+          "sends": 337,
+          "opens": 218,
+          "clicks": 15,
+          "matchScore": 3,
+          "matchReason": "lodger"
+        },
+        {
+          "name": "FY26 The Lodger - CORRECTED KBYG 10/22 WED",
+          "sent": "2025-10-21",
+          "sends": 130,
+          "opens": 89,
+          "clicks": 32,
+          "matchScore": 3,
+          "matchReason": "lodger"
+        }
+      ]
+    },
+    {
+      "label": "CS12",
+      "revenue": 0,
+      "purchases": 1,
+      "sessions": 42,
+      "rawSlugs": [
+        "CS12"
+      ],
+      "mappedSends": 10,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/31 Weekly Concert Promo CS12 - Classical Aficionado CONTROL",
+          "sent": "2026-04-02",
+          "sends": 265,
+          "opens": 133,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 4/28 Weekly Concert Promo CS12 - CE COMBO",
+          "sent": "2026-04-30",
+          "sends": 22839,
+          "opens": 10348,
+          "clicks": 141,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 4/28 Weekly Concert Promo CS12 - CA COMBO",
+          "sent": "2026-04-30",
+          "sends": 7010,
+          "opens": 3186,
+          "clicks": 53,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 4/28 Weekly Concert Promo CS12 - CA CONTROL",
+          "sent": "2026-04-30",
+          "sends": 416,
+          "opens": 199,
+          "clicks": 8,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 KBYG - FRIDAY",
+          "sent": "2026-05-27",
+          "sends": 388,
+          "opens": 300,
+          "clicks": 91,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 KBYG - SATURDAY",
+          "sent": "2026-05-28",
+          "sends": 354,
+          "opens": 224,
+          "clicks": 78,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 KBYG - SUNDAY",
+          "sent": "2026-05-29",
+          "sends": 405,
+          "opens": 264,
+          "clicks": 80,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 Follow-Up #1 Friday",
+          "sent": "2026-05-30",
+          "sends": 355,
+          "opens": 215,
+          "clicks": 17,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 Follow-Up #2 Saturday",
+          "sent": "2026-05-31",
+          "sends": 330,
+          "opens": 193,
+          "clicks": 18,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        },
+        {
+          "name": "FY26 CS12 Follow-Up #3 Sunday",
+          "sent": "2026-06-01",
+          "sends": 385,
+          "opens": 219,
+          "clicks": 20,
+          "matchScore": 3,
+          "matchReason": "series CS12"
+        }
+      ]
+    },
+    {
+      "label": "PP04",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 38,
+      "rawSlugs": [
+        "PP04"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "CATS",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 37,
+      "rawSlugs": [
+        "CATS"
+      ],
+      "mappedSends": 12,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 CATS VIP Invite - Board & $30k",
+          "sent": "2026-04-14",
+          "sends": 40,
+          "opens": 31,
+          "clicks": 9,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP Invite - Fanfare, Overture, Sempre, Prelude, Baton",
+          "sent": "2026-04-22",
+          "sends": 554,
+          "opens": 381,
+          "clicks": 43,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP Invite - Crescendo & Bravura",
+          "sent": "2026-04-22",
+          "sends": 122,
+          "opens": 97,
+          "clicks": 21,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 4/30 - CATS Email 1",
+          "sent": "2026-04-30",
+          "sends": 109140,
+          "opens": 37907,
+          "clicks": 578,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP Invite Follow Up - Fanfare, Overture, Sempre, Prelude, Baton",
+          "sent": "2026-05-06",
+          "sends": 544,
+          "opens": 343,
+          "clicks": 12,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP Invite Follow Up - Board & $30k",
+          "sent": "2026-05-07",
+          "sends": 35,
+          "opens": 25,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP Invite - Auxiliaries",
+          "sent": "2026-05-08",
+          "sends": 45,
+          "opens": 30,
+          "clicks": 4,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 5/19 - CATS Email 2",
+          "sent": "2026-05-19",
+          "sends": 109021,
+          "opens": 37902,
+          "clicks": 766,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP KBYG - 1 Parking Pass",
+          "sent": "2026-05-21",
+          "sends": 41,
+          "opens": 39,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS VIP KBYG - NO PARKING",
+          "sent": "2026-05-21",
+          "sends": 7,
+          "opens": 5,
+          "clicks": 0,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 5/22 - CATS KBYG (reserved tickets)",
+          "sent": "2026-05-22",
+          "sends": 37,
+          "opens": 32,
+          "clicks": 11,
+          "matchScore": 3,
+          "matchReason": "cats"
+        },
+        {
+          "name": "FY26 CATS Follow-Up (reserved tickets only)",
+          "sent": "2026-05-26",
+          "sends": 45,
+          "opens": 37,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "cats"
+        }
+      ]
+    },
+    {
+      "label": "finalfastasy",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 28,
+      "rawSlugs": [
+        "finalfastasy"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "OnStage1",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 27,
+      "rawSlugs": [
+        "OnStage1"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_22upcoming5/6",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 23,
+      "rawSlugs": [
+        "_22upcoming5/6"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "pp-goldilocks",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 20,
+      "rawSlugs": [
+        "pp-goldilocks"
+      ],
+      "mappedSends": 1,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 4/7 Weekly Concert Update PP: Goldilocks -- CE CONTROL GROUP",
+          "sent": "2026-04-09",
+          "sends": 1375,
+          "opens": 648,
+          "clicks": 15,
+          "matchScore": 3,
+          "matchReason": "pp+goldilocks"
+        }
+      ]
+    },
+    {
+      "label": "5a32113754-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 17,
+      "rawSlugs": [
+        "5a32113754-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "OnStage3",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 15,
+      "rawSlugs": [
+        "OnStage3"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "BenRector",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 19,
+      "rawSlugs": [
+        "ben-rector",
+        "BenRector"
+      ],
+      "mappedSends": 9,
+      "note": null,
+      "confidence": "GREEN",
+      "sends": [
+        {
+          "name": "FY26 3/31 Weekly Concert Update Ben Rector -- Curious Explorer MAIN AUDIENCE",
+          "sent": "2026-04-02",
+          "sends": 478,
+          "opens": 257,
+          "clicks": 6,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 3/31 Weekly Concert Update Ben Rector -- Curious Explorer CONTROL GROUP",
+          "sent": "2026-04-02",
+          "sends": 229,
+          "opens": 120,
+          "clicks": 3,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 4/2 Catch Up Ben Rector -- Classical Aficionado",
+          "sent": "2026-04-03",
+          "sends": 4092,
+          "opens": 1680,
+          "clicks": 30,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 4/2 Catch Up Ben Rector -- Curious Explorer",
+          "sent": "2026-04-03",
+          "sends": 3945,
+          "opens": 1839,
+          "clicks": 37,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 4/28 Weekly Concert Update Ben Rector -- CE CONTROL GROUP",
+          "sent": "2026-04-30",
+          "sends": 1369,
+          "opens": 640,
+          "clicks": 12,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 Ben Rector KBYG - THURSDAY 5/21",
+          "sent": "2026-05-20",
+          "sends": 400,
+          "opens": 278,
+          "clicks": 148,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 Ben Rector KBYG - FRIDAY 5/22",
+          "sent": "2026-05-21",
+          "sends": 495,
+          "opens": 345,
+          "clicks": 197,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 Ben Rector Follow-Up #1 Thursday",
+          "sent": "2026-05-22",
+          "sends": 466,
+          "opens": 218,
+          "clicks": 10,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        },
+        {
+          "name": "FY26 Ben Rector Follow-Up #2 Friday",
+          "sent": "2026-05-23",
+          "sends": 544,
+          "opens": 277,
+          "clicks": 10,
+          "matchScore": 3,
+          "matchReason": "ben+rector"
+        }
+      ]
+    },
+    {
+      "label": "92588a98da-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 13,
+      "rawSlugs": [
+        "92588a98da-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "benrector",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 12,
+      "rawSlugs": [
+        "benrector"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "MMBCS11CS12",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 8,
+      "rawSlugs": [
+        "MMBCS11CS12"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "abdedd9441-EMAIL_CAMPAIGN_2026_04_21_07_39",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 8,
+      "rawSlugs": [
+        "abdedd9441-EMAIL_CAMPAIGN_2026_04_21_07_39"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "on-stage-yefim",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 8,
+      "rawSlugs": [
+        "on-stage-yefim"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_23marketing4/28",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 7,
+      "rawSlugs": [
+        "_23marketing4/28"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "dcbedd3ac7-EMAIL_CAMPAIGN_2026_04_21_10_40",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 7,
+      "rawSlugs": [
+        "dcbedd3ac7-EMAIL_CAMPAIGN_2026_04_21_10_40"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "dolly-parton",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 7,
+      "rawSlugs": [
+        "dolly-parton"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "prometheus",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 6,
+      "rawSlugs": [
+        "prometheus"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "support-us",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 6,
+      "rawSlugs": [
+        "support-us"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "15e08ca9a7-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 5,
+      "rawSlugs": [
+        "15e08ca9a7-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "651b44b9ec-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 5,
+      "rawSlugs": [
+        "651b44b9ec-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "f3ae28ea7b-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 5,
+      "rawSlugs": [
+        "f3ae28ea7b-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "724560f4fb-KC_Arts_Review_011226",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 4,
+      "rawSlugs": [
+        "724560f4fb-KC_Arts_Review_011226"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "afa9dfdf34-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 4,
+      "rawSlugs": [
+        "afa9dfdf34-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "newsletter_axioslocal_kansascity",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 4,
+      "rawSlugs": [
+        "newsletter_axioslocal_kansascity"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "events",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 3,
+      "rawSlugs": [
+        "events"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "mmb-stos",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 3,
+      "rawSlugs": [
+        "mmb-stos"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "100kRAOSamplerPackageFY25",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "100kRAOSamplerPackageFY25"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_21marketing10/30",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "_21marketing10/30"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_22upcoming4/18",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "_22upcoming4/18"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "on-stage-augustin-hadelich",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "on-stage-augustin-hadelich"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "rite-of-spring",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "rite-of-spring"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "sendto_localnewslettertest",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 2,
+      "rawSlugs": [
+        "sendto_localnewslettertest"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "32481c7e9f-KC_Arts_Review_112425",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "32481c7e9f-KC_Arts_Review_112425"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "520417057a-",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "520417057a-"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "54ff79b571-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "54ff79b571-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "8da307ceb9-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "8da307ceb9-EMAIL_CAMPAIGN_2024_06_29_12_24_COPY_01"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "OrganRecitalandCATSVideos",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "OrganRecitalandCATSVideos"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "Release:FY21RevisedSeasonAnnouncement",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "Release:FY21RevisedSeasonAnnouncement"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "ViolinVirtuosi",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "ViolinVirtuosi"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_19April6",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_19April6"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_20EDUatHome_Fam21",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_20EDUatHome_Fam21"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_20MusicForOurTime4",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_20MusicForOurTime4"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_20NeighborhoodOctober",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_20NeighborhoodOctober"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_20PodcastMOOT",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_20PodcastMOOT"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_20StreamingSaturdayYoon",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_20StreamingSaturdayYoon"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_22mobilemusicA",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_22mobilemusicA"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_22newmusicians",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_22newmusicians"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "_23concertreminder5/19(Copy)",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "_23concertreminder5/19(Copy)"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "b6047ecc9c-EMAIL_CAMPAIGN_2026_06_12_04_21",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "b6047ecc9c-EMAIL_CAMPAIGN_2026_06_12_04_21"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "c9370fdd2d-FZBVY_DBZCBVTA_5359_39_45_37_54",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "c9370fdd2d-FZBVY_DBZCBVTA_5359_39_45_37_54"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "e8f5c7c38f-EMAIL_CAMPAIGN_2026_04_21_07_39",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "e8f5c7c38f-EMAIL_CAMPAIGN_2026_04_21_07_39"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    },
+    {
+      "label": "petite-performance-goldilocks",
+      "revenue": 0,
+      "purchases": 0,
+      "sessions": 1,
+      "rawSlugs": [
+        "petite-performance-goldilocks"
+      ],
+      "mappedSends": 0,
+      "note": null,
+      "confidence": "RED",
+      "sends": []
+    }
+  ],
+  "unmatchedCC": [
+    {
+      "name": "FY26 DEVO | EOY Email",
+      "sent": "2025-12-15",
+      "sends": 4862,
+      "opens": 2140,
+      "clicks": 13,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Contributors Concert KBYG",
+      "sent": "2026-06-01",
+      "sends": 227,
+      "opens": 191,
+      "clicks": 101,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 2/3 Weekly Concert Promo",
+      "sent": "2026-02-03",
+      "sends": 96691,
+      "opens": 33359,
+      "clicks": 353,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/9 Weekly Concert Promo",
+      "sent": "2025-09-09",
+      "sends": 103722,
+      "opens": 36340,
+      "clicks": 790,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 12/16 Weekly Concert Promo",
+      "sent": "2025-12-16",
+      "sends": 96421,
+      "opens": 34642,
+      "clicks": 481,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Chairman's Save the Date - 1 ONLY",
+      "sent": "2026-02-18",
+      "sends": 72,
+      "opens": 60,
+      "clicks": 2,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 KinderKonzert",
+      "sent": "2025-12-03",
+      "sends": 1239,
+      "opens": 533,
+      "clicks": 74,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/4 Journey - BOGO Promo",
+      "sent": "2025-09-04",
+      "sends": 3025,
+      "opens": 1210,
+      "clicks": 57,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Black Friday Deals: Promo Email 2",
+      "sent": "2025-11-28",
+      "sends": 96189,
+      "opens": 35013,
+      "clicks": 1641,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Sempre Brunch Invite Reminder",
+      "sent": "2026-01-12",
+      "sends": 66,
+      "opens": 50,
+      "clicks": 10,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 6/3 - Mobile Music Box Email",
+      "sent": "2026-06-05",
+      "sends": 57,
+      "opens": 29,
+      "clicks": 6,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Contributors' Concert Invite - 2nd Wave",
+      "sent": "2026-05-11",
+      "sends": 117,
+      "opens": 93,
+      "clicks": 38,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 3/3 Weekly Concert Update -- Curious Explorer",
+      "sent": "2026-03-04",
+      "sends": 7329,
+      "opens": 3652,
+      "clicks": 57,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Sempre Brunch Invite",
+      "sent": "2025-12-17",
+      "sends": 80,
+      "opens": 63,
+      "clicks": 13,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 6/9 - Mobile Music Box Email",
+      "sent": "2026-06-11",
+      "sends": 31,
+      "opens": 21,
+      "clicks": 5,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/23 CS1 Standalone Email",
+      "sent": "2025-09-25",
+      "sends": 103566,
+      "opens": 36930,
+      "clicks": 321,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Chairman's Save the Date - BOTH",
+      "sent": "2026-02-18",
+      "sends": 19,
+      "opens": 15,
+      "clicks": 0,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 2/10 Weekly Concert Promo",
+      "sent": "2026-02-10",
+      "sends": 96601,
+      "opens": 11385,
+      "clicks": 316,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 5/27 - Mobile Music Box Email",
+      "sent": "2026-05-29",
+      "sends": 44,
+      "opens": 25,
+      "clicks": 4,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Morgan Freeman KBYG 9/3 WED",
+      "sent": "2025-08-31",
+      "sends": 389,
+      "opens": 307,
+      "clicks": 129,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 8/12 Music of Journey Promo",
+      "sent": "2025-08-12",
+      "sends": 103511,
+      "opens": 36698,
+      "clicks": 597,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/4 CS1 Matthias Video",
+      "sent": "2025-09-04",
+      "sends": 103722,
+      "opens": 36846,
+      "clicks": 1516,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/10 Journey Giveaway",
+      "sent": "2025-09-11",
+      "sends": 103666,
+      "opens": 35635,
+      "clicks": 772,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 8/6 Weekly Concert Promo",
+      "sent": "2025-08-06",
+      "sends": 103618,
+      "opens": 37068,
+      "clicks": 977,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 DEVO | Prelude Invitation",
+      "sent": "2025-12-16",
+      "sends": 155,
+      "opens": 101,
+      "clicks": 2,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "Piano Master Class with Tamara Stefanovich",
+      "sent": "2026-01-28",
+      "sends": 2891,
+      "opens": 1124,
+      "clicks": 52,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 11/11 Weekly Concert Promo",
+      "sent": "2025-11-11",
+      "sends": 103359,
+      "opens": 35703,
+      "clicks": 634,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Journey - KBYG 9/20 SAT",
+      "sent": "2025-09-19",
+      "sends": 419,
+      "opens": 292,
+      "clicks": 105,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 CS1 - KBYG 10/12 SUN",
+      "sent": "2025-10-10",
+      "sends": 547,
+      "opens": 394,
+      "clicks": 139,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Contributors' Concert Invite - 3rd Wave",
+      "sent": "2026-05-13",
+      "sends": 1830,
+      "opens": 1168,
+      "clicks": 391,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Morgan Freeman KBYG 9/2 TUES",
+      "sent": "2025-08-31",
+      "sends": 438,
+      "opens": 356,
+      "clicks": 152,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 11/24 Weekly Concert Promo",
+      "sent": "2025-11-25",
+      "sends": 95968,
+      "opens": 34761,
+      "clicks": 320,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/5 CS1 BOGO Promo Pops Buyers",
+      "sent": "2025-09-05",
+      "sends": 4701,
+      "opens": 2520,
+      "clicks": 106,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 12/30 Weekly Concert Promo",
+      "sent": "2025-12-30",
+      "sends": 96729,
+      "opens": 34555,
+      "clicks": 393,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "Matthias Pintscher Contract Renewal - 6/23",
+      "sent": "2026-06-23",
+      "sends": 5,
+      "opens": 4,
+      "clicks": 0,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Journey - KBYG 9/19 FRI",
+      "sent": "2025-09-19",
+      "sends": 434,
+      "opens": 293,
+      "clicks": 101,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 10/28 Weekly Concert Promo",
+      "sent": "2025-10-28",
+      "sends": 103449,
+      "opens": 34486,
+      "clicks": 348,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/30 Weekly Concert Promo",
+      "sent": "2025-09-30",
+      "sends": 103461,
+      "opens": 35820,
+      "clicks": 426,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 NEW Business Alliance Showhouse Invite",
+      "sent": "2026-05-28",
+      "sends": 2,
+      "opens": 2,
+      "clicks": 1,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 12/23 Weekly Concert Promo",
+      "sent": "2025-12-23",
+      "sends": 96939,
+      "opens": 35172,
+      "clicks": 308,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "SSY Message 2025-10-10",
+      "sent": "2025-10-10",
+      "sends": 379,
+      "opens": 310,
+      "clicks": 7,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 11/17 Weekly Concert Promo",
+      "sent": "2025-11-18",
+      "sends": 96036,
+      "opens": 34484,
+      "clicks": 328,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 10/21 Email Correction",
+      "sent": "2025-10-21",
+      "sends": 330,
+      "opens": 260,
+      "clicks": 12,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "Matthias Pintscher Contract Renewal #2 - 6/23",
+      "sent": "2026-06-23",
+      "sends": 61733,
+      "opens": 23486,
+      "clicks": 310,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Journey - KBYG 9/21 SUN",
+      "sent": "2025-09-19",
+      "sends": 359,
+      "opens": 262,
+      "clicks": 103,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Family Series Update Notice",
+      "sent": "2026-06-26",
+      "sends": 78,
+      "opens": 61,
+      "clicks": 2,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 12/2 Weekly Concert Promo",
+      "sent": "2025-12-02",
+      "sends": 95984,
+      "opens": 34134,
+      "clicks": 499,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 10/14 Weekly Concert Promo",
+      "sent": "2025-10-14",
+      "sends": 103693,
+      "opens": 35572,
+      "clicks": 562,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Business Alliance Showhouse Invite",
+      "sent": "2026-05-04",
+      "sends": 2,
+      "opens": 2,
+      "clicks": 0,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 7/23 Morgan Freeman Promo",
+      "sent": "2025-07-24",
+      "sends": 103881,
+      "opens": 36637,
+      "clicks": 848,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 11/4 Weekly Concert Promo",
+      "sent": "2025-11-04",
+      "sends": 103471,
+      "opens": 35469,
+      "clicks": 517,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 2/17 Weekly Concert Promo",
+      "sent": "2026-02-18",
+      "sends": 96853,
+      "opens": 36108,
+      "clicks": 405,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 2/24 Weekly Concert Promo",
+      "sent": "2026-02-24",
+      "sends": 97492,
+      "opens": 35235,
+      "clicks": 383,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 CS1 - KBYG 10/10 FRI",
+      "sent": "2025-10-10",
+      "sends": 450,
+      "opens": 310,
+      "clicks": 93,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 CS1 - KBYG 10/11 SAT",
+      "sent": "2025-10-10",
+      "sends": 458,
+      "opens": 307,
+      "clicks": 107,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 La nuit sombre KBYG 9/5",
+      "sent": "2025-08-29",
+      "sends": 260,
+      "opens": 214,
+      "clicks": 67,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Contributors' Concert Invite - 1st Wave",
+      "sent": "2026-05-06",
+      "sends": 41,
+      "opens": 30,
+      "clicks": 10,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 1/13 Weekly Concert Promo",
+      "sent": "2026-01-13",
+      "sends": 96458,
+      "opens": 35225,
+      "clicks": 401,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Chairman's Invite - Reminder & Update",
+      "sent": "2026-03-17",
+      "sends": 61,
+      "opens": 45,
+      "clicks": 10,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 10/21 Weekly Concert Promo",
+      "sent": "2025-10-21",
+      "sends": 103565,
+      "opens": 36100,
+      "clicks": 450,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Match Appeal 5.15",
+      "sent": "2026-05-15",
+      "sends": 18801,
+      "opens": 7224,
+      "clicks": 52,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Match Appeal 3.27",
+      "sent": "2026-03-27",
+      "sends": 18974,
+      "opens": 7421,
+      "clicks": 74,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 6/19 - Mobile Music Box Email",
+      "sent": "2026-06-19",
+      "sends": 37,
+      "opens": 18,
+      "clicks": 1,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Trey Anastasio Follow-Up",
+      "sent": "2026-06-11",
+      "sends": 66,
+      "opens": 31,
+      "clicks": 2,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Trey Anastasio KBYG - WEDNESDAY 6/10",
+      "sent": "2026-06-08",
+      "sends": 637,
+      "opens": 375,
+      "clicks": 193,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 10/7 Weekly Concert Promo",
+      "sent": "2025-10-07",
+      "sends": 103311,
+      "opens": 34392,
+      "clicks": 505,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 DEVO | Baton Invitation",
+      "sent": "2025-12-16",
+      "sends": 159,
+      "opens": 96,
+      "clicks": 2,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Match Appeal 4.17",
+      "sent": "2026-04-17",
+      "sends": 18843,
+      "opens": 7327,
+      "clicks": 76,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Family 2 Email 2025/11/03 05:26:40 PM",
+      "sent": "2025-11-04",
+      "sends": 3251,
+      "opens": 1538,
+      "clicks": 41,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Current Pops Subs - Customer Feedback Survey #1",
+      "sent": "2025-12-15",
+      "sends": 429,
+      "opens": 267,
+      "clicks": 108,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY25 Recording Session Invite(2)",
+      "sent": "2025-09-05",
+      "sends": 516,
+      "opens": 385,
+      "clicks": 70,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 1/20 Weekly Concert Promo",
+      "sent": "2026-01-21",
+      "sends": 96353,
+      "opens": 35721,
+      "clicks": 499,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Music & The Mind KBYG",
+      "sent": "2026-01-16",
+      "sends": 1,
+      "opens": 1,
+      "clicks": 0,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Orchestra Games Reminder",
+      "sent": "2025-09-27",
+      "sends": 172,
+      "opens": 133,
+      "clicks": 12,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 5/15 - Mobile Music Box Email",
+      "sent": "2026-05-15",
+      "sends": 38,
+      "opens": 27,
+      "clicks": 11,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 5/1 - Mobile Music Box Email 1",
+      "sent": "2026-05-01",
+      "sends": 68,
+      "opens": 44,
+      "clicks": 12,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/5 CS1 BOGO Promo - Morgan Freeman first time buyers",
+      "sent": "2025-09-05",
+      "sends": 1050,
+      "opens": 615,
+      "clicks": 36,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 8/27 Chicken Fried Promo",
+      "sent": "2025-08-27",
+      "sends": 103211,
+      "opens": 36047,
+      "clicks": 542,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Carnival Games Reminder",
+      "sent": "2025-11-07",
+      "sends": 153,
+      "opens": 130,
+      "clicks": 21,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 1/27 Weekly Concert Promo",
+      "sent": "2026-01-27",
+      "sends": 96788,
+      "opens": 34822,
+      "clicks": 448,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 5/5 - Mobile Music Box Email 2",
+      "sent": "2026-05-05",
+      "sends": 49,
+      "opens": 36,
+      "clicks": 4,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Chairman's Dinner KBYG",
+      "sent": "2026-05-22",
+      "sends": 54,
+      "opens": 48,
+      "clicks": 1,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Black Friday Deals: Promo Email 1",
+      "sent": "2025-11-21",
+      "sends": 96071,
+      "opens": 34360,
+      "clicks": 262,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 1/6 Weekly Concert Promo",
+      "sent": "2026-01-06",
+      "sends": 96485,
+      "opens": 34861,
+      "clicks": 395,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 7/31 La Nuit Sombre Matthias Video",
+      "sent": "2025-08-01",
+      "sends": 103745,
+      "opens": 37034,
+      "clicks": 522,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 5/22 - Mobile Music Box Email",
+      "sent": "2026-05-22",
+      "sends": 107,
+      "opens": 67,
+      "clicks": 17,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/16 Weekly Concert Promo",
+      "sent": "2025-09-16",
+      "sends": 103544,
+      "opens": 35745,
+      "clicks": 741,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 Sempre Brunch KBYG",
+      "sent": "2026-02-05",
+      "sends": 35,
+      "opens": 23,
+      "clicks": 3,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 8/20 Weekly Concert Promo",
+      "sent": "2025-08-20",
+      "sends": 103367,
+      "opens": 36511,
+      "clicks": 797,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "DB Donor Message 2025-10-30",
+      "sent": "2025-10-31",
+      "sends": 1105,
+      "opens": 755,
+      "clicks": 16,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 9/23 Weekly Concert Promo",
+      "sent": "2025-09-23",
+      "sends": 103643,
+      "opens": 35711,
+      "clicks": 475,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 6/17 - Mobile Music Box Email",
+      "sent": "2026-06-17",
+      "sends": 54,
+      "opens": 33,
+      "clicks": 5,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    },
+    {
+      "name": "FY26 12/9 Weekly Concert Promo",
+      "sent": "2025-12-09",
+      "sends": 96133,
+      "opens": 34307,
+      "clicks": 440,
+      "group": null,
+      "matchScore": 0,
+      "matchReason": "unmatched"
+    }
+  ]
+}

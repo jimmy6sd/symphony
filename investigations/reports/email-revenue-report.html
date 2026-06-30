@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KC Symphony — Email Revenue Attribution (FY26)</title>
+<meta name="description" content="GA4-attributed revenue mapped to Constant Contact email campaigns, with confidence flags.">
+<style>
+  :root { --ink:#1a1d21; --muted:#5f6671; --line:#e6e8eb; --bg:#f6f7f9; --card:#fff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--bg); }
+  .wrap { max-width:1040px; margin:0 auto; padding:32px 24px 80px; }
+  header h1 { font-size:24px; margin:0 0 4px; letter-spacing:-.01em; }
+  header .sub { color:var(--muted); margin:0 0 24px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:0 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .card .k { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 6px; display:flex; align-items:center; gap:6px; }
+  .card .v { font-size:22px; font-weight:650; }
+  .card .p { font-size:13px; color:var(--muted); }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; vertical-align:middle; }
+  .legend { display:flex; flex-wrap:wrap; gap:18px; margin:18px 0 24px; font-size:13px; color:var(--muted); }
+  .legend span b { color:var(--ink); font-weight:600; }
+  .callout { background:#fff8e6; border:1px solid #f0e0a8; border-radius:10px; padding:14px 16px; margin:0 0 24px; font-size:14px; }
+  .callout b { display:block; margin-bottom:4px; }
+  table.main { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  table.main thead th { text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); padding:11px 12px; border-bottom:1px solid var(--line); background:#fafbfc; }
+  table.main th.num, table.main td.num { text-align:right; }
+  table.main td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tr.grp:hover { background:#fafbfc; }
+  tr.grp .name { font-weight:550; }
+  .rev { font-variant-numeric:tabular-nums; font-weight:600; }
+  .num { font-variant-numeric:tabular-nums; }
+  .slugs { display:block; font-weight:400; font-size:12px; color:var(--muted); margin-top:2px; }
+  .exp { border:none; background:none; cursor:pointer; color:var(--muted); font-size:13px; margin-right:6px; padding:0; width:14px; }
+  tr.detail td { background:#fbfcfd; padding:6px 12px 16px 38px; }
+  .note { color:#8a6d00; font-size:13px; margin:8px 0; }
+  .empty { color:var(--muted); font-style:italic; font-size:13px; margin:8px 0; }
+  table.sends { width:100%; border-collapse:collapse; margin-top:6px; font-size:13px; }
+  table.sends th { text-align:left; color:var(--muted); font-weight:500; padding:5px 10px; border-bottom:1px solid var(--line); }
+  table.sends td { padding:5px 10px; border-bottom:1px solid #eef0f2; }
+  table.sends .dt { color:var(--muted); white-space:nowrap; }
+  table.sends .num { text-align:right; }
+  footer { margin-top:28px; color:var(--muted); font-size:12px; line-height:1.6; }
+  footer code { background:#eceef0; padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Email Revenue Attribution — FY26</h1>
+    <p class="sub">GA4-attributed purchase revenue mapped to Constant Contact campaigns · 2025-07-01 → 2026-06-28</p>
+  </header>
+
+  <div class="cards">
+    <div class="card"><p class="k">Total email revenue</p><div class="v">$292,235</div><p class="p">GA4 Email channel</p></div>
+    <div class="card"><p class="k"><span class="dot" style="background:#2ca02c"></span>High confidence</p><div class="v">$134,170</div><p class="p">45.9% · 39 campaigns</p></div>
+    <div class="card"><p class="k"><span class="dot" style="background:#e0a800"></span>Review</p><div class="v">$137,492</div><p class="p">47.0% · 3 campaigns</p></div>
+    <div class="card"><p class="k"><span class="dot" style="background:#d62728"></span>Unmatched</p><div class="v">$9,377</div><p class="p">3.2% · 66 campaigns</p></div>
+    <div class="card"><p class="k"><span class="dot" style="background:#9aa0a6"></span>Automation</p><div class="v">$11,196</div><p class="p">3.8% · 11 sources</p></div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:#2ca02c"></span> <b>High</b> — Clean match (series code or distinctive name)</span><span><span class="dot" style="background:#e0a800"></span> <b>Review</b> — Partial match, broad flight, or approximate split</span><span><span class="dot" style="background:#d62728"></span> <b>Unmatched</b> — GA4 revenue with no matching Constant Contact send</span><span><span class="dot" style="background:#9aa0a6"></span> <b>Automation</b> — Site/automation traffic — not a discrete campaign</span>
+  </div>
+
+  <div class="callout">
+    <b>How to read this — 93.0% of revenue is mapped or acknowledged.</b>
+    Google Analytics attributes purchase revenue to the email <em>campaign theme</em> (the <code>utm_campaign</code> tag), which usually spans a whole flight of sends — so revenue is shown <strong>per campaign group</strong>, not per individual email. Expand any row to see the Constant Contact sends behind it. Attribution is last-click/session-based, so it credits the visit that converted and will not tie out exactly to Tessitura ticket revenue.
+  </div>
+
+  <table class="main">
+    <thead><tr><th></th><th>Campaign</th><th class="num">Revenue</th><th class="num">Purchases</th><th class="num">Sessions</th><th class="num">CC sends</th></tr></thead>
+    <tbody><tr class="grp" data-i="0">
+      <td><span class="dot" style="background:#e0a800"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>26/27 Subscriptions<span class="slugs">26/27Subs, 2026/27-subscriptions, subscriptions</span></td>
+      <td class="num rev">$100,599</td>
+      <td class="num">97</td>
+      <td class="num">2,364</td>
+      <td class="num">27</td>
+    </tr>
+    <tr class="detail" data-i="0" hidden><td></td><td colspan="5"><p class="note">⚠ Season/subscription revenue; shares sends with 26/27 Concerts — split is approximate.</p><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-11-05</td><td>FY26 Classical Subscription Packages</td><td class="num">101,453</td><td class="num">34,140</td><td class="num">1,305</td></tr><tr><td class="dt">2025-12-10</td><td>FY26 Season Announcement Invite</td><td class="num">234</td><td class="num">181</td><td class="num">37</td></tr><tr><td class="dt">2025-12-15</td><td>FY26 Lapsed Pops Subscribers - Customer Feedback Survey #1</td><td class="num">199</td><td class="num">114</td><td class="num">35</td></tr><tr><td class="dt">2025-12-15</td><td>FY26 Active Non Pops Subscribers - Customer Feedback Survey #1</td><td class="num">195</td><td class="num">103</td><td class="num">18</td></tr><tr><td class="dt">2026-01-06</td><td>FY26 Season Announcement Invite - Reminder</td><td class="num">201</td><td class="num">142</td><td class="num">12</td></tr><tr><td class="dt">2026-01-12</td><td>FY26 Piazza Subscription Update - Customer Facing</td><td class="num">373</td><td class="num">293</td><td class="num">2</td></tr><tr><td class="dt">2026-01-26</td><td>FY26 Season Announcement KBYG</td><td class="num">60</td><td class="num">56</td><td class="num">6</td></tr><tr><td class="dt">2026-01-29</td><td>FY26/27 Season Launch Email</td><td class="num">96,820</td><td class="num">36,064</td><td class="num">1,697</td></tr><tr><td class="dt">2026-02-12</td><td>FY26/27 Season Announcement Email #2</td><td class="num">96,950</td><td class="num">14,079</td><td class="num">1,652</td></tr><tr><td class="dt">2026-02-27</td><td>FY26 Subscriber Renewal 2/26</td><td class="num">1,553</td><td class="num">1,010</td><td class="num">91</td></tr><tr><td class="dt">2026-03-06</td><td>FY26 Subscriber Renewal 3/5 - Pops and Family</td><td class="num">684</td><td class="num">397</td><td class="num">15</td></tr><tr><td class="dt">2026-03-06</td><td>FY26 Subscriber Renewal 3/5 - Classical</td><td class="num">1,144</td><td class="num">700</td><td class="num">25</td></tr><tr><td class="dt">2026-03-12</td><td>FY26 Subscriber Renewal: Don't Miss Out 3/12 - Pops and Family</td><td class="num">489</td><td class="num">294</td><td class="num">15</td></tr><tr><td class="dt">2026-03-12</td><td>FY26 Subscriber Renewal: Don't Miss Out 3/12 - Classical</td><td class="num">817</td><td class="num">519</td><td class="num">40</td></tr><tr><td class="dt">2026-03-19</td><td>FY26 Subscriber Renewal: Count Down Timer 3/19 - Classical</td><td class="num">683</td><td class="num">428</td><td class="num">64</td></tr><tr><td class="dt">2026-03-19</td><td>FY26 Subscriber Renewal: Count Down Timer 3/19 - Pops and Family</td><td class="num">399</td><td class="num">241</td><td class="num">32</td></tr><tr><td class="dt">2026-03-27</td><td>FY26 Subscriber Renewal: Last Chance 3/27 - Pops and Family</td><td class="num">310</td><td class="num">178</td><td class="num">16</td></tr><tr><td class="dt">2026-03-27</td><td>FY26 Subscriber Renewal: Last Chance 3/27 - Classical</td><td class="num">471</td><td class="num">273</td><td class="num">37</td></tr><tr><td class="dt">2026-04-16</td><td>FY26 Film Subscription Announcement 4/16</td><td class="num">2,788</td><td class="num">1,374</td><td class="num">83</td></tr><tr><td class="dt">2026-04-23</td><td>FY26 New Subscriber 4/23</td><td class="num">2,787</td><td class="num">1,312</td><td class="num">30</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 New Subscriber Acquisition #2</td><td class="num">2,646</td><td class="num">1,188</td><td class="num">28</td></tr><tr><td class="dt">2026-05-12</td><td>FY26 EU Tour Pre-Sale #2 - Subscribers &amp; Donors</td><td class="num">2,887</td><td class="num">1,621</td><td class="num">132</td></tr><tr><td class="dt">2026-05-18</td><td>FY26 Subscriber Courtesy Week</td><td class="num">1,804</td><td class="num">1,216</td><td class="num">111</td></tr><tr><td class="dt">2026-05-21</td><td>FY26 New Subscriber Acquisition #3</td><td class="num">2,640</td><td class="num">1,456</td><td class="num">66</td></tr><tr><td class="dt">2026-06-04</td><td>FY26 New Subscriber Acquisition #4</td><td class="num">2,639</td><td class="num">1,150</td><td class="num">40</td></tr><tr><td class="dt">2026-06-24</td><td>FY26 Lapsed Subscriber Email - 6/16</td><td class="num">387</td><td class="num">233</td><td class="num">28</td></tr><tr><td class="dt">2026-06-25</td><td>Automatic Renewal Opt-In 6/25</td><td class="num">600</td><td class="num">392</td><td class="num">56</td></tr></tbody></table></td></tr><tr class="grp" data-i="1">
+      <td><span class="dot" style="background:#e0a800"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>26/27 Concerts<span class="slugs">26/27_ concerts, 26/27_concerts</span></td>
+      <td class="num rev">$35,600</td>
+      <td class="num">109</td>
+      <td class="num">1,948</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="1" hidden><td></td><td colspan="5"><p class="note">⚠ New-season concert revenue; shares season-announcement sends with Subscriptions.</p><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="2">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>ELF<span class="slugs">ELF, Elf, [ELF]</span></td>
+      <td class="num rev">$22,715</td>
+      <td class="num">101</td>
+      <td class="num">2,974</td>
+      <td class="num">6</td>
+    </tr>
+    <tr class="detail" data-i="2" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-02</td><td>FY26 Elf Standalone Email</td><td class="num">103,391</td><td class="num">35,150</td><td class="num">751</td></tr><tr><td class="dt">2025-10-24</td><td>FY26 Elf Standalone Email #2</td><td class="num">103,537</td><td class="num">36,081</td><td class="num">564</td></tr><tr><td class="dt">2025-11-26</td><td>FY26 Elf KBYG - Friday</td><td class="num">234</td><td class="num">172</td><td class="num">83</td></tr><tr><td class="dt">2025-11-27</td><td>FY26 Elf KBYG - Saturday 7PM</td><td class="num">218</td><td class="num">156</td><td class="num">70</td></tr><tr><td class="dt">2025-11-27</td><td>FY26 Elf KBYG - Saturday 1PM</td><td class="num">190</td><td class="num">139</td><td class="num">74</td></tr><tr><td class="dt">2025-11-28</td><td>FY26 Elf KBYG - Sunday</td><td class="num">240</td><td class="num">173</td><td class="num">81</td></tr></tbody></table></td></tr><tr class="grp" data-i="3">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Billy Joel / Elton John<span class="slugs">BillyJoelEltonJohn, eltonjohn-billyjoel, billyjoel-eltonjohn</span></td>
+      <td class="num rev">$10,011</td>
+      <td class="num">41</td>
+      <td class="num">1,270</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="3" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-02-19</td><td>FY26 Billy Joel/Elton John Standalone #1</td><td class="num">97,591</td><td class="num">35,649</td><td class="num">984</td></tr><tr><td class="dt">2026-03-26</td><td>FY26 Billy Joel &amp; Elton John KYBG - FRIDAY 3/27</td><td class="num">491</td><td class="num">335</td><td class="num">117</td></tr><tr><td class="dt">2026-03-27</td><td>FY26 Billy Joel &amp; Elton John KYBG - SUNDAY 3/29</td><td class="num">473</td><td class="num">324</td><td class="num">137</td></tr><tr><td class="dt">2026-03-27</td><td>FY26 Billy Joel &amp; Elton John KYBG - SATURDAY 3/28</td><td class="num">475</td><td class="num">347</td><td class="num">134</td></tr></tbody></table></td></tr><tr class="grp" data-i="4">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>ChristmasFestival</td>
+      <td class="num rev">$9,333</td>
+      <td class="num">32</td>
+      <td class="num">1,522</td>
+      <td class="num">11</td>
+    </tr>
+    <tr class="detail" data-i="4" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-11-13</td><td>FY26 Christmas Festival Standalone #1</td><td class="num">96,184</td><td class="num">34,991</td><td class="num">486</td></tr><tr><td class="dt">2025-11-14</td><td>FY26 Christmas Festival Rehearsal Reception Invite</td><td class="num">354</td><td class="num">270</td><td class="num">60</td></tr><tr><td class="dt">2025-12-11</td><td>FY26 LOJ Christmas Tour KYBG - FRI</td><td class="num">561</td><td class="num">420</td><td class="num">230</td></tr><tr><td class="dt">2025-12-12</td><td>FY26 LOJ Christmas Tour KYBG - SAT</td><td class="num">533</td><td class="num">399</td><td class="num">205</td></tr><tr><td class="dt">2025-12-15</td><td>FY26 Christmas Festival Rehearsal Reception KBYG</td><td class="num">101</td><td class="num">87</td><td class="num">1</td></tr><tr><td class="dt">2025-12-17</td><td>FY26 Christmas Festival KYBG - THURSDAY</td><td class="num">237</td><td class="num">156</td><td class="num">79</td></tr><tr><td class="dt">2025-12-18</td><td>FY26 Christmas Festival KYBG - FRIDAY</td><td class="num">229</td><td class="num">142</td><td class="num">61</td></tr><tr><td class="dt">2025-12-19</td><td>FY26 Christmas Festival KYBG - SUNDAY 2PM</td><td class="num">273</td><td class="num">182</td><td class="num">81</td></tr><tr><td class="dt">2025-12-19</td><td>FY26 Christmas Festival KYBG - SATURDAY 1PM</td><td class="num">264</td><td class="num">175</td><td class="num">70</td></tr><tr><td class="dt">2025-12-19</td><td>FY26 Christmas Festival KYBG - SATURDAY 7PM</td><td class="num">239</td><td class="num">167</td><td class="num">58</td></tr><tr><td class="dt">2025-12-19</td><td>FY26 Christmas Festival KYBG - SUNDAY 7PM</td><td class="num">205</td><td class="num">134</td><td class="num">49</td></tr></tbody></table></td></tr><tr class="grp" data-i="5">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>ShesGotSoul</td>
+      <td class="num rev">$9,275</td>
+      <td class="num">46</td>
+      <td class="num">1,822</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="5" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-01-15</td><td>FY26 She's Got Soul Standalone #1</td><td class="num">96,407</td><td class="num">34,351</td><td class="num">236</td></tr><tr><td class="dt">2026-02-05</td><td>FY26 She's Got Soul Standalone #2</td><td class="num">96,676</td><td class="num">12,170</td><td class="num">264</td></tr><tr><td class="dt">2026-02-12</td><td>FY26 She's Got Soul KYBG - FRIDAY</td><td class="num">394</td><td class="num">190</td><td class="num">79</td></tr><tr><td class="dt">2026-02-13</td><td>FY26 She's Got Soul KYBG - SUNDAY</td><td class="num">293</td><td class="num">130</td><td class="num">66</td></tr><tr><td class="dt">2026-02-13</td><td>FY26 She's Got Soul KYBG - SATURDAY</td><td class="num">407</td><td class="num">174</td><td class="num">83</td></tr></tbody></table></td></tr><tr class="grp" data-i="6">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>ChrisThile</td>
+      <td class="num rev">$9,158</td>
+      <td class="num">37</td>
+      <td class="num">1,799</td>
+      <td class="num">1</td>
+    </tr>
+    <tr class="detail" data-i="6" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-02-11</td><td>FY26 Chris Thile KYBG - THURSDAY</td><td class="num">523</td><td class="num">287</td><td class="num">179</td></tr></tbody></table></td></tr><tr class="grp" data-i="7">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>IndianaJones</td>
+      <td class="num rev">$9,092</td>
+      <td class="num">40</td>
+      <td class="num">2,184</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="7" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-01-01</td><td>FY26 Indiana Jones Standalone #1</td><td class="num">96,612</td><td class="num">35,202</td><td class="num">529</td></tr><tr><td class="dt">2026-01-21</td><td>FY26 Indiana Jones KYBG - THURSDAY</td><td class="num">421</td><td class="num">288</td><td class="num">110</td></tr><tr><td class="dt">2026-01-22</td><td>FY26 Indiana Jones KYBG - FRIDAY</td><td class="num">387</td><td class="num">262</td><td class="num">107</td></tr><tr><td class="dt">2026-01-23</td><td>FY26 Indiana Jones KYBG - SATURDAY</td><td class="num">366</td><td class="num">254</td><td class="num">93</td></tr><tr><td class="dt">2026-01-24</td><td>FY26 Indiana Jones KYBG - SUNDAY</td><td class="num">357</td><td class="num">243</td><td class="num">80</td></tr></tbody></table></td></tr><tr class="grp" data-i="8">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Messiah<span class="slugs">Messiah, messiah</span></td>
+      <td class="num rev">$8,604</td>
+      <td class="num">59</td>
+      <td class="num">1,543</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="8" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-09</td><td>FY26 Handel's Messiah Standalone #1</td><td class="num">103,204</td><td class="num">34,290</td><td class="num">428</td></tr><tr><td class="dt">2025-12-04</td><td>FY26 Handel's Messiah KYBG - FRI</td><td class="num">346</td><td class="num">192</td><td class="num">19</td></tr><tr><td class="dt">2025-12-04</td><td>FY26 Handel's Messiah KYBG - SAT</td><td class="num">292</td><td class="num">192</td><td class="num">86</td></tr><tr><td class="dt">2025-12-04</td><td>FY26 Handel's Messiah KYBG - FRI (Resend)</td><td class="num">318</td><td class="num">217</td><td class="num">105</td></tr><tr><td class="dt">2025-12-05</td><td>FY26 Handel's Messiah KYBG - SUN</td><td class="num">342</td><td class="num">223</td><td class="num">106</td></tr></tbody></table></td></tr><tr class="grp" data-i="9">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Taylor Swift (Symphony Era)</td>
+      <td class="num rev">$7,786</td>
+      <td class="num">36</td>
+      <td class="num">353</td>
+      <td class="num">3</td>
+    </tr>
+    <tr class="detail" data-i="9" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-10</td><td>FY26 3/10 Weekly Concert Update Final Symphony -- Curious Explorer</td><td class="num">7,339</td><td class="num">3,575</td><td class="num">63</td></tr><tr><td class="dt">2026-03-24</td><td>FY26 Final Symphony KYBG - WEDNESDAY 3/25</td><td class="num">351</td><td class="num">229</td><td class="num">110</td></tr><tr><td class="dt">2026-03-25</td><td>FY26 Final Symphony KYBG - THURSDAY 3/26</td><td class="num">308</td><td class="num">175</td><td class="num">85</td></tr></tbody></table></td></tr><tr class="grp" data-i="10">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>IAWL</td>
+      <td class="num rev">$7,660</td>
+      <td class="num">28</td>
+      <td class="num">1,506</td>
+      <td class="num">2</td>
+    </tr>
+    <tr class="detail" data-i="10" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-22</td><td>FY26 IAWL KYBG - TUESDAY</td><td class="num">273</td><td class="num">197</td><td class="num">78</td></tr><tr><td class="dt">2025-12-23</td><td>FY26 IAWL KYBG - WEDNESDAY</td><td class="num">279</td><td class="num">200</td><td class="num">90</td></tr></tbody></table></td></tr><tr class="grp" data-i="11">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>BFCM</td>
+      <td class="num rev">$5,772</td>
+      <td class="num">34</td>
+      <td class="num">1,439</td>
+      <td class="num">1</td>
+    </tr>
+    <tr class="detail" data-i="11" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-01</td><td>FY26 BFCM Deals: Promo Email 3</td><td class="num">96,078</td><td class="num">33,797</td><td class="num">317</td></tr></tbody></table></td></tr><tr class="grp" data-i="12">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS6</td>
+      <td class="num rev">$5,630</td>
+      <td class="num">27</td>
+      <td class="num">1,670</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="12" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-26</td><td>FY26 CS6 Standalone #1</td><td class="num">96,863</td><td class="num">34,760</td><td class="num">274</td></tr><tr><td class="dt">2026-01-29</td><td>FY26 CS6 KYBG - FRIDAY</td><td class="num">302</td><td class="num">221</td><td class="num">64</td></tr><tr><td class="dt">2026-01-30</td><td>FY26 CS6 KYBG - SATURDAY</td><td class="num">418</td><td class="num">274</td><td class="num">77</td></tr><tr><td class="dt">2026-01-30</td><td>FY26 CS6 KYBG - SUNDAY</td><td class="num">444</td><td class="num">310</td><td class="num">76</td></tr></tbody></table></td></tr><tr class="grp" data-i="13">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>abandoncart</td>
+      <td class="num rev">$4,983</td>
+      <td class="num">43</td>
+      <td class="num">405</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="13" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="14">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS3</td>
+      <td class="num rev">$4,573</td>
+      <td class="num">32</td>
+      <td class="num">1,123</td>
+      <td class="num">6</td>
+    </tr>
+    <tr class="detail" data-i="14" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-09-25</td><td>FY26 CS3 Standalone Email</td><td class="num">103,519</td><td class="num">35,979</td><td class="num">348</td></tr><tr><td class="dt">2025-10-16</td><td>FY26 CS3 Standalone Email #2</td><td class="num">103,590</td><td class="num">34,664</td><td class="num">229</td></tr><tr><td class="dt">2025-11-17</td><td>FY26 CS3 Matthias Video</td><td class="num">96,088</td><td class="num">34,953</td><td class="num">554</td></tr><tr><td class="dt">2025-11-21</td><td>FY26 CS3 - KBYG FRI</td><td class="num">261</td><td class="num">174</td><td class="num">57</td></tr><tr><td class="dt">2025-11-21</td><td>FY26 CS3 - KBYG SAT</td><td class="num">386</td><td class="num">252</td><td class="num">77</td></tr><tr><td class="dt">2025-11-21</td><td>FY26 CS3 - KBYG SUN</td><td class="num">394</td><td class="num">275</td><td class="num">77</td></tr></tbody></table></td></tr><tr class="grp" data-i="15">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>EU Tour<span class="slugs">EUTour, EUR-Tour-Kickoff, european-send-off</span></td>
+      <td class="num rev">$4,331</td>
+      <td class="num">30</td>
+      <td class="num">438</td>
+      <td class="num">2</td>
+    </tr>
+    <tr class="detail" data-i="15" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-05-07</td><td>FY26 EU Tour Pre-Sale #1 - Symphony Society</td><td class="num">337</td><td class="num">242</td><td class="num">32</td></tr><tr><td class="dt">2026-05-15</td><td>FY26 EU Tour Sale - General Audience</td><td class="num">29,780</td><td class="num">11,229</td><td class="num">162</td></tr></tbody></table></td></tr><tr class="grp" data-i="16">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>single-tickets</td>
+      <td class="num rev">$3,414</td>
+      <td class="num">6</td>
+      <td class="num">41</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="16" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-07-15</td><td>FY26 7/15 Single Ticket On Sale Announcement</td><td class="num">104,010</td><td class="num">36,330</td><td class="num">1,760</td></tr><tr><td class="dt">2026-06-08</td><td>FY26 Single Ticket Email #1 - Teaser &amp; Early Access</td><td class="num">4,466</td><td class="num">2,464</td><td class="num">169</td></tr><tr><td class="dt">2026-06-14</td><td>FY26 Single Ticket Email #2 - Final Reminder</td><td class="num">4,461</td><td class="num">2,299</td><td class="num">196</td></tr><tr><td class="dt">2026-06-15</td><td>FY26 Single Ticket Email #3 - Launch</td><td class="num">41,712</td><td class="num">16,351</td><td class="num">1,014</td></tr><tr><td class="dt">2026-06-23</td><td>Single Ticket Email #4 Launch Follow Up</td><td class="num">4,457</td><td class="num">2,218</td><td class="num">52</td></tr></tbody></table></td></tr><tr class="grp" data-i="17">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Harry Potter (HP2)</td>
+      <td class="num rev">$2,510</td>
+      <td class="num">6</td>
+      <td class="num">987</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="17" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-02-18</td><td>FY26 Harry Potter KYBG - THURSDAY</td><td class="num">428</td><td class="num">258</td><td class="num">113</td></tr><tr><td class="dt">2026-02-20</td><td>FY26 Harry Potter KYBG - FRIDAY</td><td class="num">402</td><td class="num">263</td><td class="num">105</td></tr><tr><td class="dt">2026-02-21</td><td>FY26 Harry Potter KYBG - SATURDAY</td><td class="num">380</td><td class="num">253</td><td class="num">104</td></tr><tr><td class="dt">2026-02-21</td><td>FY26 Harry Potter KYBG - SUNDAY</td><td class="num">328</td><td class="num">230</td><td class="num">98</td></tr></tbody></table></td></tr><tr class="grp" data-i="18">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>OnStage2</td>
+      <td class="num rev">$2,419</td>
+      <td class="num">19</td>
+      <td class="num">1,579</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="18" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="19">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS5</td>
+      <td class="num rev">$2,314</td>
+      <td class="num">18</td>
+      <td class="num">1,518</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="19" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-05</td><td>FY26 CS5 Standalone #1</td><td class="num">96,232</td><td class="num">35,634</td><td class="num">304</td></tr><tr><td class="dt">2026-01-15</td><td>FY26 CS5 KYBG - FRIDAY</td><td class="num">214</td><td class="num">150</td><td class="num">40</td></tr><tr><td class="dt">2026-01-16</td><td>FY26 CS5 KYBG - SATURDAY</td><td class="num">389</td><td class="num">248</td><td class="num">67</td></tr><tr><td class="dt">2026-01-17</td><td>FY26 CS5 KYBG - SUNDAY</td><td class="num">375</td><td class="num">258</td><td class="num">66</td></tr></tbody></table></td></tr><tr class="grp" data-i="20">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS7</td>
+      <td class="num rev">$2,280</td>
+      <td class="num">13</td>
+      <td class="num">800</td>
+      <td class="num">3</td>
+    </tr>
+    <tr class="detail" data-i="20" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-02-04</td><td>FY26 CS7 KYBG - FRIDAY</td><td class="num">254</td><td class="num">171</td><td class="num">54</td></tr><tr><td class="dt">2026-02-05</td><td>FY26 CS7 KYBG - SATURDAY</td><td class="num">275</td><td class="num">115</td><td class="num">54</td></tr><tr><td class="dt">2026-02-06</td><td>FY26 CS7 KYBG - SUNDAY</td><td class="num">318</td><td class="num">146</td><td class="num">62</td></tr></tbody></table></td></tr><tr class="grp" data-i="21">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS4</td>
+      <td class="num rev">$2,091</td>
+      <td class="num">11</td>
+      <td class="num">1,671</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="21" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-11</td><td>FY26 CS4 Standalone #1</td><td class="num">96,528</td><td class="num">34,622</td><td class="num">234</td></tr><tr><td class="dt">2026-01-08</td><td>FY26 CS4 KYBG - FRIDAY</td><td class="num">359</td><td class="num">240</td><td class="num">75</td></tr><tr><td class="dt">2026-01-09</td><td>FY26 CS4 KYBG - SUNDAY</td><td class="num">399</td><td class="num">260</td><td class="num">88</td></tr><tr><td class="dt">2026-01-09</td><td>FY26 CS4 KYBG - SATURDAY</td><td class="num">358</td><td class="num">240</td><td class="num">74</td></tr></tbody></table></td></tr><tr class="grp" data-i="22">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Leslie Odom Jr</td>
+      <td class="num rev">$2,075</td>
+      <td class="num">12</td>
+      <td class="num">378</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="22" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="23">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS9</td>
+      <td class="num rev">$2,072</td>
+      <td class="num">11</td>
+      <td class="num">252</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="23" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-09</td><td>FY26 CS9 KBYG - FRIDAY</td><td class="num">309</td><td class="num">219</td><td class="num">72</td></tr><tr><td class="dt">2026-04-10</td><td>FY26 CS9 KBYG - SUNDAY</td><td class="num">402</td><td class="num">272</td><td class="num">80</td></tr><tr><td class="dt">2026-04-10</td><td>FY26 CS9 KBYG - CORRECTION EMAIL</td><td class="num">1,060</td><td class="num">716</td><td class="num">10</td></tr><tr><td class="dt">2026-04-10</td><td>FY26 CS9 KBYG - SATURDAY</td><td class="num">374</td><td class="num">255</td><td class="num">76</td></tr></tbody></table></td></tr><tr class="grp" data-i="24">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>film-subscription</td>
+      <td class="num rev">$1,963</td>
+      <td class="num">3</td>
+      <td class="num">161</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="24" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="25">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>PhilharmoniaFantastique</td>
+      <td class="num rev">$1,814</td>
+      <td class="num">13</td>
+      <td class="num">875</td>
+      <td class="num">2</td>
+    </tr>
+    <tr class="detail" data-i="25" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-01-23</td><td>FY26 Philharmonia Fantastique Standalone</td><td class="num">96,920</td><td class="num">34,564</td><td class="num">497</td></tr><tr><td class="dt">2026-02-27</td><td>FY26 Philharmonia Fantastique KYBG</td><td class="num">167</td><td class="num">126</td><td class="num">31</td></tr></tbody></table></td></tr><tr class="grp" data-i="26">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS2</td>
+      <td class="num rev">$1,620</td>
+      <td class="num">18</td>
+      <td class="num">611</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="26" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-09-15</td><td>FY26 9/15 CS2 Standalone Email</td><td class="num">103,598</td><td class="num">35,612</td><td class="num">356</td></tr><tr><td class="dt">2025-10-29</td><td>FY26 CS2 Matthias Video</td><td class="num">103,396</td><td class="num">34,678</td><td class="num">696</td></tr><tr><td class="dt">2025-10-30</td><td>FY26 CS2 - KBYG SAT</td><td class="num">523</td><td class="num">356</td><td class="num">109</td></tr><tr><td class="dt">2025-10-30</td><td>FY26 CS2 - KBYG FRI</td><td class="num">280</td><td class="num">181</td><td class="num">63</td></tr><tr><td class="dt">2025-10-31</td><td>FY26 CS2 - KBYG SUN</td><td class="num">513</td><td class="num">340</td><td class="num">105</td></tr></tbody></table></td></tr><tr class="grp" data-i="27">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS8</td>
+      <td class="num rev">$1,389</td>
+      <td class="num">10</td>
+      <td class="num">305</td>
+      <td class="num">5</td>
+    </tr>
+    <tr class="detail" data-i="27" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-04</td><td>FY26 3/3 Weekly Concert Promo CS8 - Classical Aficionado</td><td class="num">9,657</td><td class="num">4,543</td><td class="num">148</td></tr><tr><td class="dt">2026-03-12</td><td>FY26 CS8 KYBG - FRIDAY CORRECT</td><td class="num">314</td><td class="num">244</td><td class="num">57</td></tr><tr><td class="dt">2026-03-12</td><td>FY26 CS8 KYBG - FRIDAY</td><td class="num">314</td><td class="num">167</td><td class="num">22</td></tr><tr><td class="dt">2026-03-13</td><td>FY26 CS8 KYBG - SATURDAY 3/14</td><td class="num">296</td><td class="num">204</td><td class="num">56</td></tr><tr><td class="dt">2026-03-13</td><td>FY26 CS8 KYBG - SUNDAY 3/15</td><td class="num">365</td><td class="num">265</td><td class="num">81</td></tr></tbody></table></td></tr><tr class="grp" data-i="28">
+      <td><span class="dot" style="background:#e0a800"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>KCSMoviesSub</td>
+      <td class="num rev">$1,293</td>
+      <td class="num">2</td>
+      <td class="num">115</td>
+      <td class="num">1</td>
+    </tr>
+    <tr class="detail" data-i="28" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-12-15</td><td>FY26 DEVO | CF Family Sub Suite Invite</td><td class="num">52</td><td class="num">33</td><td class="num">14</td></tr></tbody></table></td></tr><tr class="grp" data-i="29">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>FinalSymphony<span class="slugs">FinalSymphony, final-symphony</span></td>
+      <td class="num rev">$1,197</td>
+      <td class="num">6</td>
+      <td class="num">304</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="29" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="30">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>openhouse</td>
+      <td class="num rev">$910</td>
+      <td class="num">2</td>
+      <td class="num">20</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="30" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="31">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Dolly Parton<span class="slugs">dollyparton, DollyParton</span></td>
+      <td class="num rev">$801</td>
+      <td class="num">3</td>
+      <td class="num">75</td>
+      <td class="num">8</td>
+    </tr>
+    <tr class="detail" data-i="31" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-17</td><td>FY26 3/17 Weekly Concert Update Dolly Parton's Threads -- Curious Explorer</td><td class="num">7,348</td><td class="num">3,177</td><td class="num">80</td></tr><tr><td class="dt">2026-04-16</td><td>FY26 4/14 Weekly Concert Update Dolly Parton Threads -- CE CONTROL GROUP</td><td class="num">1,371</td><td class="num">624</td><td class="num">12</td></tr><tr><td class="dt">2026-05-13</td><td>FY26 Dolly Parton KBYG - FRIDAY 5/15</td><td class="num">388</td><td class="num">264</td><td class="num">81</td></tr><tr><td class="dt">2026-05-14</td><td>FY26 Dolly Parton KBYG - SATURDAY 5/16</td><td class="num">349</td><td class="num">237</td><td class="num">71</td></tr><tr><td class="dt">2026-05-15</td><td>FY26 Dolly Parton KBYG - SUNDAY 5/17</td><td class="num">381</td><td class="num">244</td><td class="num">99</td></tr><tr><td class="dt">2026-05-16</td><td>FY26 Dolly Parton Follow-Up #1 Friday</td><td class="num">411</td><td class="num">213</td><td class="num">11</td></tr><tr><td class="dt">2026-05-17</td><td>FY26 Dolly Parton Follow-Up #2 Saturday</td><td class="num">380</td><td class="num">211</td><td class="num">15</td></tr><tr><td class="dt">2026-05-18</td><td>FY26 Dolly Parton Follow-Up #3 Sunday</td><td class="num">433</td><td class="num">224</td><td class="num">9</td></tr></tbody></table></td></tr><tr class="grp" data-i="32">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS11</td>
+      <td class="num rev">$660</td>
+      <td class="num">6</td>
+      <td class="num">117</td>
+      <td class="num">9</td>
+    </tr>
+    <tr class="detail" data-i="32" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-17</td><td>FY26 3/17 Weekly Concert Promo CS11 - Classical Aficionado</td><td class="num">9,805</td><td class="num">4,051</td><td class="num">120</td></tr><tr><td class="dt">2026-04-23</td><td>FY26 4/21 Weekly Concert Promo CS11 - CA CONTROL</td><td class="num">413</td><td class="num">197</td><td class="num">4</td></tr><tr><td class="dt">2026-04-24</td><td>FY26 4/22 - Dolly, CS11, CS12 Promo - BOGO</td><td class="num">1,086</td><td class="num">575</td><td class="num">20</td></tr><tr><td class="dt">2026-05-07</td><td>FY26 CS11 KBYG - FRIDAY</td><td class="num">276</td><td class="num">187</td><td class="num">60</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 CS11 KBYG - SATURDAY</td><td class="num">385</td><td class="num">247</td><td class="num">78</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 CS11 KBYG - SUNDAY</td><td class="num">415</td><td class="num">280</td><td class="num">90</td></tr><tr><td class="dt">2026-05-09</td><td>FY26 CS11 Follow-Up #1 Friday</td><td class="num">340</td><td class="num">197</td><td class="num">11</td></tr><tr><td class="dt">2026-05-10</td><td>FY26 CS11 Follow-Up #2 Saturday</td><td class="num">407</td><td class="num">237</td><td class="num">14</td></tr><tr><td class="dt">2026-05-11</td><td>FY26 CS11 Follow-Up #3 Sunday</td><td class="num">420</td><td class="num">242</td><td class="num">20</td></tr></tbody></table></td></tr><tr class="grp" data-i="33">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>midsummer-nights-dream</td>
+      <td class="num rev">$604</td>
+      <td class="num">4</td>
+      <td class="num">67</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="33" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="34">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>upcoming-events</td>
+      <td class="num rev">$579</td>
+      <td class="num">4</td>
+      <td class="num">171</td>
+      <td class="num">3</td>
+    </tr>
+    <tr class="detail" data-i="34" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-09</td><td>FY26 Campaign Events Invite Reminder - MARNY</td><td class="num">38</td><td class="num">28</td><td class="num">5</td></tr><tr><td class="dt">2026-03-09</td><td>FY26 Campaign Events Invite Reminder - BEBE</td><td class="num">14</td><td class="num">12</td><td class="num">0</td></tr><tr><td class="dt">2026-03-09</td><td>FY26 Campaign Events Invite Reminder - JEFF</td><td class="num">16</td><td class="num">14</td><td class="num">2</td></tr></tbody></table></td></tr><tr class="grp" data-i="35">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>Holiday</td>
+      <td class="num rev">$562</td>
+      <td class="num">4</td>
+      <td class="num">116</td>
+      <td class="num">3</td>
+    </tr>
+    <tr class="detail" data-i="35" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-07-01</td><td>FY25 7/1 Holiday Single Tickets On Sale</td><td class="num">104,205</td><td class="num">36,069</td><td class="num">854</td></tr><tr><td class="dt">2025-10-08</td><td>FY26 Holiday Standalone #1</td><td class="num">103,257</td><td class="num">34,877</td><td class="num">438</td></tr><tr><td class="dt">2025-10-15</td><td>FY26 Holiday Standalone #2</td><td class="num">103,631</td><td class="num">35,213</td><td class="num">602</td></tr></tbody></table></td></tr><tr class="grp" data-i="36">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS13</td>
+      <td class="num rev">$546</td>
+      <td class="num">4</td>
+      <td class="num">133</td>
+      <td class="num">11</td>
+    </tr>
+    <tr class="detail" data-i="36" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-09</td><td>FY26 4/7 Weekly Concert CS13 - Curious Explorer COMBO</td><td class="num">22,966</td><td class="num">10,461</td><td class="num">125</td></tr><tr><td class="dt">2026-04-09</td><td>FY26 4/7 Weekly Concert Promo CS13 - CA CONTROL</td><td class="num">415</td><td class="num">197</td><td class="num">3</td></tr><tr><td class="dt">2026-04-09</td><td>FY26 4/7 Weekly Concert CS13 - Classical Aficionado COMBO</td><td class="num">7,039</td><td class="num">3,304</td><td class="num">81</td></tr><tr><td class="dt">2026-05-05</td><td>FY26 5/5 Weekly Concert Promo CS13</td><td class="num">1,095</td><td class="num">566</td><td class="num">23</td></tr><tr><td class="dt">2026-06-03</td><td>FY26 CS13 KBYG - FRIDAY</td><td class="num">449</td><td class="num">338</td><td class="num">102</td></tr><tr><td class="dt">2026-06-03</td><td>FY26 6/2 CS13 Promo #2</td><td class="num">1,058</td><td class="num">528</td><td class="num">30</td></tr><tr><td class="dt">2026-06-04</td><td>FY26 CS13 KBYG - SATURDAY</td><td class="num">477</td><td class="num">317</td><td class="num">98</td></tr><tr><td class="dt">2026-06-05</td><td>FY26 CS13 KBYG - SUNDAY</td><td class="num">556</td><td class="num">385</td><td class="num">121</td></tr><tr><td class="dt">2026-06-06</td><td>FY26 CS13 Follow-Up #1 Friday</td><td class="num">416</td><td class="num">250</td><td class="num">24</td></tr><tr><td class="dt">2026-06-07</td><td>FY26 CS13 Follow-Up #2 Saturday</td><td class="num">450</td><td class="num">267</td><td class="num">29</td></tr><tr><td class="dt">2026-06-08</td><td>FY26 CS13 Follow-Up #3 Sunday</td><td class="num">527</td><td class="num">297</td><td class="num">40</td></tr></tbody></table></td></tr><tr class="grp" data-i="37">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>90sMixtape</td>
+      <td class="num rev">$480</td>
+      <td class="num">5</td>
+      <td class="num">154</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="37" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-23</td><td>FY26 90s Mixtape - KBYG 10/25 SAT</td><td class="num">330</td><td class="num">240</td><td class="num">87</td></tr><tr><td class="dt">2025-10-23</td><td>FY26 90s Mixtape - KBYG 10/24 FRI</td><td class="num">328</td><td class="num">232</td><td class="num">67</td></tr><tr><td class="dt">2025-10-24</td><td>FY26 90s Mixtape - KBYG 10/26 SUN</td><td class="num">258</td><td class="num">191</td><td class="num">67</td></tr><tr><td class="dt">2025-09-18</td><td>FY26 9/18 90s Standalone Email</td><td class="num">103,487</td><td class="num">34,995</td><td class="num">366</td></tr></tbody></table></td></tr><tr class="grp" data-i="38">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>contact-us</td>
+      <td class="num rev">$360</td>
+      <td class="num">1</td>
+      <td class="num">84</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="38" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="39">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS10</td>
+      <td class="num rev">$346</td>
+      <td class="num">2</td>
+      <td class="num">149</td>
+      <td class="num">4</td>
+    </tr>
+    <tr class="detail" data-i="39" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-10</td><td>FY26 3/10 Weekly Concert Promo CS10 - Classical Aficionado</td><td class="num">9,658</td><td class="num">4,342</td><td class="num">111</td></tr><tr><td class="dt">2026-04-16</td><td>FY26 CS10 KBYG - FRIDAY</td><td class="num">329</td><td class="num">236</td><td class="num">54</td></tr><tr><td class="dt">2026-04-17</td><td>FY26 CS10 KBYG - SUNDAY</td><td class="num">369</td><td class="num">243</td><td class="num">61</td></tr><tr><td class="dt">2026-04-17</td><td>FY26 CS10 KBYG - SATURDAY</td><td class="num">329</td><td class="num">213</td><td class="num">51</td></tr></tbody></table></td></tr><tr class="grp" data-i="40">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>get-ready</td>
+      <td class="num rev">$316</td>
+      <td class="num">4</td>
+      <td class="num">793</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="40" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="41">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>on-stage-yefim-bronfman</td>
+      <td class="num rev">$300</td>
+      <td class="num">1</td>
+      <td class="num">11</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="41" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="42">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CATS26</td>
+      <td class="num rev">$266</td>
+      <td class="num">7</td>
+      <td class="num">928</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="42" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="43">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>OnStage4</td>
+      <td class="num rev">$252</td>
+      <td class="num">2</td>
+      <td class="num">5</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="43" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="44">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>TopGun</td>
+      <td class="num rev">$213</td>
+      <td class="num">1</td>
+      <td class="num">43</td>
+      <td class="num">3</td>
+    </tr>
+    <tr class="detail" data-i="44" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-16</td><td>FY26 Top Gun - KBYG 10/17 FRI</td><td class="num">356</td><td class="num">263</td><td class="num">117</td></tr><tr><td class="dt">2025-10-17</td><td>FY26 Top Gun - KBYG 10/19 SUN</td><td class="num">286</td><td class="num">202</td><td class="num">81</td></tr><tr><td class="dt">2025-10-17</td><td>FY26 Top Gun - KBYG 10/18 SAT</td><td class="num">373</td><td class="num">262</td><td class="num">106</td></tr></tbody></table></td></tr><tr class="grp" data-i="45">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>steve-hackman</td>
+      <td class="num rev">$210</td>
+      <td class="num">1</td>
+      <td class="num">79</td>
+      <td class="num">9</td>
+    </tr>
+    <tr class="detail" data-i="45" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-24</td><td>FY26 3/24 Weekly Concert Update Steve Hackman -- Curious Explorer</td><td class="num">4,643</td><td class="num">2,417</td><td class="num">246</td></tr><tr><td class="dt">2026-04-23</td><td>FY26 4/21 Weekly Concert Update Steve Hackman -- CE CONTROL GROUP</td><td class="num">1,366</td><td class="num">657</td><td class="num">13</td></tr><tr><td class="dt">2026-04-23</td><td>FY26 4/21 Weekly Concert Update Steve Hackman -- CE COMBO</td><td class="num">22,868</td><td class="num">10,859</td><td class="num">346</td></tr><tr><td class="dt">2026-04-23</td><td>FY26 4/21 Weekly Concert Update Steve Hackman -- CA COMBO</td><td class="num">7,014</td><td class="num">3,295</td><td class="num">77</td></tr><tr><td class="dt">2026-06-09</td><td>FY26 Steve Hackman - Radio Contest</td><td class="num">68</td><td class="num">37</td><td class="num">4</td></tr><tr><td class="dt">2026-06-09</td><td>FY26 Steve Hackman KBYG - THURS 6/11</td><td class="num">505</td><td class="num">351</td><td class="num">153</td></tr><tr><td class="dt">2026-06-10</td><td>FY26 Steve Hackman KBYG - FRIDAY 6/12</td><td class="num">572</td><td class="num">376</td><td class="num">186</td></tr><tr><td class="dt">2026-06-12</td><td>FY26 Steve Hackman Follow-Up #1 Thursday</td><td class="num">504</td><td class="num">284</td><td class="num">13</td></tr><tr><td class="dt">2026-06-13</td><td>FY26 Steve Hackman Follow-Up #2 Friday</td><td class="num">534</td><td class="num">283</td><td class="num">30</td></tr></tbody></table></td></tr><tr class="grp" data-i="46">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>New Music Venue</td>
+      <td class="num rev">$201</td>
+      <td class="num">8</td>
+      <td class="num">1,745</td>
+      <td class="num">7</td>
+    </tr>
+    <tr class="detail" data-i="46" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-03-30</td><td>FY26 NMV External Announcement 3/30</td><td class="num">30,475</td><td class="num">13,309</td><td class="num">799</td></tr><tr><td class="dt">2026-03-30</td><td>EJT Donor Message on NMV TRUE</td><td class="num">818</td><td class="num">572</td><td class="num">13</td></tr><tr><td class="dt">2026-04-02</td><td>FY26 NMV - Donor Follow Up 4/2</td><td class="num">1,409</td><td class="num">825</td><td class="num">49</td></tr><tr><td class="dt">2026-04-03</td><td>FY26 NMV - General Interest Catch Up Send 4/2</td><td class="num">29,944</td><td class="num">12,551</td><td class="num">403</td></tr><tr><td class="dt">2026-06-12</td><td>FY26 NMV 6/12</td><td class="num">2,538</td><td class="num">1,512</td><td class="num">37</td></tr><tr><td class="dt">2026-06-22</td><td>DB Donor Message (Matthias &amp; NMV)  2026-06-22</td><td class="num">2,537</td><td class="num">1,369</td><td class="num">19</td></tr><tr><td class="dt">2026-06-25</td><td>DB Donor Message (Matthias &amp; NMV)  2026-06-22 (Resend)</td><td class="num">1</td><td class="num">1</td><td class="num">0</td></tr></tbody></table></td></tr><tr class="grp" data-i="47">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>tickets</td>
+      <td class="num rev">$200</td>
+      <td class="num">1</td>
+      <td class="num">153</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="47" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="48">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>plan-your-visit</td>
+      <td class="num rev">$169</td>
+      <td class="num">9</td>
+      <td class="num">300</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="48" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="49">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>spring</td>
+      <td class="num rev">$132</td>
+      <td class="num">2</td>
+      <td class="num">32</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="49" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="50">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>PetitePerformances</td>
+      <td class="num rev">$128</td>
+      <td class="num">4</td>
+      <td class="num">18</td>
+      <td class="num">12</td>
+    </tr>
+    <tr class="detail" data-i="50" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-10</td><td>FY26 10/11 Petite Performances 9:30 Reminder</td><td class="num">24</td><td class="num">21</td><td class="num">10</td></tr><tr><td class="dt">2025-10-10</td><td>FY26 10/11 Petite Performances 10:30 Reminder</td><td class="num">29</td><td class="num">26</td><td class="num">9</td></tr><tr><td class="dt">2025-10-10</td><td>FY26 10/11 Petite Performances 11:30 Reminder</td><td class="num">22</td><td class="num">17</td><td class="num">7</td></tr><tr><td class="dt">2025-12-05</td><td>FY26 12/5 Petite Performances 9:30 Reminder</td><td class="num">47</td><td class="num">41</td><td class="num">7</td></tr><tr><td class="dt">2025-12-05</td><td>FY26 12/5 Petite Performances 10:30 Reminder</td><td class="num">46</td><td class="num">42</td><td class="num">8</td></tr><tr><td class="dt">2025-12-05</td><td>FY26 12/5 Petite Performances 11:30 Reminder</td><td class="num">32</td><td class="num">23</td><td class="num">5</td></tr><tr><td class="dt">2026-03-13</td><td>FY26 3/14 Petite Performances 10:30 Reminder</td><td class="num">53</td><td class="num">48</td><td class="num">12</td></tr><tr><td class="dt">2026-03-13</td><td>FY26 3/14 Petite Performances 9:30 Reminder</td><td class="num">48</td><td class="num">41</td><td class="num">8</td></tr><tr><td class="dt">2026-03-13</td><td>FY26 3/14 Petite Performances 11:30 Reminder</td><td class="num">46</td><td class="num">37</td><td class="num">4</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 5/9 Petite Performances 10:30 Reminder</td><td class="num">56</td><td class="num">42</td><td class="num">6</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 5/9 Petite Performances 9:30 Reminder</td><td class="num">50</td><td class="num">37</td><td class="num">3</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 5/9 Petite Performances 11:30 Reminder</td><td class="num">41</td><td class="num">31</td><td class="num">4</td></tr></tbody></table></td></tr><tr class="grp" data-i="51">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>FS2</td>
+      <td class="num rev">$123</td>
+      <td class="num">2</td>
+      <td class="num">149</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="51" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="52">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>musicians</td>
+      <td class="num rev">$117</td>
+      <td class="num">2</td>
+      <td class="num">228</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="52" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="53">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>on-stage-gil</td>
+      <td class="num rev">$100</td>
+      <td class="num">1</td>
+      <td class="num">19</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="53" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="54">
+      <td><span class="dot" style="background:#d62728"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>PP03</td>
+      <td class="num rev">$80</td>
+      <td class="num">3</td>
+      <td class="num">27</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="54" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="55">
+      <td><span class="dot" style="background:#9aa0a6"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>app</td>
+      <td class="num rev">$16</td>
+      <td class="num">1</td>
+      <td class="num">124</td>
+      <td class="num">—</td>
+    </tr>
+    <tr class="detail" data-i="55" hidden><td></td><td colspan="5"><p class="empty">No Constant Contact send mapped to this campaign.</p></td></tr><tr class="grp" data-i="56">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>LOJ</td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">106</td>
+      <td class="num">1</td>
+    </tr>
+    <tr class="detail" data-i="56" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-07-08</td><td>FY25 7/8 LOJ Promo</td><td class="num">104,107</td><td class="num">36,640</td><td class="num">582</td></tr></tbody></table></td></tr><tr class="grp" data-i="57">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS14</td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">94</td>
+      <td class="num">9</td>
+    </tr>
+    <tr class="detail" data-i="57" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-16</td><td>FY26 4/14 Weekly Concert CS14 - Classical Aficionado COMBO</td><td class="num">7,022</td><td class="num">3,360</td><td class="num">96</td></tr><tr><td class="dt">2026-04-16</td><td>FY26 4/14 Weekly Concert CS14 - Curious Explorer COMBO</td><td class="num">22,903</td><td class="num">10,437</td><td class="num">170</td></tr><tr><td class="dt">2026-04-16</td><td>FY26 4/14 Weekly Concert Promo CS14 - CA CONTROL</td><td class="num">413</td><td class="num">198</td><td class="num">3</td></tr><tr><td class="dt">2026-06-17</td><td>FY26 CS14 KBYG - FRIDAY</td><td class="num">504</td><td class="num">364</td><td class="num">100</td></tr><tr><td class="dt">2026-06-18</td><td>FY26 CS14 KBYG - SATURDAY</td><td class="num">578</td><td class="num">381</td><td class="num">106</td></tr><tr><td class="dt">2026-06-19</td><td>FY26 CS14 KBYG - SUNDAY</td><td class="num">610</td><td class="num">405</td><td class="num">137</td></tr><tr><td class="dt">2026-06-20</td><td>FY26 CS14 Follow Up #1 FRIDAY</td><td class="num">479</td><td class="num">251</td><td class="num">19</td></tr><tr><td class="dt">2026-06-21</td><td>FY26 CS14 Follow Up #2 SATURDAY</td><td class="num">546</td><td class="num">281</td><td class="num">25</td></tr><tr><td class="dt">2026-06-22</td><td>FY26 CS14 Follow Up #3 SUNDAY</td><td class="num">580</td><td class="num">298</td><td class="num">45</td></tr></tbody></table></td></tr><tr class="grp" data-i="58">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>OnStage</td>
+      <td class="num rev">$0</td>
+      <td class="num">1</td>
+      <td class="num">80</td>
+      <td class="num">8</td>
+    </tr>
+    <tr class="detail" data-i="58" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-29</td><td>FY26 On Stage 1 - KBYG 10/29</td><td class="num">23</td><td class="num">19</td><td class="num">1</td></tr><tr><td class="dt">2026-01-08</td><td>FY26 On Stage 2 Standalone #1</td><td class="num">96,583</td><td class="num">35,503</td><td class="num">267</td></tr><tr><td class="dt">2026-02-04</td><td>FY26 On Stage 2 KYBG - THURSDAY</td><td class="num">34</td><td class="num">27</td><td class="num">15</td></tr><tr><td class="dt">2026-03-24</td><td>FY26 3/24 Weekly Concert Promo On Stage Gil Shaham - Classical Aficionado</td><td class="num">4,869</td><td class="num">2,057</td><td class="num">45</td></tr><tr><td class="dt">2026-05-27</td><td>FY26 On Stage 3 KBYG - THURSDAY</td><td class="num">48</td><td class="num">33</td><td class="num">16</td></tr><tr><td class="dt">2026-05-29</td><td>FY26 On Stage 3 Follow-Up</td><td class="num">53</td><td class="num">34</td><td class="num">4</td></tr><tr><td class="dt">2026-06-02</td><td>FY26 On Stage 4 KBYG - THURSDAY</td><td class="num">37</td><td class="num">29</td><td class="num">8</td></tr><tr><td class="dt">2026-06-05</td><td>FY26 On Stage 4 Follow-Up</td><td class="num">42</td><td class="num">27</td><td class="num">1</td></tr></tbody></table></td></tr><tr class="grp" data-i="59">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>TheLodger</td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">57</td>
+      <td class="num">2</td>
+    </tr>
+    <tr class="detail" data-i="59" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2025-10-21</td><td>FY26 The Lodger - KBYG 10/22 WED</td><td class="num">337</td><td class="num">218</td><td class="num">15</td></tr><tr><td class="dt">2025-10-21</td><td>FY26 The Lodger - CORRECTED KBYG 10/22 WED</td><td class="num">130</td><td class="num">89</td><td class="num">32</td></tr></tbody></table></td></tr><tr class="grp" data-i="60">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CS12</td>
+      <td class="num rev">$0</td>
+      <td class="num">1</td>
+      <td class="num">42</td>
+      <td class="num">10</td>
+    </tr>
+    <tr class="detail" data-i="60" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-02</td><td>FY26 3/31 Weekly Concert Promo CS12 - Classical Aficionado CONTROL</td><td class="num">265</td><td class="num">133</td><td class="num">3</td></tr><tr><td class="dt">2026-04-30</td><td>FY26 4/28 Weekly Concert Promo CS12 - CE COMBO</td><td class="num">22,839</td><td class="num">10,348</td><td class="num">141</td></tr><tr><td class="dt">2026-04-30</td><td>FY26 4/28 Weekly Concert Promo CS12 - CA COMBO</td><td class="num">7,010</td><td class="num">3,186</td><td class="num">53</td></tr><tr><td class="dt">2026-04-30</td><td>FY26 4/28 Weekly Concert Promo CS12 - CA CONTROL</td><td class="num">416</td><td class="num">199</td><td class="num">8</td></tr><tr><td class="dt">2026-05-27</td><td>FY26 CS12 KBYG - FRIDAY</td><td class="num">388</td><td class="num">300</td><td class="num">91</td></tr><tr><td class="dt">2026-05-28</td><td>FY26 CS12 KBYG - SATURDAY</td><td class="num">354</td><td class="num">224</td><td class="num">78</td></tr><tr><td class="dt">2026-05-29</td><td>FY26 CS12 KBYG - SUNDAY</td><td class="num">405</td><td class="num">264</td><td class="num">80</td></tr><tr><td class="dt">2026-05-30</td><td>FY26 CS12 Follow-Up #1 Friday</td><td class="num">355</td><td class="num">215</td><td class="num">17</td></tr><tr><td class="dt">2026-05-31</td><td>FY26 CS12 Follow-Up #2 Saturday</td><td class="num">330</td><td class="num">193</td><td class="num">18</td></tr><tr><td class="dt">2026-06-01</td><td>FY26 CS12 Follow-Up #3 Sunday</td><td class="num">385</td><td class="num">219</td><td class="num">20</td></tr></tbody></table></td></tr><tr class="grp" data-i="61">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>CATS</td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">37</td>
+      <td class="num">12</td>
+    </tr>
+    <tr class="detail" data-i="61" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-14</td><td>FY26 CATS VIP Invite - Board &amp; $30k</td><td class="num">40</td><td class="num">31</td><td class="num">9</td></tr><tr><td class="dt">2026-04-22</td><td>FY26 CATS VIP Invite - Fanfare, Overture, Sempre, Prelude, Baton</td><td class="num">554</td><td class="num">381</td><td class="num">43</td></tr><tr><td class="dt">2026-04-22</td><td>FY26 CATS VIP Invite - Crescendo &amp; Bravura</td><td class="num">122</td><td class="num">97</td><td class="num">21</td></tr><tr><td class="dt">2026-04-30</td><td>FY26 4/30 - CATS Email 1</td><td class="num">109,140</td><td class="num">37,907</td><td class="num">578</td></tr><tr><td class="dt">2026-05-06</td><td>FY26 CATS VIP Invite Follow Up - Fanfare, Overture, Sempre, Prelude, Baton</td><td class="num">544</td><td class="num">343</td><td class="num">12</td></tr><tr><td class="dt">2026-05-07</td><td>FY26 CATS VIP Invite Follow Up - Board &amp; $30k</td><td class="num">35</td><td class="num">25</td><td class="num">3</td></tr><tr><td class="dt">2026-05-08</td><td>FY26 CATS VIP Invite - Auxiliaries</td><td class="num">45</td><td class="num">30</td><td class="num">4</td></tr><tr><td class="dt">2026-05-19</td><td>FY26 5/19 - CATS Email 2</td><td class="num">109,021</td><td class="num">37,902</td><td class="num">766</td></tr><tr><td class="dt">2026-05-21</td><td>FY26 CATS VIP KBYG - 1 Parking Pass</td><td class="num">41</td><td class="num">39</td><td class="num">3</td></tr><tr><td class="dt">2026-05-21</td><td>FY26 CATS VIP KBYG - NO PARKING</td><td class="num">7</td><td class="num">5</td><td class="num">0</td></tr><tr><td class="dt">2026-05-22</td><td>FY26 5/22 - CATS KBYG (reserved tickets)</td><td class="num">37</td><td class="num">32</td><td class="num">11</td></tr><tr><td class="dt">2026-05-26</td><td>FY26 CATS Follow-Up (reserved tickets only)</td><td class="num">45</td><td class="num">37</td><td class="num">3</td></tr></tbody></table></td></tr><tr class="grp" data-i="62">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>pp-goldilocks</td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">20</td>
+      <td class="num">1</td>
+    </tr>
+    <tr class="detail" data-i="62" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-09</td><td>FY26 4/7 Weekly Concert Update PP: Goldilocks -- CE CONTROL GROUP</td><td class="num">1,375</td><td class="num">648</td><td class="num">15</td></tr></tbody></table></td></tr><tr class="grp" data-i="63">
+      <td><span class="dot" style="background:#2ca02c"></span></td>
+      <td class="name"><button class="exp" aria-expanded="false">▸</button>BenRector<span class="slugs">ben-rector, BenRector</span></td>
+      <td class="num rev">$0</td>
+      <td class="num">0</td>
+      <td class="num">19</td>
+      <td class="num">9</td>
+    </tr>
+    <tr class="detail" data-i="63" hidden><td></td><td colspan="5"><table class="sends"><thead><tr><th>Sent</th><th>Constant Contact campaign</th><th class="num">Sends</th><th class="num">Opens</th><th class="num">Clicks</th></tr></thead><tbody><tr><td class="dt">2026-04-02</td><td>FY26 3/31 Weekly Concert Update Ben Rector -- Curious Explorer MAIN AUDIENCE</td><td class="num">478</td><td class="num">257</td><td class="num">6</td></tr><tr><td class="dt">2026-04-02</td><td>FY26 3/31 Weekly Concert Update Ben Rector -- Curious Explorer CONTROL GROUP</td><td class="num">229</td><td class="num">120</td><td class="num">3</td></tr><tr><td class="dt">2026-04-03</td><td>FY26 4/2 Catch Up Ben Rector -- Classical Aficionado</td><td class="num">4,092</td><td class="num">1,680</td><td class="num">30</td></tr><tr><td class="dt">2026-04-03</td><td>FY26 4/2 Catch Up Ben Rector -- Curious Explorer</td><td class="num">3,945</td><td class="num">1,839</td><td class="num">37</td></tr><tr><td class="dt">2026-04-30</td><td>FY26 4/28 Weekly Concert Update Ben Rector -- CE CONTROL GROUP</td><td class="num">1,369</td><td class="num">640</td><td class="num">12</td></tr><tr><td class="dt">2026-05-20</td><td>FY26 Ben Rector KBYG - THURSDAY 5/21</td><td class="num">400</td><td class="num">278</td><td class="num">148</td></tr><tr><td class="dt">2026-05-21</td><td>FY26 Ben Rector KBYG - FRIDAY 5/22</td><td class="num">495</td><td class="num">345</td><td class="num">197</td></tr><tr><td class="dt">2026-05-22</td><td>FY26 Ben Rector Follow-Up #1 Thursday</td><td class="num">466</td><td class="num">218</td><td class="num">10</td></tr><tr><td class="dt">2026-05-23</td><td>FY26 Ben Rector Follow-Up #2 Friday</td><td class="num">544</td><td class="num">277</td><td class="num">10</td></tr></tbody></table></td></tr></tbody>
+  </table>
+
+  <footer>
+    Source: GA4 property 445499663 (Email channel, <code>sessionCampaignName</code>) joined to <code>email_campaign_snapshots</code> (Constant Contact).
+    Confidence is the reliability of the campaign↔revenue mapping, not of the underlying GA4 attribution.
+    Generated 6/30/2026, 10:32:35 AM Central. One-off snapshot.
+  </footer>
+</div>
+<script>
+  document.querySelectorAll('tr.grp').forEach(function (r) {
+    r.addEventListener('click', function () {
+      var i = r.getAttribute('data-i');
+      var d = document.querySelector('tr.detail[data-i="' + i + '"]');
+      var btn = r.querySelector('.exp');
+      var open = d.hasAttribute('hidden');
+      if (open) { d.removeAttribute('hidden'); btn.textContent = '▾'; btn.setAttribute('aria-expanded','true'); }
+      else { d.setAttribute('hidden',''); btn.textContent = '▸'; btn.setAttribute('aria-expanded','false'); }
+    });
+  });
+</script>
+</body>
+</html>
