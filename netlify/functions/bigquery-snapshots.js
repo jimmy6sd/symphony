@@ -1398,10 +1398,14 @@ async function getYTDComparison(bigquery, params, headers) {
           ON p.performance_code = s.performance_code
         WHERE p.performance_date BETWEEN '${win.start}' AND '${win.end}'
           AND (p.cancelled IS NULL OR p.cancelled = false)
-          -- Bound snapshots to the fiscal year so a COMPLETED year's weekly curve is
-          -- not polluted by post-season snapshots (which map to fiscal week 1 of the
-          -- next year). No-op for the in-progress year (no snapshots past today).
-          AND s.snapshot_date <= '${win.end}'
+          -- Bound snapshots to the fiscal year so each year's weekly curve is clean:
+          --  * upper bound keeps a COMPLETED year from being polluted by post-season
+          --    snapshots (which map to fiscal week 1 of the next year);
+          --  * lower bound keeps the IN-PROGRESS year's pre-season advance-sale
+          --    snapshots (captured in the prior spring, which map to fiscal weeks
+          --    ~45-52) from sprawling across the chart. The first in-year snapshot is
+          --    cumulative, so those advance sales are still counted at week 1.
+          AND s.snapshot_date BETWEEN '${win.start}' AND '${win.end}'
           ${seriesCondition}
       ),
       weekly_totals AS (
@@ -1427,10 +1431,15 @@ async function getYTDComparison(bigquery, params, headers) {
         total_tickets,
         total_revenue,
         perf_count,
-        -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1)
-        CASE WHEN EXTRACT(ISOWEEK FROM week_start) >= 27
-             THEN EXTRACT(ISOWEEK FROM week_start) - 26
-             ELSE EXTRACT(ISOWEEK FROM week_start) + 26 END as fiscal_week,
+        -- Calculate fiscal week (ISO week offset by 26: ISO week 27 = fiscal week 1).
+        -- The Saturday-truncated week that contains July 1 starts in late June, so its
+        -- ISO week resolves to ~52; for the in-progress year those are really week 1,
+        -- so map any pre-fiscal-year-start week bucket to week 1.
+        CASE
+          WHEN week_start < DATE('${win.start}') THEN 1
+          WHEN EXTRACT(ISOWEEK FROM week_start) >= 27 THEN EXTRACT(ISOWEEK FROM week_start) - 26
+          ELSE EXTRACT(ISOWEEK FROM week_start) + 26
+        END as fiscal_week,
         EXTRACT(ISOWEEK FROM week_start) as iso_week
       FROM weekly_totals
       ORDER BY week_start
