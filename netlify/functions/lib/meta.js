@@ -23,7 +23,7 @@ async function fetchMetaInsights(startDate, endDate) {
     if (body.error) {
       const msg = body.error.message || JSON.stringify(body.error);
       if (body.error.type === 'OAuthException') {
-        return { spend: null, error: `Meta token expired. Run: python auth_meta.py <app_id> <app_secret>` };
+        return { spend: null, error: `Meta token expired. Regenerate META_ACCESS_TOKEN (Meta Business System User token recommended) and update it in Netlify env vars, then redeploy.` };
       }
       return { spend: null, error: `Meta API error: ${msg}` };
     }
