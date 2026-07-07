@@ -16,6 +16,11 @@ class DataTable {
         this.ytdData = null; // YTD comparison data for scorecard
         this.scorecardVisible = false;
 
+        // Fiscal-year roles for the scorecard's YTD pace comparison.
+        // Roll these forward each July when a new season starts.
+        this.currentFY = 'FY27'; // In-progress season
+        this.priorFY = 'FY26';   // Prior completed season (pace baseline)
+
         // Define columns and their properties
         // info: optional tooltip explaining calculation/data source (shown via ⓘ icon)
         this.columns = [
@@ -1047,46 +1052,62 @@ class DataTable {
 
     async fetchYtdData() {
         try {
-            const response = await fetch('/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&fiscalYears=FY25,FY26');
+            const response = await fetch(`/.netlify/functions/bigquery-snapshots?action=get-ytd-comparison&fiscalYears=${this.priorFY},${this.currentFY}`);
             if (!response.ok) return;
             const result = await response.json();
             const data = result.data || {};
 
-            // Get latest data point from each series (last entry = most recent cumulative total)
-            const fy25 = data['FY25'];
-            const fy26 = data['FY26 Current'];
+            // Both roles come from the live "<FY> Current" series (prior year is now
+            // complete through week 52; current year is in progress).
+            const prior = data[`${this.priorFY} Current`];
+            const current = data[`${this.currentFY} Current`];
 
-            if (!fy25 || !fy26 || fy25.length === 0 || fy26.length === 0) return;
+            if (!prior || !current || prior.length === 0 || current.length === 0) return;
 
-            // FY26 latest point
-            const fy26Latest = fy26[fy26.length - 1];
-            const fy26Week = fy26Latest.fiscalWeek;
+            // Current year's latest point
+            const currentLatest = current[current.length - 1];
+            const currentWeek = currentLatest.fiscalWeek;
 
-            // Find FY25 at the same fiscal week for apples-to-apples comparison
-            const fy25AtSameWeek = fy25.find(d => d.fiscalWeek === fy26Week) || fy25[fy25.length - 1];
+            // Find prior year at the same fiscal week (or nearest preceding) for an
+            // apples-to-apples comparison. Early in a new season the prior-year curve
+            // may not reach this week yet — in that case leave the baseline null so the
+            // YoY comparison and pace projection are suppressed rather than compared
+            // against the prior FULL season (which would be misleading).
+            const priorAtSameWeek =
+                prior.find(d => d.fiscalWeek === currentWeek) ||
+                prior.filter(d => d.fiscalWeek < currentWeek)
+                     .sort((a, b) => b.fiscalWeek - a.fiscalWeek)[0] ||
+                null;
 
-            // FY25 full season total (last entry in FY25 array)
-            const fy25Final = fy25[fy25.length - 1];
+            // Prior year full season total (last entry = highest cumulative)
+            const priorFinal = prior[prior.length - 1];
 
-            // Pace-based season projection: FY25 full season * (FY26 current / FY25 at same week)
-            const fy25RevenueAtWeek = fy25AtSameWeek.revenue || 0;
-            const fy25FullRevenue = fy25Final.revenue || 0;
-            const fy25FullTickets = fy25Final.tickets || 0;
-            const projectedSeasonRevenue = fy25RevenueAtWeek > 0
-                ? fy25FullRevenue * ((fy26Latest.revenue || 0) / fy25RevenueAtWeek)
+            if (!priorAtSameWeek) {
+                // No comparable prior-year week yet — show current-season totals only
+                this.ytdData = null;
+                this.updateScorecard();
+                return;
+            }
+
+            // Pace-based season projection: prior full season * (current YTD / prior at same week)
+            const priorRevenueAtWeek = priorAtSameWeek.revenue || 0;
+            const priorFullRevenue = priorFinal.revenue || 0;
+            const priorFullTickets = priorFinal.tickets || 0;
+            const projectedSeasonRevenue = priorRevenueAtWeek > 0
+                ? priorFullRevenue * ((currentLatest.revenue || 0) / priorRevenueAtWeek)
                 : 0;
-            const projectedSeasonTickets = (fy25AtSameWeek.tickets || 0) > 0
-                ? fy25FullTickets * ((fy26Latest.tickets || 0) / (fy25AtSameWeek.tickets || 1))
+            const projectedSeasonTickets = (priorAtSameWeek.tickets || 0) > 0
+                ? priorFullTickets * ((currentLatest.tickets || 0) / (priorAtSameWeek.tickets || 1))
                 : 0;
 
             this.ytdData = {
-                fy25Tickets: fy25AtSameWeek.tickets || 0,
-                fy25Revenue: fy25RevenueAtWeek,
-                fy25FullRevenue: fy25FullRevenue,
-                fy25FullTickets: fy25FullTickets,
-                fy26Tickets: fy26Latest.tickets || 0,
-                fy26Revenue: fy26Latest.revenue || 0,
-                fy26Week: fy26Week,
+                priorTickets: priorAtSameWeek.tickets || 0,
+                priorRevenue: priorRevenueAtWeek,
+                priorFullRevenue: priorFullRevenue,
+                priorFullTickets: priorFullTickets,
+                currentTickets: currentLatest.tickets || 0,
+                currentRevenue: currentLatest.revenue || 0,
+                currentWeek: currentWeek,
                 projectedSeasonRevenue,
                 projectedSeasonTickets
             };
@@ -1114,7 +1135,7 @@ class DataTable {
             { key: 'budgetVariance', label: 'Budget Variance',
               tooltip: 'Total Revenue minus sum of all budget goals for non-cancelled performances. Green = above budget, red = below budget.' },
             { key: 'projRevenue', label: 'Proj. Revenue', comparison: 'revenue', projected: true,
-              tooltip: 'FY25 full-season revenue × (FY26 YTD revenue ÷ FY25 YTD revenue). Projects what the full season will look like based on current sales pace.' }
+              tooltip: `${this.priorFY} full-season revenue × (${this.currentFY} YTD revenue ÷ ${this.priorFY} YTD revenue). Projects what the full season will look like based on current sales pace.` }
         ];
 
         cards.forEach(card => {
@@ -1160,7 +1181,7 @@ class DataTable {
             return `$${fmt(Math.round(n))}`;
         };
 
-        // Proj. Revenue uses pace-based YTD projection (FY25 full season * FY26/FY25 pace)
+        // Proj. Revenue uses pace-based YTD projection (prior full season * current/prior pace)
         const projRevenue = this.ytdData?.projectedSeasonRevenue || 0;
 
         const updates = {
@@ -1185,15 +1206,15 @@ class DataTable {
 
         // Update YTD comparisons if data available
         if (this.ytdData) {
-            this.updateYtdComparison(scorecardEl, 'ticketsSold', this.ytdData.fy26Tickets, this.ytdData.fy25Tickets);
-            this.updateYtdComparison(scorecardEl, 'revenue', this.ytdData.fy26Revenue, this.ytdData.fy25Revenue);
+            this.updateYtdComparison(scorecardEl, 'ticketsSold', this.ytdData.currentTickets, this.ytdData.priorTickets);
+            this.updateYtdComparison(scorecardEl, 'revenue', this.ytdData.currentRevenue, this.ytdData.priorRevenue);
             if (projRevenue > 0) {
-                this.updateYtdComparison(scorecardEl, 'projRevenue', projRevenue, this.ytdData.fy25FullRevenue, 'vs FY25 Full');
+                this.updateYtdComparison(scorecardEl, 'projRevenue', projRevenue, this.ytdData.priorFullRevenue, `vs ${this.priorFY} Full`);
             }
         }
     }
 
-    updateYtdComparison(scorecardEl, cardKey, currentVal, previousVal, label = 'vs FY25 YTD') {
+    updateYtdComparison(scorecardEl, cardKey, currentVal, previousVal, label = `vs ${this.priorFY} YTD`) {
         const compEl = scorecardEl.select(`[data-key="${cardKey}"] .scorecard-comparison`);
         if (compEl.empty() || !previousVal) return;
 

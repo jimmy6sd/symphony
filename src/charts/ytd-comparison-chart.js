@@ -7,17 +7,22 @@ class YTDComparisonChart {
         this.data = {};  // { FY23: [...], FY24: [...], ... }
         this.metric = options.metric || 'revenue';
         this.weekType = options.weekType || 'fiscal';
-        this.visibleYears = new Set(['FY24', 'FY25', 'FY26']);
+        this.visibleYears = new Set(['FY25', 'FY26', 'FY27']);
 
-        // Year colors (FY25 is target comp in orange, FY26 is current in blue)
+        // Fiscal-year roles. Roll these forward each July when a new season starts.
+        this.currentFY = 'FY27';    // In-progress year (emphasized blue, gets projection line)
+        this.baselineFY = 'FY26';   // Prior completed year the projection is based on
+
+        // Year colors (baseline in teal, current in blue)
         this.yearColors = {
             'FY19': '#5d6d7e',  // Dark slate (historical summary)
             'FY22': '#a3b1c2',  // Medium gray-blue (historical summary)
             'FY23': '#d4a0d0',  // Soft purple (historical summary)
-            'FY24': '#8884d8',  // Purple (was FY23's color)
-            'FY25': '#ff7c43',  // Orange (target comp)
-            'FY26': '#3498db',  // Blue (current year - merged Excel + live)
-            'FY26 Projected': '#2ecc71'  // Green dashed (projection based on FY25)
+            'FY24': '#8884d8',  // Purple
+            'FY25': '#ff7c43',  // Orange
+            'FY26': '#16a085',  // Teal (prior completed year / projection baseline)
+            'FY27': '#3498db',  // Blue (current year - merged Excel + live)
+            'FY27 Projected': '#2ecc71'  // Green dashed (projection based on FY26)
         };
 
         // Responsive state
@@ -351,10 +356,10 @@ class YTDComparisonChart {
                     .attr('d', line)
                     .attr('fill', 'none')
                     .attr('stroke', this.yearColors[year])
-                    .attr('stroke-width', year === 'FY26' ? 3 : 2.5)
+                    .attr('stroke-width', year === this.currentFY ? 3 : 2.5)
                     .attr('stroke-linecap', 'round')
                     .attr('stroke-linejoin', 'round')
-                    .attr('opacity', year === 'FY26' ? 1 : 0.8);
+                    .attr('opacity', year === this.currentFY ? 1 : 0.8);
             }
 
             // Draw points (larger for summary-only years)
@@ -374,7 +379,7 @@ class YTDComparisonChart {
                 .style('cursor', 'pointer');
         });
 
-        // Add FY26 projection based on FY25 (target comp)
+        // Add current-year projection based on the prior completed year (baseline)
         this.renderProjection(g, xScale, yScale, visibleData, line);
 
         // Add legend (desktop only)
@@ -386,16 +391,16 @@ class YTDComparisonChart {
         this.setupTooltip(g, xScale, yScale, visibleData, innerHeight);
     }
 
-    // Find FY25 data point at given week, falling back to nearest preceding week
-    findFY25AtWeek(fy25Data, targetWeek) {
+    // Find baseline-year data point at given week, falling back to nearest preceding week
+    findBaselineAtWeek(baselineData, targetWeek) {
         const weekKey = this.weekType === 'iso' ? 'isoWeek' : 'fiscalWeek';
         // Exact match first
-        const exact = fy25Data.find(d => d[weekKey] === targetWeek);
+        const exact = baselineData.find(d => d[weekKey] === targetWeek);
         if (exact) return exact;
         // Fall back to nearest preceding week
         let best = null;
         let bestWeek = -1;
-        for (const d of fy25Data) {
+        for (const d of baselineData) {
             const w = d[weekKey];
             if (w < targetWeek && w > bestWeek) {
                 best = d;
@@ -407,75 +412,75 @@ class YTDComparisonChart {
 
     calculateProjectedMax(visibleData) {
         // Calculate the max projected value so Y scale can accommodate it
-        const fy25Data = visibleData['FY25'];
-        const fy26CurrentData = visibleData['FY26'];
+        const baselineData = visibleData[this.baselineFY];
+        const currentData = visibleData[this.currentFY];
 
-        if (!fy25Data || !fy26CurrentData || fy26CurrentData.length === 0) {
+        if (!baselineData || !currentData || currentData.length === 0) {
             return 0;
         }
 
-        // Find the last FY26 data point
-        const sortedFY26 = [...fy26CurrentData].sort((a, b) => {
+        // Find the last current-year data point
+        const sortedCurrent = [...currentData].sort((a, b) => {
             const weekA = this.weekType === 'iso' ? a.isoWeek : a.fiscalWeek;
             const weekB = this.weekType === 'iso' ? b.isoWeek : b.fiscalWeek;
             return weekB - weekA;
         });
-        const lastFY26Point = sortedFY26[0];
-        const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
-        const lastFY26Value = this.getValue(lastFY26Point);
+        const lastCurrentPoint = sortedCurrent[0];
+        const lastCurrentWeek = this.weekType === 'iso' ? lastCurrentPoint.isoWeek : lastCurrentPoint.fiscalWeek;
+        const lastCurrentValue = this.getValue(lastCurrentPoint);
 
-        // Find FY25 value at the same week (or nearest preceding)
-        const fy25AtWeek = this.findFY25AtWeek(fy25Data, lastFY26Week);
+        // Find baseline value at the same week (or nearest preceding)
+        const baselineAtWeek = this.findBaselineAtWeek(baselineData, lastCurrentWeek);
 
-        if (!fy25AtWeek) {
+        if (!baselineAtWeek) {
             return 0;
         }
 
-        const fy25ValueAtWeek = this.getValue(fy25AtWeek);
-        const variance = lastFY26Value - fy25ValueAtWeek;
+        const baselineValueAtWeek = this.getValue(baselineAtWeek);
+        const variance = lastCurrentValue - baselineValueAtWeek;
 
-        // Find max FY25 value and add variance
-        const fy25Max = Math.max(...fy25Data.map(d => this.getValue(d)));
-        return fy25Max + variance;
+        // Find max baseline value and add variance
+        const baselineMax = Math.max(...baselineData.map(d => this.getValue(d)));
+        return baselineMax + variance;
     }
 
     renderProjection(g, xScale, yScale, visibleData, line) {
         // Clear previous projection data
         this.projectionData = [];
 
-        // Only render if we have both FY25 (target) and FY26 data
-        const fy25Data = visibleData['FY25'];
-        const fy26CurrentData = visibleData['FY26'];
+        // Only render if we have both the baseline and current year
+        const baselineData = visibleData[this.baselineFY];
+        const currentData = visibleData[this.currentFY];
 
-        if (!fy25Data || !fy26CurrentData || fy26CurrentData.length === 0) {
+        if (!baselineData || !currentData || currentData.length === 0) {
             return;
         }
 
-        // Find the last FY26 data point
-        const sortedFY26 = [...fy26CurrentData].sort((a, b) => {
+        // Find the last current-year data point
+        const sortedCurrent = [...currentData].sort((a, b) => {
             const weekA = this.weekType === 'iso' ? a.isoWeek : a.fiscalWeek;
             const weekB = this.weekType === 'iso' ? b.isoWeek : b.fiscalWeek;
             return weekB - weekA;
         });
-        const lastFY26Point = sortedFY26[0];
-        const lastFY26Week = this.weekType === 'iso' ? lastFY26Point.isoWeek : lastFY26Point.fiscalWeek;
-        const lastFY26Value = this.getValue(lastFY26Point);
+        const lastCurrentPoint = sortedCurrent[0];
+        const lastCurrentWeek = this.weekType === 'iso' ? lastCurrentPoint.isoWeek : lastCurrentPoint.fiscalWeek;
+        const lastCurrentValue = this.getValue(lastCurrentPoint);
 
-        // Find FY25 value at the same week (or nearest preceding)
-        const fy25AtWeek = this.findFY25AtWeek(fy25Data, lastFY26Week);
+        // Find baseline value at the same week (or nearest preceding)
+        const baselineAtWeek = this.findBaselineAtWeek(baselineData, lastCurrentWeek);
 
-        if (!fy25AtWeek) {
+        if (!baselineAtWeek) {
             return; // Can't calculate variance without matching week
         }
 
-        const fy25ValueAtWeek = this.getValue(fy25AtWeek);
-        const variance = lastFY26Value - fy25ValueAtWeek;
+        const baselineValueAtWeek = this.getValue(baselineAtWeek);
+        const variance = lastCurrentValue - baselineValueAtWeek;
 
-        // Get FY25 data points AFTER the current FY26 week
-        const fy25FutureWeeks = fy25Data
+        // Get baseline data points AFTER the last current-year week
+        const baselineFutureWeeks = baselineData
             .filter(d => {
                 const week = this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek;
-                return week > lastFY26Week;
+                return week > lastCurrentWeek;
             })
             .sort((a, b) => {
                 const weekA = this.weekType === 'iso' ? a.isoWeek : a.fiscalWeek;
@@ -483,36 +488,36 @@ class YTDComparisonChart {
                 return weekA - weekB;
             });
 
-        if (fy25FutureWeeks.length === 0) {
+        if (baselineFutureWeeks.length === 0) {
             return; // No future weeks to project
         }
 
-        // Build projection data: FY25 future values + variance (applied to current metric)
+        // Build projection data: baseline future values + variance (applied to current metric)
         // Calculate variance for each metric type
         const varianceByMetric = {
-            tickets: lastFY26Point.tickets - (fy25AtWeek.tickets || 0),
-            revenue: lastFY26Point.revenue - (fy25AtWeek.revenue || 0),
-            singleTickets: (lastFY26Point.singleTickets || 0) - (fy25AtWeek.singleTickets || 0),
-            singleRevenue: (lastFY26Point.singleRevenue || 0) - (fy25AtWeek.singleRevenue || 0),
-            subscriptionTickets: (lastFY26Point.subscriptionTickets || 0) - (fy25AtWeek.subscriptionTickets || 0),
-            subscriptionRevenue: (lastFY26Point.subscriptionRevenue || 0) - (fy25AtWeek.subscriptionRevenue || 0)
+            tickets: lastCurrentPoint.tickets - (baselineAtWeek.tickets || 0),
+            revenue: lastCurrentPoint.revenue - (baselineAtWeek.revenue || 0),
+            singleTickets: (lastCurrentPoint.singleTickets || 0) - (baselineAtWeek.singleTickets || 0),
+            singleRevenue: (lastCurrentPoint.singleRevenue || 0) - (baselineAtWeek.singleRevenue || 0),
+            subscriptionTickets: (lastCurrentPoint.subscriptionTickets || 0) - (baselineAtWeek.subscriptionTickets || 0),
+            subscriptionRevenue: (lastCurrentPoint.subscriptionRevenue || 0) - (baselineAtWeek.subscriptionRevenue || 0)
         };
 
         const projectionData = [
-            // Start from last actual FY26 point
+            // Start from last actual current-year point
             {
-                fiscalWeek: lastFY26Point.fiscalWeek,
-                isoWeek: lastFY26Point.isoWeek,
-                tickets: lastFY26Point.tickets,
-                revenue: lastFY26Point.revenue,
-                singleTickets: lastFY26Point.singleTickets,
-                singleRevenue: lastFY26Point.singleRevenue,
-                subscriptionTickets: lastFY26Point.subscriptionTickets,
-                subscriptionRevenue: lastFY26Point.subscriptionRevenue,
+                fiscalWeek: lastCurrentPoint.fiscalWeek,
+                isoWeek: lastCurrentPoint.isoWeek,
+                tickets: lastCurrentPoint.tickets,
+                revenue: lastCurrentPoint.revenue,
+                singleTickets: lastCurrentPoint.singleTickets,
+                singleRevenue: lastCurrentPoint.singleRevenue,
+                subscriptionTickets: lastCurrentPoint.subscriptionTickets,
+                subscriptionRevenue: lastCurrentPoint.subscriptionRevenue,
                 isActual: true
             },
             // Project future weeks - add variance to each metric
-            ...fy25FutureWeeks.map(d => ({
+            ...baselineFutureWeeks.map(d => ({
                 fiscalWeek: d.fiscalWeek,
                 isoWeek: d.isoWeek,
                 tickets: (d.tickets || 0) + varianceByMetric.tickets,
@@ -534,7 +539,7 @@ class YTDComparisonChart {
             .attr('class', 'projection-line')
             .attr('d', line)
             .attr('fill', 'none')
-            .attr('stroke', this.yearColors['FY26 Projected'])
+            .attr('stroke', this.yearColors[`${this.currentFY} Projected`])
             .attr('stroke-width', 2.5)
             .attr('stroke-dasharray', '8,4')
             .attr('opacity', 0.8);
@@ -548,7 +553,7 @@ class YTDComparisonChart {
             .attr('cx', d => xScale(this.weekType === 'iso' ? d.isoWeek : d.fiscalWeek))
             .attr('cy', d => yScale(this.getValue(d)))
             .attr('r', this.isMobile ? 4 : 3)
-            .attr('fill', this.yearColors['FY26 Projected'])
+            .attr('fill', this.yearColors[`${this.currentFY} Projected`])
             .attr('stroke', 'white')
             .attr('stroke-width', 1)
             .attr('opacity', 0.7)
@@ -569,8 +574,8 @@ class YTDComparisonChart {
             const row = legend.append('g')
                 .attr('transform', `translate(0, ${i * 24})`);
 
-            const isCurrent = year === 'FY26';
-            const isTarget = year === 'FY25';
+            const isCurrent = year === this.currentFY;
+            const isTarget = year === this.baselineFY;
 
             row.append('line')
                 .attr('x1', 0)
@@ -599,8 +604,8 @@ class YTDComparisonChart {
 
         let nextY = regularYears.length * 24;
 
-        // Add projection legend entry if FY25 and FY26 are visible
-        if (this.visibleYears.has('FY25') && this.visibleYears.has('FY26')) {
+        // Add projection legend entry if both baseline and current year are visible
+        if (this.visibleYears.has(this.baselineFY) && this.visibleYears.has(this.currentFY)) {
             const projY = nextY;
             nextY += 24;
             const projRow = legend.append('g')
@@ -611,7 +616,7 @@ class YTDComparisonChart {
                 .attr('x2', 24)
                 .attr('y1', 8)
                 .attr('y2', 8)
-                .attr('stroke', this.yearColors['FY26 Projected'])
+                .attr('stroke', this.yearColors[`${this.currentFY} Projected`])
                 .attr('stroke-width', 2.5)
                 .attr('stroke-dasharray', '4,2');
 
@@ -619,7 +624,7 @@ class YTDComparisonChart {
                 .attr('cx', 12)
                 .attr('cy', 8)
                 .attr('r', 3)
-                .attr('fill', this.yearColors['FY26 Projected']);
+                .attr('fill', this.yearColors[`${this.currentFY} Projected`]);
 
             projRow.append('text')
                 .attr('x', 32)
@@ -627,7 +632,7 @@ class YTDComparisonChart {
                 .style('font-size', '12px')
                 .style('font-weight', '400')
                 .style('font-style', 'italic')
-                .text('FY26 Projected');
+                .text(`${this.currentFY} Projected`);
         }
 
         // Add summary years as a compact group below everything
@@ -710,14 +715,14 @@ class YTDComparisonChart {
                     }
                 });
 
-                // Check for projected FY26 value at this week
+                // Check for projected current-year value at this week
                 if (self.projectionData && self.projectionData.length > 0) {
                     const projMatch = self.projectionData.find(w =>
                         (self.weekType === 'iso' ? w.isoWeek : w.fiscalWeek) === week && w.isProjected
                     );
                     if (projMatch) {
                         weekValues.push({
-                            year: 'FY26 Projected',
+                            year: `${self.currentFY} Projected`,
                             value: self.getValue(projMatch),
                             date: null,
                             isProjected: true

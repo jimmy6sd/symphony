@@ -11,14 +11,19 @@ class YTDComparisonApp {
         this.availableSeries = [];   // Populated from API _meta
         this.selectedSeries = null;  // null = All, otherwise a single series name
 
+        // Fiscal-year roles. Roll these forward each July when a new season starts.
+        this.currentFY = 'FY27';           // In-progress year (emphasized, projected)
+        this.liveYears = ['FY26', 'FY27']; // Sourced live and merged from "<FY> Current"
+
         this.yearColors = {
             'FY19': '#5d6d7e',  // Dark slate (historical summary)
             'FY22': '#a3b1c2',  // Medium gray-blue (historical summary)
             'FY23': '#d4a0d0',  // Soft purple (historical summary)
-            'FY24': '#8884d8',  // Purple (was FY23's color)
-            'FY25': '#ff7c43',  // Orange (target comp)
-            'FY26': '#3498db',  // Blue (current year - merged)
-            'FY26 Projected': '#2ecc71'  // Green (projection)
+            'FY24': '#8884d8',  // Purple
+            'FY25': '#ff7c43',  // Orange
+            'FY26': '#16a085',  // Teal (prior completed year / projection baseline)
+            'FY27': '#3498db',  // Blue (current year - merged)
+            'FY27 Projected': '#2ecc71'  // Green (projection)
         };
 
         this.metricLabels = {
@@ -70,8 +75,8 @@ class YTDComparisonApp {
             this.availableSeries = result._meta.availableSeries;
         }
 
-        // Merge FY26 and FY26 Current into a single FY26 series
-        this.mergeFY26Data();
+        // Merge each live year's Excel + "<FY> Current" streams into a single series
+        this.mergeLiveData();
 
         this.summaryYears = Object.keys(this.data).filter(y => {
             const d = this.data[y];
@@ -102,56 +107,30 @@ class YTDComparisonApp {
         const result = await response.json();
         this.segmentData = result.data;
 
-        // Merge FY26 data for segments
-        this.mergeFY26SegmentData();
+        // Merge each live year for segments
+        this.mergeLiveData(this.segmentData);
     }
 
-    mergeFY26SegmentData() {
-        if (!this.segmentData) return;
+    // Merge each live year's Excel-seeded and live ("<FY> Current") streams into a
+    // single "<FY>" series, preferring live data where weeks overlap. Operates on
+    // this.data by default, or the passed dataset (e.g. this.segmentData).
+    mergeLiveData(dataset = this.data) {
+        if (!dataset) return;
 
-        const fy26Excel = this.segmentData['FY26'] || [];
-        const fy26Current = this.segmentData['FY26 Current'] || [];
+        this.liveYears.forEach(fy => {
+            const excel = dataset[fy] || [];
+            const current = dataset[`${fy} Current`] || [];
 
-        if (fy26Excel.length === 0 && fy26Current.length === 0) return;
+            if (excel.length === 0 && current.length === 0) return;
 
-        const weekMap = new Map();
-        fy26Excel.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
-        fy26Current.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
+            // Map week -> data, preferring "<FY> Current" (live) over Excel
+            const weekMap = new Map();
+            excel.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
+            current.forEach(week => weekMap.set(week.fiscalWeek, { ...week }));
 
-        this.segmentData['FY26'] = Array.from(weekMap.values()).sort((a, b) => a.fiscalWeek - b.fiscalWeek);
-        delete this.segmentData['FY26 Current'];
-    }
-
-    mergeFY26Data() {
-        const fy26Excel = this.data['FY26'] || [];
-        const fy26Current = this.data['FY26 Current'] || [];
-
-        if (fy26Excel.length === 0 && fy26Current.length === 0) return;
-
-        // Create a map of week -> data, preferring FY26 Current (live) over Excel
-        const weekMap = new Map();
-
-        // First add Excel data
-        fy26Excel.forEach(week => {
-            const key = week.fiscalWeek; // Use fiscal week as key
-            weekMap.set(key, { ...week });
+            dataset[fy] = Array.from(weekMap.values()).sort((a, b) => a.fiscalWeek - b.fiscalWeek);
+            delete dataset[`${fy} Current`];
         });
-
-        // Then overlay with Current data (overwrites Excel for same weeks)
-        fy26Current.forEach(week => {
-            const key = week.fiscalWeek;
-            weekMap.set(key, { ...week });
-        });
-
-        // Convert back to sorted array
-        const merged = Array.from(weekMap.values())
-            .sort((a, b) => a.fiscalWeek - b.fiscalWeek);
-
-        // Replace FY26 with merged data and remove FY26 Current
-        this.data['FY26'] = merged;
-        delete this.data['FY26 Current'];
-
-        console.log(`Merged FY26 data: ${fy26Excel.length} Excel + ${fy26Current.length} Current = ${merged.length} weeks`);
     }
 
     setupControls() {
@@ -216,7 +195,7 @@ class YTDComparisonApp {
         container.innerHTML = '';
 
         this.availableYears.forEach(year => {
-            const isVisible = this.chart ? this.chart.visibleYears.has(year) : ['FY24', 'FY25', 'FY26'].includes(year);
+            const isVisible = this.chart ? this.chart.visibleYears.has(year) : ['FY25', 'FY26', 'FY27'].includes(year);
             const toggle = document.createElement('label');
             toggle.className = 'year-toggle' + (isVisible ? ' active' : '');
             toggle.dataset.year = year;
@@ -401,7 +380,7 @@ class YTDComparisonApp {
             const card = document.createElement('div');
             card.className = 'summary-card';
 
-            const isCurrent = year === 'FY26';
+            const isCurrent = year === this.currentFY;
             const isSingleOnly = latestWeek.data.singleTicketOnly;
             const statusLabel = isCurrent ? 'YTD' : (isSingleOnly ? 'FINAL · Singles Only' : 'FINAL');
 
@@ -549,7 +528,7 @@ class YTDComparisonApp {
         const segmentData = segments.map(segment => {
             const yearResults = {};
             visibleYears.forEach(year => {
-                const isCurrent = year === 'FY26'; // FY26 is the current season
+                const isCurrent = year === this.currentFY; // in-progress season
                 yearResults[year] = this.calculateSegmentTotal(dataSource[year], segment, metric, weekType, isCurrent, attributionMode);
             });
             return { segment, yearResults };
