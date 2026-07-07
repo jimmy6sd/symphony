@@ -196,9 +196,19 @@ class YTDComparisonApp {
 
         this.availableYears.forEach(year => {
             const isVisible = this.chart ? this.chart.visibleYears.has(year) : ['FY25', 'FY26', 'FY27'].includes(year);
+            const color = this.yearColors[year] || '#999';
             const toggle = document.createElement('label');
             toggle.className = 'year-toggle' + (isVisible ? ' active' : '');
             toggle.dataset.year = year;
+
+            // Color the toggle from the shared yearColors so it always matches the
+            // chart line for this year (active = filled, inactive = outlined).
+            const paint = (active) => {
+                toggle.style.borderColor = color;
+                toggle.style.background = active ? color : 'white';
+                toggle.style.color = active ? 'white' : color;
+            };
+            paint(isVisible);
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -211,8 +221,9 @@ class YTDComparisonApp {
 
             toggle.addEventListener('click', (e) => {
                 e.preventDefault();
-                toggle.classList.toggle('active');
-                checkbox.checked = !checkbox.checked;
+                const nowActive = toggle.classList.toggle('active');
+                checkbox.checked = nowActive;
+                paint(nowActive);
                 this.chart?.toggleYear(year);
                 this.renderSummary();
                 this.renderSegmentCards();

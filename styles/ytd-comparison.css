@@ -141,34 +141,8 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Year-specific colors */
-.year-toggle[data-year="FY23"] {
-    border-color: #8884d8;
-}
-.year-toggle[data-year="FY23"].active {
-    background: #8884d8;
-}
-
-.year-toggle[data-year="FY24"] {
-    border-color: #8884d8;
-}
-.year-toggle[data-year="FY24"].active {
-    background: #8884d8;
-}
-
-.year-toggle[data-year="FY25"] {
-    border-color: #ff7c43;
-}
-.year-toggle[data-year="FY25"].active {
-    background: #ff7c43;
-}
-
-.year-toggle[data-year="FY26"] {
-    border-color: #3498db;
-}
-.year-toggle[data-year="FY26"].active {
-    background: #3498db;
-}
+/* Year-specific colors are applied inline from yearColors in ytd-comparison-app.js
+   (renderYearToggles) so the toggles always match the chart lines. */
 
 /* Series Toggles */
 .series-toggles {
