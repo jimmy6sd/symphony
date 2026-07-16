@@ -354,6 +354,16 @@
         </div>
 
         <div class="form-group">
+          <label>Series</label>
+          <select id="edit_series">
+            <option value="">— None —</option>
+            <option value="__new__">+ Custom series…</option>
+          </select>
+          <input type="text" id="edit_series_new" placeholder="Custom series value" style="display:none; margin-top:8px;">
+          <small style="display:block; margin-top:6px; color:#7f8c8d;">Drives the dashboard/YTD category (Classical / Pops / Family / Film / Specials). Separate from Season.</small>
+        </div>
+
+        <div class="form-group">
           <label>Season</label>
           <select id="edit_season_category">
             <option value="">— None —</option>
@@ -549,6 +559,7 @@
         venueSelect.value = venueValue;
       }
 
+      populateSeriesSelect(perf.series || '');
       populateSeasonCategorySelect(seasonCategory(perf.season));
       document.getElementById('edit_capacity').value = perf.capacity || '';
       document.getElementById('edit_budget_goal').value = perf.budget_goal || '';
@@ -575,6 +586,41 @@
 
     // Build the category dropdown from existing categories, ensuring the current
     // value is present, plus an "+ Add new…" escape hatch.
+    // Known series values, grouped so the dashboard's SERIES_MAP_SQL categories
+    // stay obvious (Classical / Pops / Family / Film / Specials). Insertion order
+    // is intentional — not alphabetized.
+    const KNOWN_SERIES = [
+      'Classical','CS01','CS02','CS03','CS04','CS05','CS06','CS07','CS08','CS09','CS10','CS11','CS12','CS13','CS14','Piazza','Chamber Music',
+      'Pops','PS1','PS2','PS3','PS4','PS5','Happy Hour',
+      'Family','FS1','FS2','FS3','FS4','Christmas Festival','Education',
+      'Film','FM1','FM2','FM3',
+      'Special Event','On Stage'
+    ];
+
+    function populateSeriesSelect(currentSeries) {
+      const sel = document.getElementById('edit_series');
+      const list = [...KNOWN_SERIES];
+      // Preserve any existing/legacy value (e.g. "Other", "Handel's Messiah") so it displays.
+      if (currentSeries && !list.includes(currentSeries)) list.push(currentSeries);
+      sel.innerHTML = '<option value="">— None —</option>' +
+        list.map(s => `<option value="${s}">${s}</option>`).join('') +
+        '<option value="__new__">+ Custom series…</option>';
+      sel.value = currentSeries || '';
+
+      const newInput = document.getElementById('edit_series_new');
+      newInput.value = '';
+      newInput.style.display = 'none';
+    }
+
+    // The series value the user has chosen (handles the "+ Custom…" path).
+    function selectedSeries() {
+      const sel = document.getElementById('edit_series');
+      if (sel.value === '__new__') {
+        return document.getElementById('edit_series_new').value.trim();
+      }
+      return sel.value;
+    }
+
     function populateSeasonCategorySelect(currentCategory) {
       const sel = document.getElementById('edit_season_category');
       const cats = getCategories();
@@ -621,6 +667,13 @@
       }
     }
 
+    document.getElementById('edit_series').addEventListener('change', () => {
+      const isNew = document.getElementById('edit_series').value === '__new__';
+      const newInput = document.getElementById('edit_series_new');
+      newInput.style.display = isNew ? 'block' : 'none';
+      if (isNew) newInput.focus();
+    });
+
     document.getElementById('edit_season_category').addEventListener('change', () => {
       const isNew = document.getElementById('edit_season_category').value === '__new__';
       const newInput = document.getElementById('edit_season_category_new');
@@ -639,6 +692,7 @@
         title: document.getElementById('edit_title').value,
         performance_date: document.getElementById('edit_date').value,
         venue: document.getElementById('edit_venue').value,
+        series: selectedSeries(),
         season: composeSeason(),
         capacity: parseInt(document.getElementById('edit_capacity').value),
         budget_goal: parseInt(document.getElementById('edit_budget_goal').value) || 0,
